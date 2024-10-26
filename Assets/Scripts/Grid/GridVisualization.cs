@@ -8,7 +8,6 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
-using static UnityEditor.Progress;
 
 
 public class PlayerPositionArgs : EventArgs
@@ -61,7 +60,7 @@ public class GridVisualization : MonoBehaviour
 
     [SerializeField] public GameObject worldItem;
     public const int renderChunks = 2;
-    public const int maxLoadedChunks = 35;
+    public const int maxLoadedChunks = 40;
 
     public Map map;
     public Pathfinding pathfinding;
@@ -199,7 +198,7 @@ public class GridVisualization : MonoBehaviour
     }
 
     IEnumerator LoadChunks(Vector2 posChunk)
-    {
+    {  
         List<int> list = new List<int>();
         for (int x = -renderChunks; x <= renderChunks; x++)
         {
@@ -220,7 +219,10 @@ public class GridVisualization : MonoBehaviour
         foreach (int index in list)
         {
             StartCoroutine(LoadChunk(index));
+            StartCoroutine(TryUnloadChunks(lastPlayerChunk));
+
             yield return null;
+
         }
         yield return null;
     }
