@@ -177,6 +177,7 @@ public class BuildingManager : MonoBehaviour
         if (gridTile == null || gridTile.IsBuildObject()) return;    
         Sounds.instance.Hammer();
         Transform obj = Instantiate(buildingPrefab,GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).transform;
+        obj.tag = "BuildObject";
         gridTile.SetGridObject(new Wall(selectedObjectID,0,obj));
         GridVisualization.instance.SetNewSprite(posXY,selectedObjectID);
         builtObject(this, null);
@@ -193,6 +194,7 @@ public class BuildingManager : MonoBehaviour
         else if(item is BuildingObject)
         {
             Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform.GetChild(0);
+            obj.tag = "BuildObject";
             Transform shadowT = Instantiate(shadow, obj.parent).transform;
             ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(gridObject.ID,gridObject.variantIndex);
             obj.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprite;
@@ -220,6 +222,7 @@ public class BuildingManager : MonoBehaviour
 
         Sounds.instance.Hammer();
         Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).transform.GetChild(0);
+        obj.tag = "BuildObject";
         Transform shadowT = Instantiate(shadow, obj.parent).transform;
 
         ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(selectedObjectID, rotation % rotationStates);
@@ -238,7 +241,11 @@ public class BuildingManager : MonoBehaviour
 
         switch (item)
         {
-            case DoorItem : gridObject.SetGridObject(new GridDoor(itemID, indexVariant, buildingObj),true);
+            case DoorItem:
+                gridObject.SetGridObject(new GridDoor(itemID, indexVariant, buildingObj), true);
+                return;
+            case ContainerItem : 
+                gridObject.SetGridObject(new GridContainer(itemID, indexVariant, buildingObj,(item as ContainerItem).capacity),true);
                 return;
         }
 
@@ -248,11 +255,19 @@ public class BuildingManager : MonoBehaviour
     {
         GridObject gridObject = GridVisualization.instance.GetValueByGridPosition(posXY).gridObject;
         Variant  variant = ItemsAsset.instance.GetObjectVariant(gridObject.ID, gridObject.variantIndex).variants[index];
-        gridObject.objectTransform.GetComponentInChildren<SpriteRenderer>().sprite = variant.sprite;
-        PolygonCollider2D polygonCollider2D = gridObject.objectTransform.GetComponentInChildren<PolygonCollider2D>();
+
+        Transform obj = null;
+        for (int i = 0; i < gridObject.objectTransform.childCount; i++)
+        {
+            if (gridObject.objectTransform.GetChild(i).CompareTag("BuildObject"))
+                obj = gridObject.objectTransform.GetChild(i);
+        }
+
+        obj.GetComponent<SpriteRenderer>().sprite = variant.sprite;
+        PolygonCollider2D polygonCollider2D = obj.GetComponent<PolygonCollider2D>();
         polygonCollider2D.points = variant.hitbox;
         polygonCollider2D.usedByComposite = false;
         Timer.Create(2f, () => { if(polygonCollider2D != null) polygonCollider2D.usedByComposite = true; return false; });
-        MyTools.ChangePositionPivot(gridObject.objectTransform, gridObject.objectTransform.GetChild(0).TransformPoint(0, variant.minY, 0));
+        MyTools.ChangePositionPivot(gridObject.objectTransform, obj.TransformPoint(0, variant.minY, 0));
     }
 }

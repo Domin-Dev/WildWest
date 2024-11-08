@@ -7,10 +7,18 @@ public interface IGetBarValue
     public void IncreaseHitPoints(float value);
     public bool DecreaseHitPoints(float value);
 }
+public class GridContainer : GridObject
+{
+    public Item[] items;
+    public GridContainer(int ID, int indexVariant, Transform obj, int size) : base(ID, indexVariant, obj)
+    {
+        items = new Item[size];
+    }
+}
 public class GridDoor : GridObject
 {
     public bool doorIsClosed;
-    public GridDoor(int ID, int indexVariant , Transform obj,bool doorIsClosed = true) : base(ID,indexVariant, obj)
+    public GridDoor(int ID, int indexVariant, Transform obj, bool doorIsClosed = true) : base(ID, indexVariant, obj)
     {
         this.doorIsClosed = doorIsClosed;
     }

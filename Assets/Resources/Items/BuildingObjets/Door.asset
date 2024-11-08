@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 08bdd6df0c09ed54ea720dd8a0815812, type: 3}
-  m_Name: Wall
+  m_Name: Door
   m_EditorClassIdentifier: 
   name: Door
   description: 
@@ -33,7 +33,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.105}
       - {x: 0.12, y: 0.105}
       - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: 0.01, y: 0.055}
       minY: 0.005
       sprite: {fileID: 21300000, guid: 718a65e92ca0b6d41980bf7c2e8cb3ac, type: 2}
     - hitbox:
@@ -41,7 +41,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.285}
       - {x: -0.08, y: 0.285}
       - {x: -0.08, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: -0.099999994, y: 0.13499999}
       minY: 0.005
       sprite: {fileID: 21300000, guid: bc81a473387d11f42a0d39c79a8d8553, type: 2}
   - variants:
@@ -50,7 +50,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.105}
       - {x: 0.12, y: 0.105}
       - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: 0, y: 0.055}
       minY: 0.005
       sprite: {fileID: 21300000, guid: e2dab3f6922a7734381d881b9918e08c, type: 2}
     - hitbox:
@@ -58,7 +58,7 @@ MonoBehaviour:
       - {x: 0.08, y: 0.285}
       - {x: 0.12, y: 0.285}
       - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: 0.099999994, y: 0.145}
       minY: 0.005
       sprite: {fileID: 21300000, guid: 5ba78ba121781b54fb2d6b3080565de0, type: 2}
   - variants:
@@ -67,7 +67,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.285}
       - {x: -0.08, y: 0.285}
       - {x: -0.08, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: -0.099999994, y: 0.13499999}
       minY: 0.005
       sprite: {fileID: 21300000, guid: 952ec1a25eb6336409275dfb717c4503, type: 2}
     - hitbox:
@@ -75,7 +75,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.105}
       - {x: 0.12, y: 0.105}
       - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: 0, y: 0.065}
       minY: 0.005
       sprite: {fileID: 21300000, guid: 1c594b25ada133744a67975c360634f1, type: 2}
   - variants:
@@ -84,7 +84,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.285}
       - {x: -0.08, y: 0.285}
       - {x: -0.08, y: 0.005}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: -0.099999994, y: 0.13499999}
       minY: 0.005
       sprite: {fileID: 21300000, guid: 07fe0b92bae65234284b37a7c0711850, type: 2}
     - hitbox:
@@ -92,6 +92,6 @@ MonoBehaviour:
       - {x: -0.12, y: 0.295}
       - {x: 0.12, y: 0.295}
       - {x: 0.12, y: 0.195}
-      particlePoint: {x: 0, y: 0}
+      particlePoint: {x: 0, y: 0.24499999}
       minY: 0.195
       sprite: {fileID: 21300000, guid: bb72e643706f5bb48a239ddd102998ae, type: 2}

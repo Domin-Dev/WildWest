@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using static UnityEditor.Progress;
 
 public class Actions : MonoBehaviour
 {
@@ -10,16 +11,6 @@ public class Actions : MonoBehaviour
     Transform pointerTransform;
     //public static Grid<GridTile> grid { private set; get; }
     public static Actions instance { private set; get; }
-    //public Grid<GridTile> _grid
-    //{
-    //    set
-    //    {
-    //        if (grid == null)
-    //        {
-    //            grid = value;
-    //        }
-    //    }
-    //}
 
     Vector2 lastPos;
 
@@ -61,13 +52,14 @@ public class Actions : MonoBehaviour
                 if (tile != null)
                 {
                     GridObject gridObject = tile.gridObject;
-                    if (gridObject != null)
+                    switch (gridObject)
                     {
-                        if (gridObject is GridDoor)
-                        {
-                            Door(gridObject as GridDoor, pos);
-                        }
+                        case GridDoor:
+                            Door(gridObject as GridDoor, pos);return;
+                        case GridContainer:
+                            Container(gridObject as GridContainer);return;
                     }
+                    
                 }
             }
         }
@@ -75,11 +67,18 @@ public class Actions : MonoBehaviour
 
     private void Door(GridDoor gridDoor,Vector2 position)
     {
-        if(gridDoor.doorIsClosed)
+        Debug.Log($"liczba");
+
+        if (gridDoor.doorIsClosed)
             BuildingManager.instance.ChangeSprite(position, 1);
         else
             BuildingManager.instance.ChangeSprite(position, 0);
         gridDoor.doorIsClosed = !gridDoor.doorIsClosed;
+    }
+
+    private void Container(GridContainer gridContainer)
+    {
+        Debug.Log($"liczba {gridContainer.items.Length}");
     }
     public void Destroy(ItemStats itemStats)
     {

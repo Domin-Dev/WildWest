@@ -23,6 +23,12 @@ public class ItemFinder : ScriptableObject, ISearchWindowProvider
 
         var items = ItemList.items;
 
+        var element = new SearchTreeEntry(new GUIContent("Null [ID: -1]"));
+        element.userData = -1;
+        element.level = 1;
+        element.content.image = null;
+        result.Add(element);
+
         foreach (var item in items)
         {
             SearchTreeEntry searchTreeEntry = new SearchTreeEntry(new GUIContent($"{item.Value.name} [ID: {item.Key}]"));

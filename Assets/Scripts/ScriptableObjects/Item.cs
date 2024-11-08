@@ -28,19 +28,26 @@ public class Item : ScriptableObject
 }
 
 [System.Serializable]
-public class Ingredient
+public class Ingredient : ItemID
 {
-    public int itemID;
     public int number;
 
-    public Ingredient(int itemID, int number)
+    public Ingredient(int itemID, int number): base(itemID)
     {
-        this.itemID = itemID;
         this.number = number;
     }
 }
 
+[System.Serializable]
+public class ItemID
+{
+    public int itemID;
 
+    public ItemID(int itemID)
+    {
+        this.itemID = itemID;
+    }
+}
 
 [CreateAssetMenu(fileName = "DestroyableItem", menuName = "GameAsset/Items/DestroyableItem")]
 public class Destroyable: Item
