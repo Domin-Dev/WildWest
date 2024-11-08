@@ -225,6 +225,7 @@ public class EquipmentManager : MonoBehaviour
     private ItemStats[] equipment = new ItemStats[SlotCount];
     private ItemStats[] equipmentBar = new ItemStats[BarSlotCount];
     private ItemStats[] clothes = new ItemStats[clothesCount];
+    private ItemStats[] container;
 
     private SlotPosition selectedSlotInEQ;
     private ItemStats selectedItemStats;
@@ -290,6 +291,15 @@ public class EquipmentManager : MonoBehaviour
     {
         handsController.UseItem += UseSelectedItem;
         BuildingManager.instance.builtObject += BuiltObject;
+    }
+
+    public void LoadChest(GridContainer gridContainer)
+    {
+        equipmentIsOpen = true;
+        OpenEquipmentUI(this, new BoolArgs(true));
+        container = gridContainer.items;
+        Debug.Log(container);
+        UIManager.instance.LoadSlotsContainer(container);
     }
 
     private void BuiltObject(object sender, EventArgs e)
@@ -748,6 +758,8 @@ public class EquipmentManager : MonoBehaviour
                 return equipment;
             case 2:
                 return clothes;
+            case 3:
+                return container;
         }
         return null;
     }

@@ -44,6 +44,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Transform equipmentItemBar;
     [SerializeField] private Transform equipmentDragItems;
     [SerializeField] private Transform equipmentClothes;
+    [SerializeField] private Transform equipmentContainer;
     [Space(20f)]
     #endregion
     #region Stats UI
@@ -79,6 +80,7 @@ public class UIManager : MonoBehaviour
     private EquipmentGrid equipmentBarGrid;
     private EquipmentGrid mainEquipmentGrid;
     private EquipmentGrid clothesGrid;
+    private EquipmentGrid containerGrid;
 
     private List<Transform> openWindows = new List<Transform>();
 
@@ -126,6 +128,7 @@ public class UIManager : MonoBehaviour
         equipmentBarGrid = new EquipmentGrid(equipmentItemBar, 0);
         mainEquipmentGrid = new EquipmentGrid(equipmentItemSlots, 1);
         clothesGrid = new EquipmentGrid(equipmentClothes, 2);
+        containerGrid = new EquipmentGrid(equipmentContainer, 3);
     }
     private void SetUpNetworkUI()
     {
@@ -166,6 +169,41 @@ public class UIManager : MonoBehaviour
         LoadSlots(equipmentBarGrid,EquipmentManager.BarSlotCount, true);
         LoadSlots(barGrid,EquipmentManager.BarSlotCount,true);
         LoadClothesSlots(clothesGrid); 
+    }
+
+    public void LoadSlotsContainer(ItemStats[] items)
+    {
+        containerGrid.gridTransform.gameObject.SetActive(true);
+        if (containerGrid.gridTransform.childCount >= items.Length)
+        {
+            for (int i = 0; i < containerGrid.gridTransform.childCount; i++)
+            {
+                if(i >= items.Length) containerGrid.gridTransform.GetChild(i).gameObject.SetActive(false);
+                else containerGrid.gridTransform.GetChild(i).gameObject.SetActive(true);
+
+                if (containerGrid.gridTransform.GetChild(i).childCount > 0) Destroy(containerGrid.gridTransform.GetChild(i).GetChild(0).gameObject);
+                if (items[i] != null) NewItemUI(containerGrid.gridTransform, new CreateItemArgs(items[i], new SlotPosition(3, i), false));
+            }
+        }
+        else
+        {
+            for (int i = 0; i < items.Length; i++)
+            {
+                if (i >= containerGrid.gridTransform.childCount)
+                {
+                    Transform slot = Instantiate(itemSlot, containerGrid.gridTransform).transform;
+                    slot.AddComponent<DropSlot>().SetSlotPosition(i, containerGrid.gridIndex);
+                }
+                else
+                {
+                    if (containerGrid.gridTransform.GetChild(i).childCount > 0) Destroy(containerGrid.gridTransform.GetChild(i).GetChild(0).gameObject);
+                    containerGrid.gridTransform.GetChild(i).gameObject.SetActive(true);
+                }
+                if (items[i] != null) NewItemUI(containerGrid.gridTransform, new CreateItemArgs(items[i], new SlotPosition(3, i), false));
+                
+            }
+        }
+
     }
 
     private void TurnPlaceholder(object sender, PlaceholderArgs e)
@@ -374,6 +412,7 @@ public class UIManager : MonoBehaviour
             case 0: return equipmentItemBar;
             case 1: return equipmentItemSlots;
             case 2: return equipmentClothes;
+            case 3: return equipmentContainer;
         }
         return null;
     }
@@ -454,6 +493,7 @@ public class UIManager : MonoBehaviour
         {
             TooltipSystem.Hide();
             openWindows.Remove(equipment);
+            containerGrid.gridTransform.gameObject.SetActive(false);
             if(timer != null) timer.Cancel();
         }
         else

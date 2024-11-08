@@ -84,6 +84,7 @@ public class BuildingManager : MonoBehaviour
             }
         }
     }
+
     public void StartBuildingMode(int id)
     {
         selectedObjectID = id;

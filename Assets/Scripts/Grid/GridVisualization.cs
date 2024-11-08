@@ -671,17 +671,30 @@ public class GridVisualization : MonoBehaviour
     {
         int id = gridTile.gridObject.ID;
         Item item = ItemsAsset.instance.GetItem(id);
-        Destroy(gridTile.gridObject.objectTransform.gameObject);
-        gridTile.SetGridObject(null);
-
         Vector2 vector2 = new Vector2(gridTile.x, gridTile.y);
-        DestroyDrop(id, vector2);
+        Destroy(gridTile.gridObject.objectTransform.gameObject);
+
+        DestroyDrop(gridTile.gridObject, vector2);
+        gridTile.SetGridObject(null);
         if (item is WallObject) UpdateNeighbors(vector2, id); 
     }
 
-    public void DestroyDrop(int id, Vector2 pos)
+    public void DestroyDrop(GridObject gridObject, Vector2 pos)
     {
-        BuildingItem item = (BuildingItem)ItemsAsset.instance.GetItem(id);
+        BuildingItem item = (BuildingItem)ItemsAsset.instance.GetItem(gridObject.ID);
+        if(gridObject is GridContainer)
+        {
+            GridContainer container = (GridContainer)gridObject;
+            for (int i = 0;i  < container.items.Length ;i++)
+            {
+                if (container.items[i] != null)
+                {
+                    Vector2 target = GetWorldPosition(pos + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
+                    CreateWorldItem(new ItemStats(container.items[i]), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
+                }
+            }
+        }
+
         for (int i = 0; i < item.drop.Length; i++)
         {
             Drop drop = item.drop[i];
@@ -700,7 +713,7 @@ public class GridVisualization : MonoBehaviour
         if(item.drop.Length == 0)
         {
             Vector2 target = GetWorldPosition(pos + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
-            CreateWorldItem(new ItemStats(id), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
+            CreateWorldItem(new ItemStats(gridObject.ID), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
         }
 
     }

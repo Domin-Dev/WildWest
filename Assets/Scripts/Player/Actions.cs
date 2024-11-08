@@ -79,6 +79,7 @@ public class Actions : MonoBehaviour
     private void Container(GridContainer gridContainer)
     {
         Debug.Log($"liczba {gridContainer.items.Length}");
+        EquipmentManager.instance.LoadChest(gridContainer);
     }
     public void Destroy(ItemStats itemStats)
     {

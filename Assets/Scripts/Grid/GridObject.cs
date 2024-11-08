@@ -9,10 +9,10 @@ public interface IGetBarValue
 }
 public class GridContainer : GridObject
 {
-    public Item[] items;
+    public ItemStats[] items;
     public GridContainer(int ID, int indexVariant, Transform obj, int size) : base(ID, indexVariant, obj)
     {
-        items = new Item[size];
+        items = new ItemStats[size];
     }
 }
 public class GridDoor : GridObject
