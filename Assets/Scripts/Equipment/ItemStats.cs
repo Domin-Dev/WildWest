@@ -30,6 +30,10 @@ public class ItemStats
         this.itemCount = itemCount;
     }
 
+    public int GetMaxStack()
+    {
+        return ItemsAsset.instance.GetStackMax(itemID);
+    }
     public bool isNull()
     {
         if (itemID != -1) return false;

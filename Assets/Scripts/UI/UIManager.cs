@@ -146,7 +146,7 @@ public class UIManager : MonoBehaviour
         });
     }
     public void SetUpUIEquipment(EquipmentManager eqManager)
-    {
+    { 
         eqManager.UpdateSelectedSlotInBar += UpdateSelectedSlot;
 
         eqManager.OpenEquipmentUI += OpenEquipment;
@@ -163,12 +163,16 @@ public class UIManager : MonoBehaviour
         eqManager.UpdateMainBarItemCount += UpdateMainBarItemCount;
         eqManager.UpdateItemLifeBar += UpdateItemLifeBar;
         eqManager.TurnPlaceholder += TurnPlaceholder;
-       
 
+
+        OpenEquipment(this, new BoolArgs(true));
         LoadSlots(mainEquipmentGrid,EquipmentManager.SlotCount, false);
         LoadSlots(equipmentBarGrid,EquipmentManager.BarSlotCount, true);
         LoadSlots(barGrid,EquipmentManager.BarSlotCount,true);
-        LoadClothesSlots(clothesGrid); 
+        LoadClothesSlots(clothesGrid);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.GetComponent<RectTransform>());
+        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.parent.GetComponent<RectTransform>());
+        OpenEquipment(this, new BoolArgs(false));
     }
 
     public void LoadSlotsContainer(ItemStats[] items)
@@ -178,11 +182,13 @@ public class UIManager : MonoBehaviour
         {
             for (int i = 0; i < containerGrid.gridTransform.childCount; i++)
             {
-                if(i >= items.Length) containerGrid.gridTransform.GetChild(i).gameObject.SetActive(false);
-                else containerGrid.gridTransform.GetChild(i).gameObject.SetActive(true);
-
-                if (containerGrid.gridTransform.GetChild(i).childCount > 0) Destroy(containerGrid.gridTransform.GetChild(i).GetChild(0).gameObject);
-                if (items[i] != null) NewItemUI(containerGrid.gridTransform, new CreateItemArgs(items[i], new SlotPosition(3, i), false));
+                if (i >= items.Length) containerGrid.gridTransform.GetChild(i).gameObject.SetActive(false);
+                else
+                {
+                    if (containerGrid.gridTransform.GetChild(i).childCount > 0) Destroy(containerGrid.gridTransform.GetChild(i).GetChild(0).gameObject);
+                    containerGrid.gridTransform.GetChild(i).gameObject.SetActive(true);
+                    if (items[i] != null) NewItemUI(containerGrid.gridTransform, new CreateItemArgs(items[i], new SlotPosition(3, i), false));
+                }
             }
         }
         else
@@ -203,7 +209,8 @@ public class UIManager : MonoBehaviour
                 
             }
         }
-
+        OpenEquipment(this, new BoolArgs(true)); ;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(containerGrid.gridTransform.GetComponent<RectTransform>());
     }
 
     private void TurnPlaceholder(object sender, PlaceholderArgs e)
@@ -369,9 +376,7 @@ public class UIManager : MonoBehaviour
     }
     private void RemoveItemUI(object sender, PositionArgs e)
     {
-        Transform grid;
-        if (e.position.gridIndex == 0) grid = equipmentItemBar;
-        else grid = equipmentItemSlots;
+        Transform grid = GetGrid(e.position.gridIndex);
 
         RemoveItem(grid, e);
         if(e.position.gridIndex == 0)
@@ -502,7 +507,7 @@ public class UIManager : MonoBehaviour
             openWindows.Add(equipment);
             SelectItem(-1);
             CheckRecipes();
-        }
+        } 
     }
     private void CloseWindows()
     {
@@ -599,7 +604,6 @@ public class UIManager : MonoBehaviour
     { 
         ReadOnlyCollection<Item> items = ItemsAsset.instance.GetRecipesCrafTable(-1);
         itemRecipes = new Dictionary<int, Transform>();
-      //  craftButton.GetComponent<ButtonHold>().action = () => { Craft(); };
 
         for (int i = 0; i < items.Count; i++)
         {

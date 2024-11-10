@@ -78,7 +78,6 @@ public class Actions : MonoBehaviour
 
     private void Container(GridContainer gridContainer)
     {
-        Debug.Log($"liczba {gridContainer.items.Length}");
         EquipmentManager.instance.LoadChest(gridContainer);
     }
     public void Destroy(ItemStats itemStats)
@@ -114,16 +113,7 @@ public class Actions : MonoBehaviour
                                 return true;
                             }
 
-                            //for (int i = 0; i < 8; i++)
-                            //{
-                            //    if (neighbors[i] != null)
-                            //    {
-                            //        Transform obj = neighbors[i].gridObject.objectTransform;
-                            //        float X = Mathf.LerpAngle(obj.localScale.x, 1.15f, Time.deltaTime * 20f);
-                            //        float Y = Mathf.LerpAngle(obj.localScale.y, 1.05f, Time.deltaTime * 18f);
-                            //        obj.localScale = new Vector3(X, Y);
-                            //    }
-                            //}
+                        
                             return false;
                         },
                         () =>
@@ -144,17 +134,6 @@ public class Actions : MonoBehaviour
                                 }
                                 return true;
                             }
-
-                            //for (int i = 0; i < 8; i++)
-                            //{
-                            //    if (neighbors[i] != null)
-                            //    {
-                            //        Transform obj = neighbors[i].gridObject.objectTransform;
-                            //        float X = Mathf.LerpAngle(obj.localScale.x, 1f, Time.deltaTime * 20f);
-                            //        float Y = Mathf.LerpAngle(obj.localScale.y, 1f, Time.deltaTime * 18f);
-                            //        obj.localScale = new Vector3(X, Y);
-                            //    }
-                            //}
 
                             return false;
                         }

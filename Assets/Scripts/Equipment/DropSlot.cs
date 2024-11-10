@@ -1,6 +1,7 @@
 using UnityEngine.EventSystems;
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Security.Cryptography;
 
 public class DropSlot : MonoBehaviour, IDropHandler, IPointerClickHandler,IPointerEnterHandler,IPointerExitHandler
 {
@@ -18,13 +19,15 @@ public class DropSlot : MonoBehaviour, IDropHandler, IPointerClickHandler,IPoint
     {
         if (EquipmentManager.instance.input == eventData.button)
         {
-            if (eventData.pointerDrag != null)
+
+            DragDrop dragDrop = null;
+            if (eventData.pointerDrag != null && eventData.pointerDrag.TryGetComponent(out dragDrop))
             {
                 EquipmentManager.instance.MoveSelectedItem(slotPosition);
                 eventData.pointerDrag.transform.SetParent(transform);
                 eventData.pointerDrag.transform.SetAsFirstSibling();
                 eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
-                eventData.pointerDrag.GetComponent<DragDrop>().IsInSlot();
+                dragDrop.IsInSlot();
                 Sounds.instance.Shield();
             }
         }
@@ -49,11 +52,24 @@ public class DropSlot : MonoBehaviour, IDropHandler, IPointerClickHandler,IPoint
         {
             if (EquipmentManager.instance.IsNotSelected())
             {
-                if(eventData.clickCount > 1)
+                if (!EquipmentManager.instance.IsFreeSlot(slotPosition))
                 {
-                    Sounds.instance.Shield();
-                    eventData.clickCount = 0;
-                    EquipmentManager.instance.CollectAll(slotPosition);
+                    if (eventData.clickCount > 1)
+                    {
+                        Sounds.instance.Shield();
+                        eventData.clickCount = 0;
+                        EquipmentManager.instance.CollectAll(slotPosition);
+                    }
+                    else if (Input.GetKey(KeyCode.LeftControl))
+                    {
+                        EquipmentManager.instance.MoveUpItem(slotPosition);
+                        Sounds.instance.Shield();
+                    }
+                    else if(Input.GetKey(KeyCode.LeftShift))
+                    {
+                        EquipmentManager.instance.MoveUpItems(slotPosition);
+                        Sounds.instance.Shield();
+                    }
                 }
             }
             else

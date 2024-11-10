@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 59e70a2f0b8269f4bbf89acfa07ca4c4, type: 3}
-  m_Name: ContainerItem
+  m_Name: ContainerItem 1
   m_EditorClassIdentifier: 
-  name: Chest
+  name: ' 2'
   description: 
-  ID: 53
+  ID: 54
   stackMax: 50
   icon: {fileID: -1680953567, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
   - itemID: 42
-    number: 3
+    number: 5
   craftTables: ffffffff
   numberItem: 1
   durability: 0
@@ -63,6 +63,6 @@ MonoBehaviour:
       particlePoint: {x: 0.02, y: 0.114999995}
       minY: 0.024999999
       sprite: {fileID: 21300000, guid: 13a0e219884ee464d879dd18ea82c5e8, type: 2}
-  capacity: 5
+  capacity: 30
   ItemContainer:
     itemID: -1
