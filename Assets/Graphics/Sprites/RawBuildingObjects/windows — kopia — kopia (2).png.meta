@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 44e70f36900b88e47b1de8a1dc252b18
+guid: 5e1f56c7b0f070f40856c9718301a3b6
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -173,28 +173,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: Stones_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 0
-        width: 27
-        height: 51
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: bcd614993f83e0a4299f530af5d7c44a
-      internalID: -1353880743
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     physicsShape: []
     bones: []
@@ -205,8 +184,7 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable:
-      Stones_0: -1353880743
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

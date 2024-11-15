@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Net.Http.Headers;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -296,7 +298,6 @@ public class EquipmentManager : MonoBehaviour
 
     public void MoveUpItem(SlotPosition slotPosition)
     {
-        
         if (container != null)
         {
             if (slotPosition.gridIndex == 3)            
@@ -310,11 +311,12 @@ public class EquipmentManager : MonoBehaviour
                 FindGoodSlot(slotPosition, new int[] {1 });
             else
                 FindGoodSlot(slotPosition, new int[] { 0});
-        }        
+        }
     }
 
     public void MoveUpItems(SlotPosition slotPosition)
     {
+        if (slotPosition.gridIndex == 2) return;
         int id = GetItemStats(slotPosition).itemID;  
         if (container != null)
         {
@@ -354,7 +356,7 @@ public class EquipmentManager : MonoBehaviour
             FindGoodSlot(items[i], gridsTo);
         }
     }
-    private void FindGoodSlot(SlotPosition slotPosition, int[] girds)
+    private bool FindGoodSlot(SlotPosition slotPosition, int[] girds)
     {
         ItemStats itemStats = GetItemStats(slotPosition);
         int stackMax = itemStats.GetMaxStack();
@@ -377,7 +379,9 @@ public class EquipmentManager : MonoBehaviour
                         IncreaseItemCount(itemList[i], itemStats.itemCount);
                         ClearSlot(slotPosition);
                         RemoveItemUI(this, new PositionArgs(slotPosition));
-                        return;
+                        if (slotPosition.gridIndex == 2)
+                            TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
+                        return true;
                     }
                 }
             }
@@ -391,9 +395,12 @@ public class EquipmentManager : MonoBehaviour
             {
                 MoveItem(slotPosition, new SlotPosition(girds[i], x));
                 UpdateItemInHand(this, new ItemStatsArgs(GetItemStats(new SlotPosition(0, slotInHand))));
-                return;
+                if (slotPosition.gridIndex == 2)
+                    TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
+                return true;
             }
         }
+        return false;
     }
 
     private void MoveItem(SlotPosition from, SlotPosition to)
@@ -427,7 +434,15 @@ public class EquipmentManager : MonoBehaviour
     {
         equipmentIsOpen = true;
         container = gridContainer.items;
-        UIManager.instance.LoadSlotsContainer(container);
+        ContainerItem cont = (ContainerItem)ItemsAsset.instance.GetItem(gridContainer.ID);
+        if (cont.ItemContainer.itemID < 0)
+            UIManager.instance.LoadSlotsContainer(container);
+        else
+        {
+            Sprite icon = ItemsAsset.instance.GetIcon(cont.ItemContainer.itemID);
+            UIManager.instance.LoadSlotsDedicatedContainer(container, icon);
+        }
+
     }
 
     private void BuiltObject(object sender, EventArgs e)
@@ -899,7 +914,6 @@ public class EquipmentManager : MonoBehaviour
             player.RemoveClothes((int)garment.type);
         }
 
-
         return GetGrid(position.gridIndex)[position.slotIndex] = itemStats;
     }
     private void UpdateCount(SlotPosition position)
@@ -1122,6 +1136,10 @@ public class EquipmentManager : MonoBehaviour
         }
         
         GridVisualization.instance.CreateWorldItem(selectedItemStats, (Vector2)player.transform.position , player.GetThrowDir(UnityEngine.Random.Range(0.25f,0.5f)));  
+        if(selectedSlotInEQ.gridIndex == 0 && slotInHand == selectedSlotInEQ.slotIndex)
+        {
+            UpdateItemInHand(null, new ItemStatsArgs(GetItemStats(selectedSlotInEQ)));
+        }
         ClearSelectedSlot();
     }
 

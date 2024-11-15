@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 [System.Serializable]
@@ -15,6 +16,8 @@ public abstract class BuildingItem : Item
     [Header("Drop")]
     public Drop[] drop;
     public Texture2D texture;
+    public int shadowPixels = 19;
+    public int2 size = new int2(27, 51);
 }
 public abstract class VariantItem : BuildingItem
 {

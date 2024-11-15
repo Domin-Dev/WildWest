@@ -50,6 +50,16 @@ public class ItemsAsset : MonoBehaviour
         return itemList.ToArray();
     }
 
+
+    public Vector2 GetOffsetVector(int itemID)
+    {
+        Item item = GetItem(itemID);
+        if(item != null && item is VariantItem)
+        {
+            return new Vector2(0, ((VariantItem)item).shadowPixels * 0.01f);
+        }
+        return Vector2.zero;
+    }
     public bool CheckItemType<T>(int itemID) where T : Item
     {
         var item = GetItem(itemID);

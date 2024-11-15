@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -29,8 +30,13 @@ public class VariantItemEditor : ItemEditor
    
     private void CutSpritesWall(Texture2D texture)
     {
-        int k = texture.width / 27;
-        int h = texture.height / 51;
+        if(texture.width % variantItem.size.x != 0 || texture.height % variantItem.size.y != 0)
+        {
+            Debug.LogError("Variant size does not match texture size");
+        }
+        int k = texture.width / variantItem.size.x;
+        int h = texture.height / variantItem.size.y;
+
 
         List<ObjectVariant> objectVariants = new List<ObjectVariant>();
 
@@ -39,7 +45,7 @@ public class VariantItemEditor : ItemEditor
             AssetDatabase.CreateFolder($"{MyTools.buildingObjectsSpritesPath}", variantItem.name);
         }
 
-        Cut(texture,objectVariants, k,h/2);
+        Cut(texture,objectVariants,k,h/2);
 
         variantItem.objectVariants = objectVariants.ToArray();
         AssetDatabase.SaveAssets();
@@ -50,14 +56,17 @@ public class VariantItemEditor : ItemEditor
     private void Cut(Texture2D texture, List<ObjectVariant> objectVariants, int k,int numberVariant)
     {
         Color[] pointsColor = { particlePointColor };
+        int width = variantItem.size.x;
+        int height = variantItem.size.y;
+
 
         for (int i = 0; i < k; i++)
         {
             List<Variant> variants = new List<Variant>();
             for (int j = 0; j < numberVariant; j++)
             {
-                Sprite sprite = Sprite.Create(texture, new Rect(i * 27, j * 102, 27, 51), new Vector2(0.5f, 1f / 51f));
-                Sprite hitbox = Sprite.Create(texture, new Rect(i * 27, j * 102 + 51, 27, 51), Vector2.zero);
+                Sprite sprite = Sprite.Create(texture, new Rect(i * width, j * height * 2, width, height), new Vector2(0.5f, 1f / 51f));
+                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, j * height * 2 + height, width, height), Vector2.zero);
                 Cutter cutter = new Cutter(hitbox, sprite.pivot);
                 Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
                 Vector2[] hitboxArray = cutter.CutHitBox(MyTools.hitboxColor);

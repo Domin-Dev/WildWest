@@ -35,6 +35,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Transform equipment;
     [Space]
     [SerializeField] private GameObject itemSlot;
+    [SerializeField] private GameObject greyIcon;
     [SerializeField] private GameObject slotIndex;
     [SerializeField] private GameObject item;
     [SerializeField] private GameObject lifePointsBar;
@@ -213,6 +214,21 @@ public class UIManager : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(containerGrid.gridTransform.GetComponent<RectTransform>());
     }
 
+    public void LoadSlotsDedicatedContainer(ItemStats[] items,Sprite icon)
+    {
+        LoadSlotsContainer(items);
+        for (int i = 0; i < containerGrid.gridTransform.childCount; i++)
+        { 
+            Transform o = containerGrid.gridTransform.GetChild(i);
+            Debug.Log(o.gameObject.activeSelf);
+            if(o.gameObject.activeSelf)
+            {
+               Transform grey = Instantiate(greyIcon, o).transform;
+                grey.localPosition = Vector3.zero;
+                grey.GetComponent<Image>().sprite = icon;
+            }
+        }
+    }
     private void TurnPlaceholder(object sender, PlaceholderArgs e)
     {
         SwitchPlaceholder(e.turn, GetGrid(e.slotPosition.gridIndex).GetChild(e.slotPosition.slotIndex));

@@ -15,14 +15,33 @@ public class BuildingManager : MonoBehaviour
     [SerializeField] GameObject pointer;
     [SerializeField] GameObject buildingPrefab;
     [SerializeField] GameObject buildingBar;
-    [SerializeField] GameObject shadow;
+
     private Transform barValue;
 
     [SerializeField] Transform parent;
     [SerializeField] Color planColor;
 
     Vector2 startPos;
-    int selectedObjectID = -1;
+    Vector2 shadowOffset;
+    Action<Vector2> build;
+    Vector2 lastPos;
+
+
+    int _selectedObjectID;
+    int selectedObjectID
+    {
+        set
+        {
+            if (value >= 0)
+            {
+                shadowOffset = ItemsAsset.instance.GetOffsetVector(value);
+                if (lastPos != null) Plan(lastPos);
+            }
+            _selectedObjectID = value;
+        }
+        get { return _selectedObjectID; }
+    } 
+
     int rotationStates = 0;
     bool buildingMode;
     int rotation = 0;
@@ -39,6 +58,7 @@ public class BuildingManager : MonoBehaviour
         if (instance == null)
         {
             instance = this;
+            selectedObjectID = -1;
         }
         else
         {
@@ -52,8 +72,6 @@ public class BuildingManager : MonoBehaviour
         SetUpPointer();
     }
 
-    Action<Vector2> build;
-    Vector2 lastPos;
 
     private void Update()
     {
@@ -88,7 +106,7 @@ public class BuildingManager : MonoBehaviour
     public void StartBuildingMode(int id)
     {
         selectedObjectID = id;
-        planObject.gameObject.SetActive(true);
+ 
         SetBuildMode();
         SpriteRenderer spriteRenderer = planObject.GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(id,rotation % rotationStates); 
@@ -151,7 +169,7 @@ public class BuildingManager : MonoBehaviour
     private void Plan(Vector2 pos)
     {
         lastPos = pos;
-        planObject.transform.position = GridVisualization.instance.GetWorldPosition(pos);
+        planObject.transform.position = GridVisualization.instance.GetWorldPosition(pos) - shadowOffset;
         var value = GridVisualization.instance.GetValueByGridPosition(pos);
         if(value != null && value.IsBuildObject())
             planObject.gameObject.SetActive(false);
@@ -196,14 +214,12 @@ public class BuildingManager : MonoBehaviour
         {
             Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform.GetChild(0);
             obj.tag = "BuildObject";
-            Transform shadowT = Instantiate(shadow, obj.parent).transform;
             ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(gridObject.ID,gridObject.variantIndex);
             obj.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprite;
             obj.GetComponent<PolygonCollider2D>().points = objectVariant.variants[0].hitbox;
 
             CreateGridObject(gridObject.ID,gridPosition, gridObject.variantIndex, obj.parent);
             MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, objectVariant.variants[0].minY, 0));
-            shadowT.localPosition = obj.localPosition;
         }
     }
     private void BuildFloor(Vector2 posXY)
@@ -221,18 +237,17 @@ public class BuildingManager : MonoBehaviour
     {
         if (GridVisualization.instance.GetValueByGridPosition(posXY).IsBuildObject()) return;
 
+        VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
         Sounds.instance.Hammer();
-        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).transform.GetChild(0);
+        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f,item.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
         obj.tag = "BuildObject";
-        Transform shadowT = Instantiate(shadow, obj.parent).transform;
 
-        ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(selectedObjectID, rotation % rotationStates);
+        ObjectVariant objectVariant = item.objectVariants[rotation % rotationStates];
 
         obj.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprite;
         obj.GetComponent<PolygonCollider2D>().points = objectVariant.variants[0].hitbox;
         CreateGridObject(selectedObjectID,posXY, rotation % rotationStates, obj.parent);
         MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, objectVariant.variants[0].minY, 0));
-        shadowT.localPosition = obj.localPosition;
         builtObject(this, null);
     }
     private void CreateGridObject(int itemID,Vector2 posXY,int indexVariant, Transform buildingObj)

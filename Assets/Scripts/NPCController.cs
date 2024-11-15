@@ -145,13 +145,11 @@ public class NPCController : MonoBehaviour, ILifePoints,IUsesWeapons
         if (UnityEngine.Random.Range(0,5) == 0)
         {
             isRepulse = true;
-            Debug.Log(hitDir + " " + transform.position);
             if (hitDir.x < transform.position.x )
             {
                 angle = -angle;
             }
 
-            Debug.Log(angle);
             repulseRotation = angle;
             lastRotation = transform.rotation.z;
             standUp = false;
