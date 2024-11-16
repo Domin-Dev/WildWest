@@ -186,7 +186,10 @@ public class UIManager : MonoBehaviour
                 if (i >= items.Length) containerGrid.gridTransform.GetChild(i).gameObject.SetActive(false);
                 else
                 {
-                    if (containerGrid.gridTransform.GetChild(i).childCount > 0) Destroy(containerGrid.gridTransform.GetChild(i).GetChild(0).gameObject);
+                    foreach(Transform child in containerGrid.gridTransform.GetChild(i))
+                    { 
+                        Destroy(child.gameObject);
+                    }
                     containerGrid.gridTransform.GetChild(i).gameObject.SetActive(true);
                     if (items[i] != null) NewItemUI(containerGrid.gridTransform, new CreateItemArgs(items[i], new SlotPosition(3, i), false));
                 }
@@ -217,16 +220,13 @@ public class UIManager : MonoBehaviour
     public void LoadSlotsDedicatedContainer(ItemStats[] items,Sprite icon)
     {
         LoadSlotsContainer(items);
-        for (int i = 0; i < containerGrid.gridTransform.childCount; i++)
+        for (int i = 0; i < items.Length; i++)
         { 
             Transform o = containerGrid.gridTransform.GetChild(i);
-            Debug.Log(o.gameObject.activeSelf);
-            if(o.gameObject.activeSelf)
-            {
-               Transform grey = Instantiate(greyIcon, o).transform;
-                grey.localPosition = Vector3.zero;
-                grey.GetComponent<Image>().sprite = icon;
-            }
+            Transform grey = Instantiate(greyIcon, o).transform;
+            grey.localPosition = Vector3.zero;
+            grey.GetComponent<Image>().sprite = icon;
+            if (items[i] != null) grey.gameObject.SetActive(false);
         }
     }
     private void TurnPlaceholder(object sender, PlaceholderArgs e)
@@ -393,6 +393,10 @@ public class UIManager : MonoBehaviour
     private void RemoveItemUI(object sender, PositionArgs e)
     {
         Transform grid = GetGrid(e.position.gridIndex);
+        if(EquipmentManager.instance.HasPlaceholders(e.position))
+        {
+            SwitchPlaceholder(true,grid.GetChild(e.position.slotIndex));
+        }
 
         RemoveItem(grid, e);
         if(e.position.gridIndex == 0)
@@ -438,18 +442,15 @@ public class UIManager : MonoBehaviour
         return null;
     }
 
+
     private void MoveItemUI(object sender, MoveItemUIArgs e)
     {
         Transform gridFrom = GetGrid(e.from.gridIndex);
         Transform gridTo = GetGrid(e.to.gridIndex);
         
-        if(e.from.gridIndex == 2) 
+        if(EquipmentManager.instance.HasPlaceholders(e.to))
         {
-            SwitchPlaceholder(false, gridFrom.GetChild(e.from.slotIndex));
-        }
-        if(e.to.gridIndex == 2)
-        {
-            SwitchPlaceholder(true, gridFrom.GetChild(e.to.slotIndex));
+            SwitchPlaceholder(false, gridTo.GetChild(e.to.slotIndex));
         }
       
 
@@ -465,7 +466,7 @@ public class UIManager : MonoBehaviour
     private void CreateItemUI(object sender, CreateItemArgs e)
     {
         Transform gridUI = GetGrid(e.position.gridIndex);
-        if (e.position.gridIndex == 2)
+        if (EquipmentManager.instance.HasPlaceholders(e.position))
         {
             SwitchPlaceholder(false,gridUI.GetChild(e.position.slotIndex));
         }

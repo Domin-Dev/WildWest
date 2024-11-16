@@ -39,7 +39,6 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
             transform.SetParent(UIManager.instance.itemParent);
             isInSlot = false;
             EquipmentManager.instance.input = eventData.button;
-
             if (parent != null)
             {
                 if (eventData.button == PointerEventData.InputButton.Left)

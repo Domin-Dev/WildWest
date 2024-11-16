@@ -231,6 +231,8 @@ public class EquipmentManager : MonoBehaviour
 
     private SlotPosition selectedSlotInEQ;
     private ItemStats selectedItemStats;
+    private List<int> placeholderGrids = new List<int>();
+
     [HideInInspector] public PointerEventData.InputButton input;
     public static EquipmentManager instance { private set; get; }
 
@@ -252,6 +254,7 @@ public class EquipmentManager : MonoBehaviour
     {
         UIManager.instance.SetUpUIEquipment(this);
         selectedSlotInEQ = new SlotPosition(-1, -1);
+        placeholderGrids.Add(2);
         ChangeSelectedSlot(0);
     }
 
@@ -379,8 +382,15 @@ public class EquipmentManager : MonoBehaviour
                         IncreaseItemCount(itemList[i], itemStats.itemCount);
                         ClearSlot(slotPosition);
                         RemoveItemUI(this, new PositionArgs(slotPosition));
-                        if (slotPosition.gridIndex == 2)
+                        if (HasPlaceholders(slotPosition))
+                        {
                             TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
+                            if (slotPosition.gridIndex == 2)
+                            {
+                                Garment garment = (Garment)ItemsAsset.instance.GetItem(item.itemID);
+                                player.RemoveClothes((int)garment.type);
+                            }
+                        }
                         return true;
                     }
                 }
@@ -395,7 +405,7 @@ public class EquipmentManager : MonoBehaviour
             {
                 MoveItem(slotPosition, new SlotPosition(girds[i], x));
                 UpdateItemInHand(this, new ItemStatsArgs(GetItemStats(new SlotPosition(0, slotInHand))));
-                if (slotPosition.gridIndex == 2)
+                if (HasPlaceholders(slotPosition))
                     TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
                 return true;
             }
@@ -436,15 +446,26 @@ public class EquipmentManager : MonoBehaviour
         container = gridContainer.items;
         ContainerItem cont = (ContainerItem)ItemsAsset.instance.GetItem(gridContainer.ID);
         if (cont.ItemContainer.itemID < 0)
+        {
+            placeholderGrids.Remove(3);
             UIManager.instance.LoadSlotsContainer(container);
+        }
         else
         {
+            placeholderGrids.Add(3);
             Sprite icon = ItemsAsset.instance.GetIcon(cont.ItemContainer.itemID);
             UIManager.instance.LoadSlotsDedicatedContainer(container, icon);
         }
 
     }
-
+    public bool HasPlaceholders(int gridIndex)
+    {
+        return placeholderGrids.Contains(gridIndex);
+    }
+    public bool HasPlaceholders(SlotPosition slotPosition)
+    {
+        return HasPlaceholders(slotPosition.gridIndex);
+    }
     private void BuiltObject(object sender, EventArgs e)
     {
         if (DecreaseItemCount(new SlotPosition(0, slotInHand), 1) <= 0)
@@ -465,6 +486,7 @@ public class EquipmentManager : MonoBehaviour
         ItemStats itemStats = GetItemStats(selectedSlotInEQ);
         if (itemStats == null || itemStats.itemID == selectedItemStats.itemID)
         {
+            Debug.Log("SSSS");
             if (itemStats != null)
             {
                 PutItems(selectedItemStats, SlotPosition.NullSlot, selectedSlotInEQ);
@@ -472,7 +494,6 @@ public class EquipmentManager : MonoBehaviour
             }
             else
             {
-
                 SetItemStats(selectedSlotInEQ, selectedItemStats);
                 if (selectedSlotInEQ.gridIndex == 0) NewMainBarItemUI(GetItemStats(selectedSlotInEQ), selectedSlotInEQ);
                 NewItemUI(selectedItemStats, selectedSlotInEQ, true);
@@ -480,6 +501,7 @@ public class EquipmentManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("SSSS");
             AddNewItem(selectedItemStats);
         }
 
@@ -494,6 +516,7 @@ public class EquipmentManager : MonoBehaviour
     }
     public void SelectedSlotTakeAll(SlotPosition slotPosition)
     {
+        if (HasPlaceholders(slotPosition)) TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
         selectedSlotInEQ = slotPosition;
         selectedItemStats = GetItemStats(slotPosition);
         ClearSlot(slotPosition);
@@ -659,7 +682,7 @@ public class EquipmentManager : MonoBehaviour
             {
                 NewMainBarItemUI(selectedItemStats, target);
             }
-            else if (target.gridIndex == 2)
+            else if (HasPlaceholders(target))
             {
                 TurnPlaceholder(this, new PlaceholderArgs(false, target));
             }
@@ -740,7 +763,7 @@ public class EquipmentManager : MonoBehaviour
             UpdateItemInHand(this, new ItemStatsArgs(GetItemStats(new SlotPosition(0, slotInHand))));
         }
 
-        if (IsFreeSlot(selectedSlotInEQ) && selectedSlotInEQ.gridIndex == 2)
+        if (IsFreeSlot(selectedSlotInEQ) && HasPlaceholders(selectedSlotInEQ))
         {
             TurnPlaceholder(this, new PlaceholderArgs(true, selectedSlotInEQ));
         }
@@ -751,8 +774,17 @@ public class EquipmentManager : MonoBehaviour
     public void PutOneItem(SlotPosition position)
     {
         int stackMax = ItemsAsset.instance.GetStackMax(selectedItemStats.itemID);
+
         if (selectedItemStats.itemCount > 0)
         {
+            if (position.gridIndex == 2 && !IsGarment(position, selectedItemStats) || (selectedSlotInEQ.gridIndex == 2 && !IsTheType(position)))
+            {
+                UnselectedSlot();
+                MoveSelectedItemEnd(position);
+                return;
+            }
+
+
             ItemStats itemStats;
             if (IsFreeSlot(position))
             {
@@ -1130,11 +1162,17 @@ public class EquipmentManager : MonoBehaviour
 
     public void ThrowItem()
     {      
-        if(selectedSlotInEQ.gridIndex == 2)
+        if(HasPlaceholders(selectedSlotInEQ))
         {
             TurnPlaceholder(this, new PlaceholderArgs(true, selectedSlotInEQ));
         }
-        
+
+        if(selectedSlotInEQ.gridIndex == 2)
+        {
+            Garment garment = (Garment)ItemsAsset.instance.GetItem(selectedItemStats.itemID);
+            player.RemoveClothes((int)garment.type);
+        }
+
         GridVisualization.instance.CreateWorldItem(selectedItemStats, (Vector2)player.transform.position , player.GetThrowDir(UnityEngine.Random.Range(0.25f,0.5f)));  
         if(selectedSlotInEQ.gridIndex == 0 && slotInHand == selectedSlotInEQ.slotIndex)
         {
