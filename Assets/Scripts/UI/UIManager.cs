@@ -515,6 +515,7 @@ public class UIManager : MonoBehaviour
         {
             TooltipSystem.Hide();
             openWindows.Remove(equipment);
+            ResetSelectedItem();
             containerGrid.gridTransform.gameObject.SetActive(false);
             if(timer != null) timer.Cancel();
         }
@@ -526,6 +527,17 @@ public class UIManager : MonoBehaviour
             CheckRecipes();
         } 
     }
+
+           
+    private void ResetSelectedItem()
+    {
+        if(itemParent.childCount > 0)
+        { 
+            Transform obj = itemParent.GetChild(0);
+            obj.GetComponent<DragDrop>().ResetItem();
+        }
+    }
+       
     private void CloseWindows()
     {
         foreach (Transform item in openWindows)

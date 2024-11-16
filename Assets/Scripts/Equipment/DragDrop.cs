@@ -1,4 +1,5 @@
 
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,7 +9,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
     public Transform parent;
     private CanvasGroup canvasGroup;
 
-    private bool isInSlot;
+    public bool isInSlot;
 
     private Canvas canvas;
 
@@ -59,6 +60,21 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
         {
             rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
         }
+    }
+
+    public void ResetItem()
+    {
+        rectTransform.localScale = Vector3.one;
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+
+        EquipmentManager.instance.UnselectedSlot();
+        if (parent != null)
+        {
+            transform.SetParent(parent);
+            transform.SetAsFirstSibling();
+        }
+        rectTransform.anchoredPosition = Vector2.zero;
     }
 
     public void OnEndDrag(PointerEventData eventData)

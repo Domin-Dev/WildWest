@@ -58,7 +58,7 @@ public class DropSlot : MonoBehaviour, IDropHandler, IPointerClickHandler,IPoint
                     {
                         Sounds.instance.Shield();
                         eventData.clickCount = 0;
-                        EquipmentManager.instance.CollectAll(slotPosition);
+                        EquipmentManager.instance.DoubleClick(slotPosition);
                     }
                     else if (Input.GetKey(KeyCode.LeftControl))
                     {
