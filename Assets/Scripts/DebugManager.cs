@@ -110,7 +110,7 @@ public class DebugManager : MonoBehaviour
         GridVisualization.instance.onChangeChunk += UpdateChunkDebugger;
 
         gameVersionText.text = Application.productName + " " + Application.version;
-        SetPlayerPosition(GridVisualization.instance.playerPosition);
+        SetPlayerPosition(GridVisualization.instance.lastPlayerPosition);
         int chunkIndex = GridVisualization.instance.lastPlayerChunk;
         SetChunk(GridVisualization.instance.GetChunkCoordinates(chunkIndex),chunkIndex);
     }

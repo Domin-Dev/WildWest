@@ -30,6 +30,7 @@ MonoBehaviour:
       itemID: 43
       number: 2
   texture: {fileID: 2800000, guid: c52fcab1f96ccf343a11920a3933359e, type: 3}
+  isObjectCovering: 0
   shadowPixels: 19
   size:
     x: 27
@@ -42,6 +43,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.2512745}
       - {x: 0.12, y: 0.2512745}
       - {x: 0.12, y: 0.07127451}
+      CoveringPoints: []
       particlePoint: {x: 0, y: 0.1512745}
       minY: 0.07127451
       sprite: {fileID: 21300000, guid: c102fb73e2a617d4bb191d1bd379609c, type: 2}
@@ -51,6 +53,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.2012745}
       - {x: 0.07, y: 0.2012745}
       - {x: 0.07, y: 0.021274509}
+      CoveringPoints: []
       particlePoint: {x: -0.03, y: 0.11127451}
       minY: 0.021274509
       sprite: {fileID: 21300000, guid: 775447e3a1517044798e445436465a42, type: 2}
@@ -60,6 +63,7 @@ MonoBehaviour:
       - {x: -0.12, y: 0.1812745}
       - {x: 0.12, y: 0.1812745}
       - {x: 0.12, y: 0.0012745094}
+      CoveringPoints: []
       particlePoint: {x: 0, y: 0.08127451}
       minY: 0.0012745094
       sprite: {fileID: 21300000, guid: 8d7f4d50842841a418d2aa8ff9026ca8, type: 2}
@@ -69,6 +73,7 @@ MonoBehaviour:
       - {x: -0.07, y: 0.2012745}
       - {x: 0.12, y: 0.2012745}
       - {x: 0.12, y: 0.021274509}
+      CoveringPoints: []
       particlePoint: {x: 0.02, y: 0.11127451}
       minY: 0.021274509
       sprite: {fileID: 21300000, guid: 0d848726f860e1b4f955bd4979e47a36, type: 2}

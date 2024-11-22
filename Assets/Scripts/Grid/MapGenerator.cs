@@ -152,6 +152,10 @@ public class MapGenerator : MonoBehaviour
         {
             SetBuildingObject(chunk, x, y, 50);
         }
+        else if (rand.Next(0, 100) <= 2)
+        {
+            SetBuildingObject(chunk, x, y, 57);
+        }
 
     }
 

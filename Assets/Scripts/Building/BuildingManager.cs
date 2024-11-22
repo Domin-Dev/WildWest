@@ -212,14 +212,24 @@ public class BuildingManager : MonoBehaviour
         }
         else if(item is BuildingObject)
         {
-            Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform.GetChild(0);
-            obj.tag = "BuildObject";
-            ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(gridObject.ID,gridObject.variantIndex);
-            obj.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprite;
-            obj.GetComponent<PolygonCollider2D>().points = objectVariant.variants[0].hitbox;
+            VariantItem variantItem = (VariantItem)ItemsAsset.instance.GetItem(gridObject.ID);
 
+            Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition) - new Vector2(0f, variantItem.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
+            obj.tag = "BuildObject";
+
+            Variant variant = variantItem.objectVariants[gridObject.variantIndex].variants[0];
+            SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+            if (variant.CoveringPoints != null)
+            {
+                for (int i = 0; i < variant.CoveringPoints.Length; i++)
+                {
+                    GridVisualization.instance.GetValueByGridPosition(gridPosition + variant.CoveringPoints[i])?.SetObjectCovering(spriteRenderer);
+                }
+            }
+            spriteRenderer.sprite = variant.sprite;
+            obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
             CreateGridObject(gridObject.ID,gridPosition, gridObject.variantIndex, obj.parent);
-            MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, objectVariant.variants[0].minY, 0));
+            MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
         }
     }
     private void BuildFloor(Vector2 posXY)
@@ -242,12 +252,21 @@ public class BuildingManager : MonoBehaviour
         Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f,item.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
         obj.tag = "BuildObject";
 
-        ObjectVariant objectVariant = item.objectVariants[rotation % rotationStates];
+        Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
+        SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
 
-        obj.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprite;
-        obj.GetComponent<PolygonCollider2D>().points = objectVariant.variants[0].hitbox;
+        if (variant.CoveringPoints != null)
+        {
+            for (int i = 0; i < variant.CoveringPoints.Length; i++)
+            {
+                GridVisualization.instance.GetValueByGridPosition(posXY + variant.CoveringPoints[i]).SetObjectCovering(spriteRenderer);
+            }
+        }
+
+        spriteRenderer.sprite = variant.sprite;
+        obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
         CreateGridObject(selectedObjectID,posXY, rotation % rotationStates, obj.parent);
-        MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, objectVariant.variants[0].minY, 0));
+        MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
         builtObject(this, null);
     }
     private void CreateGridObject(int itemID,Vector2 posXY,int indexVariant, Transform buildingObj)

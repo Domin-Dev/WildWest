@@ -65,7 +65,7 @@ public class VariantItemEditor : ItemEditor
             List<Variant> variants = new List<Variant>();
             for (int j = 0; j < numberVariant; j++)
             {
-                Sprite sprite = Sprite.Create(texture, new Rect(i * width, j * height * 2, width, height), new Vector2(0.5f, 1f / 51f));
+                Sprite sprite = Sprite.Create(texture, new Rect(i * width, j * height * 2, width, height), new Vector2(13.5f / width, 1f / height));
                 Sprite hitbox = Sprite.Create(texture, new Rect(i * width, j * height * 2 + height, width, height), Vector2.zero);
                 Cutter cutter = new Cutter(hitbox, sprite.pivot);
                 Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);

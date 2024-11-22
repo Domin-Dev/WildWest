@@ -1,5 +1,7 @@
 ﻿
 using UnityEngine;
+using System.Collections.Generic;
+
 [System.Serializable]
 public class GridTile: IGetBarValue
 {
@@ -8,6 +10,8 @@ public class GridTile: IGetBarValue
     public int borders;
     public GridObject gridObject { private set; get; }
     public int x, y;
+
+    public List<SpriteRenderer> objectsCovering;
 
     //pathfinding
     public int gCost;
@@ -36,7 +40,63 @@ public class GridTile: IGetBarValue
         this.gridObject = gridObject;
         this.isWalkable = isWalkable;
     }
+    public void SetObjectCovering(SpriteRenderer spriteRenderer)
+    {
+        if(objectsCovering != null)
+        {
+            objectsCovering.Add(spriteRenderer);
+        }
+        else
+        {
+            objectsCovering = new List<SpriteRenderer>();
+            objectsCovering.Add(spriteRenderer);
+        }
 
+    }
+
+    public void TrunOffObjectsCovering()
+    {
+        if(objectsCovering != null)
+        {
+            for (int i = objectsCovering.Count - 1; i >= 0; i--)
+            {
+                SpriteRenderer spriteRenderer = objectsCovering[i];
+                if (spriteRenderer != null)
+                {
+                    Color color = spriteRenderer.color;
+                    color.a = 0.5f;
+                    spriteRenderer.color = color;
+                }
+                else
+                {
+                    objectsCovering.RemoveAt(i);
+                    if (objectsCovering.Count == 0) objectsCovering = null;
+                }
+            }
+        }
+
+    }
+    public void TurnOnObjectsCovering()
+    {
+        if (objectsCovering != null)
+        {
+            for (int i = objectsCovering.Count - 1; i >= 0; i--)
+            {
+                SpriteRenderer spriteRenderer = objectsCovering[i];
+                if (spriteRenderer != null)
+                {
+                    Color color = spriteRenderer.color;
+                    color.a = 1f;
+                    spriteRenderer.color = color;
+                }
+                else
+                {
+                    objectsCovering.RemoveAt(i);
+                    if (objectsCovering.Count == 0) objectsCovering = null;
+                }
+            }
+        }
+    }
     public void CalculateFCost()
     {
         fCost = hCost + gCost;
@@ -48,7 +108,10 @@ public class GridTile: IGetBarValue
         cameFrom = null;
         CalculateFCost();
     }
-
+    public Vector2 GetXYPosition()
+    {
+        return new Vector2(x, y);
+    }
     public void ChangeTileType(int tileID)
     {
         this.tileID = tileID;

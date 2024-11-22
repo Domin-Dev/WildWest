@@ -66,7 +66,7 @@ public class GridVisualization : MonoBehaviour
     public Pathfinding pathfinding;
      public Dictionary<int, LoadedChunk> loadedChunks { private set; get; }
     public int lastPlayerChunk { private set; get; } = -1;
-    public Vector2 playerPosition { private set; get; } = Vector2.zero;
+    public Vector2 lastPlayerPosition { private set; get; } = Vector2.zero;
 
     public event EventHandler<PlayerPositionArgs> onPlayerMove;
     public event EventHandler<PlayerPositionArgs> onChangeChunk;
@@ -180,7 +180,11 @@ public class GridVisualization : MonoBehaviour
     private Vector2 CheckChunks(Vector2 worldPosition)
     {
         Vector2 positionXY = GetGridPosition(worldPosition);
-        playerPosition = positionXY;
+        if (lastPlayerPosition != positionXY)
+        {
+            CheckGridTile(positionXY);
+            lastPlayerPosition = positionXY;
+        }
 
         int chunkIndex = GetChunkIndexByPositionXY(positionXY);
 
@@ -195,6 +199,14 @@ public class GridVisualization : MonoBehaviour
             return posChunk;
         }
         return GetChunkCoordinates(lastPlayerChunk);
+    }
+
+    private void CheckGridTile(Vector2 newPlayerPosition)
+    {
+        GridTile gridTile = GetGridTileByPositionXY(lastPlayerPosition);
+        gridTile.TurnOnObjectsCovering();
+        gridTile = GetGridTileByPositionXY(newPlayerPosition);
+        gridTile.TrunOffObjectsCovering();
     }
 
     IEnumerator LoadChunks(Vector2 posChunk)
@@ -237,8 +249,7 @@ public class GridVisualization : MonoBehaviour
         else
         {
             array = new KeyValuePair<int, int>[loadedChunks.Count - maxLoadedChunks];
-            Debug.Log(loadedChunks.Count);
-            Debug.Log(array.Length);
+
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] = new KeyValuePair<int, int>(-1,int.MaxValue);
@@ -366,6 +377,11 @@ public class GridVisualization : MonoBehaviour
         {
             return -1;
         }
+    }
+
+    public GridTile GetGridTileByPositionXY(Vector2 position)
+    {
+        return GetGridTileByPositionXY((int)position.x,(int)position.y);
     }
 
     public GridTile GetGridTileByPositionXY(int x,int y)
@@ -642,7 +658,8 @@ public class GridVisualization : MonoBehaviour
     public GridTile GetValueByGridPosition(Vector2 gridPosition)
     {
         int chunkIndex =  GetChunkIndexByPositionXY(gridPosition);
-        if(loadedChunks.ContainsKey(chunkIndex) && gridPosition.x >= 0 && gridPosition.y >= 0 && gridPosition.x < map.width && gridPosition.y < map.height)
+        // loadedChunks.ContainsKey(chunkIndex)
+        if (map.chunks.ContainsKey(chunkIndex) && gridPosition.x >= 0 && gridPosition.y >= 0 && gridPosition.x < map.width && gridPosition.y < map.height)
         {
             return map.chunks[chunkIndex].grid[(int)gridPosition.x % map.chunkSize, (int)gridPosition.y % map.chunkSize];
         }
@@ -673,8 +690,8 @@ public class GridVisualization : MonoBehaviour
         Item item = ItemsAsset.instance.GetItem(id);
         Vector2 vector2 = new Vector2(gridTile.x, gridTile.y);
         Destroy(gridTile.gridObject.objectTransform.gameObject);
-
         DestroyDrop(gridTile.gridObject, vector2);
+
         gridTile.SetGridObject(null);
         if (item is WallObject) UpdateNeighbors(vector2, id); 
     }

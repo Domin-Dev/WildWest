@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Net.Http.Headers;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -309,6 +307,8 @@ public class EquipmentManager : MonoBehaviour
         {
             if (slotPosition.gridIndex == 3)            
                 FindGoodSlot(slotPosition,new int[]{0,1});
+            else if (slotPosition.gridIndex == 2)
+                FindGoodSlot(slotPosition, new int[] {3,0,1});
             else
                 FindGoodSlot(slotPosition,new int[]{3});
         }
@@ -360,16 +360,19 @@ public class EquipmentManager : MonoBehaviour
     private void FindGoodSlots(int itemID, int[] gridsFrom, int[] gridsTo)
     {
         var items = FindItems(itemID, gridsFrom);
+        CheckDedicatedGrids(ref gridsTo,itemID);
+        if (gridsTo.Length == 0) return;
         for (int i = 0; i < items.Count; i++)
         {
             FindGoodSlot(items[i], gridsTo);
         }
     }
-    private bool FindGoodSlot(SlotPosition slotPosition, int[] girds)
+    private bool FindGoodSlot(SlotPosition slotPosition, int[] grids)
     {
         ItemStats itemStats = GetItemStats(slotPosition);
         int stackMax = itemStats.GetMaxStack();
-        var itemList = FindItems(itemStats.itemID, girds);
+        CheckDedicatedGrids(ref grids,itemStats.itemID);
+        var itemList = FindItems(itemStats.itemID, grids);
         if (itemList.Count > 0)
         {
             for (int i = 0; i < itemList.Count; i++)
@@ -400,12 +403,12 @@ public class EquipmentManager : MonoBehaviour
             UpdateCount(slotPosition);
         }
 
-        for (int i = 0; i < girds.Length; i++)
+        for (int i = 0; i < grids.Length; i++)
         {
-            int x = FindFreeSlot(GetGrid(girds[i]));
+            int x = FindFreeSlot(GetGrid(grids[i]));
             if(x >= 0)
             {
-                MoveItem(slotPosition, new SlotPosition(girds[i], x));
+                MoveItem(slotPosition, new SlotPosition(grids[i], x));
                 UpdateItemInHand(this, new ItemStatsArgs(GetItemStats(new SlotPosition(0, slotInHand))));
                 if (HasPlaceholders(slotPosition))
                 {
@@ -680,11 +683,28 @@ public class EquipmentManager : MonoBehaviour
         return slotPosition.Compare(new SlotPosition(0, slotInHand));
     }
 
-    private bool CheckDedicatedGrids(SlotPosition target)
+    private void CheckDedicatedGrids(ref int[] grids,int idItem)
     {
-        if (dedicatedGrids.ContainsKey(target.gridIndex))
+        List<int> newGrid = new List<int>();
+        for (int i = 0; i < grids.Length; i++)
         {
-            if (selectedItemStats.itemID != dedicatedGrids[target.gridIndex])
+            if(!CheckDedicatedGrid(grids[i], idItem))
+            {
+                newGrid.Add(grids[i]);
+            }
+        }
+        grids = newGrid.ToArray();
+        Debug.Log(grids.Length);
+    }
+    private bool CheckDedicatedGrid(SlotPosition target)
+    {
+        return CheckDedicatedGrid(target.gridIndex,selectedItemStats.itemID);
+    }
+    private bool CheckDedicatedGrid(int gridIndex ,int idItem)
+    {
+        if (dedicatedGrids.ContainsKey(gridIndex))
+        {
+            if (idItem != dedicatedGrids[gridIndex])
             {
                 return true;
             }
@@ -692,12 +712,14 @@ public class EquipmentManager : MonoBehaviour
             {
                 return false;
             }
-        }  
+        }
         return false;
     }
+
+
     public void MoveSelectedItem(SlotPosition target)
     {
-        if (CheckDedicatedGrids(target) || (target.gridIndex == 2 && !IsGarment(target, selectedItemStats)) || (selectedSlotInEQ.gridIndex == 2 && !IsTheType(target)))
+        if (CheckDedicatedGrid(target) || (target.gridIndex == 2 && !IsGarment(target, selectedItemStats)) || (selectedSlotInEQ.gridIndex == 2 && !IsTheType(target)))
         {
             UnselectedSlot();
             MoveSelectedItemEnd(target);
@@ -806,7 +828,7 @@ public class EquipmentManager : MonoBehaviour
 
         if (selectedItemStats.itemCount > 0)
         {
-            if (CheckDedicatedGrids(position)  || (position.gridIndex == 2 && !IsGarment(position, selectedItemStats)) || (selectedSlotInEQ.gridIndex == 2 && !IsTheType(position)))
+            if (CheckDedicatedGrid(position)  || (position.gridIndex == 2 && !IsGarment(position, selectedItemStats)) || (selectedSlotInEQ.gridIndex == 2 && !IsTheType(position)))
             {
                 UnselectedSlot();
                 MoveSelectedItemEnd(position);
@@ -907,6 +929,7 @@ public class EquipmentManager : MonoBehaviour
             }
             MoveItem(slotPosition,pos);
             ClearSlot(slotPosition);
+            if(HasPlaceholders(slotPosition))TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
             AddNewItem(a);
         }
         else

@@ -16,6 +16,7 @@ public abstract class BuildingItem : Item
     [Header("Drop")]
     public Drop[] drop;
     public Texture2D texture;
+    public bool isObjectCovering = false;
     public int shadowPixels = 19;
     public int2 size = new int2(27, 51);
 }
@@ -43,6 +44,7 @@ public class ObjectVariant
 public class Variant
 {
     public Vector2[] hitbox;
+    public Vector2[] CoveringPoints;
     public Vector2 particlePoint;
     public float minY;
     public Sprite sprite;
