@@ -204,9 +204,9 @@ public class GridVisualization : MonoBehaviour
     private void CheckGridTile(Vector2 newPlayerPosition)
     {
         GridTile gridTile = GetGridTileByPositionXY(lastPlayerPosition);
-        gridTile.TurnOnObjectsCovering();
+        gridTile?.TurnOnObjectsCovering();
         gridTile = GetGridTileByPositionXY(newPlayerPosition);
-        gridTile.TrunOffObjectsCovering();
+        gridTile?.TrunOffObjectsCovering();
     }
 
     IEnumerator LoadChunks(Vector2 posChunk)

@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEngine.Rendering;
 using static UnityEngine.Rendering.DebugUI;
 using Unity.VisualScripting;
+using static UnityEditor.PlayerSettings;
 
 public class BuildingManager : MonoBehaviour
 {
@@ -171,10 +172,26 @@ public class BuildingManager : MonoBehaviour
         lastPos = pos;
         planObject.transform.position = GridVisualization.instance.GetWorldPosition(pos) - shadowOffset;
         var value = GridVisualization.instance.GetValueByGridPosition(pos);
-        if(value != null && value.IsBuildObject())
+        if (value != null && (value.IsBuildObject() || CheckObjectPoints(pos, selectedObjectID)))
             planObject.gameObject.SetActive(false);
         else
+        {  
             planObject.gameObject.SetActive(true);
+        }
+    }
+
+    private bool CheckObjectPoints(Vector2 pos,int id)
+    {
+        VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(id);
+        if (item == null) return false;
+        Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
+
+        for (int i = 0; i < variant.objectPoints.Length; i++)
+        {
+            var tile = GridVisualization.instance.GetValueByGridPosition(pos + variant.objectPoints[i]);
+            if(tile == null || tile.IsBuildObject()) return true;
+        }
+        return false;
     }
     private void SetBuildMode()
     {
@@ -248,11 +265,16 @@ public class BuildingManager : MonoBehaviour
         if (GridVisualization.instance.GetValueByGridPosition(posXY).IsBuildObject()) return;
 
         VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
+        Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
+
+        for (int i = 0; i < variant.objectPoints.Length; i++)
+        {
+            if (GridVisualization.instance.GetValueByGridPosition(posXY + variant.objectPoints[i]).IsBuildObject()) return;
+        }
+
         Sounds.instance.Hammer();
         Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f,item.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
         obj.tag = "BuildObject";
-
-        Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
         SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
 
         if (variant.CoveringPoints != null)
@@ -269,6 +291,7 @@ public class BuildingManager : MonoBehaviour
         MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
         builtObject(this, null);
     }
+
     private void CreateGridObject(int itemID,Vector2 posXY,int indexVariant, Transform buildingObj)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);

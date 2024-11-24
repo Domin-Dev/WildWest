@@ -45,6 +45,7 @@ public class Variant
 {
     public Vector2[] hitbox;
     public Vector2[] CoveringPoints;
+    public Vector2[] objectPoints;
     public Vector2 particlePoint;
     public float minY;
     public Sprite sprite;

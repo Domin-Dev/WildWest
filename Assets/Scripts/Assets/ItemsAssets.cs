@@ -143,7 +143,10 @@ public class ItemsAsset : MonoBehaviour
     }
     public Item GetItem(int itemID)
     {
-        return items[itemID];
+        if (items.ContainsKey(itemID))
+            return items[itemID];
+        else 
+            return null;
     }
     public TooltipInfo GetTooltipInfo(int itemID)
     {

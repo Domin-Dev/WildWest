@@ -16,22 +16,22 @@ MonoBehaviour:
   description: 
   ID: 58
   stackMax: 50
-  icon: {fileID: -1747589693, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: -1947551883, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
-  - itemID: 43
+  - itemID: 42
     number: 2
   craftTables: ffffffff
-  numberItem: 1
+  numberItem: 5
   durability: 100
   drop:
   - maxNumber: 0
     probability: 1
     ingredient:
-      itemID: 43
+      itemID: 42
       number: 2
   texture: {fileID: 2800000, guid: c2300bc3d2c111f4a80e15200310b22d, type: 3}
   isObjectCovering: 0
-  shadowPixels: 19
+  shadowPixels: 10
   size:
     x: 52
     y: 70
@@ -39,11 +39,49 @@ MonoBehaviour:
   objectVariants:
   - variants:
     - hitbox:
+      - {x: -0.11, y: 0.21499999}
+      - {x: -0.11, y: 0.285}
+      - {x: 0.34, y: 0.285}
+      - {x: 0.34, y: 0.21499999}
+      CoveringPoints: []
+      objectPoints:
+      - {x: 0, y: 1}
+      particlePoint: {x: 0.13, y: 0.255}
+      minY: 0.21499999
+      sprite: {fileID: 21300000, guid: ececdcc20ae677446889b58fa1e7f5f8, type: 2}
+  - variants:
+    - hitbox:
+      - {x: -0.11, y: 0.21499999}
+      - {x: -0.11, y: 0.285}
+      - {x: 0.34, y: 0.285}
+      - {x: 0.34, y: 0.21499999}
+      CoveringPoints: []
+      objectPoints:
+      - {x: 0, y: 1}
+      particlePoint: {x: 0.13, y: 0.255}
+      minY: 0.21499999
+      sprite: {fileID: 21300000, guid: 870790bf3523a6b4588a7a4d2132b056, type: 2}
+  - variants:
+    - hitbox:
       - {x: -0.099999994, y: 0.21499999}
       - {x: -0.099999994, y: 0.285}
       - {x: 0.35, y: 0.285}
       - {x: 0.35, y: 0.21499999}
       CoveringPoints: []
-      particlePoint: {x: 0.11, y: 0.255}
+      objectPoints:
+      - {x: 1, y: 0}
+      particlePoint: {x: 0.14, y: 0.255}
       minY: 0.21499999
-      sprite: {fileID: 21300000, guid: ececdcc20ae677446889b58fa1e7f5f8, type: 2}
+      sprite: {fileID: 21300000, guid: 4719069bc9e9f324785da6ea38ade58c, type: 2}
+  - variants:
+    - hitbox:
+      - {x: -0.099999994, y: 0.21499999}
+      - {x: -0.099999994, y: 0.285}
+      - {x: 0.35, y: 0.285}
+      - {x: 0.35, y: 0.21499999}
+      CoveringPoints: []
+      objectPoints:
+      - {x: 1, y: 0}
+      particlePoint: {x: 0.14, y: 0.255}
+      minY: 0.21499999
+      sprite: {fileID: 21300000, guid: 357c816d7562a074a9010dedbf1ce083, type: 2}
