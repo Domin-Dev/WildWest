@@ -1,4 +1,4 @@
-using System.Numerics;
+
 using UnityEngine;
 
 public interface IGetBarValue
@@ -10,7 +10,7 @@ public interface IGetBarValue
 public class GridContainer : GridObject
 {
     public ItemStats[] items;
-    public GridContainer(int ID, int indexVariant, Transform obj, int size) : base(ID, indexVariant, obj)
+    public GridContainer(int ID, int indexVariant, Transform obj, int size,Vector2 mainPosition) : base(ID, indexVariant, obj, mainPosition)
     {
         items = new ItemStats[size];
     }
@@ -18,7 +18,7 @@ public class GridContainer : GridObject
 public class GridDoor : GridObject
 {
     public bool doorIsClosed;
-    public GridDoor(int ID, int indexVariant, Transform obj, bool doorIsClosed = true) : base(ID, indexVariant, obj)
+    public GridDoor(int ID, int indexVariant, Transform obj, Vector2 mainPosition, bool doorIsClosed = true) : base(ID, indexVariant, obj,mainPosition)
     {
         this.doorIsClosed = doorIsClosed;
     }
@@ -26,7 +26,7 @@ public class GridDoor : GridObject
 
 public class Wall : GridObject
 {
-    public Wall(int ID, int indexVariant, Transform obj, int stateIndex = 0) : base(ID, indexVariant, obj, stateIndex)
+    public Wall(int ID, int indexVariant, Transform obj,Vector2 mainPosition, int stateIndex = 0) : base(ID, indexVariant, obj, mainPosition , stateIndex)
     {
     }
 }
@@ -40,8 +40,10 @@ public class GridObject: IGetBarValue
 
     public float hitPoints;
     private float maxHitPoints;
-    
-    public GridObject(int ID,int indexVariant,Transform obj,int stateIndex = 0)
+
+    public Vector2 mainPosition;
+
+    public GridObject(int ID,int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0)
     {
         this.ID = ID;
         this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
@@ -49,6 +51,7 @@ public class GridObject: IGetBarValue
         this.variantIndex = indexVariant;
         this.objectTransform = obj;
         this.stateIndex = stateIndex;
+        this.mainPosition = mainPosition;
     }
     public float GetBarValue()
     {

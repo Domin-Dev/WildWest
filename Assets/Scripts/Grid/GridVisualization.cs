@@ -692,7 +692,17 @@ public class GridVisualization : MonoBehaviour
         Destroy(gridTile.gridObject.objectTransform.gameObject);
         DestroyDrop(gridTile.gridObject, vector2);
 
-        gridTile.SetGridObject(null);
+        Variant variant  = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
+
+        Vector2 mainPos = gridTile.gridObject.mainPosition;
+        GetValueByGridPosition(mainPos)?.SetGridObject(null);
+        for (int i = 0; i < variant.objectPoints.Length; i++)
+        {
+            Debug.Log(mainPos + variant.objectPoints[i]);
+            GetValueByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
+        }
+       
+
         if (item is WallObject) UpdateNeighbors(vector2, id); 
     }
 

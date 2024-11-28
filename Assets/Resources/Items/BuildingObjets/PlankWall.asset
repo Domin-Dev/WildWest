@@ -25,149 +25,186 @@ MonoBehaviour:
   durability: 50
   drop: []
   texture: {fileID: 2800000, guid: 9755133acbc71554bbe177a9cd599766, type: 3}
+  isObjectCovering: 0
+  shadowPixels: 19
+  size:
+    x: 27
+    y: 70
   HitParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
   objectVariants:
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: fa0679916a392d2489fd517a8719a310, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: 2d49bb77345d32d4ba58b41e794edb91, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: a4c59e4f633dc3649bd292f05614c0d5, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: 569891ed9ba01b944ae0562470cfdf3f, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: 13389aa375b0d114c944e096c55d9b02, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: c6c257b163a7d854693824c009960884, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: 439290e607eab14489d7266573379ee6, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: bf88f9f3966d8bc42bb1ce229da99d56, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: ef79844678a9f1b45aaf6068b5dc837e, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: 2cb08e4b1c45482419d3aa58133320f8, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: d99ec6308cba012448434e8cf02d996d, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.005}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.005}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.005
+      - {x: -0.12, y: 0.195}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.195}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.195
       sprite: {fileID: 21300000, guid: 01949a3d1eb157a4d9860b33a3cc75d3, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: 65ea1194fcdd55540aceea5d280ef8d6, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: 8231010073ea47044873b9d825450fad, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.285}
-      - {x: 0.12, y: 0.285}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.475}
+      - {x: 0.12, y: 0.475}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: 5ad714473ee1a4748bc46a22558f0d0d, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.105}
-      - {x: -0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.39499998}
-      - {x: 0.12, y: 0.105}
-      particlePoint: {x: 0, y: 0.195}
-      minY: 0.105
+      - {x: -0.12, y: 0.295}
+      - {x: -0.12, y: 0.585}
+      - {x: 0.12, y: 0.585}
+      - {x: 0.12, y: 0.295}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.385}
+      minY: 0.295
       sprite: {fileID: 21300000, guid: 943f1205c5a64714e814e85eb7235ba2, type: 2}

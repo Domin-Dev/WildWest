@@ -1,10 +1,5 @@
 using UnityEngine;
 using System;
-using Unity.Mathematics;
-using UnityEngine.Rendering;
-using static UnityEngine.Rendering.DebugUI;
-using Unity.VisualScripting;
-using static UnityEditor.PlayerSettings;
 
 public class BuildingManager : MonoBehaviour
 {
@@ -210,11 +205,14 @@ public class BuildingManager : MonoBehaviour
     private void BuildWall(Vector2 posXY)
     {
         var gridTile = GridVisualization.instance.GetValueByGridPosition(posXY);
-        if (gridTile == null || gridTile.IsBuildObject()) return;    
+        if (gridTile == null || gridTile.IsBuildObject()) return;
+        VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
+        Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
+
         Sounds.instance.Hammer();
-        Transform obj = Instantiate(buildingPrefab,GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).transform;
+        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f, item.shadowPixels * 0.01f), Quaternion.identity, parent).transform;
         obj.tag = "BuildObject";
-        gridTile.SetGridObject(new Wall(selectedObjectID,0,obj));
+        gridTile.SetGridObject(new Wall(selectedObjectID,0,obj,posXY));
         GridVisualization.instance.SetNewSprite(posXY,selectedObjectID);
         builtObject(this, null);
     }
@@ -267,6 +265,7 @@ public class BuildingManager : MonoBehaviour
         VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
         Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
 
+
         for (int i = 0; i < variant.objectPoints.Length; i++)
         {
             if (GridVisualization.instance.GetValueByGridPosition(posXY + variant.objectPoints[i]).IsBuildObject()) return;
@@ -276,6 +275,8 @@ public class BuildingManager : MonoBehaviour
         Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f,item.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
         obj.tag = "BuildObject";
         SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+
+
 
         if (variant.CoveringPoints != null)
         {
@@ -300,14 +301,24 @@ public class BuildingManager : MonoBehaviour
         switch (item)
         {
             case DoorItem:
-                gridObject.SetGridObject(new GridDoor(itemID, indexVariant, buildingObj), true);
+                gridObject.SetGridObject(new GridDoor(itemID, indexVariant, buildingObj,posXY), true);
                 return;
             case ContainerItem : 
-                gridObject.SetGridObject(new GridContainer(itemID, indexVariant, buildingObj,(item as ContainerItem).capacity),true);
+                gridObject.SetGridObject(new GridContainer(itemID, indexVariant, buildingObj,(item as ContainerItem).capacity,posXY),true);
                 return;
         }
 
-        gridObject.SetGridObject(new GridObject(itemID, indexVariant, buildingObj));
+        GridObject gridObj = new GridObject(itemID, indexVariant, buildingObj,posXY);
+        gridObject.SetGridObject(gridObj);
+
+        Variant variant = ((VariantItem)item).objectVariants[indexVariant].variants[0];
+        if (variant.objectPoints != null)
+        {
+            for (int i = 0; i < variant.objectPoints.Length; i++)
+            {
+                GridVisualization.instance.GetValueByGridPosition(posXY + variant.objectPoints[i])?.SetGridObject(gridObj);
+            }
+        }
     }
     public void ChangeSprite(Vector2 posXY, int index)
     {

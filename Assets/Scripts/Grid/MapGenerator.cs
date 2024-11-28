@@ -62,7 +62,7 @@ public class MapGenerator : MonoBehaviour
     
     private void SetBuildingObject(Chunk chunk, int x, int y,int index)
     {
-        chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null));
+        chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
 
     public Map GenerateMap(float cellSize, Vector2 offset)
