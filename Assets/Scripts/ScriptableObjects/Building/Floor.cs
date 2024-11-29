@@ -10,6 +10,7 @@ public class TileTexture
 public class Floor : BuildingItem 
 {
     public Texture2D grassTexture;
-    public int chanceOfDefaultTile;
+    [Range(0.0f, 1.0f)]
+    public float chanceOfDefaultTile;
 }
 

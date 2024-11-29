@@ -31,6 +31,14 @@ public class Wall : GridObject
     }
 }
 
+public class Ground : GridObject
+{
+    public Ground(int ID) : base(ID)
+    {
+
+    }
+}
+
 public class GridObject: IGetBarValue
 {
     public int ID;
@@ -52,6 +60,18 @@ public class GridObject: IGetBarValue
         this.objectTransform = obj;
         this.stateIndex = stateIndex;
         this.mainPosition = mainPosition;
+    }
+
+    public GridObject(int ID)
+    {
+        this.ID = ID;
+        this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
+        this.hitPoints = maxHitPoints;
+
+        this.variantIndex = 0;
+        this.objectTransform = null;
+        this.stateIndex = 0;
+        this.mainPosition = Vector2.zero;
     }
     public float GetBarValue()
     {

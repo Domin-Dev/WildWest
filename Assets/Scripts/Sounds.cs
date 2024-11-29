@@ -36,7 +36,7 @@ public class Sounds : MonoBehaviour
 
     public void Sword()
     {
-        audioSource.PlayOneShot(swordSounds[Random.Range(0,2)]);
+        audioSource.PlayOneShot(swordSounds[Random.Range(0,1)]);
     }
 
     public void Hit()

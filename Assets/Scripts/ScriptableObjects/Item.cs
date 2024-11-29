@@ -31,7 +31,6 @@ public class Item : ScriptableObject
 public class Ingredient : ItemID
 {
     public int number;
-
     public Ingredient(int itemID, int number): base(itemID)
     {
         this.number = number;

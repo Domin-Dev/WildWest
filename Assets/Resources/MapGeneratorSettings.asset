@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6aa03cb7e6fb640439b21ea557b69d5d, type: 3}
   m_Name: MapGeneratorSettings
   m_EditorClassIdentifier: 
-  grassID: 21
+  grassID: 19
   tiles:
   - tileID: 19
   - tileID: 19
@@ -20,7 +20,3 @@ MonoBehaviour:
   - tileID: 19
   - tileID: 19
   - tileID: 19
-  - tileID: 10004
-  - tileID: 10005
-  - tileID: 105
-  - tileID: 106

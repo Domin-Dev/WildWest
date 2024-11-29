@@ -9,47 +9,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b999aea9fb03d7f4ea250a166970f98a, type: 3}
+  m_Script: {fileID: 11500000, guid: ac44ede8a5cadab44b3d50f5e7a695b5, type: 3}
   m_Name: Weapon 4
   m_EditorClassIdentifier: 
-  name: Axe
+  name: 
   description: 
-  ID: 41
+  ID: 59
   stackMax: 1
-  icon: {fileID: 1643540470, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: 1297209924, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
-  - itemID: 42
-    number: 2
-  - itemID: 43
-    number: 2
+  - itemID: 0
+    number: 0
   craftTables: ffffffff
   numberItem: 1
-  durability: 10
-  weaponImage: {fileID: -1655073702, guid: be4caf0e68ca6f044a441f2f2398620f, type: 3}
+  durability: 50
+  weaponImage: {fileID: 403010464, guid: 6c6f8ce0761483d44bb33772793fbef9, type: 3}
   hitBoxPoints:
-  - {x: -0.015, y: -0.024999999}
-  - {x: -0.015, y: 0.015}
-  - {x: -0.044999998, y: 0.015}
-  - {x: -0.044999998, y: 0.005}
-  - {x: -0.065, y: 0.005}
-  - {x: -0.074999996, y: 0.015}
-  - {x: -0.055, y: 0.035}
-  - {x: -0.035, y: 0.035}
-  - {x: -0.035, y: 0.044999998}
-  - {x: -0.015, y: 0.044999998}
-  - {x: -0.015, y: 0.055}
-  - {x: 0.005, y: 0.055}
-  - {x: 0.015, y: 0.044999998}
-  - {x: 0.035, y: 0.044999998}
-  - {x: 0.044999998, y: 0.035}
-  - {x: 0.055, y: 0.035}
-  - {x: 0.074999996, y: 0.015}
-  - {x: 0.065, y: 0.005}
-  - {x: 0.044999998, y: 0.005}
-  - {x: 0.035, y: 0.015}
-  - {x: 0.015, y: 0.015}
-  - {x: 0.015, y: -0.024999999}
-  gripPoint1: {x: 0.005, y: -0.044999998}
-  gripPoint2: {x: -100, y: -100}
+  - {x: -0.015, y: -0.005}
+  - {x: -0.015, y: 0.035}
+  - {x: -0.024999999, y: 0.035}
+  - {x: -0.024999999, y: 0.074999996}
+  - {x: -0.005, y: 0.095}
+  - {x: 0.005, y: 0.095}
+  - {x: 0.024999999, y: 0.074999996}
+  - {x: 0.024999999, y: 0.035}
+  - {x: 0.015, y: 0.024999999}
+  - {x: 0.015, y: -0.005}
+  gripPoint1: {x: 0.005, y: -0.024999999}
+  gripPoint2: {x: 0.005, y: -0.085}
   damage: 5
   cooldown: 0
+  toolType: 5
+  efficiency: 0

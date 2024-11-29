@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using System.Collections.ObjectModel;
+using UnityEngine.Video;
 
 public class ItemsAsset : MonoBehaviour
 {
@@ -148,6 +149,15 @@ public class ItemsAsset : MonoBehaviour
         else 
             return null;
     }
+    public T GetItem<T>(int itemID) where T : Item
+    {
+        Item item = GetItem(itemID);
+        if(item is T)
+        {
+            return item as T;
+        }
+        return null;
+    }
     public TooltipInfo GetTooltipInfo(int itemID)
     {
         return GetTooltipInfo(GetItem(itemID));
@@ -224,6 +234,14 @@ public class ItemsAsset : MonoBehaviour
             return null;
         }
     }
-
+    public ToolType GetToolRequired(int itemID)
+    {
+       BuildingItem buildingItem = GetItem<BuildingItem>(itemID);
+        if(buildingItem != null)
+        {
+            return buildingItem.toolRequired;
+        }
+        return ToolType.None;
+    }
 
 }

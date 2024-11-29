@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
@@ -55,9 +57,10 @@ public class MapGenerator : MonoBehaviour
         gridVisualization.SetMap(map); 
     }
 
-    private void SetValue(Chunk chunk ,int x,int y,int index)
+    private void SetValue(Chunk chunk ,int x,int y,int index, int variant)
     {
-        chunk.grid[x,y].tileID = mapGeneratorSettings.tiles[index].tileID;
+        chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21); 
+        chunk.grid[x,y].variant = variant;
     }
     
     private void SetBuildingObject(Chunk chunk, int x, int y,int index)
@@ -78,6 +81,8 @@ public class MapGenerator : MonoBehaviour
         }
 
         var rand = new System.Random(seed);
+        List<int> numerVariants = GetNumberVariants();
+        List<float> chancesOfDefaultTile = GetChanceOfDefaultTile();
 
         foreach (var item in map.chunks)
         {
@@ -89,26 +94,51 @@ public class MapGenerator : MonoBehaviour
                 for (int x = 0; x < chunkSize; x++)
                 {
                     GenerateCell(item.Value, x, y,rand);
+                    int index = -1;
                     if (value >= 0.75f)
-                    { 
-                        SetValue(item.Value, x, y,0);
+                    {
+                        index = 0;
                     }
                     else if (value >= 0.5f)
                     {
-                        SetValue(item.Value, x, y, 1);
+                        index = 1;
                     }
                     else if (value >= 0.25f)
                     {
-                        SetValue(item.Value, x, y, 2);
+                        index = 2;
                     }
                     else 
                     {
-                        SetValue(item.Value, x, y, 3);
+                        index = 3;
                     }
-                }
+
+                    if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
+                        SetValue(item.Value, x, y, index, 0);
+                    else
+                        SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));                }
             }
         }
         return map;
+    }
+
+    private List<int> GetNumberVariants()
+    {
+        List<int> list = new List<int>();
+        for (int i = 0; i < mapGeneratorSettings.tiles.Count; i++)
+        {
+            list.Add(GridVisualization.instance.TilesUV[mapGeneratorSettings.tiles[i].tileID].variants);
+        }
+        return list;
+    }
+
+    private List<float> GetChanceOfDefaultTile()
+    {
+        List<float> list = new List<float>();
+        for (int i = 0; i < mapGeneratorSettings.tiles.Count; i++)
+        {
+            list.Add(((Floor)ItemsAsset.instance.GetItem(mapGeneratorSettings.tiles[i].tileID)).chanceOfDefaultTile);
+        }
+        return list;
     }
     private void GenerateCell(Chunk chunk, int x, int y, System.Random rand)
     {
@@ -159,30 +189,30 @@ public class MapGenerator : MonoBehaviour
 
     }
 
-    private void GenerateTempCell(Chunk chunk, int x, int y, System.Random rand)
-    {
-        float value = Generate(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y,offsetRain,scaleRain);
-        if (value >= 0.8f)
-        {
-            SetValue(chunk, x, y, 3);
-        }
-        else if (value >= 0.6f)
-        {
-            SetValue(chunk, x, y, 4);
-        }
-        else if (value >= 0.4f)
-        {
-            SetValue(chunk, x, y, 5);
-        }
-        else if (value >= 0.2f)
-        {
-            SetValue(chunk, x, y, 6);
-        }
-        else
-        {
-            SetValue(chunk, x, y, 7);
-        }
-    }
+    //private void GenerateTempCell(Chunk chunk, int x, int y, System.Random rand)
+    //{
+    //    float value = Generate(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y,offsetRain,scaleRain);
+    //    if (value >= 0.8f)
+    //    {
+    //        SetValue(chunk, x, y, 3);
+    //    }
+    //    else if (value >= 0.6f)
+    //    {
+    //        SetValue(chunk, x, y, 4);
+    //    }
+    //    else if (value >= 0.4f)
+    //    {
+    //        SetValue(chunk, x, y, 5);
+    //    }
+    //    else if (value >= 0.2f)
+    //    {
+    //        SetValue(chunk, x, y, 6);
+    //    }
+    //    else
+    //    {
+    //        SetValue(chunk, x, y, 7);
+    //    }
+    //}
 
     private float Generate(int x, int y, Vector2 offset, float scale)
     {

@@ -86,9 +86,15 @@ public class Actions : MonoBehaviour
             GridObject gridObject = gridTile?.gridObject;
             if (gridObject != null)
             {
+                Tool item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
+                var type = ItemsAsset.instance.GetToolRequired(gridObject.ID);
+                if ((item == null) || (type != ToolType.None && type != item.toolType))
+                {
+                    Sounds.instance.Sword();
+                    return;
+                }
+               
                 Sounds.instance.Shield();
-                Weapon item = ItemsAsset.instance.GetItem(itemStats.itemID) as Weapon;
-
                 Transform obj = gridObject.objectTransform;
                 float lastRotation = transform.eulerAngles.z;
                 if (item != null)
@@ -137,6 +143,14 @@ public class Actions : MonoBehaviour
                         );
                     }
                 }
+            }
+            else
+            {
+                Tool item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
+                if (item.toolType == ToolType.Shovel)
+                {
+                    BuildingManager.instance.Digging(pos);
+                };
             }
         }
     }

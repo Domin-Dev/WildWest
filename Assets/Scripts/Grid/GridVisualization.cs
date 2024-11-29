@@ -1,6 +1,5 @@
 
 
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -432,19 +431,18 @@ public class GridVisualization : MonoBehaviour
             int localX = x % map.chunkSize;
             int localY = y % map.chunkSize;
 
-            GridTile[,] grid = map.chunks[chunkIndex].grid;
             Mesh mesh = loadedChunks[chunkIndex].transform.GetComponent<MeshFilter>().mesh;
             Vector2[] uv = mesh.uv;
             int index = localX + localY * map.chunkSize;
-            GridTile gridTile = grid[localX,localY];
+            GridTile gridTile = map.chunks[chunkIndex].grid[localX,localY];
 
             Vector2 uv11, uv00;
             int borders = CalculateBorders(x, y);
 
             if (borders != gridTile.borders || repeat)
             {
-                GetUVTile(gridTile.tileID, borders, out uv00, out uv11);
                 gridTile.borders = borders;
+                GetUVTile(gridTile, out uv00, out uv11);
                 UVSet(uv, index, uv00, uv11);
                 mesh.uv = uv;
             }
@@ -475,37 +473,22 @@ public class GridVisualization : MonoBehaviour
         return GetCoordinatesByLocalChunkCoordinates(chunkIndex, new Vector2(x, y));
     }
 
-    private void GetUVTile(int tileID,int borders,out Vector2 uv00, out Vector2 uv11)
+    private void GetUVTile(GridTile gridTile,out Vector2 uv00, out Vector2 uv11)
     {
-        uv00 = Vector2.zero;
-        uv11 = Vector2.zero;
-
-        TileUV tileUV = TilesUV[tileID];
-        if (borders == 0 || tileUV.uv00Grass == null)
+        TileUV tileUV = TilesUV[gridTile.tileID];
+        if (gridTile.borders == 0 || tileUV.uv00Grass == null)
         {
-            if (UnityEngine.Random.Range(1, 101) > 60)
-            {
-                uv11 = tileUV.uv00 + new Vector2(tileWidth, tileHeight);
-                uv00 = tileUV.uv00;
-            }
-            else
-            {
-                int variant = 0;
-                if(tileUV.variants > 1) variant = UnityEngine.Random.Range(1, tileUV.variants);
-
-                uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * variant);
-                uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * variant);
-            }
+            uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * gridTile.variant);
+            uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant);
         }
         else
         {
-            if(borders < 0) borders = 15 - borders;
-            borders--;
+            if(gridTile.borders < 0) gridTile.borders = 15 - gridTile.borders;
+            gridTile.borders--;
 
-            uv00 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth, 0) * borders;
-            uv11 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth,tileHeight) + new Vector2(tileWidth, 0) * borders;
-        }  
-        
+            uv00 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth, 0) * gridTile.borders;
+            uv11 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth,tileHeight) + new Vector2(tileWidth, 0) * gridTile.borders;
+        }    
     }
     private int CalculateBorders(int x,int y)
     {
@@ -612,8 +595,8 @@ public class GridVisualization : MonoBehaviour
                 int borders = 0;
                 if (IsGrass(gridTile.tileID)) borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y);
                 Vector2 uv11, uv00;
-                GetUVTile(gridTile.tileID, borders, out uv00, out uv11);
                 gridTile.borders = borders;
+                GetUVTile(gridTile, out uv00, out uv11);
                 UVSet(uv, index, uv00, uv11);
             }
         }
@@ -811,6 +794,12 @@ public class GridVisualization : MonoBehaviour
         Transform wItem = Instantiate(worldItem, pos, Quaternion.identity,transform).transform;
         int itemChunkIndex = map.chunks[gridIndex].AddItem(new ChunkItem(item, target,wItem));
         wItem.GetComponent<WorldItem>().SetItem(item, target, itemChunkIndex);
+    }
+
+    public void CreateWorldItem(ItemStats item,Vector2 posXY)
+    {
+        Vector2 target = GetWorldPosition(posXY + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
+        CreateWorldItem(item, GetWorldPosition(posXY + new Vector2(0, 0.5f)), target);
     }
     private void LoadWorldItem(int itemChunkIndex,Chunk chunk)
     {

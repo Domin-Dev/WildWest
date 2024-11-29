@@ -3,11 +3,13 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class GridTile: IGetBarValue
+public class GridTile : IGetBarValue
 {
-    
-    public int tileID;
+    public int tileID {private set; get; }
+    public int secondLayerID { private set; get; }
+
     public int borders;
+    public int variant;
     public GridObject gridObject { private set; get; }
     public int x, y;
 
@@ -34,6 +36,22 @@ public class GridTile: IGetBarValue
         ResetNode();
         this.isWalkable = true;
     }
+
+    public void SetTileID(int tileID)
+    {
+        this.tileID=tileID;
+    }
+    public void SetSecondLayerID(int secondLayerID)
+    {
+        this.secondLayerID = secondLayerID;
+    }
+    public void SetTileID(int tileID,int secondLayerID)
+    {
+        this.tileID = tileID;
+        this.secondLayerID = secondLayerID;
+    }
+
+
 
     public void SetGridObject(GridObject gridObject, bool isWalkable = false)
     {
