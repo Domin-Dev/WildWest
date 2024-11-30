@@ -44,6 +44,11 @@ public class ItemStats
     {
         return new ItemStats(this);
     }
+
+    public override string ToString()
+    {
+        return $"Count: {itemCount} ItemID: {itemID}"; 
+    }
 }
 public class DestroyableItem : ItemStats
 {

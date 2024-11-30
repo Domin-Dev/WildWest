@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8e0be7e15a922e4fba3b0072447ef13, type: 3}
-  m_Name: Floor 5
+  m_Script: {fileID: 11500000, guid: 539728f2f7e719740a2f497506f118ac, type: 3}
+  m_Name: Hole
   m_EditorClassIdentifier: 
-  name: Hole
+  name: 
   description: 
   ID: 60
   stackMax: 50
-  icon: {fileID: 1019810992, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: -68435274, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
   - itemID: 0
     number: 0
@@ -28,3 +28,4 @@ MonoBehaviour:
   toolRequired: 0
   grassTexture: {fileID: 0}
   chanceOfDefaultTile: 0
+  diggingParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}

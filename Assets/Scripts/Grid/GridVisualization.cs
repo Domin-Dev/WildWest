@@ -59,7 +59,7 @@ public class GridVisualization : MonoBehaviour
 
     [SerializeField] public GameObject worldItem;
     public const int renderChunks = 2;
-    public const int maxLoadedChunks = 40;
+    public const int maxLoadedChunks = 30;
 
     public Map map;
     public Pathfinding pathfinding;
@@ -281,7 +281,6 @@ public class GridVisualization : MonoBehaviour
             loadedChunks.Remove(array[i].Key);
             yield return null;
         }
-        Debug.Log(loadedChunks.Count);
         yield return null;
     }
     IEnumerator UnloadChunk(int index)
@@ -345,7 +344,7 @@ public class GridVisualization : MonoBehaviour
             for (int y = 0; y < map.chunkSize; y++)
             {
                 var value = chunk.grid[x, y].gridObject;
-                if(value != null &&  value is Wall)
+                if(value != null &&  value is GridWall)
                 {
                     SetNewSprite(GetCoordinatesByLocalChunkCoordinates(chunkIndex,x,y),value.ID);
                 }
@@ -439,9 +438,18 @@ public class GridVisualization : MonoBehaviour
             Vector2 uv11, uv00;
             int borders = CalculateBorders(x, y);
 
-            if (borders != gridTile.borders || repeat)
+            if (borders != gridTile.borders || gridTile.GridObjectIsType<GridHole>() || repeat)
             {
                 gridTile.borders = borders;
+                if (gridTile.GridObjectIsType<GridHole>())
+                {
+                    GridTile tile = GetValueByGridPosition(x, y + 1);
+                    if (tile != null && tile.GridObjectIsType<GridHole>())
+                        GetUVHole(gridTile, 1, out uv00, out uv11);
+                    else
+                        GetUVHole(gridTile, 0, out uv00, out uv11);
+                }
+                else
                 GetUVTile(gridTile, out uv00, out uv11);
                 UVSet(uv, index, uv00, uv11);
                 mesh.uv = uv;
@@ -490,6 +498,14 @@ public class GridVisualization : MonoBehaviour
             uv11 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth,tileHeight) + new Vector2(tileWidth, 0) * gridTile.borders;
         }    
     }
+
+    private void GetUVHole(GridTile gridTile,int variant, out Vector2 uv00, out Vector2 uv11)
+    {
+        TileUV tileUV = TilesUV[gridTile.tileID];
+        uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * variant);
+        uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * variant);
+    }
+
     private int CalculateBorders(int x,int y)
     {
         int value = 0;
@@ -681,7 +697,6 @@ public class GridVisualization : MonoBehaviour
         GetValueByGridPosition(mainPos)?.SetGridObject(null);
         for (int i = 0; i < variant.objectPoints.Length; i++)
         {
-            Debug.Log(mainPos + variant.objectPoints[i]);
             GetValueByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
         }
        
@@ -689,6 +704,10 @@ public class GridVisualization : MonoBehaviour
         if (item is WallObject) UpdateNeighbors(vector2, id); 
     }
 
+    public void DestroySurface(GridTile ground)
+    {
+        ground.SetGridObject(null,true);
+    }
     public void DestroyDrop(GridObject gridObject, Vector2 pos)
     {
         BuildingItem item = (BuildingItem)ItemsAsset.instance.GetItem(gridObject.ID);
@@ -790,12 +809,120 @@ public class GridVisualization : MonoBehaviour
     }
     public void CreateWorldItem(ItemStats item,Vector2 pos,Vector2 target)
     {
-        int gridIndex = GetChunkIndexByWorldPosition(new Vector2(target.x, target.y));
-        Transform wItem = Instantiate(worldItem, pos, Quaternion.identity,transform).transform;
-        int itemChunkIndex = map.chunks[gridIndex].AddItem(new ChunkItem(item, target,wItem));
-        wItem.GetComponent<WorldItem>().SetItem(item, target, itemChunkIndex);
+        int chunkIndex = GetChunkIndexByWorldPosition(new Vector2(target.x, target.y));
+        Transform itemTransform = Instantiate(worldItem, pos, Quaternion.identity,transform).transform;
+        Vector2 vector2 = GetGridPosition(target);
+        ChunkItem newItem = new ChunkItem(item, vector2, itemTransform);
+        int itemChunkIndex = map.chunks[chunkIndex].AddItem(newItem);
+        WorldItem witem = itemTransform.GetComponent<WorldItem>();
+        witem.SetItem(item, target, itemChunkIndex);
+
+        if (item.itemCount < ItemsAsset.instance.GetStackMax(item.itemID))
+        {
+            ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, itemChunkIndex, item.itemID);
+            if (chunkItem != null) witem.AddStacks(chunkItem, newItem);
+        }
     }
 
+    public bool AddStacks(ChunkItem chunkItem,ItemStats itemStats)
+    {
+        int free = ItemsAsset.instance.GetStackMax(chunkItem.item.itemID) - chunkItem.item.itemCount;
+        if(itemStats.itemCount - free > 0)
+        {
+            chunkItem.item.itemCount += free;
+            itemStats.itemCount -= free;
+            return false;
+        }
+        else
+        {
+            chunkItem.item.itemCount += itemStats.itemCount;
+            return true;
+        }
+    }
+    public ChunkItem CheckNeighboringWorldItems(Vector2 posXY, int chunkIndex, int itemChunkIndex, int id)
+    {
+        ChunkItem chunkItem;
+        chunkItem = map.chunks[chunkIndex].FindItem(posXY,id, itemChunkIndex);
+        if (chunkItem != null) return chunkItem;
+        bool[] isFreeTile = CheckNeighboringFreeTile(posXY);
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (i % 2 == 1)
+            {
+                if (isFreeTile[(i - 1)/2] || isFreeTile[((i + 1) / 2)%4])
+                {
+                    int newChunkIndex = GetChunkIndexByPositionXY(posXY + MyTools.directions8[i]);
+                    chunkItem = map.chunks[newChunkIndex].FindItem(posXY + MyTools.directions8[i], id, itemChunkIndex);
+                    if (chunkItem != null) return chunkItem;
+                }
+            }
+            else
+            {
+                int newChunkIndex = GetChunkIndexByPositionXY(posXY + MyTools.directions8[i]);
+                chunkItem = map.chunks[newChunkIndex].FindItem(posXY + MyTools.directions8[i], id, itemChunkIndex);
+                if (chunkItem != null) return chunkItem;
+            }
+        }
+        return null;
+    }
+
+    private bool[] CheckNeighboringFreeTile(Vector2 posXY)
+    {
+        bool[] isFreeTile = new bool[4];
+        for (int i = 0; i < 4; i++)
+        {
+            GridTile gridTile = GetValueByGridPosition(posXY + MyTools.directions4[i]);
+            if (gridTile != null) isFreeTile[i] = gridTile.isWalkable;
+            else isFreeTile[i] = true;
+        }
+        return isFreeTile;
+    }
+
+    public void MoveWorldItems(Vector2 posXY)
+    {
+        int chunkIndex = GetChunkIndexByPositionXY(posXY);
+        Vector2? newPosXY = null;
+
+        bool[] isFreeTile = new bool[8];
+        for (int i = 0; i < 8; i++)
+        {
+            GridTile gridTile = GetValueByGridPosition(posXY + MyTools.directions8[i]);
+            if (gridTile != null) isFreeTile[i] = gridTile.isWalkable;
+            else isFreeTile[i] = true; 
+        }
+
+        for (int i = 0; i < 8; i++)
+        {
+            if (isFreeTile[i])
+            {
+                if (i % 2 == 1)
+                {
+                    if (isFreeTile[i - 1] || isFreeTile[(i + 1) % 8])
+                    {
+                        newPosXY = posXY + MyTools.directions8[i];
+                    }
+                }
+                else
+                {
+                    newPosXY = posXY + MyTools.directions8[i];
+                    break;
+                }
+            }
+        }
+
+
+        if (newPosXY != null)
+        {
+            int newChunkIndex = GetChunkIndexByPositionXY((Vector2)newPosXY);
+            if(chunkIndex != newChunkIndex)
+            {
+                map.chunks[chunkIndex].MoveAllItems(posXY, (Vector2)newPosXY, map.chunks[newChunkIndex]);
+            }
+            else
+                map.chunks[chunkIndex].MoveAllItems(posXY, (Vector2)newPosXY);
+        }
+    }
     public void CreateWorldItem(ItemStats item,Vector2 posXY)
     {
         Vector2 target = GetWorldPosition(posXY + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
@@ -804,9 +931,11 @@ public class GridVisualization : MonoBehaviour
     private void LoadWorldItem(int itemChunkIndex,Chunk chunk)
     {
         var item = chunk.items[itemChunkIndex];
-        Transform wItem = Instantiate(worldItem, item.position, Quaternion.identity, transform).transform;
+        Vector2 pos = GetWorldPosition(item.position);
+
+        Transform wItem = Instantiate(worldItem,pos, Quaternion.identity, transform).transform;
         item.worldItem = wItem;
-        wItem.GetComponent<WorldItem>().SetItem(item.item, item.position, itemChunkIndex);
+        wItem.GetComponent<WorldItem>().SetItem(item.item, pos, itemChunkIndex);
     }
     public void UnloadWorldItem(ChunkItem chunkItem)
     {

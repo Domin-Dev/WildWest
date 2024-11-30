@@ -867,13 +867,17 @@ public class UIManager : MonoBehaviour
             notices[i] = collectedItems.GetChild(i);
         }
     }
-    public void NewCollectedItem(ItemStats stats)
+
+
+
+
+    public void NewCollectedItem(int id,int count)
     {
         for (int i = 0; i < 5; i++)
         {
             if (collectedItemTimers[i] == null)
             {
-                CreateNotice(stats,i);
+                CreateNotice(id, count, i);
                 return;
             } 
         }
@@ -890,17 +894,17 @@ public class UIManager : MonoBehaviour
             }
         }
         collectedItemTimers[index].Cancel();
-        CreateNotice(stats, index);
+        CreateNotice(id,count, index);
     }
 
-    private void CreateNotice(ItemStats stats,int index)
+    private void CreateNotice(int itemID,int count,int index)
     {
         Transform item = notices[index];
         CanvasGroup canvasGroup = item.GetComponent<CanvasGroup>();
         canvasGroup.alpha = 1f;
         item.gameObject.SetActive(true);
         item.SetAsLastSibling();
-        SetCollectItem(stats, item);
+        SetCollectItem(itemID,count, item);
         collectedItemTimers[index] = Timer.Create(1f, () =>
         {
             collectedItemTimers[index] = Timer.Create(() =>
@@ -921,11 +925,13 @@ public class UIManager : MonoBehaviour
             return false;
         });
     }
-    private void SetCollectItem(ItemStats stats,Transform obj)
+
+    private void SetCollectItem(int itemID, int itemCount , Transform obj)
     {
-        Item item = ItemsAsset.instance.GetItem(stats.itemID);
-        obj.GetChild(0).GetComponent<TextMeshProUGUI>().text = "+"+stats.itemCount;
+        Item item = ItemsAsset.instance.GetItem(itemID);
+        obj.GetChild(0).GetComponent<TextMeshProUGUI>().text = "+" + itemCount;
         obj.GetChild(1).GetComponent<Image>().sprite = item.icon;
         obj.GetChild(2).GetComponent<TextMeshProUGUI>().text = item.name;
     }
+
 }

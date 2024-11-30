@@ -609,7 +609,6 @@ public class EquipmentManager : MonoBehaviour
                     items[i] = itemStats;
                     NewItemUI(itemStats, new SlotPosition(gridIndex, i), false);
                     UIManager.instance.CheckRecipesWithItem(itemStats.itemID, true);
-                    UIManager.instance.NewCollectedItem(itemStats);
                     return true;
                 }
             }
@@ -618,6 +617,7 @@ public class EquipmentManager : MonoBehaviour
     }
     public bool AddNewItem(ItemStats itemStats)
     {
+        int startCount = itemStats.itemCount;
         if(itemStats == null) return false;
         if (itemStats.itemCount > 0)
         {
@@ -641,16 +641,23 @@ public class EquipmentManager : MonoBehaviour
                         {
                             IncreaseItemCount(itemList[i], itemStats.itemCount);
                             UIManager.instance.CheckRecipesWithItem(itemStats.itemID, true);
-                            UIManager.instance.NewCollectedItem(itemStats);
+                            UIManager.instance.NewCollectedItem(itemStats.itemID,startCount);
                             return true;
                         }
                     }
                 }
             }
 
-            if(CheckTab(equipmentBar, 0, itemStats, stackMax)) return true;
-            if(CheckTab(equipment, 1, itemStats, stackMax)) return true;
+            for (int i = 0; i <= 1 ; i++)
+            {
+                if (CheckTab(GetGrid(i), i, itemStats, stackMax))
+                {
+                    UIManager.instance.NewCollectedItem(itemStats.itemID, startCount);
+                    return true;
+                }
+            }
 
+            if(startCount - itemStats.itemCount > 0) UIManager.instance.NewCollectedItem(itemStats.itemID, startCount - itemStats.itemCount);
         }
         return false;
     }

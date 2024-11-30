@@ -24,18 +24,28 @@ public class GridDoor : GridObject
     }
 }
 
-public class Wall : GridObject
+public class GridWall : GridObject
 {
-    public Wall(int ID, int indexVariant, Transform obj,Vector2 mainPosition, int stateIndex = 0) : base(ID, indexVariant, obj, mainPosition , stateIndex)
+    public GridWall(int ID, int indexVariant, Transform obj,Vector2 mainPosition, int stateIndex = 0) : base(ID, indexVariant, obj, mainPosition , stateIndex)
     {
     }
 }
 
-public class Ground : GridObject
+public class GridSurface : GridObject
 {
-    public Ground(int ID) : base(ID)
+    public GridSurface(int ID) : base(ID){}
+    public override void Destory(GridTile gridTile)
     {
+        GridVisualization.instance.DestroySurface(gridTile);
+    }
+}
 
+public class GridHole : GridObject
+{
+    public int fill;
+    public GridHole(int ID,int fill = 0) : base(ID) 
+    {
+        this.fill = fill;
     }
 }
 
@@ -89,6 +99,11 @@ public class GridObject: IGetBarValue
     public void IncreaseHitPoints(float value)
     {
         hitPoints = Mathf.Clamp(hitPoints + value, 0, maxHitPoints);
+    }
+
+    public virtual void Destory(GridTile gridTile)
+    {
+        GridVisualization.instance.DestroyObject(gridTile);
     }
 }
 

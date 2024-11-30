@@ -51,7 +51,16 @@ public class GridTile : IGetBarValue
         this.secondLayerID = secondLayerID;
     }
 
-
+    public bool IsGridObjectClass(out GridObject gridObjectout)
+    {
+        gridObjectout = gridObject;
+        return IsGridObjectClass();
+    }
+    public bool IsGridObjectClass()
+    {
+        if (gridObject == null) return false;
+        return gridObject.GetType() != typeof(GridSurface);
+    }
 
     public void SetGridObject(GridObject gridObject, bool isWalkable = false)
     {
@@ -148,6 +157,16 @@ public class GridTile : IGetBarValue
     {  
         return IsBuildObject() && gridObject.ID == id; 
     }
+    
+    public bool GridObjectIsType<T>()
+    {
+        if(gridObject == null) return false;
+        else
+        {
+            return gridObject is T;
+        }
+    }
+
     public override string ToString()
     {
         return $"Position : [{x},{y}]";
@@ -164,7 +183,7 @@ public class GridTile : IGetBarValue
     {
         if(!gridObject.DecreaseHitPoints(value))
         {
-            GridVisualization.instance.DestroyObject(this);
+            gridObject.Destory(this);
             return false;
         }
         return true;
