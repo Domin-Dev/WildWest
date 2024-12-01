@@ -53,7 +53,7 @@ public class MapGenerator : MonoBehaviour
         offsetRain.x = rand.Next(-100000, 100000);
         offsetRain.y = rand.Next(-100000, 100000);
 
-        var map = GenerateMap(0.25f, gridOffset);
+        GenerateMap(0.25f, gridOffset,out Map map);
         gridVisualization.SetMap(map); 
     }
 
@@ -68,15 +68,16 @@ public class MapGenerator : MonoBehaviour
         chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
 
-    public Map GenerateMap(float cellSize, Vector2 offset)
+    public void GenerateMap(float cellSize, Vector2 offset, out Map map)
     {
-        Map map = new Map(offset, cellSize,chunkSize,widthInChunks,heightInChunks);
+        map = new Map(offset, cellSize,chunkSize,widthInChunks,heightInChunks);
 
         for (int y = 0; y < heightInChunks; y++)
         {
             for (int x = 0; x < widthInChunks; x++)
             {
-                map.chunks.Add(x + y * widthInChunks,new Chunk(chunkSize,new Vector2(x * chunkSize,y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
+                int index = x + y * widthInChunks;
+                map.chunks.Add(index, new Chunk(index,chunkSize, new Vector2(x * chunkSize,y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
             }
         }
 
@@ -118,7 +119,6 @@ public class MapGenerator : MonoBehaviour
                         SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));                }
             }
         }
-        return map;
     }
 
     private List<int> GetNumberVariants()

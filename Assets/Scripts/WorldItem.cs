@@ -6,7 +6,7 @@ using static UnityEditor.Progress;
 
 public class WorldItem : MonoBehaviour
 {
-    ItemStats itemStats;
+    public ItemStats itemStats;
     Timer timer;
     Timer timerTransform;
     Timer timerFollow;
@@ -17,10 +17,10 @@ public class WorldItem : MonoBehaviour
 
 
     public int itemChunkIndex;
+    public int chunkIndex;
     private void SetUp(Vector2 target)
     {
         GetComponent<Collider2D>().enabled = false;
-       // position = target;
         transform.localScale = new Vector2(0, 0);
         timer = Timer.Create
         (() =>
@@ -50,6 +50,7 @@ public class WorldItem : MonoBehaviour
 
         if (Vector2.Distance(transform.position, target) > 0.02f)
         {
+            Debug.Log("start");
             timerTransform = Timer.Create
             (() =>
             {
@@ -64,7 +65,8 @@ public class WorldItem : MonoBehaviour
             },
             () =>
             {
-                if(actionTodo != null) SetNextTarget();
+                Debug.Log("end");
+                if (actionTodo != null) SetNextTarget();
                 return true;
             }
             );
@@ -72,40 +74,52 @@ public class WorldItem : MonoBehaviour
         else
             this.GetComponent<Collider2D>().enabled = true;
     }
-    public void SetItem(ItemStats itemStats,Vector2 target,int itemChunkIndex)
+    public void SetItem(ItemStats itemStats,Vector2 target,int itemChunkIndex,int chunkIndex)
     {
         this.itemStats = itemStats;
         this.itemChunkIndex = itemChunkIndex;
+        this.chunkIndex = chunkIndex;
+
         transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = ItemsAsset.instance.GetIcon(itemStats.itemID);
         SetUp(target);
     }
 
-    public void AddStacks(ChunkItem stackTochunkItem, ChunkItem currentItem)
+    public void AddStacks(ChunkItem stackTochunkItem, ChunkItem currentItem, bool force)
     {
         target = stackTochunkItem.worldItem.position;
         actionTodo = () =>
         {
-            if (GridVisualization.instance.AddStacks(stackTochunkItem, itemStats))
+            if (itemChunkIndex != -1 && GridVisualization.instance.AddStacks(stackTochunkItem, itemStats)) 
+            { 
                 GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
+            }
             else
                 currentItem.position = GridVisualization.instance.GetGridPosition(stackTochunkItem.worldItem.position);
         };
 
-        if (timerTransform == null || timerTransform.IsEnd())
+        if (force)
         {
-            Timer.Create(5, () => { SetNextTarget(); return false; });
+            SetNextTarget();
+        }
+        else if (timerTransform == null || timerTransform.IsEnd())
+        {
+            SetNextTarget();
         }
     }
 
-    public void Move(Vector2 newPos,ChunkItem item,int oldChunk,int newChunk)
+    public void Move(Vector2 newPos, ChunkItem item, int oldChunk, int newChunk)
     {
         target = newPos;
         actionTodo = () =>
         {
-            GridVisualization.instance.map.chunks[oldChunk].RemoveItem(itemChunkIndex);
             item.position = GridVisualization.instance.GetGridPosition(newPos);
-            itemChunkIndex = GridVisualization.instance.map.chunks[newChunk].AddItem(item);
-            GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
+            if (newChunk != oldChunk)
+            {
+                GridVisualization.instance.map.chunks[oldChunk].RemoveItem(itemChunkIndex);
+                itemChunkIndex = GridVisualization.instance.map.chunks[newChunk].AddItem(item);
+            }
+            //GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
+            GridVisualization.instance.StartAddStacks(transform.position, this);
         };
 
         if (timerTransform == null || timerTransform.IsEnd())
@@ -115,9 +129,10 @@ public class WorldItem : MonoBehaviour
     }
     private void SetNextTarget()
     {
+        Debug.Log("start");
         timerTransform = Timer.Create
         (() =>
-        {
+        { 
             Vector2 pos = Vector2.Lerp(transform.position, (Vector2)target, Time.deltaTime * 8f);
             transform.position = pos;
             if (Vector2.Distance(transform.position, (Vector2)target) < 0.03f)
@@ -130,6 +145,7 @@ public class WorldItem : MonoBehaviour
         () =>
         {
             actionTodo();
+            Debug.Log("end");
             return true;
         }
         );
@@ -163,9 +179,11 @@ public class WorldItem : MonoBehaviour
     }
     private void AddItem()
     {
-        if (EquipmentManager.instance.AddNewItem(itemStats))
+        if (itemChunkIndex != -1 && EquipmentManager.instance.AddNewItem(itemStats))
         {
             Sounds.instance.Click();
+            ClearTimers();
+            actionTodo = null;
             GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
         }
     }

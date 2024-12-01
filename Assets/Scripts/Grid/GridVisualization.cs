@@ -793,7 +793,6 @@ public class GridVisualization : MonoBehaviour
 
         Transform child = gridObject.objectTransform.GetChild(0);
         ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(gridObject.ID, value);
-        Debug.Log(objectVariant);
         child.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprite;
         child.GetComponent<PolygonCollider2D>().points = objectVariant.variants[0].hitbox;
         MyTools.ChangePositionPivot(gridObject.objectTransform, child.TransformPoint(0, objectVariant.variants[0].minY, 0));
@@ -814,16 +813,35 @@ public class GridVisualization : MonoBehaviour
         Vector2 vector2 = GetGridPosition(target);
         ChunkItem newItem = new ChunkItem(item, vector2, itemTransform);
         int itemChunkIndex = map.chunks[chunkIndex].AddItem(newItem);
+
+        Debug.Log(map.chunks[chunkIndex].chunkIndex + " " + chunkIndex);
         WorldItem witem = itemTransform.GetComponent<WorldItem>();
-        witem.SetItem(item, target, itemChunkIndex);
+
+        witem.SetItem(item, target, itemChunkIndex,chunkIndex);
 
         if (item.itemCount < ItemsAsset.instance.GetStackMax(item.itemID))
         {
             ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, itemChunkIndex, item.itemID);
-            if (chunkItem != null) witem.AddStacks(chunkItem, newItem);
+            if (chunkItem != null) witem.AddStacks(chunkItem, newItem,false);
         }
     }
 
+    public void StartAddStacks(Vector2 worldPosition,WorldItem worldItem)
+    {
+        Vector2 vector2 = GetGridPosition(worldPosition);
+        int chunkIndex = GetChunkIndexByPositionXY(vector2);
+        ChunkItem oldchunkItem = map.chunks[chunkIndex].items[worldItem.itemChunkIndex];
+
+        if (worldItem.itemStats.itemCount < ItemsAsset.instance.GetStackMax(worldItem.itemStats.itemID))
+        {
+            ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, worldItem.itemChunkIndex, worldItem.itemStats.itemID);
+            if (chunkItem != null)
+            {
+                Debug.Log("siema");
+                worldItem.AddStacks(chunkItem, oldchunkItem,true);
+            }
+        }
+    }
     public bool AddStacks(ChunkItem chunkItem,ItemStats itemStats)
     {
         int free = ItemsAsset.instance.GetStackMax(chunkItem.item.itemID) - chunkItem.item.itemCount;
@@ -889,7 +907,7 @@ public class GridVisualization : MonoBehaviour
         {
             GridTile gridTile = GetValueByGridPosition(posXY + MyTools.directions8[i]);
             if (gridTile != null) isFreeTile[i] = gridTile.isWalkable;
-            else isFreeTile[i] = true; 
+            else isFreeTile[i] = false; 
         }
 
         for (int i = 0; i < 8; i++)
@@ -911,17 +929,15 @@ public class GridVisualization : MonoBehaviour
             }
         }
 
-
         if (newPosXY != null)
         {
             int newChunkIndex = GetChunkIndexByPositionXY((Vector2)newPosXY);
-            if(chunkIndex != newChunkIndex)
-            {
-                map.chunks[chunkIndex].MoveAllItems(posXY, (Vector2)newPosXY, map.chunks[newChunkIndex]);
-            }
-            else
-                map.chunks[chunkIndex].MoveAllItems(posXY, (Vector2)newPosXY);
+            map.chunks[chunkIndex].MoveAllItems(posXY, GetWorldPosition((Vector2)newPosXY + new Vector2(0,0.5f)),chunkIndex,newChunkIndex);
+        }else
+        {
+           // map.chunks[chunkIndex].FindItem
         }
+
     }
     public void CreateWorldItem(ItemStats item,Vector2 posXY)
     {
@@ -935,20 +951,32 @@ public class GridVisualization : MonoBehaviour
 
         Transform wItem = Instantiate(worldItem,pos, Quaternion.identity, transform).transform;
         item.worldItem = wItem;
-        wItem.GetComponent<WorldItem>().SetItem(item.item, pos, itemChunkIndex);
+        wItem.GetComponent<WorldItem>().SetItem(item.item, pos, itemChunkIndex,chunk.chunkIndex);
     }
     public void UnloadWorldItem(ChunkItem chunkItem)
     {
         chunkItem.worldItem.GetComponent<WorldItem>().ClearTimers();
         Destroy(chunkItem.worldItem.gameObject);
     }
-    public void RemoveWorldItem(Vector2 pos,int itemChunkIndex) 
+    public void RemoveWorldItem(Vector2 pos, int itemChunkIndex)
     {
         int gridIndex = GetChunkIndexByWorldPosition(new Vector2(pos.x, pos.y));
-        Chunk chunk = map.chunks[gridIndex];
-        Transform worldItem = chunk.items[itemChunkIndex].worldItem;
-        worldItem.GetComponent<WorldItem>().ClearTimers();
-        Destroy(worldItem.gameObject);
-        chunk.RemoveItem(itemChunkIndex);
+        if (map.chunks.ContainsKey(gridIndex))
+        {
+            Chunk chunk = map.chunks[gridIndex];
+
+            if (itemChunkIndex != -1)
+            {
+                Debug.Log(itemChunkIndex);
+
+                Transform worldItem = chunk.items[itemChunkIndex].worldItem;
+                worldItem.GetComponent<WorldItem>().ClearTimers();
+                worldItem.GetComponent<WorldItem>().itemChunkIndex = -1;
+                Destroy(worldItem.gameObject);
+                chunk.RemoveItem(itemChunkIndex);
+            }
+        }
+        else
+            Debug.LogError("GridIndex desn't exist");
     }
 }

@@ -221,6 +221,7 @@ public class BuildingManager : MonoBehaviour
         obj.tag = "BuildObject";
         gridTile.SetGridObject(new GridWall(selectedObjectID,0,obj,posXY));
         GridVisualization.instance.SetNewSprite(posXY,selectedObjectID);
+        GridVisualization.instance.MoveWorldItems(posXY);
         builtObject(this, null);
     }
     public void LoadObject(GridObject gridObject,Vector2 gridPosition)
@@ -279,13 +280,13 @@ public class BuildingManager : MonoBehaviour
             if (!gridTile.DecreaseHitPoints(20))
             {
                 GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
-                selectedObjectID = 60;
-                gridTile.SetTileID(selectedObjectID);
-                gridTile.variant = CalculateVariant(selectedObjectID);
-                gridTile.SetGridObject(new GridHole(60));
+                int id = 60;
+                gridTile.SetTileID(id);
+                gridTile.variant = CalculateVariant(id);
+                gridTile.SetGridObject(new GridHole(id));
                 Instantiate(collider, GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).tag = "BuildObject"; 
-
                 GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
+                GridVisualization.instance.MoveWorldItems(posXY);
             }
         }
     }
@@ -352,6 +353,7 @@ public class BuildingManager : MonoBehaviour
         obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
         CreateGridObject(selectedObjectID,posXY, rotation % rotationStates, obj.parent);
         MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
+        GridVisualization.instance.MoveWorldItems(posXY);
         builtObject(this, null);
     }
 

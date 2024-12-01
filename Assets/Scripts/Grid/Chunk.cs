@@ -22,20 +22,24 @@ public class Chunk
     public Vector2 position { set; get; }
 
     public List<ChunkItem> items { set; get;}
-    public Chunk(int gridSize,Vector2 chunkCoordinates, Vector2 position)
+
+    public int chunkIndex {private set; get; }
+    public Chunk(int chunkIndex,int gridSize,Vector2 chunkCoordinates, Vector2 position)
     {
-        this.grid = new GridTile[gridSize,gridSize];
+        this.grid = new GridTile[gridSize, gridSize];
         for (int i = 0; i < gridSize; i++)
         {
             for (int j = 0; j < gridSize; j++)
             {
-                grid[i, j] = new GridTile((int)chunkCoordinates.x + i,(int)chunkCoordinates.y + j);
+                grid[i, j] = new GridTile((int)chunkCoordinates.x + i, (int)chunkCoordinates.y + j);
             }
         }
         this.ChunkGridPosition = chunkCoordinates;
         this.position = position;
+        this.chunkIndex = chunkIndex;
         items = new List<ChunkItem>();
     }
+
     public int AddItem(ChunkItem chunkItem)
     {
         for (int i = 0; i < items.Count; i++)
@@ -60,7 +64,6 @@ public class Chunk
             items[index] = null;
         }
     }
-
     public ChunkItem FindItem(Vector2 position, int id, int itemChunkIndex)
     {
         for (int i = 0; i < items.Count; i++)
@@ -76,20 +79,18 @@ public class Chunk
         return null;
     }
 
-    public void MoveAllItems(Vector2 posXY, Vector2 newPos)
+
+
+    public void MoveAllItems(Vector2 posXY, Vector2 newWorldPosition, int currentChunk, int newChunk)
     {
         for (int i = 0; i < items.Count; i++)
         {
             ChunkItem chunkItem = items[i];
             if (chunkItem != null && chunkItem.position == posXY)
             {
-               // chunkItem.worldItem;
+                chunkItem.worldItem.GetComponent<WorldItem>().Move(newWorldPosition, chunkItem, currentChunk, newChunk);
             }
         }
-    }
-
-    public void MoveAllItems(Vector2 posXY, Vector2 newPos,Chunk newChunk)
-    {
     }
 }
 

@@ -617,8 +617,8 @@ public class EquipmentManager : MonoBehaviour
     }
     public bool AddNewItem(ItemStats itemStats)
     {
-        int startCount = itemStats.itemCount;
         if(itemStats == null) return false;
+        int startCount = itemStats.itemCount;
         if (itemStats.itemCount > 0)
         {
             List<SlotPosition> itemList = FindItems(itemStats.itemID,true);
