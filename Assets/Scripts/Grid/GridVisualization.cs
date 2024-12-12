@@ -933,9 +933,10 @@ public class GridVisualization : MonoBehaviour
         {
             int newChunkIndex = GetChunkIndexByPositionXY((Vector2)newPosXY);
             map.chunks[chunkIndex].MoveAllItems(posXY, GetWorldPosition((Vector2)newPosXY + new Vector2(0,0.5f)),chunkIndex,newChunkIndex);
-        }else
+        }
+        else
         {
-           // map.chunks[chunkIndex].FindItem
+            map.chunks[chunkIndex].RemoveAllItems(posXY);
         }
 
     }
@@ -958,17 +959,16 @@ public class GridVisualization : MonoBehaviour
         chunkItem.worldItem.GetComponent<WorldItem>().ClearTimers();
         Destroy(chunkItem.worldItem.gameObject);
     }
-    public void RemoveWorldItem(Vector2 pos, int itemChunkIndex)
+
+    public void RemoveWorldItem(int chunkIndex,int itemChunkIndex)
     {
-        int gridIndex = GetChunkIndexByWorldPosition(new Vector2(pos.x, pos.y));
-        if (map.chunks.ContainsKey(gridIndex))
+        if (map.chunks.ContainsKey(chunkIndex))
         {
-            Chunk chunk = map.chunks[gridIndex];
+            Chunk chunk = map.chunks[chunkIndex];
 
             if (itemChunkIndex != -1)
             {
-                Debug.Log(itemChunkIndex);
-
+                Debug.Log(itemChunkIndex + " " + chunk.items.Count + " " + chunkIndex);
                 Transform worldItem = chunk.items[itemChunkIndex].worldItem;
                 worldItem.GetComponent<WorldItem>().ClearTimers();
                 worldItem.GetComponent<WorldItem>().itemChunkIndex = -1;
@@ -978,5 +978,10 @@ public class GridVisualization : MonoBehaviour
         }
         else
             Debug.LogError("GridIndex desn't exist");
+    }
+    public void RemoveWorldItem(Vector2 worldPosition, int itemChunkIndex)
+    {
+        int chunkIndex = GetChunkIndexByWorldPosition(new Vector2(worldPosition.x, worldPosition.y));
+        RemoveWorldItem(chunkIndex, itemChunkIndex);
     }
 }

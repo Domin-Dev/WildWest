@@ -1,8 +1,5 @@
 using System;
-using System.Data;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.Progress;
 
 public class WorldItem : MonoBehaviour
 {
@@ -91,7 +88,7 @@ public class WorldItem : MonoBehaviour
         {
             if (itemChunkIndex != -1 && GridVisualization.instance.AddStacks(stackTochunkItem, itemStats)) 
             { 
-                GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
+                GridVisualization.instance.RemoveWorldItem(chunkIndex, itemChunkIndex);
             }
             else
                 currentItem.position = GridVisualization.instance.GetGridPosition(stackTochunkItem.worldItem.position);
@@ -117,6 +114,7 @@ public class WorldItem : MonoBehaviour
             {
                 GridVisualization.instance.map.chunks[oldChunk].RemoveItem(itemChunkIndex);
                 itemChunkIndex = GridVisualization.instance.map.chunks[newChunk].AddItem(item);
+                chunkIndex = newChunk;
             }
             //GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
             GridVisualization.instance.StartAddStacks(transform.position, this);
@@ -184,7 +182,7 @@ public class WorldItem : MonoBehaviour
             Sounds.instance.Click();
             ClearTimers();
             actionTodo = null;
-            GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
+            GridVisualization.instance.RemoveWorldItem(chunkIndex, itemChunkIndex);
         }
     }
 

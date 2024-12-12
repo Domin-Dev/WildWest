@@ -64,6 +64,19 @@ public class Chunk
             items[index] = null;
         }
     }
+
+    public void RemoveAllItems(Vector2 posXY)
+    {
+        Debug.Log(items.Count + " " + chunkIndex);
+        for (int i = items.Count - 1; i >= 0; i--)
+        {
+            ChunkItem chunkItem = items[i];
+            if (chunkItem != null && chunkItem.position == posXY)
+            {
+                GridVisualization.instance.RemoveWorldItem(chunkIndex, i);
+            }
+        }
+    }
     public ChunkItem FindItem(Vector2 position, int id, int itemChunkIndex)
     {
         for (int i = 0; i < items.Count; i++)

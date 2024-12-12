@@ -50,6 +50,7 @@ public class DragDrop : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDrag
                     EquipmentManager.instance.SelectedSlotTakeHalf(parent.GetComponent<DropSlot>().GetSlotPosition());
                 }
             }
+            TooltipSystem.Hide();
         }
     }
 
