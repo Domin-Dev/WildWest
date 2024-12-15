@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e8e0be7e15a922e4fba3b0072447ef13, type: 3}
-  m_Name: Floor 1
+  m_Name: FirstLayerFloor
   m_EditorClassIdentifier: 
   name: Grass
   description: 
@@ -23,12 +23,10 @@ MonoBehaviour:
   craftTables: ffffffff
   numberItem: 1
   durability: 0
-  drop:
-  - maxNumber: 9
-    probability: 1
-    ingredient:
-      itemID: 0
-      number: 0
+  drop: []
   texture: {fileID: 2800000, guid: 12c27d734aa211e44a8f002b27861857, type: 3}
+  toolRequired: 0
   grassTexture: {fileID: 0}
   chanceOfDefaultTile: 0.6
+  diggingParticles: {fileID: 0}
+  swapForSecondLayerFloorID: 21

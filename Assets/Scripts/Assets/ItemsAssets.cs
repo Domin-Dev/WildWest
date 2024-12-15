@@ -66,6 +66,14 @@ public class ItemsAsset : MonoBehaviour
         var item = GetItem(itemID);
         return item is T;
     }
+
+    public bool CheckItemType<T>(int itemID,out T outItem) where T : Item
+    {
+        var item = GetItem(itemID);
+        outItem = item as T;
+        return item is T;
+    }
+
     public Sprite GetBuildingObjectSprite(int id, int index)
     {
         if (items.ContainsKey(id))

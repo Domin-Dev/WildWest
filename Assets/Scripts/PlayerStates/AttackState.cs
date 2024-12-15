@@ -29,6 +29,7 @@ public class AttackState : HeroState
                 controller.handsController.SetDefaultState();
             }
         }
+        UIManager.instance.PrintTileInfo();
     }
     public override void ExitState() 
     {

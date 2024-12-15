@@ -63,8 +63,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject recipeIcon;
     [SerializeField] Transform ingredients;
     #endregion
-
     [SerializeField] Transform collectedItems;
+    [Space(20f)]
+    [SerializeField] TextMeshProUGUI tileInfo;
+    [Space(20f)]
+
 
     private const float buttonScale = 1f;
     private const float selectedButtonScale = 1.1f;
@@ -215,6 +218,23 @@ public class UIManager : MonoBehaviour
         }
         OpenEquipment(this, new BoolArgs(true)); ;
         LayoutRebuilder.ForceRebuildLayoutImmediate(containerGrid.gridTransform.GetComponent<RectTransform>());
+    }
+
+
+
+    private GridTile tile;
+
+    public void SetCurretTile(GridTile gridTile)
+    {
+        tile = gridTile;
+        PrintTileInfo();
+    }
+
+    public void PrintTileInfo()
+    {
+        tileInfo.text = "";
+        if (tile == null) return;
+        else tileInfo.text = tile.GetTileInfo();
     }
 
     public void LoadSlotsDedicatedContainer(ItemStats[] items,Sprite icon)
@@ -548,11 +568,15 @@ public class UIManager : MonoBehaviour
     }
     private void UpdateSelectedSlot(object sender, UpdateSelectedSlotInBarArgs e)
     {
-        mainItemBar.GetChild(e.lastSlot).GetComponent<Image>().sprite = unSelected;
-        mainItemBar.GetChild(e.currentSlot).GetComponent<Image>().sprite = selected;
+        Transform last = mainItemBar.GetChild(e.lastSlot);
+        last.GetComponent<Image>().sprite = unSelected;
+        Transform current = mainItemBar.GetChild(e.currentSlot);
+        current.GetComponent<Image>().sprite = selected;
+
         if(lastSlotUI != null) lastSlotUI.localScale = new Vector3(buttonScale, buttonScale,1);
-        currentSlotUI = mainItemBar.GetChild(e.currentSlot).GetComponent<RectTransform>();
-        lastSlotUI = mainItemBar.GetChild(e.lastSlot).GetComponent<RectTransform>();
+
+        currentSlotUI = current.GetComponent<RectTransform>();
+        lastSlotUI = last.GetComponent<RectTransform>();
     }
     private RectTransform lastSlotUI;
     private RectTransform currentSlotUI;
@@ -584,14 +608,14 @@ public class UIManager : MonoBehaviour
         if (numbering)
         {
             int index;
-            for (int i = 0; i < number; i++)
+            for (int i = number - 1; i >= 0 ; i--)
             {
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
                 if (!isMainBar)
                     slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
-                
                 if (index > 9) index = 0;
+                slot.SetAsFirstSibling();
                 Instantiate(slotIndex,slot).GetComponent<TextMeshProUGUI>().text = index.ToString();
             }
         }

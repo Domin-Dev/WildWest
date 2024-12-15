@@ -84,6 +84,7 @@ public class BuildingManager : MonoBehaviour
                     {
                         build(pos);
                         planObject.gameObject.SetActive(false);
+                        UIManager.instance.PrintTileInfo();
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.R) && rotationStates > 0)
@@ -281,10 +282,12 @@ public class BuildingManager : MonoBehaviour
             {
                 GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
                 int id = 60;
-                gridTile.SetTileID(id);
+                gridTile.SetTileID(60);
                 gridTile.variant = CalculateVariant(id);
-                gridTile.SetGridObject(new GridHole(id));
-                Instantiate(collider, GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).tag = "BuildObject"; 
+                Transform obj = Instantiate(collider, GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).transform;
+                obj.tag = "BuildObject";
+                gridTile.SetGridObject(new GridHole(id,obj));
+
                 GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
                 GridVisualization.instance.MoveWorldItems(posXY);
             }
@@ -293,13 +296,23 @@ public class BuildingManager : MonoBehaviour
     private void BuildFloor(Vector2 posXY)
     {
         GridTile gridTile = GridVisualization.instance.GetValueByGridPosition(posXY);
-        if (gridTile.tileID != selectedObjectID)
+        if (gridTile.tileID != selectedObjectID || (gridTile.secondLayerID == -1))
         {
-            if(gridTile.tileID != -1) GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
-            if (gridTile.GridObjectIsType<GridHole>()) gridTile.SetGridObject(new GridSurface(selectedObjectID), true);
+            if (gridTile.GridObjectIsType<GridHole>())
+            {
+                GridVisualization.instance.DestroyObject(gridTile,false);
+                gridTile.SetGridObject(new GridSurface(selectedObjectID), true);
+            }
+            else if(gridTile.tileID != -1)
+            {
+                if (gridTile.secondLayerID != -1)
+                    GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
+                else
+                    gridTile.SetSecondLayerID(gridTile.tileID); 
+            }
+
             gridTile.SetTileID(selectedObjectID);
             gridTile.variant = CalculateVariant(selectedObjectID);
-
             GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
             Sounds.instance.Hammer();
             builtObject(this, null);

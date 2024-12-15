@@ -117,7 +117,7 @@ public class WorldItem : MonoBehaviour
                 chunkIndex = newChunk;
             }
             //GridVisualization.instance.RemoveWorldItem(transform.position, itemChunkIndex);
-            GridVisualization.instance.StartAddStacks(transform.position, this);
+            GridVisualization.instance.StartAddStacks(transform.position, chunkIndex, this);
         };
 
         if (timerTransform == null || timerTransform.IsEnd())
@@ -127,7 +127,6 @@ public class WorldItem : MonoBehaviour
     }
     private void SetNextTarget()
     {
-        Debug.Log("start");
         timerTransform = Timer.Create
         (() =>
         { 
@@ -142,8 +141,7 @@ public class WorldItem : MonoBehaviour
         },
         () =>
         {
-            actionTodo();
-            Debug.Log("end");
+            actionTodo?.Invoke();
             return true;
         }
         );

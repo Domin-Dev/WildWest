@@ -4,5 +4,6 @@ using UnityEngine;
 public class Hole : Floor 
 {
     public Texture2D waterTexture;
+    public int capacity;
 }
 

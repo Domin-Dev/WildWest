@@ -1,4 +1,5 @@
 
+using Unity.Mathematics;
 using UnityEngine;
 
 public interface IGetBarValue
@@ -43,10 +44,24 @@ public class GridSurface : GridObject
 public class GridHole : GridObject
 {
     public int fill;
-    public GridHole(int ID,int fill = 0) : base(ID) 
+    public GridHole(int ID,Transform objectTransform, int fill = 0) : base(ID, objectTransform) 
     {
         this.fill = fill;
     }
+
+    public void PourWater(int value,GridTile gridTile)
+    {
+        int max = GetMaxFill();
+        int overflow = (fill + value) - max;
+        fill = Mathf.Clamp(fill + value,0, max); 
+        GridVisualization.instance.WaterTransfer(gridTile, overflow);
+    }
+
+    public int GetMaxFill()
+    {
+        return ItemsAsset.instance.GetItem<Hole>(ID).capacity;
+    }
+
 }
 
 public class GridObject: IGetBarValue
@@ -78,8 +93,20 @@ public class GridObject: IGetBarValue
         this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
         this.hitPoints = maxHitPoints;
 
-        this.variantIndex = 0;
+        this.variantIndex = -1;
         this.objectTransform = null;
+        this.stateIndex = 0;
+        this.mainPosition = Vector2.zero;
+    }
+
+    public GridObject(int ID, Transform objectTransform)
+    {
+        this.ID = ID;
+        this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
+        this.hitPoints = maxHitPoints;
+
+        this.variantIndex = -1;
+        this.objectTransform = objectTransform;
         this.stateIndex = 0;
         this.mainPosition = Vector2.zero;
     }
@@ -103,7 +130,12 @@ public class GridObject: IGetBarValue
 
     public virtual void Destory(GridTile gridTile)
     {
-        GridVisualization.instance.DestroyObject(gridTile);
+        GridVisualization.instance.DestroyObject(gridTile,true);
+    }
+
+    public override string ToString()
+    {
+        return ItemsAsset.instance.GetItem(ID).name;
     }
 }
 

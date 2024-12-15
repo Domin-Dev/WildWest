@@ -40,7 +40,7 @@ public class Actions : MonoBehaviour
             if (pos != lastPos)
             {
                 lastPos = pos;
-                pointerTransform.position = GridVisualization.instance.GetWorldPosition(pos);
+                SetTileInfo();
             }
 
             if (Input.GetMouseButtonDown(1))
@@ -59,7 +59,18 @@ public class Actions : MonoBehaviour
                     
                 }
             }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                GridVisualization.instance.PourWater(100, lastPos);
+            }
         }
+    }
+
+    private void SetTileInfo()
+    {
+        pointerTransform.position = GridVisualization.instance.GetWorldPosition(lastPos);
+        UIManager.instance.SetCurretTile(GridVisualization.instance.GetGridTileByPositionXY(lastPos));
     }
 
     private void Door(GridDoor gridDoor,Vector2 position)

@@ -6,6 +6,5 @@ using UnityEngine;
 public class LiquidContainer: BuildingObject
 {
     public int capacity;
-    public ItemID ItemContainer;
 }
 

@@ -43,7 +43,10 @@ public class GridTile : IGetBarValue
     }
     public void SetSecondLayerID(int secondLayerID)
     {
-        this.secondLayerID = secondLayerID;
+        if (secondLayerID != -1 && ItemsAsset.instance.CheckItemType<FirstLayerFloor>(secondLayerID, out FirstLayerFloor floor))
+            this.secondLayerID = floor.swapForSecondLayerFloorID;
+        else
+            this.secondLayerID = secondLayerID;
     }
     public void SetTileID(int tileID,int secondLayerID)
     {
@@ -166,11 +169,45 @@ public class GridTile : IGetBarValue
             return gridObject is T;
         }
     }
-
+    public bool GridObjectIsType<T>(out T output) where T : GridObject
+    {
+        output = null;
+        if (gridObject == null) return false;
+        else
+        {
+            output = gridObject as T;
+            return gridObject is T;
+        }
+    }
     public override string ToString()
     {
         return $"Position : [{x},{y}]";
     }
+
+    public string GetTileInfo()
+    {
+        string output = "";
+
+        if (IsGridObjectClass())
+        {
+            if (GridObjectIsType<GridHole>())
+            {
+                int fill = ((GridHole)gridObject).fill;
+                if( fill  > 0)
+                    output += "<color=#A3A3A3>Water:" + "[" + ((GridHole)gridObject).fill + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> \n";
+                else
+                    output += "Hole";
+                return output;
+            }
+            output += gridObject.ToString() + '\n';
+        }
+        if(tileID >= 0) output += "Tile:" + ItemsAsset.instance.GetItem(tileID).name + '\n';
+        if(secondLayerID >= 0) output += "<color=#A3A3A3>Second Layer:" + ItemsAsset.instance.GetItem(secondLayerID).name + "</color> \n";
+
+        return output;
+    }
+
+
     public float GetBarValue()
     {
        return gridObject.GetBarValue();

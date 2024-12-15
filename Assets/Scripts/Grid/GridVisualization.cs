@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 
 public class PlayerPositionArgs : EventArgs
@@ -611,8 +612,22 @@ public class GridVisualization : MonoBehaviour
                 int borders = 0;
                 if (IsGrass(gridTile.tileID)) borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y);
                 Vector2 uv11, uv00;
+               
+                
+                if (gridTile.GridObjectIsType<GridHole>())
+                {
+                    GridTile tile = GetValueByGridPosition( chunk.ChunkGridPosition +  new Vector2(x, y + 1));
+                    if (tile != null && tile.GridObjectIsType<GridHole>())
+                        GetUVHole(gridTile, 1, out uv00, out uv11);
+                    else
+                        GetUVHole(gridTile, 0, out uv00, out uv11);
+                }
+                else
+                {
+                    GetUVTile(gridTile, out uv00, out uv11);
+
+                }
                 gridTile.borders = borders;
-                GetUVTile(gridTile, out uv00, out uv11);
                 UVSet(uv, index, uv00, uv11);
             }
         }
@@ -683,27 +698,27 @@ public class GridVisualization : MonoBehaviour
         int y = (int)posXY.y % map.chunkSize;
         return map.chunks[x + y * map.widthInChunks].grid;
     }
-    public void DestroyObject(GridTile gridTile)
+    public void DestroyObject(GridTile gridTile,bool drop)
     {
         int id = gridTile.gridObject.ID;
         Item item = ItemsAsset.instance.GetItem(id);
         Vector2 vector2 = new Vector2(gridTile.x, gridTile.y);
         Destroy(gridTile.gridObject.objectTransform.gameObject);
-        DestroyDrop(gridTile.gridObject, vector2);
+        if(drop) 
+            DestroyDrop(gridTile.gridObject, vector2);
 
-        Variant variant  = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
-
-        Vector2 mainPos = gridTile.gridObject.mainPosition;
-        GetValueByGridPosition(mainPos)?.SetGridObject(null);
-        for (int i = 0; i < variant.objectPoints.Length; i++)
+        if (gridTile.gridObject.variantIndex >= 0)
         {
-            GetValueByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
+            Variant variant = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
+            Vector2 mainPos = gridTile.gridObject.mainPosition;
+            GetValueByGridPosition(mainPos)?.SetGridObject(null);
+            for (int i = 0; i < variant.objectPoints.Length; i++)
+            {
+                GetValueByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
+            }
         }
-       
-
         if (item is WallObject) UpdateNeighbors(vector2, id); 
     }
-
     public void DestroySurface(GridTile ground)
     {
         ground.SetGridObject(null,true);
@@ -826,10 +841,9 @@ public class GridVisualization : MonoBehaviour
         }
     }
 
-    public void StartAddStacks(Vector2 worldPosition,WorldItem worldItem)
+    public void StartAddStacks(Vector2 worldPosition,int chunkIndex, WorldItem worldItem)
     {
         Vector2 vector2 = GetGridPosition(worldPosition);
-        int chunkIndex = GetChunkIndexByPositionXY(vector2);
         ChunkItem oldchunkItem = map.chunks[chunkIndex].items[worldItem.itemChunkIndex];
 
         if (worldItem.itemStats.itemCount < ItemsAsset.instance.GetStackMax(worldItem.itemStats.itemID))
@@ -984,4 +998,57 @@ public class GridVisualization : MonoBehaviour
         int chunkIndex = GetChunkIndexByWorldPosition(new Vector2(worldPosition.x, worldPosition.y));
         RemoveWorldItem(chunkIndex, itemChunkIndex);
     }
+
+    public void PourWater(int water, Vector2 posXY)
+    {
+        GridTile gridTile = GetGridTileByPositionXY(posXY);
+        if (gridTile == null) return;
+        GridHole hole;
+        if(gridTile.GridObjectIsType<GridHole>(out hole))
+        {
+            hole.PourWater(water, gridTile);
+        }
+    }
+
+
+    public void WaterTransfer(GridTile gridTile, int overflow)
+    {
+        List<GridTile> holesToCheck = new List<GridTile>();
+        List<GridTile> holesToDivideWater = new List<GridTile>();
+        holesToCheck.Add(gridTile);
+
+        int water = overflow;
+        while (holesToCheck.Count > 0)
+        {
+            Debug.Log("nowe1");
+            for (int i = holesToCheck.Count - 1; i >= 0; i--)
+            {
+                GridTile hole = holesToCheck[i];
+                for (int j = 0; j < 4; j++)
+                {
+                    GridTile tile = GetGridTileByPositionXY(hole.GetXYPosition() + MyTools.directions4[j]);
+                    GridHole gridHole = null;
+                    if (tile != null && tile.GridObjectIsType<GridHole>(out gridHole))
+                    {
+                        holesToCheck.Add(tile);
+                        holesToDivideWater.Add(tile);
+                        water += gridHole.fill;
+                    }
+                }
+                holesToDivideWater.Add(hole);
+              //  holesToCheck.RemoveAt(i);
+            }
+            int ration = water / holesToDivideWater.Count;
+            for (int i = holesToDivideWater.Count - 1; i >= 0; i--)
+            {
+                GridHole hole = holesToDivideWater[i].gridObject as GridHole;
+                hole.fill = ration;
+            }
+            holesToDivideWater.Clear();
+            water = 0;
+            break;
+        }
+    }
+
+
 }
