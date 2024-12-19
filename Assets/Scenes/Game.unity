@@ -12794,7 +12794,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00000014901161, y: -0.00000067055225, z: -10}
+  m_LocalPosition: {x: 0.00000020861626, y: -0.00000067055225, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16100,6 +16100,7 @@ MonoBehaviour:
   LoadAllMap: 0
   worldItem: {fileID: 8553173326923410488, guid: dff186c7fab90df4a82d9b4317f7b7c0, type: 3}
   mapMaterial: {fileID: 2100000, guid: d43aa4880e8663448a8d159ff697a36b, type: 2}
+  linesTexture: {fileID: 2800000, guid: ba41da0884dbd2645ae59aba7c24dac1, type: 3}
 --- !u!114 &643743970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23270,7 +23271,7 @@ Transform:
   m_GameObject: {fileID: 917291348}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00000014901161, y: -0.00000067055225, z: -10}
+  m_LocalPosition: {x: 0.00000020861626, y: -0.00000067055225, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -33840,7 +33841,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1017828613}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

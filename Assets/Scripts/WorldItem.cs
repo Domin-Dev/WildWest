@@ -47,7 +47,6 @@ public class WorldItem : MonoBehaviour
 
         if (Vector2.Distance(transform.position, target) > 0.02f)
         {
-            Debug.Log("start");
             timerTransform = Timer.Create
             (() =>
             {
@@ -62,7 +61,6 @@ public class WorldItem : MonoBehaviour
             },
             () =>
             {
-                Debug.Log("end");
                 if (actionTodo != null) SetNextTarget();
                 return true;
             }

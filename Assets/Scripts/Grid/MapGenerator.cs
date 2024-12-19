@@ -41,7 +41,7 @@ public class MapGenerator : MonoBehaviour
     private void Start()
     {
         gridVisualization = GridVisualization.instance;
-        mapGeneratorSettings = gridVisualization.settings;
+        mapGeneratorSettings = gridVisualization.id;
 
         var rand = new System.Random(seed);
         offset.x = rand.Next(-100000, 100000);

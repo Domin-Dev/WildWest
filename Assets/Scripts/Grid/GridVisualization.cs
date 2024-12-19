@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
+using static UnityEditor.UIElements.ToolbarMenu;
 
 
 public class PlayerPositionArgs : EventArgs
@@ -64,7 +65,7 @@ public class GridVisualization : MonoBehaviour
 
     public Map map;
     public Pathfinding pathfinding;
-     public Dictionary<int, LoadedChunk> loadedChunks { private set; get; }
+    public Dictionary<int, LoadedChunk> loadedChunks { private set; get; }
     public int lastPlayerChunk { private set; get; } = -1;
     public Vector2 lastPlayerPosition { private set; get; } = Vector2.zero;
 
@@ -72,13 +73,16 @@ public class GridVisualization : MonoBehaviour
     public event EventHandler<PlayerPositionArgs> onChangeChunk;
 
     public Dictionary<int, TileUV> TilesUV { get; private set; }
-    public MapGeneratorSettings settings { private set; get; }
+    public MapGeneratorSettings id { private set; get; }
 
     int textureWidth;
     int textureHeight;
     const int sizeTile = 25;//px
     float tileWidth;//    sizeTile /textureWidth;
     float tileHeight;//   sizeTile / textureHeight;
+
+    float linetileWidth;
+
     Texture2D mapTexture;
     float width1;
     float height1;
@@ -86,6 +90,7 @@ public class GridVisualization : MonoBehaviour
     public static GridVisualization instance { private set; get; }
 
     [SerializeField] private Material mapMaterial;
+    [SerializeField] private Texture2D linesTexture;
     private void Awake()
     {
         Application.targetFrameRate = -1;
@@ -97,15 +102,17 @@ public class GridVisualization : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        settings = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
+        id = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
         SetUpMapMaterial();
     }
+
+
 
     private void SetUpMapMaterial(int sizeTile = 25)
     {
         TilesUV = new Dictionary<int, TileUV>();
         Floor[] array = ItemsAsset.instance.GetItemsByType<Floor>();
-        Texture2D texture = new Texture2D(46 * sizeTile, sizeTile * CountTextures(array));
+        Texture2D texture = new Texture2D(46 * sizeTile, sizeTile * (CountTextures(array) + 1));
         texture.filterMode = FilterMode.Point;
 
         textureWidth = texture.width;
@@ -114,6 +121,13 @@ public class GridVisualization : MonoBehaviour
         tileHeight = (float)sizeTile / textureHeight;
         width1 = 0.01f / textureWidth;
         height1 = 0.01f / textureHeight;
+
+        //Set Up Lines
+        Vector2 uv00 = new Vector2(0,0);
+        int variants = linesTexture.width / sizeTile;
+        TilesUV.Add(-1, new TileUV(uv00, variants,null));
+        linetileWidth = (float)sizeTile / linesTexture.width;
+        //
 
         int k = 0;
         for (int i = 0; i < array.Length; i++)
@@ -125,11 +139,11 @@ public class GridVisualization : MonoBehaviour
                 grassUV = new Vector2(0, (float)k * sizeTile / textureHeight);
                 CopyTexture(ref k, sizeTile, floor.grassTexture, texture);
             }
-            Vector2 uv00 = new Vector2(0, (float)k * sizeTile / textureHeight);
+            uv00 = new Vector2(0, (float)k * sizeTile / textureHeight);
             CopyTexture(ref k, sizeTile, floor.texture, texture);
-            int variants = floor.texture.width / sizeTile;
+            variants = floor.texture.width / sizeTile;
 
-            TilesUV.Add(floor.ID, new TileUV(uv00, variants, grassUV));
+            if(floor.ID >= 0) TilesUV.Add(floor.ID, new TileUV(uv00, variants, grassUV));
         }
         texture.Apply(true, true);
         mapTexture = texture;
@@ -432,28 +446,36 @@ public class GridVisualization : MonoBehaviour
             int localY = y % map.chunkSize;
 
             Mesh mesh = loadedChunks[chunkIndex].transform.GetComponent<MeshFilter>().mesh;
+            Mesh lineMesh = loadedChunks[chunkIndex].transform.GetChild(0).GetComponent<MeshFilter>().mesh;
             Vector2[] uv = mesh.uv;
+            Vector2[] linesUv = lineMesh.uv;
+
             int index = localX + localY * map.chunkSize;
             GridTile gridTile = map.chunks[chunkIndex].grid[localX,localY];
 
             Vector2 uv11, uv00;
-            int borders = CalculateBorders(x, y);
+            int borders = CalculateBorders(x, y, gridTile.tileID);
 
             if (borders != gridTile.borders || gridTile.GridObjectIsType<GridHole>() || repeat)
             {
                 gridTile.borders = borders;
-                if (gridTile.GridObjectIsType<GridHole>())
+                if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
                 {
                     GridTile tile = GetValueByGridPosition(x, y + 1);
                     if (tile != null && tile.GridObjectIsType<GridHole>())
-                        GetUVHole(gridTile, 1, out uv00, out uv11);
+                        GetUVTile(gridTile, 1 + hole.GetWaterLevel() * 2, out uv00, out uv11);
                     else
-                        GetUVHole(gridTile, 0, out uv00, out uv11);
+                        GetUVTile(gridTile, 0 + hole.GetWaterLevel() * 2, out uv00, out uv11);
                 }
                 else
-                GetUVTile(gridTile, out uv00, out uv11);
-                UVSet(uv, index, uv00, uv11);
+                    GetUVTile(gridTile, out uv00, out uv11);
+
+                UVSet(uv, index, uv00, uv11); 
                 mesh.uv = uv;
+
+                GetUVLine(borders, out uv00, out uv11);
+                UVSet(linesUv, index, uv00, uv11);
+                lineMesh.uv = linesUv;
             }
 
             if (repeat)
@@ -485,108 +507,146 @@ public class GridVisualization : MonoBehaviour
     private void GetUVTile(GridTile gridTile,out Vector2 uv00, out Vector2 uv11)
     {
         TileUV tileUV = TilesUV[gridTile.tileID];
-        if (gridTile.borders == 0 || tileUV.uv00Grass == null)
-        {
-            uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * gridTile.variant);
-            uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant);
-        }
-        else
-        {
-            if(gridTile.borders < 0) gridTile.borders = 15 - gridTile.borders;
-            gridTile.borders--;
+        uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * gridTile.variant);
+        uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant);
 
-            uv00 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth, 0) * gridTile.borders;
-            uv11 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth,tileHeight) + new Vector2(tileWidth, 0) * gridTile.borders;
-        }    
+
+        //if (gridTile.borders == 0 || tileUV.uv00Grass == null)
+        //{
+        //    uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * gridTile.variant);
+        //    uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant);
+        //}
+        //else
+        //{
+        //    if(gridTile.borders < 0) gridTile.borders = 15 - gridTile.borders;
+        //    gridTile.borders--;
+
+        //    uv00 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth, 0) * gridTile.borders;
+        //    uv11 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth,tileHeight) + new Vector2(tileWidth, 0) * gridTile.borders;
+        //}    
     }
-
-    private void GetUVHole(GridTile gridTile,int variant, out Vector2 uv00, out Vector2 uv11)
+    private void GetUVTile(GridTile gridTile,int variant, out Vector2 uv00, out Vector2 uv11)
     {
-        TileUV tileUV = TilesUV[gridTile.tileID];
+        GetUVTile(gridTile.tileID,variant, out uv00, out uv11);
+    }
+    private void GetUVTile(int tileID, int variant, out Vector2 uv00, out Vector2 uv11)
+    {
+        TileUV tileUV = TilesUV[tileID];
         uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * variant);
         uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * variant);
     }
+    private void GetUVLine(int variant, out Vector2 uv00, out Vector2 uv11)
+    {
+        TileUV tileUV = TilesUV[-1];
+        uv00 = tileUV.uv00 + (new Vector2(linetileWidth, 0) * variant);
+        uv11 = (tileUV.uv00 + new Vector2(linetileWidth, 1)) + (new Vector2(linetileWidth, 0) * variant);
+    }
 
-    private int CalculateBorders(int x,int y)
+    private int CalculateBorders(int x, int y,int id)
     {
         int value = 0;
-        int number = 0;
-
-        if (GetValueByGridPosition(x, y + 1)?.tileID  == settings.grassID) { value += 1; number++; }
-        if (GetValueByGridPosition(x + 1, y )?.tileID == settings.grassID) { value += 2; number++; }
-        if (GetValueByGridPosition(x , y - 1)?.tileID == settings.grassID) { value += 4; number++; }
-        if (GetValueByGridPosition(x - 1, y )?.tileID == settings.grassID) { value += 8; number++; }
-
-        if (value == 0)
-        {
-            if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value -= 1;
-            if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value -= 2;
-            if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) value -= 4;
-            if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) value -= 8;
-        }
-        else if(number == 1)
-        {
-            int k = 0;
-            switch (value)
-            {
-                case 1:
-                    if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) k += 1;
-                    if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) k += 2;
-                    break;
-                case 2:
-                    if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) k += 1;
-                    if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) k += 2;
-                    break;
-                case 4:
-                    if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) k += 1;
-                    if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) k += 2;
-                    break;
-                case 8:
-                    if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) k += 1;
-                    if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) k += 2;
-                    break;
-            }
-            if (k > 0)
-            {
-                if(value != 8) value = 30 + ((value / 2) * 3) + k;
-                else value = 39 + k;
-            }
-        }
-        else if (number == 2)
-        {      
-            switch (value)
-            {
-                case 3:
-                    if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) value = 43;
-                    break;
-                case 6:
-                    if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) value = 44;
-                    break;
-                case 9:
-                    if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value = 45;
-                    break;
-                case 12:
-                    if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value = 46;
-                    break;
-            }
-        }
-
+        if (GetValueByGridPosition(x, y + 1)?.tileID > id) value += 1;
+        if (GetValueByGridPosition(x + 1, y)?.tileID > id) value += 2;
+        if (GetValueByGridPosition(x, y - 1)?.tileID > id) value += 4; 
+        if (GetValueByGridPosition(x - 1, y)?.tileID > id) value += 8; 
         return value;
     }
+
+    //private int CalculateBorders(int x,int y)
+    //{
+    //    int value = 0;
+    //    int number = 0;
+
+
+    //    if (GetValueByGridPosition(x, y + 1)?.tileID  == settings.grassID) { value += 1; number++; }
+    //    if (GetValueByGridPosition(x + 1, y )?.tileID == settings.grassID) { value += 2; number++; }
+    //    if (GetValueByGridPosition(x , y - 1)?.tileID == settings.grassID) { value += 4; number++; }
+    //    if (GetValueByGridPosition(x - 1, y )?.tileID == settings.grassID) { value += 8; number++; }
+
+    //    if (value == 0)
+    //    {
+    //        if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value -= 1;
+    //        if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value -= 2;
+    //        if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) value -= 4;
+    //        if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) value -= 8;
+    //    }
+    //    else if(number == 1)
+    //    {
+    //        int k = 0;
+    //        switch (value)
+    //        {
+    //            case 1:
+    //                if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) k += 1;
+    //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) k += 2;
+    //                break;
+    //            case 2:
+    //                if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) k += 1;
+    //                if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) k += 2;
+    //                break;
+    //            case 4:
+    //                if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) k += 1;
+    //                if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) k += 2;
+    //                break;
+    //            case 8:
+    //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) k += 1;
+    //                if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) k += 2;
+    //                break;
+    //        }
+    //        if (k > 0)
+    //        {
+    //            if(value != 8) value = 30 + ((value / 2) * 3) + k;
+    //            else value = 39 + k;
+    //        }
+    //    }
+    //    else if (number == 2)
+    //    {      
+    //        switch (value)
+    //        {
+    //            case 3:
+    //                if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) value = 43;
+    //                break;
+    //            case 6:
+    //                if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) value = 44;
+    //                break;
+    //            case 9:
+    //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value = 45;
+    //                break;
+    //            case 12:
+    //                if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value = 46;
+    //                break;
+    //        }
+    //    }
+
+    //    return value;
+    //}
+
+
+
     public Transform CreateMesh(Chunk chunk)
     {
-        MeshFilter meshFilter = new GameObject("part of map").AddComponent<MeshFilter>();
+        Transform partOfMap = new GameObject("part of map").transform;
+        Transform lines = new GameObject("Lines").transform;
+        lines.SetParent(partOfMap);
+
+        MeshFilter meshFilter = partOfMap.AddComponent<MeshFilter>();
+        MeshFilter linesMeshFilter = lines.AddComponent<MeshFilter>();
+
         meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
+        linesMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;
         int width = map.chunkSize;
         int height = map.chunkSize;
         float cellSize = map.cellSize;
         
         Mesh mesh = new Mesh();
+        Mesh linesMesh= new Mesh();
 
         meshFilter.transform.position = new Vector3(chunk.position.x, chunk.position.y, 10);
+
         Vector3[] vertices = new Vector3[4 * (width * height)];
-        Vector2[] uv = new Vector2[4 * (width * height)];
         int[] triangles = new int[6 * (width * height)];
+
+        Vector2[] uv = new Vector2[4 * (width * height)];
+        Vector2[] lineUv = new Vector2[4 * (width * height)];
 
         for (int y = 0; y < height; y++)
         {
@@ -606,11 +666,11 @@ public class GridVisualization : MonoBehaviour
                 triangles[index * 6 + 4] = index * 4 + 2;
                 triangles[index * 6 + 5] = index * 4 + 3;
 
-
                 GridTile gridTile = chunk.grid[x, y];
              
                 int borders = 0;
-                if (IsGrass(gridTile.tileID)) borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y);
+               // if (IsGrass(gridTile.tileID))
+               // borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y);
                 Vector2 uv11, uv00;
                
                 
@@ -618,31 +678,43 @@ public class GridVisualization : MonoBehaviour
                 {
                     GridTile tile = GetValueByGridPosition( chunk.ChunkGridPosition +  new Vector2(x, y + 1));
                     if (tile != null && tile.GridObjectIsType<GridHole>())
-                        GetUVHole(gridTile, 1, out uv00, out uv11);
+                        GetUVTile(gridTile, 1, out uv00, out uv11);
                     else
-                        GetUVHole(gridTile, 0, out uv00, out uv11);
+                        GetUVTile(gridTile, 0, out uv00, out uv11);
                 }
                 else
                 {
                     GetUVTile(gridTile, out uv00, out uv11);
-
                 }
+
                 gridTile.borders = borders;
                 UVSet(uv, index, uv00, uv11);
+
+                borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, gridTile.tileID);
+                GetUVLine(borders, out uv00, out uv11);
+                UVSet(lineUv, index, uv00, uv11);
             }
         }
-
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
 
-        MeshRenderer  meshRenderer = meshFilter.AddComponent<MeshRenderer>();
+        linesMesh.vertices = vertices;
+        linesMesh.uv = lineUv;
+        linesMesh.triangles = triangles;
+
+        MeshRenderer meshRenderer = meshFilter.AddComponent<MeshRenderer>();
         meshRenderer.material = mapMaterial;
         meshRenderer.material.mainTexture = mapTexture;
+
+        MeshRenderer linesMeshRenderer = linesMeshFilter.AddComponent<MeshRenderer>();
+        linesMeshRenderer.material = mapMaterial;
+        linesMeshRenderer.material.mainTexture = linesTexture;
+        linesMeshFilter.mesh = linesMesh;
+
         meshFilter.transform.parent = transform;
         meshFilter.mesh = mesh;
         return meshFilter.transform;
-
     }
     private bool IsGrass(int tileID)
     {
@@ -829,7 +901,6 @@ public class GridVisualization : MonoBehaviour
         ChunkItem newItem = new ChunkItem(item, vector2, itemTransform);
         int itemChunkIndex = map.chunks[chunkIndex].AddItem(newItem);
 
-        Debug.Log(map.chunks[chunkIndex].chunkIndex + " " + chunkIndex);
         WorldItem witem = itemTransform.GetComponent<WorldItem>();
 
         witem.SetItem(item, target, itemChunkIndex,chunkIndex);
@@ -1011,43 +1082,45 @@ public class GridVisualization : MonoBehaviour
     }
 
 
-    public void WaterTransfer(GridTile gridTile, int overflow)
+    public void WaterTransfer(GridTile gridTile, float overflow)
     {
+        GridHole gridHole = null;
         List<GridTile> holesToCheck = new List<GridTile>();
         List<GridTile> holesToDivideWater = new List<GridTile>();
         holesToCheck.Add(gridTile);
+        holesToDivideWater.Add(gridTile);
+        gridTile.GridObjectIsType<GridHole>(out gridHole);
 
-        int water = overflow;
+        float water = overflow + gridHole.fill;
         while (holesToCheck.Count > 0)
         {
-            Debug.Log("nowe1");
             for (int i = holesToCheck.Count - 1; i >= 0; i--)
             {
                 GridTile hole = holesToCheck[i];
                 for (int j = 0; j < 4; j++)
                 {
                     GridTile tile = GetGridTileByPositionXY(hole.GetXYPosition() + MyTools.directions4[j]);
-                    GridHole gridHole = null;
-                    if (tile != null && tile.GridObjectIsType<GridHole>(out gridHole))
+                    if (tile != null && tile.GridObjectIsType<GridHole>(out gridHole) && !holesToDivideWater.Contains(tile))
                     {
+                        if((water + gridHole.fill) / (float)holesToDivideWater.Count < 50) break;
                         holesToCheck.Add(tile);
                         holesToDivideWater.Add(tile);
                         water += gridHole.fill;
                     }
                 }
-                holesToDivideWater.Add(hole);
-              //  holesToCheck.RemoveAt(i);
+                holesToCheck.RemoveAt(i);
             }
-            int ration = water / holesToDivideWater.Count;
-            for (int i = holesToDivideWater.Count - 1; i >= 0; i--)
-            {
-                GridHole hole = holesToDivideWater[i].gridObject as GridHole;
-                hole.fill = ration;
-            }
-            holesToDivideWater.Clear();
-            water = 0;
-            break;
         }
+
+        float ration = water / holesToDivideWater.Count;
+        for (int i = holesToDivideWater.Count - 1; i >= 0; i--)
+        {
+            GridTile tile = holesToDivideWater[i];
+            GridHole hole = tile.gridObject as GridHole;
+            hole.fill = ration;
+            UpdateMesh(tile.x, tile.y, true);
+        }
+        holesToDivideWater.Clear();
     }
 
 

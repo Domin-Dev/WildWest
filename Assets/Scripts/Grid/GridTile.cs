@@ -192,17 +192,17 @@ public class GridTile : IGetBarValue
         {
             if (GridObjectIsType<GridHole>())
             {
-                int fill = ((GridHole)gridObject).fill;
+                float fill = ((GridHole)gridObject).fill;
                 if( fill  > 0)
-                    output += "<color=#A3A3A3>Water:" + "[" + ((GridHole)gridObject).fill + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> \n";
+                    output += "<color=#A3A3A3>Water: " + "[" + ((GridHole)gridObject).fill.ToString("F2") + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> \n";
                 else
                     output += "Hole";
                 return output;
             }
             output += gridObject.ToString() + '\n';
         }
-        if(tileID >= 0) output += "Tile:" + ItemsAsset.instance.GetItem(tileID).name + '\n';
-        if(secondLayerID >= 0) output += "<color=#A3A3A3>Second Layer:" + ItemsAsset.instance.GetItem(secondLayerID).name + "</color> \n";
+        if(tileID >= 0) output += "Tile: " + ItemsAsset.instance.GetItem(tileID).name + '\n';
+        if(secondLayerID >= 0) output += "<color=#A3A3A3>Second Layer: " + ItemsAsset.instance.GetItem(secondLayerID).name + "</color> \n";
 
         return output;
     }

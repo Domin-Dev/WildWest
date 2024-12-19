@@ -43,23 +43,35 @@ public class GridSurface : GridObject
 
 public class GridHole : GridObject
 {
-    public int fill;
-    public GridHole(int ID,Transform objectTransform, int fill = 0) : base(ID, objectTransform) 
+    public float fill;
+    public GridHole(int ID,Transform objectTransform, float fill = 0) : base(ID, objectTransform) 
     {
         this.fill = fill;
     }
 
-    public void PourWater(int value,GridTile gridTile)
+    public void PourWater(float value,GridTile gridTile)
     {
-        int max = GetMaxFill();
-        int overflow = (fill + value) - max;
-        fill = Mathf.Clamp(fill + value,0, max); 
-        GridVisualization.instance.WaterTransfer(gridTile, overflow);
+        GridVisualization.instance.WaterTransfer(gridTile, value);
     }
 
     public int GetMaxFill()
     {
         return ItemsAsset.instance.GetItem<Hole>(ID).capacity;
+    }
+
+    public int GetWaterLevel()
+    {
+        float level = fill / GetMaxFill();
+        if (level >= 0.75f)
+            return 4;
+        else if (level >= 0.5f)
+            return 3;
+        else if (level >= 0.25f)
+            return 2;
+        else if (level > 0f)
+            return 1;
+        else
+            return 0;
     }
 
 }
