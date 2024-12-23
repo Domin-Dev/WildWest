@@ -66,7 +66,7 @@ public class GridHole : GridObject
             return 4;
         else if (level >= 0.5f)
             return 3;
-        else if (level >= 0.25f)
+        else if (level >= 0.1f)
             return 2;
         else if (level > 0f)
             return 1;

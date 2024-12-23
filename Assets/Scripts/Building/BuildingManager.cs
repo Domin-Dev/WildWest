@@ -287,8 +287,8 @@ public class BuildingManager : MonoBehaviour
                 Transform obj = Instantiate(collider, GridVisualization.instance.GetWorldPosition(posXY), Quaternion.identity, parent).transform;
                 obj.tag = "BuildObject";
                 gridTile.SetGridObject(new GridHole(id,obj));
-
                 GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
+                GridVisualization.instance.NewHole(gridTile);
                 GridVisualization.instance.MoveWorldItems(posXY);
             }
         }
