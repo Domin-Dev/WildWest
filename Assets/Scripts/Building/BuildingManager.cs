@@ -288,7 +288,7 @@ public class BuildingManager : MonoBehaviour
                 obj.tag = "BuildObject";
                 gridTile.SetGridObject(new GridHole(id,obj));
                 GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
-                GridVisualization.instance.NewHole(gridTile);
+                LiquidsManager.instance.NewHole(gridTile);
                 GridVisualization.instance.MoveWorldItems(posXY);
             }
         }

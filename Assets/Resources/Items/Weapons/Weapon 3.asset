@@ -15,7 +15,7 @@ MonoBehaviour:
   name: Hammer
   description: 
   ID: 40
-  stackMax: 50
+  stackMax: 1
   icon: {fileID: 1848595146, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients: []
   craftTables: ffffffff

@@ -491,11 +491,11 @@ public class EquipmentManager : MonoBehaviour
 
     private void UseSelectedItem(object sender, EventArgs e)
     {
-        DestroyableItem item = equipmentBar[slotInHand] as DestroyableItem;
+        IBarValue item = equipmentBar[slotInHand] as IBarValue;
         if (item != null)
         {
-            item.Use();
-            UpdateItemLifeBar(this, new LifeBarArgs(new SlotPosition(0, slotInHand), item.GetLifePointsInPercent()));
+            item.Decrease();
+            UpdateItemLifeBar(this, new LifeBarArgs(new SlotPosition(0, slotInHand), item.GetBarValue()));
         }
     }
     public void UnselectedSlot()

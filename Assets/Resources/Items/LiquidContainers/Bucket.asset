@@ -12,22 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53575917bf2337f46980e8109df228a5, type: 3}
   m_Name: Bucket
   m_EditorClassIdentifier: 
-  name: 
+  name: Bucket
   description: 
-  ID: -1
-  stackMax: 50
-  icon: {fileID: 0}
-  crafingIngredients: []
-  craftTables: 
+  ID: 62
+  stackMax: 1
+  icon: {fileID: 466988441, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  crafingIngredients:
+  - itemID: 42
+    number: 2
+  craftTables: ffffffff
   numberItem: 1
-  durability: 0
-  drop: []
-  texture: {fileID: 0}
-  toolRequired: 0
-  HitParticles: {fileID: 0}
-  objectVariants: []
-  shadowPixels: 19
-  size:
-    x: 27
-    y: 51
-  capacity: 0
+  capacity: 200

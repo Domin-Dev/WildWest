@@ -9,16 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aff25f118aea99e4fbef6769aaa56cab, type: 3}
-  m_Name: Item
+  m_Script: {fileID: 11500000, guid: 53575917bf2337f46980e8109df228a5, type: 3}
+  m_Name: Bucket 1
   m_EditorClassIdentifier: 
-  name: Bucket
+  name: 'Waterskin '
   description: 
-  ID: 62
-  stackMax: 50
-  icon: {fileID: 466988441, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  ID: 66
+  stackMax: 1
+  icon: {fileID: 1224355096, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
   - itemID: 42
     number: 2
   craftTables: ffffffff
   numberItem: 1
+  capacity: 100

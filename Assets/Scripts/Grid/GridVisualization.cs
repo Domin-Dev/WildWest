@@ -64,6 +64,7 @@ public class GridVisualization : MonoBehaviour
     public Map map;
     public Pathfinding pathfinding;
     public Dictionary<int, LoadedChunk> loadedChunks { private set; get; }
+
     public int lastPlayerChunk { private set; get; } = -1;
     public Vector2 lastPlayerPosition { private set; get; } = Vector2.zero;
 
@@ -173,7 +174,6 @@ public class GridVisualization : MonoBehaviour
     {
         this.map = map;
         loadedChunks = new Dictionary<int, LoadedChunk>();
-
         if (LoadAllMap)
         {
             foreach (var item in map.chunks)
@@ -461,9 +461,9 @@ public class GridVisualization : MonoBehaviour
                 {
                     GridTile tile = GetValueByGridPosition(x, y + 1);
                     if (tile != null && tile.GridObjectIsType<GridHole>())
-                        GetUVTile(gridTile, 1 + hole.GetWaterLevel() * 2, out uv00, out uv11);
+                        GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
                     else
-                        GetUVTile(gridTile, 0 + hole.GetWaterLevel() * 2, out uv00, out uv11);
+                        GetUVTile(gridTile, 0 + hole.waterLevel * 2, out uv00, out uv11);
                 }
                 else
                     GetUVTile(gridTile, out uv00, out uv11);
@@ -1079,88 +1079,46 @@ public class GridVisualization : MonoBehaviour
         }
     }
 
+    
 
-    public void NewHole(GridTile gridTile)
-    {
-        GridHole gridHole = null;
-        List<GridTile> holesToCheck = new List<GridTile>();
-        List<GridTile> holesToDivideWater = new List<GridTile>();
-        holesToCheck.Add(gridTile);
-        holesToDivideWater.Add(gridTile);
-        gridTile.GridObjectIsType<GridHole>(out gridHole);
 
-        float water = 0;
-        while (holesToCheck.Count > 0)
-        {
-            for (int i = holesToCheck.Count - 1; i >= 0; i--)
-            {
-                GridTile hole = holesToCheck[i];
-                for (int j = 0; j < 4; j++)
-                {
-                    GridTile tile = GetGridTileByPositionXY(hole.GetXYPosition() + MyTools.directions4[j]);
-                    if (tile != null && tile.GridObjectIsType<GridHole>(out gridHole) && !holesToDivideWater.Contains(tile))
-                    {
-                        if (gridHole.fill < 50) continue;
-                        holesToCheck.Add(tile);
-                        holesToDivideWater.Add(tile);
-                        water += gridHole.fill;
-                    }
-                }
-                holesToCheck.RemoveAt(i);
-            }
-        }
 
-        float ration = water / holesToDivideWater.Count;
-        if (ration < 50) return;
-        for (int i = holesToDivideWater.Count - 1; i >= 0; i--)
-        {
-            GridTile tile = holesToDivideWater[i];
-            GridHole hole = tile.gridObject as GridHole;
-            hole.fill = ration;
-            UpdateMesh(tile.x, tile.y, true);
-        }
-        WaterTransfer(gridTile, 0);
-    }
-    public void WaterTransfer(GridTile gridTile, float overflow)
-    {
-        GridHole gridHole = null;
-        List<GridTile> holesToCheck = new List<GridTile>();
-        List<GridTile> holesToDivideWater = new List<GridTile>();
-        holesToCheck.Add(gridTile);
-        holesToDivideWater.Add(gridTile);
-        gridTile.GridObjectIsType<GridHole>(out gridHole);
+    //    GridHole gridHole = null;
+    //    List<GridTile> holesToCheck = new List<GridTile>();
+    //    List<GridTile> holesToDivideWater = new List<GridTile>();
+    //    holesToCheck.Add(gridTile);
+    //    holesToDivideWater.Add(gridTile);
+    //    gridTile.GridObjectIsType<GridHole>(out gridHole);
 
-        float water = overflow + gridHole.fill;
-        while (holesToCheck.Count > 0)
-        {
-            for (int i = holesToCheck.Count - 1; i >= 0; i--)
-            {
-                GridTile hole = holesToCheck[i];
-                for (int j = 0; j < 4; j++)
-                {
-                    GridTile tile = GetGridTileByPositionXY(hole.GetXYPosition() + MyTools.directions4[j]);
-                    if (tile != null && tile.GridObjectIsType<GridHole>(out gridHole) && !holesToDivideWater.Contains(tile))
-                    {
-                        if((water + gridHole.fill) / ((float)holesToDivideWater.Count + 1) < 50) break;
-                        holesToCheck.Add(tile);
-                        holesToDivideWater.Add(tile);
-                        water += gridHole.fill;
-                    }
-                }
-                holesToCheck.RemoveAt(i);
-            }
-        }
+    //   // float water = overflow + gridHole.fill;
+    //    while (holesToCheck.Count > 0)
+    //    {
+    //        for (int i = holesToCheck.Count - 1; i >= 0; i--)
+    //        {
+    //            GridTile hole = holesToCheck[i];
+    //            for (int j = 0; j < 4; j++)
+    //            {
+    //                GridTile tile = GetGridTileByPositionXY(hole.GetXYPosition() + MyTools.directions4[j]);
+    //                if (tile != null && tile.GridObjectIsType<GridHole>(out gridHole) && !holesToDivideWater.Contains(tile))
+    //                {
+    //                    if((water + gridHole.fill) / ((float)holesToDivideWater.Count + 1) < 50) break;
+    //                    holesToCheck.Add(tile);
+    //                    holesToDivideWater.Add(tile);
+    //                    water += gridHole.fill;
+    //                }
+    //            }
+    //            holesToCheck.RemoveAt(i);
+    //        }
+    //    }
 
-        float ration = water / holesToDivideWater.Count;
-        for (int i = holesToDivideWater.Count - 1; i >= 0; i--)
-        {
-            GridTile tile = holesToDivideWater[i];
-            GridHole hole = tile.gridObject as GridHole;
-            hole.fill = ration;
-            UpdateMesh(tile.x, tile.y, true);
-        }
-        holesToDivideWater.Clear();
-    }
-
+    //    float ration = water / holesToDivideWater.Count;
+    //    for (int i = holesToDivideWater.Count - 1; i >= 0; i--)
+    //    {
+    //        GridTile tile = holesToDivideWater[i];
+    //        GridHole hole = tile.gridObject as GridHole;
+    //        hole.fill = ration;
+    //        UpdateMesh(tile.x, tile.y, true);
+    //    }
+    //    holesToDivideWater.Clear();
 
 }

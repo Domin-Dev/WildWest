@@ -49,7 +49,7 @@ public class ItemID
 }
 
 [CreateAssetMenu(fileName = "DestroyableItem", menuName = "GameAsset/Items/DestroyableItem")]
-public class Destroyable: Item
+public class Destroyable : Item
 {
     [Header("Destroyable")]
     public int durability;

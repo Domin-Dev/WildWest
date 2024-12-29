@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3c4558f02449b44c8e0828dbf60cfee, type: 3}
-  m_Name: IDManager
+  m_Script: {fileID: 11500000, guid: ec322febc9933bd4aa3bc666a08a97ea, type: 3}
+  m_Name: UISettings
   m_EditorClassIdentifier: 
-  LastID: 66
+  durabilityBarColor: {r: 0.01182553, g: 0.8396226, b: 0, a: 1}
+  liquidCapacityBarColor: {r: 0, g: 0.30396703, b: 0.9716981, a: 1}

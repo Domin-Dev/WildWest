@@ -38,7 +38,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject greyIcon;
     [SerializeField] private GameObject slotIndex;
     [SerializeField] private GameObject item;
-    [SerializeField] private GameObject lifePointsBar;
+    [SerializeField] private GameObject itembar;
     [Space]
     
     [SerializeField] private Transform equipmentItemSlots;
@@ -89,6 +89,8 @@ public class UIManager : MonoBehaviour
     private List<Transform> openWindows = new List<Transform>();
 
     public event EventHandler windowOpen;
+
+    [SerializeField] private UISettings uISettings;
 
     private void Awake()
     {
@@ -348,7 +350,7 @@ public class UIManager : MonoBehaviour
     {
         Image bar = barTransform.GetComponent<Image>();
         bar.transform.localScale = new Vector3(value, 1,1);
-        bar.color = new Color(bar.color.r, value, bar.color.b);
+      //  bar.color = new Color(bar.color.r, value, bar.color.b);
     }
     private void UpdateMainBarItemCount(object sender, UpdateItemCountArgs e)
     {
@@ -430,7 +432,6 @@ public class UIManager : MonoBehaviour
         slot.gameObject.SetActive(false);
         Destroy(slot.gameObject);
     }
-
     private void SwitchPlaceholder(bool turnOn,Transform parentSlot)
     {
         for (int i = 0; i < parentSlot.childCount; i++)
@@ -449,7 +450,6 @@ public class UIManager : MonoBehaviour
             }
         }
     }
-
     private Transform GetGrid(int gridIndex)
     {
         switch(gridIndex)
@@ -497,17 +497,33 @@ public class UIManager : MonoBehaviour
             NewItemUI(mainItemBar, e);
         }
     }
+
+    private void SetBarColor(Transform bar,ItemStats itemStats)
+    {
+        Image image = bar.GetComponent<Image>();
+        switch (itemStats)
+        {
+            case LiquidContainerItem:
+                image.color = uISettings.liquidCapacityBarColor;
+                break;
+            case DestroyableItem:
+                image.color = uISettings.durabilityBarColor;
+                break;
+        }
+    }
+   
     private void NewItemUI(Transform gridUI, CreateItemArgs e)
     {
         RectTransform transform = Instantiate(item, gridUI.GetChild(e.position.slotIndex)).GetComponent<RectTransform>();
         transform.SetAsFirstSibling();
 
-        if (e.itemStats as DestroyableItem != null)
+        if (e.itemStats as IBarValue != null)
         {
-            Transform bar = Instantiate(lifePointsBar, transform).transform.GetChild(0);
-            UpdateBar((e.itemStats as DestroyableItem).GetLifePointsInPercent(),bar);
+            Transform bar = Instantiate(itembar, transform).transform.GetChild(0);
+            SetBarColor(bar, e.itemStats);
+            UpdateBar((e.itemStats as IBarValue).GetBarValue(),bar);
         }
-        
+
         transform.anchoredPosition = Vector2.zero;
 
         transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(e.itemStats.itemID);

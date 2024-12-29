@@ -80,7 +80,4 @@ public class Switch : MonoBehaviour
         }
         OnChangedValue?.Invoke(this, new SwitchArgs(value));
     }
-
-
-
 }

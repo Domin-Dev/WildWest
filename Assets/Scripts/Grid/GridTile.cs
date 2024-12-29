@@ -190,11 +190,11 @@ public class GridTile : IGetBarValue
 
         if (IsGridObjectClass())
         {
-            if (GridObjectIsType<GridHole>())
+            if (GridObjectIsType<GridHole>(out GridHole hole))
             {
-                float fill = ((GridHole)gridObject).fill;
+                double fill = LiquidsManager.instance.GetFill(hole.waterHoleID);
                 if( fill  > 0)
-                    output += "<color=#A3A3A3>Water: " + "[" + ((GridHole)gridObject).fill.ToString("F2") + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> \n";
+                    output += "<color=#A3A3A3>Water: " + "[" + fill.ToString("F2") + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> " + hole.waterHoleID  +" \n";
                 else
                     output += "Hole";
                 return output;
