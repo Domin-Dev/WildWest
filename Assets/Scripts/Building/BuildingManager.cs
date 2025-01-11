@@ -301,6 +301,7 @@ public class BuildingManager : MonoBehaviour
             if (gridTile.GridObjectIsType<GridHole>())
             {
                 GridVisualization.instance.DestroyObject(gridTile,false);
+                LiquidsManager.instance.RemoveHole(gridTile);
                 gridTile.SetGridObject(new GridSurface(selectedObjectID), true);
             }
             else if(gridTile.tileID != -1)

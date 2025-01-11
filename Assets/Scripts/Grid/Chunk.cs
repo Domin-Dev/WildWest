@@ -67,7 +67,6 @@ public class Chunk
 
     public void RemoveAllItems(Vector2 posXY)
     {
-        Debug.Log(items.Count + " " + chunkIndex);
         for (int i = items.Count - 1; i >= 0; i--)
         {
             ChunkItem chunkItem = items[i];
@@ -91,8 +90,6 @@ public class Chunk
         }
         return null;
     }
-
-
 
     public void MoveAllItems(Vector2 posXY, Vector2 newWorldPosition, int currentChunk, int newChunk)
     {

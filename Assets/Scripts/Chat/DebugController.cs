@@ -32,6 +32,16 @@ public class DebugController : MonoBehaviour
             if (ItemsAsset.instance.IsItem(ID)) EquipmentManager.instance.AddNewItem(ItemsAsset.instance.GetItemStats(ID));
             else ChatManager.instance.Print("ID is't correct");
         }));
+        commandList.Add(new DebugCommand<int>("water", "Prints information about water body", "[Water body ID]", (WaterBodyID) =>
+        {
+            string text;
+            LiquidsManager.instance.waterBodies.TryGetValue(WaterBodyID, out WaterBody waterBody);
+            if(waterBody != null)
+                text = $"Water Body ID:{WaterBodyID} TileCount:{waterBody.tileCount} Fill:{Math.Round(waterBody.fill)} FillTile:{Math.Round(waterBody.GetFillTile(),2)}";  
+            else
+                text = "Incorrect Water Body ID";
+            ChatManager.instance.Print(text);
+        }));
         commandList.Add(new DebugCommand("help", "command list", "", () =>
         {
             string text = "Command list:\n";
@@ -41,7 +51,7 @@ public class DebugController : MonoBehaviour
                 text += $"/{commandBase.commandId} {commandBase.commandFormat} - {commandBase.commandDescription}\n";
             }
             ChatManager.instance.Print(text);
-        }));
+        })); 
         return commandList;
     }
 

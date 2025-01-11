@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class PlayerPositionArgs : EventArgs
@@ -920,7 +921,6 @@ public class GridVisualization : MonoBehaviour
             ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, worldItem.itemChunkIndex, worldItem.itemStats.itemID);
             if (chunkItem != null)
             {
-                Debug.Log("siema");
                 worldItem.AddStacks(chunkItem, oldchunkItem,true);
             }
         }
@@ -1051,7 +1051,6 @@ public class GridVisualization : MonoBehaviour
 
             if (itemChunkIndex != -1)
             {
-                Debug.Log(itemChunkIndex + " " + chunk.items.Count + " " + chunkIndex);
                 Transform worldItem = chunk.items[itemChunkIndex].worldItem;
                 worldItem.GetComponent<WorldItem>().ClearTimers();
                 worldItem.GetComponent<WorldItem>().itemChunkIndex = -1;
@@ -1075,7 +1074,7 @@ public class GridVisualization : MonoBehaviour
         GridHole hole;
         if(gridTile.GridObjectIsType<GridHole>(out hole))
         {
-            hole.PourWater(water, gridTile);
+            LiquidsManager.instance.WaterTransfer(gridTile, water);
         }
     }
 

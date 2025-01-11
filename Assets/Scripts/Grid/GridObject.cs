@@ -50,12 +50,6 @@ public class GridHole : GridObject
         this.waterHoleID = waterHoleID;
         this.waterLevel = waterLevel;
     }
-
-    public void PourWater(float value,GridTile gridTile)
-    {
-        LiquidsManager.instance.WaterTransfer(gridTile, value);
-    }
-
     public int GetMaxFill()
     {
         return ItemsAsset.instance.GetItem<Hole>(ID).capacity;
