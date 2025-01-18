@@ -160,7 +160,7 @@ public class LiquidsManager : MonoBehaviour
             for (int i = 0; i < 4; i++)
             {
                 GridTile tile = GridVisualization.instance.GetGridTileByPositionXY(gridTile.GetXYPosition() + MyTools.directions4[i]);
-                if (CheckWaterBody(tile)) break;
+                if (CheckWaterBody(tile,gridTile)) break;
             }
         }
     }
@@ -223,7 +223,6 @@ public class LiquidsManager : MonoBehaviour
     }
     private void ChangeWaterBodyID(List<int> bodies, GridTile gridTile, WaterBody newWaterBody)
     {
-        Debug.Log(bodies.Count);
         List<GridTile> holesToCheck = new List<GridTile>();
         List<GridTile> checkedHoles = new List<GridTile>();
         holesToCheck.Add(gridTile);
@@ -372,14 +371,18 @@ public class LiquidsManager : MonoBehaviour
         CompileWaterBody(newWaterbodies, gridTile, waterHole);
     }
 
-    private bool CheckWaterBody(GridTile gridTile)
+    private bool CheckWaterBody(GridTile gridTile,GridTile newHole)
     {
         List<GridTile> holesToCheck = new List<GridTile>();
         List<GridTile> checkedHoles = new List<GridTile>();
         gridTile.GridObjectIsType(out GridHole hole);
-        holesToCheck.Add(gridTile);
+        if (hole == null) return false;
 
-        int tileCount = 0;
+        holesToCheck.Add(gridTile);
+        checkedHoles.Add(gridTile);
+
+        int tileCount = 1;
+
         while (holesToCheck.Count > 0)
         {
             for (int i = holesToCheck.Count - 1; i >= 0; i--)
@@ -388,9 +391,8 @@ public class LiquidsManager : MonoBehaviour
                 for (int j = 0; j < 4; j++)
                 {
                     GridTile tile = GridVisualization.instance.GetGridTileByPositionXY(holeObj.GetXYPosition() + MyTools.directions4[j]);
-                    if (tile != null && tile.GridObjectIsType(out GridHole gridHole) && !checkedHoles.Contains(tile))
+                    if (tile != null && tile.GridObjectIsType(out GridHole gridHole) && !checkedHoles.Contains(tile) && newHole != tile)
                     {
-
                         if (gridHole.waterHoleID == hole.waterHoleID)
                         {
                             tileCount++;
@@ -404,32 +406,40 @@ public class LiquidsManager : MonoBehaviour
         }
 
         WaterBody oldWaterBody = waterBodies[hole.waterHoleID];
+
+
+        Debug.Log("liczba  to " + tileCount);
         if (tileCount != oldWaterBody.tileCount)
         {
             int id = GetNewID();
+            int oldId = hole.waterHoleID;
+
             WaterBody waterHole = new WaterBody(id, tileCount * oldWaterBody.GetFillTile(), tileCount);
             waterBodies.Add(id, waterHole);
             oldWaterBody.Decrease(tileCount * oldWaterBody.GetFillTile(), tileCount);
+
             int waterlevel = waterHole.GetWaterLevel();
 
             foreach (GridTile item in checkedHoles)
             {
-                if(item != null && item.GridObjectIsType(out GridHole gridHole))
+                Debug.Log(item.ToString());
+                if (item != null && item.GridObjectIsType(out GridHole gridHole))
                 {
-                    if (gridHole.waterHoleID == hole.waterHoleID)
+                    if (gridHole.waterHoleID == oldIdiii)
                     {
-                        hole.waterHoleID = id;
-                        if(hole.waterLevel != waterlevel)
+                        Debug.Log(item.ToString() + " " + id);
+                        gridHole.waterHoleID = id;
+                        if(gridHole.waterLevel != waterlevel)
                         {
-                            hole.waterLevel = waterlevel;
+                            gridHole.waterLevel = waterlevel;
                             GridVisualization.instance.UpdateMesh(item.x, item.y, true);
                         }
                     }
                 }
             }
-            return false;
+            return true;
         }
         else
-            return true;
+            return false;
     }
 }

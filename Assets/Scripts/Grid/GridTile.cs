@@ -192,6 +192,7 @@ public class GridTile : IGetBarValue
         {
             if (GridObjectIsType<GridHole>(out GridHole hole))
             {
+                Debug.Log(hole);
                 double fill = LiquidsManager.instance.GetFill(hole.waterHoleID);
                 if( fill  > 0)
                     output += "<color=#A3A3A3>Water: " + "[" + fill.ToString("F2") + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> " + LiquidsManager.instance.GetNumberTiles(hole.waterHoleID)+ "  " + hole.waterHoleID  +" \n";
