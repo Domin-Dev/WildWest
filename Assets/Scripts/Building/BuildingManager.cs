@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using UnityEngine.Rendering.Universal;
 
 public class BuildingManager : MonoBehaviour
 {
@@ -228,33 +229,37 @@ public class BuildingManager : MonoBehaviour
     public void LoadObject(GridObject gridObject,Vector2 gridPosition)
     {
         Item item = ItemsAsset.instance.GetItem(gridObject.ID);
-        if (item is WallObject)
-        { 
-            Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform;
-            gridObject.objectTransform = obj;
-
-        }
-        else if(item is BuildingObject)
+        Transform obj;
+        switch (item)
         {
-            VariantItem variantItem = (VariantItem)ItemsAsset.instance.GetItem(gridObject.ID);
-
-            Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition) - new Vector2(0f, variantItem.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
-            obj.tag = "BuildObject";
-
-            Variant variant = variantItem.objectVariants[gridObject.variantIndex].variants[0];
-            SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
-            if (variant.CoveringPoints != null)
-            {
-                for (int i = 0; i < variant.CoveringPoints.Length; i++)
+            case WallObject:
+                obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform;
+                gridObject.objectTransform = obj;
+                break;
+            case BuildingObject:
+                VariantItem variantItem = (VariantItem)ItemsAsset.instance.GetItem(gridObject.ID);
+                obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition) - new Vector2(0f, variantItem.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
+                obj.tag = "BuildObject";
+                Variant variant = variantItem.objectVariants[gridObject.variantIndex].variants[0];
+                SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
+                if (variant.CoveringPoints != null)
                 {
-                    GridVisualization.instance.GetValueByGridPosition(gridPosition + variant.CoveringPoints[i])?.SetObjectCovering(spriteRenderer);
+                    for (int i = 0; i < variant.CoveringPoints.Length; i++)
+                    {
+                        GridVisualization.instance.GetValueByGridPosition(gridPosition + variant.CoveringPoints[i])?.SetObjectCovering(spriteRenderer);
+                    }
                 }
-            }
-            spriteRenderer.sprite = variant.sprite;
-            obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
-            CreateGridObject(gridObject.ID,gridPosition, gridObject.variantIndex, obj.parent);
-            MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
-        }
+                spriteRenderer.sprite = variant.sprite;
+                obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
+                CreateGridObject(gridObject.ID, gridPosition, gridObject.variantIndex, obj.parent);
+                MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
+                break;
+            case Hole:  
+                    obj = Instantiate(collider, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform;
+                    obj.tag = "BuildObject";
+                    gridObject.objectTransform = obj;
+                break;     
+        } 
     }
 
     public void Digging(Vector2 posXY)

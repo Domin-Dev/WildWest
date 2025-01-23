@@ -51,7 +51,14 @@ public class DebugController : MonoBehaviour
                 text += $"/{commandBase.commandId} {commandBase.commandFormat} - {commandBase.commandDescription}\n";
             }
             ChatManager.instance.Print(text);
-        })); 
+        }));
+        commandList.Add(new DebugCommand<int,int>("tp", "teleport oneself ", "[TileX] [TileY]", (x,y) =>
+        {
+            string text = $"Teleport to [{x},{y}] :\n";
+            Vector2 vec = GridVisualization.instance.GetWorldPosition(x, y);
+            FindAnyObjectByType<CharacterController>().SetPosition(vec);
+            ChatManager.instance.Print(text);
+        }));
         return commandList;
     }
 

@@ -69,7 +69,10 @@ public class MapGenerator : MonoBehaviour
     }
     private void SetGridHole(Chunk chunk, int x, int y)
     {
-        chunk.grid[x, y].SetGridObject(new GridHole(60,null));
+        GridTile gridTile = chunk.grid[x, y];
+        gridTile.SetSecondLayerID(-1);
+        gridTile.SetTileID(60);
+        gridTile.SetGridObject(new GridHole(60,null));
     }
     public void GenerateMap(float cellSize, Vector2 offset, out Map map)
     {
@@ -98,6 +101,8 @@ public class MapGenerator : MonoBehaviour
                 for (int x = 0; x < chunkSize; x++)
                 {
                     GenerateCell(item.Value, x, y,rand);
+                    if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
+
                     int index = -1;
                     if (value >= 0.75f)
                     {
@@ -151,8 +156,11 @@ public class MapGenerator : MonoBehaviour
         float rainValue = Generate(posX,posY, offsetRain, scaleRain);
         float tempValue = Generate(posX,posY, offsetTemp, scaleTemp);
 
-
         if (rand.Next(0, 100) <= 2)
+        {
+            SetGridHole(chunk, x, y);
+        }
+        else if (rand.Next(0, 100) <= 2)
         {
             SetBuildingObject(chunk, x, y, 5);
         }

@@ -16116,9 +16116,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   seed: 1092354798
-  randomSeed: 0
-  widthInChunks: 20
-  heightInChunks: 20
+  randomSeed: 1
+  widthInChunks: 30
+  heightInChunks: 30
   scale: 1.5
   offset: {x: 0, y: 0}
   scaleTemp: 2
@@ -33855,7 +33855,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1017828613}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.00000012928437
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -35441,7 +35441,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 818.1, y: 0}
+  m_AnchoredPosition: {x: 818.1001, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1497388384

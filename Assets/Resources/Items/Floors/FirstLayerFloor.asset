@@ -28,5 +28,5 @@ MonoBehaviour:
   toolRequired: 0
   grassTexture: {fileID: 0}
   chanceOfDefaultTile: 0.6
-  diggingParticles: {fileID: 0}
+  diggingParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
   swapForSecondLayerFloorID: 21

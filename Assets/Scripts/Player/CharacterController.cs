@@ -125,6 +125,12 @@ public class CharacterController: NetworkBehaviour, ILifePoints, IUsesWeapons
             }
         }
     }
+    public void SetPosition(Vector2 vector)
+    {
+        transform.position = vector;
+        GridVisualization.instance.PlayerMovement(vector);
+    }
+
     #endregion
 
     #region ILifePoints

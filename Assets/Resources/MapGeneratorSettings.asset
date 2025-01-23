@@ -15,8 +15,8 @@ MonoBehaviour:
   grassID: 19
   tiles:
   - tileID: 19
-  - tileID: 19
-  - tileID: 19
+  - tileID: 21
+  - tileID: 20
   - tileID: 19
   - tileID: 19
   - tileID: 19

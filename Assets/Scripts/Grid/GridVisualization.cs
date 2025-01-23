@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 using static UnityEngine.Rendering.DebugUI;
 
 
@@ -339,7 +340,7 @@ public class GridVisualization : MonoBehaviour
     {
         if (loadedChunks.ContainsKey(chunkIndex)) yield break;
         Chunk chunk = map.chunks[chunkIndex];
-        loadedChunks.Add(chunkIndex,new LoadedChunk((int)Time.time,CreateMesh(chunk)));
+        loadedChunks.Add(chunkIndex, new LoadedChunk((int)Time.time, CreateMesh(chunk)));
         for (int x = 0; x < map.chunkSize; x++)
         {
             for (int y = 0; y < map.chunkSize; y++)
@@ -645,7 +646,7 @@ public class GridVisualization : MonoBehaviour
         int[] triangles = new int[6 * (width * height)];
 
         Vector2[] uv = new Vector2[4 * (width * height)];
-        Vector2[] lineUv = new Vector2[4 * (width * height)];
+        Vector2[] linesUV = new Vector2[4 * (width * height)];
 
         for (int y = 0; y < height; y++)
         {
@@ -666,32 +667,32 @@ public class GridVisualization : MonoBehaviour
                 triangles[index * 6 + 5] = index * 4 + 3;
 
                 GridTile gridTile = chunk.grid[x, y];
-             
-                int borders = 0;
-               // if (IsGrass(gridTile.tileID))
-               // borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y);
+                int borders = CalculateBorders(x, y, gridTile.tileID);
+
                 Vector2 uv11, uv00;
-               
-                
-                if (gridTile.GridObjectIsType<GridHole>())
+
+
+                if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
                 {
-                    GridTile tile = GetValueByGridPosition( chunk.ChunkGridPosition +  new Vector2(x, y + 1));
+                    GridTile tile = GetValueByGridPosition(gridTile.x, gridTile.y + 1);
                     if (tile != null && tile.GridObjectIsType<GridHole>())
-                        GetUVTile(gridTile, 1, out uv00, out uv11);
+                    {
+                        GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
+                    }
                     else
-                        GetUVTile(gridTile, 0, out uv00, out uv11);
+                    {
+                        GetUVTile(gridTile, 0 + hole.waterLevel * 2, out uv00, out uv11);
+                    }
                 }
                 else
-                {
                     GetUVTile(gridTile, out uv00, out uv11);
-                }
+                
 
-                gridTile.borders = borders;
                 UVSet(uv, index, uv00, uv11);
 
                 borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, gridTile.tileID);
                 GetUVLine(borders, out uv00, out uv11);
-                UVSet(lineUv, index, uv00, uv11);
+                UVSet(linesUV, index, uv00, uv11);
             }
         }
         mesh.vertices = vertices;
@@ -699,7 +700,7 @@ public class GridVisualization : MonoBehaviour
         mesh.triangles = triangles;
 
         linesMesh.vertices = vertices;
-        linesMesh.uv = lineUv;
+        linesMesh.uv = linesUV;
         linesMesh.triangles = triangles;
 
         MeshRenderer meshRenderer = meshFilter.AddComponent<MeshRenderer>();
