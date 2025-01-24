@@ -250,7 +250,8 @@ public class BuildingManager : MonoBehaviour
                     }
                 }
                 spriteRenderer.sprite = variant.sprite;
-                obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
+                if(variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
+                else Destroy(obj.GetComponent<PolygonCollider2D>());
                 CreateGridObject(gridObject.ID, gridPosition, gridObject.variantIndex, obj.parent);
                 MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
                 break;
@@ -369,7 +370,8 @@ public class BuildingManager : MonoBehaviour
         }
 
         spriteRenderer.sprite = variant.sprite;
-        obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
+        if (variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
+        else Destroy(obj.GetComponent<PolygonCollider2D>());
         CreateGridObject(selectedObjectID,posXY, rotation % rotationStates, obj.parent);
         MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
         GridVisualization.instance.MoveWorldItems(posXY);

@@ -67,6 +67,11 @@ public class MapGenerator : MonoBehaviour
     {
         chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
+
+    private void SetBuildingObject(Chunk chunk, int x, int y, int index, int variant)
+    {
+        chunk.grid[x, y].SetGridObject(new GridObject(index, variant, null, new Vector2(x, y)));
+    }
     private void SetGridHole(Chunk chunk, int x, int y)
     {
         GridTile gridTile = chunk.grid[x, y];
@@ -163,6 +168,10 @@ public class MapGenerator : MonoBehaviour
         else if (rand.Next(0, 100) <= 2)
         {
             SetBuildingObject(chunk, x, y, 5);
+        }
+        else if (rand.Next(0, 100) <= 5)
+        {
+            SetBuildingObject(chunk, x, y, 70, UnityEngine.Random.Range(0,6));
         }
         else if (rand.Next(0, 100) <= 2)
         {

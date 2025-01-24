@@ -100,6 +100,7 @@ public class Cutter
     {
         Vector2 last, current = new Vector2(-1, -1);
         int dir = GetDirection(GetNeighbors(position));
+        if (dir == -1) return position;
         int k;
         if (dir == 0) k = 7; else k = dir - 1;
         last = position;
