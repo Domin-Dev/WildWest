@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2768a2250e2de5d4aa957a906e0eb4f7, type: 3}
-  m_Name: PlankWall
+  m_Name: PlankWall 1
   m_EditorClassIdentifier: 
-  name: Plank Wall
+  name: makeshift wall
   description: 
-  ID: 7
+  ID: 72
   stackMax: 50
   icon: {fileID: -1935859808, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
@@ -24,7 +24,7 @@ MonoBehaviour:
   numberItem: 2
   durability: 50
   drop: []
-  texture: {fileID: 2800000, guid: 9755133acbc71554bbe177a9cd599766, type: 3}
+  texture: {fileID: 2800000, guid: 8d8b95945a4a9984086c7bcd7d41b89b, type: 3}
   toolRequired: 0
   HitParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
   objectVariants:
@@ -38,7 +38,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: fa0679916a392d2489fd517a8719a310, type: 2}
+      sprite: {fileID: 21300000, guid: 01358b3859e5f1d4ab15e5e5bc536b5b, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -49,7 +49,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: 2d49bb77345d32d4ba58b41e794edb91, type: 2}
+      sprite: {fileID: 21300000, guid: f4c9dc950f35aab4ea114f1f05e615ed, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -60,7 +60,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: a4c59e4f633dc3649bd292f05614c0d5, type: 2}
+      sprite: {fileID: 21300000, guid: 9b48b61877c0e4c4dbcb5c077ddb2178, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -71,7 +71,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: 569891ed9ba01b944ae0562470cfdf3f, type: 2}
+      sprite: {fileID: 21300000, guid: 0690d2f5783a7a64ea676771bdad2d2b, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -82,7 +82,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: 13389aa375b0d114c944e096c55d9b02, type: 2}
+      sprite: {fileID: 21300000, guid: 866783977c6b96b428a3d86dfc8463f7, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -93,7 +93,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: c6c257b163a7d854693824c009960884, type: 2}
+      sprite: {fileID: 21300000, guid: b934852dcefa30a49933ada31a7ef0ed, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -104,7 +104,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: 439290e607eab14489d7266573379ee6, type: 2}
+      sprite: {fileID: 21300000, guid: 48f8af4c4fa96104f9cff473f6e69283, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -115,7 +115,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: bf88f9f3966d8bc42bb1ce229da99d56, type: 2}
+      sprite: {fileID: 21300000, guid: bda2195089578294491d6bb13c9eb20a, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -126,7 +126,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: ef79844678a9f1b45aaf6068b5dc837e, type: 2}
+      sprite: {fileID: 21300000, guid: 484d82eb91aa49045a796141811ceb9c, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -137,7 +137,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: 2cb08e4b1c45482419d3aa58133320f8, type: 2}
+      sprite: {fileID: 21300000, guid: ae6f8b92be67c1c4a8c4ce4bbc5f45fb, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -148,7 +148,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: d99ec6308cba012448434e8cf02d996d, type: 2}
+      sprite: {fileID: 21300000, guid: 711f667d98e83d548abab992c52337d4, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.195}
@@ -159,7 +159,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: 01949a3d1eb157a4d9860b33a3cc75d3, type: 2}
+      sprite: {fileID: 21300000, guid: bfbcaf0acc6da054d9fb86f27d3dbd0a, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -170,7 +170,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: 65ea1194fcdd55540aceea5d280ef8d6, type: 2}
+      sprite: {fileID: 21300000, guid: bd4c32c2d95f0f9468b3d7e62acf57ce, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -181,7 +181,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: 8231010073ea47044873b9d825450fad, type: 2}
+      sprite: {fileID: 21300000, guid: e23124107afd0ea47960b23c9c276483, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -192,7 +192,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: 5ad714473ee1a4748bc46a22558f0d0d, type: 2}
+      sprite: {fileID: 21300000, guid: dcee33ea03459614e8b5196550f9323a, type: 2}
   - variants:
     - hitbox:
       - {x: -0.12, y: 0.295}
@@ -203,7 +203,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.385}
       minY: 0.295
-      sprite: {fileID: 21300000, guid: 943f1205c5a64714e814e85eb7235ba2, type: 2}
+      sprite: {fileID: 21300000, guid: a5f27245483b63c4294456290dda2646, type: 2}
   shadowPixels: 19
   size:
     x: 27

@@ -21,6 +21,9 @@ public class MapGenerator : MonoBehaviour
     [Header("Rainfall Map Settings")]
     [SerializeField] private float scaleRain = 20;
     [SerializeField] private Vector2 offsetRain;
+    [Header("Height Settings")]
+    [SerializeField] private Vector2 scaleHeight;
+    [SerializeField] private Vector2 offsetHeight;
     [Header("Chunk Settings")]
     [SerializeField] private int chunkSize = 10;
 
@@ -158,13 +161,12 @@ public class MapGenerator : MonoBehaviour
         //float value = Generate(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, offset, scale);
         int posX = x + (int)chunk.ChunkGridPosition.x;
         int posY = y + (int)chunk.ChunkGridPosition.y;
+       
         float rainValue = Generate(posX,posY, offsetRain, scaleRain);
         float tempValue = Generate(posX,posY, offsetTemp, scaleTemp);
+        float heightValue = Generate(posX,posY, offsetHeight, scaleHeight);
 
-        if (rand.Next(0, 100) <= 2)
-        {
-            SetGridHole(chunk, x, y);
-        }
+        if(heightValue < 0.15f) SetGridHole(chunk, x, y);
         else if (rand.Next(0, 100) <= 2)
         {
             SetBuildingObject(chunk, x, y, 5);
@@ -172,6 +174,10 @@ public class MapGenerator : MonoBehaviour
         else if (rand.Next(0, 100) <= 5)
         {
             SetBuildingObject(chunk, x, y, 70, UnityEngine.Random.Range(0,6));
+        }
+        else if (rand.Next(0, 100) <= 5)
+        {
+            SetBuildingObject(chunk, x, y, 71, UnityEngine.Random.Range(0, 6));
         }
         else if (rand.Next(0, 100) <= 2)
         {
@@ -181,9 +187,9 @@ public class MapGenerator : MonoBehaviour
         {
             SetBuildingObject(chunk, x, y, 45);
         }
-        else if (rand.Next(0, 100) <= 1)
+        else if (rand.Next(0, 100) <= 5)
         {
-            SetBuildingObject(chunk, x, y, 46);
+            SetBuildingObject(chunk, x, y, 46, UnityEngine.Random.Range(0, 6));
         }
         else if (rand.Next(0, 100) <= 1)
         {
@@ -221,11 +227,19 @@ public class MapGenerator : MonoBehaviour
     //    }
     //}
 
+    private float Generate(int x, int y, Vector2 offset, Vector2 scale)
+    {
+        float xf = ((float)x  + offset.x )/ chunkSize * scale.x;
+        float yf = ((float)y + offset.y) / chunkSize * scale.y;
+        float value = Mathf.PerlinNoise(xf,yf);
+        return value;
+    }
+
     private float Generate(int x, int y, Vector2 offset, float scale)
     {
-        float xf = ((float)x  + offset.x )/ chunkSize * scale;
+        float xf = ((float)x + offset.x) / chunkSize * scale;
         float yf = ((float)y + offset.y) / chunkSize * scale;
-        float value = Mathf.PerlinNoise(xf,yf);
+        float value = Mathf.PerlinNoise(xf, yf);
         return value;
     }
 }

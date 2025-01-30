@@ -87,20 +87,20 @@ public class Actions : MonoBehaviour
     {
         EquipmentManager.instance.LoadChest(gridContainer);
     }
+    
     public void Destroy(ItemStats itemStats)
     {
-        if (itemStats != null)
-        {
             Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
             GridTile gridTile = GridVisualization.instance.GetValueByGridPosition(pos);
-            Tool item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
-            if (gridTile == null || item == null || gridTile.GridObjectIsType<GridHole>()) return;
+            Tool item = null;
+            if(itemStats != null) item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
+            if (gridTile == null || gridTile.GridObjectIsType<GridHole>()) return;
 
             GridObject gridObject;
             if (gridTile.IsGridObjectClass(out gridObject))
             {
                 var type = ItemsAsset.instance.GetToolRequired(gridObject.ID);
-                if (type != ToolType.None && type != item.toolType)
+                if (type != ToolType.None && (item == null || type != item.toolType))
                 {
                     Sounds.instance.Sword();
                     return;
@@ -154,7 +154,7 @@ public class Actions : MonoBehaviour
                     );
                 }
             }
-            else
+            else if(item != null)
             { 
                 if (item.toolType == ToolType.Shovel)
                 {
@@ -162,5 +162,4 @@ public class Actions : MonoBehaviour
                 };
             }
         }
-    }
 }
