@@ -57,7 +57,6 @@ public class MapGenerator : MonoBehaviour
         offsetRain.y = rand.Next(-100000, 100000);
 
         GenerateMap(0.25f, gridOffset,out Map map);
-        gridVisualization.SetMap(map); 
     }
 
     private void SetValue(Chunk chunk ,int x,int y,int index, int variant)
@@ -132,7 +131,26 @@ public class MapGenerator : MonoBehaviour
                     if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
                         SetValue(item.Value, x, y, index, 0);
                     else
-                        SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));                }
+                        SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));
+                }
+            }
+
+            
+        }
+        gridVisualization.SetMap(map);
+        foreach (var item in map.chunks)
+        {
+            for (int y = 0; y < chunkSize; y++)
+            {
+                for (int x = 0; x < chunkSize; x++)
+                {
+                    if (item.Value.grid[x, y].GridObjectIsType<GridHole>())
+                    {
+                        int posX = x + (int)item.Value.ChunkGridPosition.x;
+                        int posY = y + (int)item.Value.ChunkGridPosition.y;
+                        GridVisualization.instance.PourWater(1000, new Vector2(posX, posY));
+                    }
+                }
             }
         }
     }

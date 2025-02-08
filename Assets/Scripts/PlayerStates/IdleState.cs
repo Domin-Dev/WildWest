@@ -24,9 +24,9 @@ public class IdleState : HeroState
         controller.UpdateCharacterSprites();
 
         if(Input.GetMouseButton(0) && controller.handsController.canAttack)
-        {
-            controller.handsController.Use();
+        {    
             heroStateMachine.ChangeState(controller.attackState);
+            controller.handsController.Use();
         }
 
         if(Input.GetKeyDown(KeyCode.R) && controller.handsController.CanReload())

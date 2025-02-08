@@ -494,7 +494,6 @@ public class EquipmentManager : MonoBehaviour
         IBarValue item = equipmentBar[slotInHand] as IBarValue;
         if (item != null)
         {
-            item.Decrease();
             UpdateItemLifeBar(this, new LifeBarArgs(new SlotPosition(0, slotInHand), item.GetBarValue()));
         }
     }
@@ -701,7 +700,6 @@ public class EquipmentManager : MonoBehaviour
             }
         }
         grids = newGrid.ToArray();
-        Debug.Log(grids.Length);
     }
     private bool CheckDedicatedGrid(SlotPosition target)
     {

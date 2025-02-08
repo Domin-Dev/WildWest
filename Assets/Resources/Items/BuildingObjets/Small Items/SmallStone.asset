@@ -40,7 +40,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.185}
       minY: 0.16499999
-      sprite: {fileID: 21300000, guid: c6a2e12c38ff93148941046e7483795f, type: 2}
+      sprite: {fileID: 21300000, guid: aa10518c974c2fa45bbb13d21b2e38d5, type: 2}
   - variants:
     - hitbox:
       - {x: 0.04, y: 0.21499999}
@@ -48,7 +48,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.225}
       minY: 0.21499999
-      sprite: {fileID: 21300000, guid: a4117509d0162df4e88df2b57dc08d6f, type: 2}
+      sprite: {fileID: 21300000, guid: c4b5113b49c00d045804353494573187, type: 2}
   - variants:
     - hitbox:
       - {x: -0.049999997, y: 0.24499999}
@@ -56,7 +56,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: -0.04, y: 0.265}
       minY: 0.24499999
-      sprite: {fileID: 21300000, guid: 97b4f2bf71f521f47bf60c4ca3f55f29, type: 2}
+      sprite: {fileID: 21300000, guid: c0bb21750d3cb9a4d9343a4bb11ab681, type: 2}
   - variants:
     - hitbox:
       - {x: 0.03, y: 0.175}
@@ -64,7 +64,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.195}
       minY: 0.175
-      sprite: {fileID: 21300000, guid: 3a040a89abe5ff840a7d6dab76133041, type: 2}
+      sprite: {fileID: 21300000, guid: 9236a7ac6842a334892cd33ea39bf185, type: 2}
   - variants:
     - hitbox:
       - {x: -0.06, y: 0.265}
@@ -72,7 +72,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: -0.06, y: 0.285}
       minY: 0.265
-      sprite: {fileID: 21300000, guid: 5c5fec6a646344248af2886462607c00, type: 2}
+      sprite: {fileID: 21300000, guid: bc77b5f8a8fe55942b0cfd8b826be5d8, type: 2}
   - variants:
     - hitbox:
       - {x: -0.049999997, y: 0.16499999}
@@ -80,7 +80,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: -0.049999997, y: 0.185}
       minY: 0.16499999
-      sprite: {fileID: 21300000, guid: e5bf2ba7dd1aa7c4c8e035a8d4f4156e, type: 2}
+      sprite: {fileID: 21300000, guid: e7b572242f2510942a5731a014146a57, type: 2}
   shadowPixels: 9
   size:
     x: 27

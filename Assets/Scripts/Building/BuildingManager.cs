@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using UnityEngine.Rendering.Universal;
 
 public class BuildingManager : MonoBehaviour
 {
@@ -81,7 +80,7 @@ public class BuildingManager : MonoBehaviour
                 if (lastPos != pos) Plan(pos);
                 if (Input.GetMouseButtonDown(0))
                 {
-                    if (GridVisualization.instance.GetValueByGridPosition(pos) != null)
+                    if (GridVisualization.instance.GetTileByGridPosition(pos) != null)
                     {
                         build(pos);
                         planObject.gameObject.SetActive(false);
@@ -142,7 +141,7 @@ public class BuildingManager : MonoBehaviour
     }
     private void UpdateBar()
     {
-        var obj = GridVisualization.instance.GetValueByGridPosition(startPos);
+        var obj = GridVisualization.instance.GetTileByGridPosition(startPos);
         if (obj.IsGridObjectClass())
         {
             TurnOnBuildingBar(obj.gridObject.objectTransform.position + new Vector3(0, 0.5f), (obj.gridObject as IGetBarValue).GetBarValue());
@@ -172,7 +171,7 @@ public class BuildingManager : MonoBehaviour
     {
         lastPos = pos;
         planObject.transform.position = GridVisualization.instance.GetWorldPosition(pos) - shadowOffset;
-        var value = GridVisualization.instance.GetValueByGridPosition(pos);
+        var value = GridVisualization.instance.GetTileByGridPosition(pos);
         
         if (value != null && (value.IsGridObjectClass() || CheckObjectPoints(pos, selectedObjectID)))
             planObject.gameObject.SetActive(false);
@@ -192,7 +191,7 @@ public class BuildingManager : MonoBehaviour
 
         for (int i = 0; i < variant.objectPoints.Length; i++)
         {
-            var tile = GridVisualization.instance.GetValueByGridPosition(pos + variant.objectPoints[i]);
+            var tile = GridVisualization.instance.GetTileByGridPosition(pos + variant.objectPoints[i]);
             if(tile == null || tile.IsGridObjectClass()) return true;
         }
         return false;
@@ -213,7 +212,7 @@ public class BuildingManager : MonoBehaviour
     }
     private void BuildWall(Vector2 posXY)
     {
-        var gridTile = GridVisualization.instance.GetValueByGridPosition(posXY);
+        var gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
         if (gridTile == null || gridTile.IsGridObjectClass()) return;
         VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
         Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
@@ -246,7 +245,7 @@ public class BuildingManager : MonoBehaviour
                 {
                     for (int i = 0; i < variant.CoveringPoints.Length; i++)
                     {
-                        GridVisualization.instance.GetValueByGridPosition(gridPosition + variant.CoveringPoints[i])?.SetObjectCovering(spriteRenderer);
+                        GridVisualization.instance.GetTileByGridPosition(gridPosition + variant.CoveringPoints[i])?.SetObjectCovering(spriteRenderer);
                     }
                 }
                 spriteRenderer.sprite = variant.sprite;
@@ -265,7 +264,7 @@ public class BuildingManager : MonoBehaviour
 
     public void Digging(Vector2 posXY)
     {
-        GridTile gridTile = GridVisualization.instance.GetValueByGridPosition(posXY);
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
         if (gridTile == null) return;
 
         if (gridTile.secondLayerID >= 0)
@@ -299,9 +298,24 @@ public class BuildingManager : MonoBehaviour
             }
         }
     }
+    public void Hoeing(Vector2 posXY)
+    {
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
+        if (gridTile == null) return;
+
+        if (gridTile.tileID >= 0 && ItemsAsset.instance.GetItem<Floor>(gridTile.tileID).canBeCultivated)
+        {
+            gridTile.SetTileID(74);
+            gridTile.variant = RandomVariant(74);
+            GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
+            Sounds.instance.Hammer();
+        }
+    }
+
+
     private void BuildFloor(Vector2 posXY)
     {
-        GridTile gridTile = GridVisualization.instance.GetValueByGridPosition(posXY);
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
         if (gridTile.tileID != selectedObjectID || (gridTile.secondLayerID == -1))
         {
             if (gridTile.GridObjectIsType<GridHole>())
@@ -341,9 +355,22 @@ public class BuildingManager : MonoBehaviour
         else
             return 0;
     }
+
+    private int RandomVariant(int floorID)
+    {
+        var tileUV =  GridVisualization.instance.TilesUV[floorID];
+        if (tileUV != null)
+        {
+            System.Random random = new System.Random();
+            return random.Next(0, tileUV.variants);
+        }
+        else
+            return 0;
+    }
+
     private void BuildObject(Vector2 posXY)
     {
-        if (GridVisualization.instance.GetValueByGridPosition(posXY).IsGridObjectClass()) return;
+        if (GridVisualization.instance.GetTileByGridPosition(posXY).IsGridObjectClass()) return;
 
         VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
         Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
@@ -351,7 +378,7 @@ public class BuildingManager : MonoBehaviour
 
         for (int i = 0; i < variant.objectPoints.Length; i++)
         {
-            if (GridVisualization.instance.GetValueByGridPosition(posXY + variant.objectPoints[i]).IsGridObjectClass()) return;
+            if (GridVisualization.instance.GetTileByGridPosition(posXY + variant.objectPoints[i]).IsGridObjectClass()) return;
         }
 
         Sounds.instance.Hammer();
@@ -365,7 +392,7 @@ public class BuildingManager : MonoBehaviour
         {
             for (int i = 0; i < variant.CoveringPoints.Length; i++)
             {
-                GridVisualization.instance.GetValueByGridPosition(posXY + variant.CoveringPoints[i]).SetObjectCovering(spriteRenderer);
+                GridVisualization.instance.GetTileByGridPosition(posXY + variant.CoveringPoints[i]).SetObjectCovering(spriteRenderer);
             }
         }
 
@@ -381,7 +408,7 @@ public class BuildingManager : MonoBehaviour
     private void CreateGridObject(int itemID,Vector2 posXY,int indexVariant, Transform buildingObj)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
-        GridTile gridObject = GridVisualization.instance.GetValueByGridPosition(posXY);
+        GridTile gridObject = GridVisualization.instance.GetTileByGridPosition(posXY);
 
         switch (item)
         {
@@ -401,13 +428,13 @@ public class BuildingManager : MonoBehaviour
         {
             for (int i = 0; i < variant.objectPoints.Length; i++)
             {
-                GridVisualization.instance.GetValueByGridPosition(posXY + variant.objectPoints[i])?.SetGridObject(gridObj);
+                GridVisualization.instance.GetTileByGridPosition(posXY + variant.objectPoints[i])?.SetGridObject(gridObj);
             }
         }
     }
     public void ChangeSprite(Vector2 posXY, int index)
     {
-        GridObject gridObject = GridVisualization.instance.GetValueByGridPosition(posXY).gridObject;
+        GridObject gridObject = GridVisualization.instance.GetTileByGridPosition(posXY).gridObject;
         Variant  variant = ItemsAsset.instance.GetObjectVariant(gridObject.ID, gridObject.variantIndex).variants[index];
 
         Transform obj = null;

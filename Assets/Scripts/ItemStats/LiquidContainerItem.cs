@@ -1,5 +1,7 @@
 
+
 using Unity.Mathematics;
+using UnityEngine;
 
 public class LiquidContainerItem : ItemStats, IBarValue
 {
@@ -29,6 +31,16 @@ public class LiquidContainerItem : ItemStats, IBarValue
 
     public void Decrease(float value = 1)
     {
-        currentFill = math.clamp(currentFill- value, 0,maxCapacity);
+        currentFill = math.clamp(currentFill -value, 0,maxCapacity);
+    }
+
+    public void Inecrease(float value = 1)
+    {
+        currentFill = math.clamp(currentFill + value, 0, maxCapacity);
+    }
+
+    public float GetFreeFill()
+    {
+        return maxCapacity - currentFill;
     }
 }

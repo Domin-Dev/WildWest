@@ -45,7 +45,7 @@ public class Actions : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
-                var tile = GridVisualization.instance.GetValueByGridPosition(pos);
+                var tile = GridVisualization.instance.GetTileByGridPosition(pos);
                 if (tile != null)
                 {
                     GridObject gridObject = tile.gridObject;
@@ -59,20 +59,13 @@ public class Actions : MonoBehaviour
                     
                 }
             }
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                GridVisualization.instance.PourWater(100, lastPos);
-            }
         }
     }
-
     private void SetTileInfo()
     {
         pointerTransform.position = GridVisualization.instance.GetWorldPosition(lastPos);
         UIManager.instance.SetCurretTile(GridVisualization.instance.GetGridTileByPositionXY(lastPos));
     }
-
     private void Door(GridDoor gridDoor,Vector2 position)
     {
 
@@ -82,84 +75,107 @@ public class Actions : MonoBehaviour
             BuildingManager.instance.ChangeSprite(position, 0);
         gridDoor.doorIsClosed = !gridDoor.doorIsClosed;
     }
-
     private void Container(GridContainer gridContainer)
     {
         EquipmentManager.instance.LoadChest(gridContainer);
-    }
-    
-    public void Destroy(ItemStats itemStats)
+    } 
+    public void Action(ItemStats itemStats)
     {
-            Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
-            GridTile gridTile = GridVisualization.instance.GetValueByGridPosition(pos);
-            Tool item = null;
-            if(itemStats != null) item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
-            if (gridTile == null || gridTile.GridObjectIsType<GridHole>()) return;
+        Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(pos);
+        Tool item = null;
+        if(itemStats != null) item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
+        if (gridTile == null ) return;
 
-            GridObject gridObject;
-            if (gridTile.IsGridObjectClass(out gridObject))
+        GridObject gridObject;
+        if (gridTile.IsGridObjectClass(out gridObject) && !(gridObject is GridHole))
+        {
+            var type = ItemsAsset.instance.GetToolRequired(gridObject.ID);
+            if (type != ToolType.None && (item == null || type != item.toolType))
             {
-                var type = ItemsAsset.instance.GetToolRequired(gridObject.ID);
-                if (type != ToolType.None && (item == null || type != item.toolType))
-                {
-                    Sounds.instance.Sword();
-                    return;
-                }
-               
-                Sounds.instance.Shield();
-                Transform obj = gridObject.objectTransform;
-                float lastRotation = transform.eulerAngles.z;
-               
-                VariantItem variantItem = ItemsAsset.instance.GetItem(gridObject.ID) as VariantItem;
-                if(variantItem.HitParticles != null) Instantiate(variantItem.HitParticles, gridObject.objectTransform.position + (Vector3)variantItem.objectVariants[gridObject.variantIndex].variants[0].particlePoint, Quaternion.identity);
-                GridTile[] neighbors = gridTile.GetNeighbors();
-
-                if(gridTile.DecreaseHitPoints(20))
-                {
-                    Timer.Create(
-                    () =>
-                    {
-                        float scaleX = Mathf.LerpAngle(obj.localScale.x, 1.1f, Time.deltaTime * 20f);
-                        float scaleY = Mathf.LerpAngle(obj.localScale.y, 1.05f, Time.deltaTime * 18f);
-                        obj.localScale = new Vector3(scaleX, scaleY);
-                        if (obj.localScale.x >= 1.09f)
-                        {
-                            return true;
-                        }
-
-                        
-                        return false;
-                    },
-                    () =>
-                    {
-                        float scaleX = Mathf.LerpAngle(obj.localScale.x, 1f, Time.deltaTime * 30);
-                        float scaleY = Mathf.LerpAngle(obj.localScale.y, 1f, Time.deltaTime * 25);
-                        obj.localScale = new Vector3(scaleX, scaleY);
-                        if (obj.localScale.x > 0.99f)
-                        {
-                            obj.localScale = new Vector2(1f, 1f);
-                            for (int i = 0; i < 8; i++)
-                            {
-                                if (neighbors[i] != null)
-                                {
-                                    Transform obj = neighbors[i].gridObject.objectTransform;
-                                    obj.localScale = new Vector3(1f, 1f);
-                                }
-                            }
-                            return true;
-                        }
-
-                        return false;
-                    }
-                    );
-                }
+                Sounds.instance.Sword();
+                return;
             }
-            else if(item != null)
-            { 
-                if (item.toolType == ToolType.Shovel)
+
+            Sounds.instance.Shield();
+            Transform obj = gridObject.objectTransform;
+            float lastRotation = transform.eulerAngles.z;
+
+            VariantItem variantItem = ItemsAsset.instance.GetItem(gridObject.ID) as VariantItem;
+            if (variantItem.HitParticles != null) Instantiate(variantItem.HitParticles, gridObject.objectTransform.position + (Vector3)variantItem.objectVariants[gridObject.variantIndex].variants[0].particlePoint, Quaternion.identity);
+            GridTile[] neighbors = gridTile.GetNeighbors();
+
+            if (gridTile.DecreaseHitPoints(20))
+            {
+                Timer.Create(
+                () =>
                 {
-                    BuildingManager.instance.Digging(pos);
-                };
+                    float scaleX = Mathf.LerpAngle(obj.localScale.x, 1.1f, Time.deltaTime * 20f);
+                    float scaleY = Mathf.LerpAngle(obj.localScale.y, 1.05f, Time.deltaTime * 18f);
+                    obj.localScale = new Vector3(scaleX, scaleY);
+                    if (obj.localScale.x >= 1.09f)
+                    {
+                        return true;
+                    }
+
+
+                    return false;
+                },
+                () =>
+                {
+                    float scaleX = Mathf.LerpAngle(obj.localScale.x, 1f, Time.deltaTime * 30);
+                    float scaleY = Mathf.LerpAngle(obj.localScale.y, 1f, Time.deltaTime * 25);
+                    obj.localScale = new Vector3(scaleX, scaleY);
+                    if (obj.localScale.x > 0.99f)
+                    {
+                        obj.localScale = new Vector2(1f, 1f);
+                        for (int i = 0; i < 8; i++)
+                        {
+                            if (neighbors[i] != null)
+                            {
+                                Transform obj = neighbors[i].gridObject.objectTransform;
+                                obj.localScale = new Vector3(1f, 1f);
+                            }
+                        }
+                        return true;
+                    }
+
+                    return false;
+                }
+                );
             }
         }
+        else if (item != null)
+        {
+            switch (item.toolType)
+            {
+                case ToolType.Shovel:
+                    BuildingManager.instance.Digging(pos);
+                    break;
+                case ToolType.Hoe:
+                    BuildingManager.instance.Hoeing(pos);
+                    break;
+            }
+        }
+        else
+        {
+            switch (itemStats)
+            {
+                case LiquidContainerItem:
+                    FillLiquidContainer((LiquidContainerItem)itemStats, gridTile);
+                    break;
+            }
+        }
+    }
+
+    private void FillLiquidContainer(LiquidContainerItem item, GridTile gridTile)
+    {
+        float free = item.GetFreeFill();
+        if(free > 0 && gridTile.GridObjectIsType(out GridHole hole) && hole.waterHoleID >= 0)
+        {
+            float water = LiquidsManager.instance.DecreaseWater(hole.waterHoleID, gridTile, free);
+            item.Inecrease(water);
+        }
+    }
+
 }

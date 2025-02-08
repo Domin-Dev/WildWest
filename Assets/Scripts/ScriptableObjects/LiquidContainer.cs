@@ -9,7 +9,7 @@ public class LiquidContainer : Item
 
     public override ItemStats GetItemStats()
     {
-        return new LiquidContainerItem(ID,capacity,59);
+        return new LiquidContainerItem(ID,capacity);
     }
 
 }

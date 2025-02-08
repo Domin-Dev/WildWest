@@ -275,6 +275,16 @@ public class ChatManager : MonoBehaviour
                     }
                     else hints.Add(commandBase);
                 }
+                else if (item is DebugCommand<int, int, int>)
+                {
+                    int arg1, arg2, arg3;
+                    if (properties.Length > 2 && int.TryParse(properties[1], out arg1) && int.TryParse(properties[2], out arg2) && int.TryParse(properties[3], out arg3))
+                    {
+                        (item as DebugCommand<int, int,int>).Invoke(arg1, arg2,arg3);
+                        return;
+                    }
+                    else hints.Add(commandBase);
+                }
             }
         }
 

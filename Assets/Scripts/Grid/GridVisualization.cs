@@ -461,7 +461,7 @@ public class GridVisualization : MonoBehaviour
                 gridTile.borders = borders;
                 if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
                 {
-                    GridTile tile = GetValueByGridPosition(x, y + 1);
+                    GridTile tile = GetTileByGridPosition(x, y + 1);
                     if (tile != null && tile.GridObjectIsType<GridHole>())
                         GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
                     else
@@ -545,10 +545,10 @@ public class GridVisualization : MonoBehaviour
     private int CalculateBorders(int x, int y,int id)
     {
         int value = 0;
-        if (GetValueByGridPosition(x, y + 1)?.tileID > id) value += 1;
-        if (GetValueByGridPosition(x + 1, y)?.tileID > id) value += 2;
-        if (GetValueByGridPosition(x, y - 1)?.tileID > id) value += 4; 
-        if (GetValueByGridPosition(x - 1, y)?.tileID > id) value += 8; 
+        if (GetTileByGridPosition(x, y + 1)?.tileID > id) value += 1;
+        if (GetTileByGridPosition(x + 1, y)?.tileID > id) value += 2;
+        if (GetTileByGridPosition(x, y - 1)?.tileID > id) value += 4; 
+        if (GetTileByGridPosition(x - 1, y)?.tileID > id) value += 8; 
         return value;
     }
 
@@ -674,7 +674,7 @@ public class GridVisualization : MonoBehaviour
 
                 if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
                 {
-                    GridTile tile = GetValueByGridPosition(gridTile.x, gridTile.y + 1);
+                    GridTile tile = GetTileByGridPosition(gridTile.x, gridTile.y + 1);
                     if (tile != null && tile.GridObjectIsType<GridHole>())
                     {
                         GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
@@ -741,7 +741,7 @@ public class GridVisualization : MonoBehaviour
     {
         UpdateMesh(x,y,true);
     }
-    public GridTile GetValueByGridPosition(Vector2 gridPosition)
+    public GridTile GetTileByGridPosition(Vector2 gridPosition)
     {
         int chunkIndex =  GetChunkIndexByPositionXY(gridPosition);
         // loadedChunks.ContainsKey(chunkIndex)
@@ -751,9 +751,9 @@ public class GridVisualization : MonoBehaviour
         }
         return null;
     }
-    public GridTile GetValueByGridPosition(int x,int y)
+    public GridTile GetTileByGridPosition(int x,int y)
     {
-        return GetValueByGridPosition(new Vector2(x, y));
+        return GetTileByGridPosition(new Vector2(x, y));
     }
     public Vector2 GetWorldPosition(Vector2 gridPosition)
     {
@@ -783,10 +783,10 @@ public class GridVisualization : MonoBehaviour
         {
             Variant variant = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
             Vector2 mainPos = gridTile.gridObject.mainPosition;
-            GetValueByGridPosition(mainPos)?.SetGridObject(null);
+            GetTileByGridPosition(mainPos)?.SetGridObject(null);
             for (int i = 0; i < variant.objectPoints.Length; i++)
             {
-                GetValueByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
+                GetTileByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
             }
         }
         if (item is WallObject) UpdateNeighbors(vector2, id); 
@@ -846,7 +846,7 @@ public class GridVisualization : MonoBehaviour
         bool[] neighbors = new bool[4];
         for (int i = 0; i < 4; i++)
         {
-            var obj = GetValueByGridPosition(positionXY + MyTools.directions4[i]);
+            var obj = GetTileByGridPosition(positionXY + MyTools.directions4[i]);
             if (obj != null && obj.IsBuildObject(ID)) neighbors[i] = true;
             else neighbors[i] = false;
         }
@@ -854,7 +854,7 @@ public class GridVisualization : MonoBehaviour
     }
     private void UpdateSprite(Vector2 positionXY)
     {
-        var gridTile = GetValueByGridPosition(positionXY);
+        var gridTile = GetTileByGridPosition(positionXY);
         if (gridTile == null) return;
         GridObject gridObject = gridTile.gridObject;
         if (gridObject == null) return;
@@ -974,7 +974,7 @@ public class GridVisualization : MonoBehaviour
         bool[] isFreeTile = new bool[4];
         for (int i = 0; i < 4; i++)
         {
-            GridTile gridTile = GetValueByGridPosition(posXY + MyTools.directions4[i]);
+            GridTile gridTile = GetTileByGridPosition(posXY + MyTools.directions4[i]);
             if (gridTile != null) isFreeTile[i] = gridTile.isWalkable;
             else isFreeTile[i] = true;
         }
@@ -989,7 +989,7 @@ public class GridVisualization : MonoBehaviour
         bool[] isFreeTile = new bool[8];
         for (int i = 0; i < 8; i++)
         {
-            GridTile gridTile = GetValueByGridPosition(posXY + MyTools.directions8[i]);
+            GridTile gridTile = GetTileByGridPosition(posXY + MyTools.directions8[i]);
             if (gridTile != null) isFreeTile[i] = gridTile.isWalkable;
             else isFreeTile[i] = false; 
         }

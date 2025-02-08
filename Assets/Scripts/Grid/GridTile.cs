@@ -230,7 +230,7 @@ public class GridTile : IGetBarValue
         GridTile[] neighbors = new GridTile[8];
         for (int i = 0; i < 8; i++)
         {
-           var obj = GridVisualization.instance.GetValueByGridPosition(new Vector2(x,y) + MyTools.directions8[i]);
+           var obj = GridVisualization.instance.GetTileByGridPosition(new Vector2(x,y) + MyTools.directions8[i]);
            if(obj != null && obj.gridObject != null && obj.gridObject.objectTransform != null) neighbors[i] = obj;
         }
         return neighbors;

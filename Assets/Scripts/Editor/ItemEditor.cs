@@ -1,7 +1,5 @@
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 [CustomEditor(typeof(Item), true)]
 public class ItemEditor : Editor
@@ -9,6 +7,7 @@ public class ItemEditor : Editor
     public override void OnInspectorGUI()
     {
         IconField(target);
+        
         base.OnInspectorGUI();
     }
 
@@ -17,8 +16,13 @@ public class ItemEditor : Editor
         Item item = (Item)target;
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Icon Image");
-        item.icon = (Sprite)EditorGUILayout.ObjectField(item.icon, typeof(Sprite), false, GUILayout.Width(150), GUILayout.Height(150));
-
+        EditorGUI.BeginChangeCheck();
+        Sprite newIcon = (Sprite)EditorGUILayout.ObjectField(item.icon, typeof(Sprite), false, GUILayout.Width(150), GUILayout.Height(150));
+        if (EditorGUI.EndChangeCheck()) 
+        {
+            item.icon = newIcon;
+            item.SetDirty(); 
+        }
         EditorGUILayout.EndHorizontal();
     }
     public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)

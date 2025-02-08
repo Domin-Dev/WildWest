@@ -10,15 +10,15 @@ public class DebugController : MonoBehaviour
     List<object> commandList = new List<object>();
     public List<object> GetCommandList()
     {
-        commandList.Add(new DebugCommand("set_time", "sets the time", "", () =>
+        commandList.Add(new DebugCommand("set_time", "Sets the time", "", () =>
         {
             Debug.Log("time set to 10");
         }));
-        commandList.Add(new DebugCommand("host", "start host", "", () =>
+        commandList.Add(new DebugCommand("host", "Start host", "", () =>
         {
             NetworkManager.Singleton.StartHost();
         }));
-        commandList.Add(new DebugCommand<int>("spawn", "spawn", "[Number]", (x) =>
+        commandList.Add(new DebugCommand<int>("spawn", "Spawn", "[Number]", (x) =>
         {
             Debug.Log("spawn" + x);
         }));
@@ -42,7 +42,7 @@ public class DebugController : MonoBehaviour
                 text = "Incorrect Water Body ID";
             ChatManager.instance.Print(text);
         }));
-        commandList.Add(new DebugCommand("help", "command list", "", () =>
+        commandList.Add(new DebugCommand("help", "Command list", "", () =>
         {
             string text = "Command list:\n";
             for (int i = 0; i < commandList.Count; i++)
@@ -52,12 +52,17 @@ public class DebugController : MonoBehaviour
             }
             ChatManager.instance.Print(text);
         }));
-        commandList.Add(new DebugCommand<int,int>("tp", "teleport oneself ", "[TileX] [TileY]", (x,y) =>
+        commandList.Add(new DebugCommand<int,int>("tp", "Teleport oneself ", "[TileX] [TileY]", (x,y) =>
         {
             string text = $"Teleport to [{x},{y}] :\n";
             Vector2 vec = GridVisualization.instance.GetWorldPosition(x, y);
             FindAnyObjectByType<CharacterController>().SetPosition(vec);
             ChatManager.instance.Print(text);
+        }));
+        commandList.Add(new DebugCommand<int,int,int>("wt", "Water transfer ", "[TileX] [TileY] [Number]", (x,y, water) =>
+        {
+            GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(x, y);
+            LiquidsManager.instance.WaterTransfer(gridTile, water);
         }));
         return commandList;
     }
