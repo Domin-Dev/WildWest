@@ -25,20 +25,20 @@ public class PlayerPositionArgs : EventArgs
 }
 public class TileUV
 {
-    public TileUV(Vector2 uv00,int variants = 1, Vector2? uv00Grass = null)
+    public TileUV(Vector2 uv00,int variants = 1, Vector2? uv00second = null)
     {
         this.uv00 = uv00;
         this.variants = variants;
-        this.uv00Grass = uv00Grass; 
+        this.uv00second = uv00second; 
     }
     public override string ToString()
     {
-        return $"UV00:{uv00} Variants:{variants} UV00Grass{uv00Grass}";
+        return $"UV00:{uv00} Variants:{variants} UV00Grass{uv00second}";
     }
 
     public Vector2 uv00 { private set; get; }
     public int variants { private set; get; }
-    public Vector2? uv00Grass { private set; get; }
+    public Vector2? uv00second { private set; get; }
 }
 
 
@@ -113,7 +113,7 @@ public class GridVisualization : MonoBehaviour
     {
         TilesUV = new Dictionary<int, TileUV>();
         Floor[] array = ItemsAsset.instance.GetItemsByType<Floor>();
-        Texture2D texture = new Texture2D(46 * sizeTile, sizeTile * (CountTextures(array) + 1));
+        Texture2D texture = new Texture2D(MaxWidth(array), sizeTile * (CountTextures(array) + 1));
         texture.filterMode = FilterMode.Point;
 
         textureWidth = texture.width;
@@ -134,17 +134,17 @@ public class GridVisualization : MonoBehaviour
         for (int i = 0; i < array.Length; i++)
         {
             Floor floor = array[i];
-            Vector2? grassUV = null;
-            if (floor.grassTexture != null)
+            Vector2? UVsecond = null;
+            if ((floor as Farmland)?.wateredFarmland != null)
             {
-                grassUV = new Vector2(0, (float)k * sizeTile / textureHeight);
-                CopyTexture(ref k, sizeTile, floor.grassTexture, texture);
+                UVsecond = new Vector2(0, (float)k * sizeTile / textureHeight);
+                CopyTexture(ref k, sizeTile, (floor as Farmland).wateredFarmland, texture);
             }
             uv00 = new Vector2(0, (float)k * sizeTile / textureHeight);
             CopyTexture(ref k, sizeTile, floor.texture, texture);
             variants = floor.texture.width / sizeTile;
 
-            if(floor.ID >= 0) TilesUV.Add(floor.ID, new TileUV(uv00, variants, grassUV));
+            if(floor.ID >= 0) TilesUV.Add(floor.ID, new TileUV(uv00, variants, UVsecond));
         }
         texture.Apply(true, true);
         mapTexture = texture;
@@ -157,13 +157,31 @@ public class GridVisualization : MonoBehaviour
             if (floor.texture != null)
             {
                 counter++;
-                if (floor.grassTexture != null)
+                if ((floor as Farmland)?.wateredFarmland != null)
                 {
                     counter++;
                 }
             }
         }
         return counter;
+    }
+
+    private int MaxWidth(Floor[] array)
+    {
+        int max = linesTexture.width;
+        foreach (Floor floor in array)
+        {
+            if (floor.texture != null)
+            {
+                if(max < floor.texture.width) max = floor.texture.width;
+                var texture = (floor as Farmland)?.wateredFarmland;
+                if (texture != null)
+                {
+                    if (max < texture.width) max = texture.width;
+                }
+            }
+        }
+        return max;
     }
     private void CopyTexture(ref int index, int height, Texture2D from, Texture2D to)
     {
@@ -437,7 +455,7 @@ public class GridVisualization : MonoBehaviour
         uv[index * 4 + 3] = new Vector2(uv11.x         ,uv00.y + height1);
     }
 
-    public void UpdateMesh(int x,int y,bool repeat)
+    public void UpdateMesh(int x,int y,bool repeat,bool updateGridObject = false)
     {
         int chunkIndex = GetChunkIndexByPositionXY(new Vector2(x, y));
         if (x >= 0 && y >= 0 && x < map.width && y < map.height && loadedChunks.ContainsKey(chunkIndex))
@@ -456,10 +474,10 @@ public class GridVisualization : MonoBehaviour
             Vector2 uv11, uv00;
             int borders = CalculateBorders(x, y, gridTile.tileID);
 
-            if (borders != gridTile.borders || gridTile.GridObjectIsType<GridHole>() || repeat)
+            if (updateGridObject || borders != gridTile.borders || gridTile.GridObjectIsType<GridHole>() || repeat)
             {
                 gridTile.borders = borders;
-                if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
+                if (gridTile.GridObjectIsType(out GridHole hole))
                 {
                     GridTile tile = GetTileByGridPosition(x, y + 1);
                     if (tile != null && tile.GridObjectIsType<GridHole>())
@@ -506,24 +524,18 @@ public class GridVisualization : MonoBehaviour
 
     private void GetUVTile(GridTile gridTile,out Vector2 uv00, out Vector2 uv11)
     {
-        TileUV tileUV = TilesUV[gridTile.tileID];
-        uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * gridTile.variant);
-        uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant);
-
-
-        //if (gridTile.borders == 0 || tileUV.uv00Grass == null)
-        //{
-        //    uv00 = tileUV.uv00 + (new Vector2(tileWidth, 0) * gridTile.variant);
-        //    uv11 = (tileUV.uv00 + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant);
-        //}
-        //else
-        //{
-        //    if(gridTile.borders < 0) gridTile.borders = 15 - gridTile.borders;
-        //    gridTile.borders--;
-
-        //    uv00 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth, 0) * gridTile.borders;
-        //    uv11 = (Vector2)tileUV.uv00Grass + new Vector2(tileWidth,tileHeight) + new Vector2(tileWidth, 0) * gridTile.borders;
-        //}    
+        Vector2 uv;
+        if (gridTile.GridObjectIsType(out GridFarmland farmland))
+        {
+            if(farmland.watered)
+                uv = (Vector2)TilesUV[gridTile.tileID].uv00second;
+            else
+                uv = TilesUV[gridTile.tileID].uv00;
+        }
+        else 
+            uv = TilesUV[gridTile.tileID].uv00;
+        uv00 = uv + (new Vector2(tileWidth, 0) * gridTile.variant);
+        uv11 = (uv + new Vector2(tileWidth, tileHeight)) + (new Vector2(tileWidth, 0) * gridTile.variant); 
     }
     private void GetUVTile(GridTile gridTile,int variant, out Vector2 uv00, out Vector2 uv11)
     {
@@ -718,7 +730,7 @@ public class GridVisualization : MonoBehaviour
     }
     private bool IsGrass(int tileID)
     {
-       return TilesUV.ContainsKey(tileID) && TilesUV[tileID].uv00Grass != null;
+       return TilesUV.ContainsKey(tileID) && TilesUV[tileID].uv00second != null;
     }
     public void PlayerMovement(Vector2 worldPosition)
     {

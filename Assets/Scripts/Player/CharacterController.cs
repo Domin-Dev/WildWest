@@ -33,14 +33,16 @@ public class CharacterController: NetworkBehaviour, ILifePoints, IUsesWeapons
     #region StateMachine
     public HeroStateMachine heroStateMachine { set; get; }
     public IdleState idleState { set; get; }
-    public AttackState attackState { set; get; }
+    public ActionState attackState { set; get; }
+    public SideActionState sideActionState { set; get; }
     public ReloadingState reloadingState { set; get; }
     public BuildingState buildingState { set; get; }
     private void SetStateMachine()
     {
         heroStateMachine = new HeroStateMachine();
         idleState = new IdleState(this, heroStateMachine);
-        attackState = new AttackState(this, heroStateMachine);
+        attackState = new ActionState(this, heroStateMachine);
+        sideActionState = new SideActionState(this, heroStateMachine);
         reloadingState = new ReloadingState(this, heroStateMachine);
         buildingState = new BuildingState(this, heroStateMachine);
     }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aff25f118aea99e4fbef6769aaa56cab, type: 3}
-  m_Name: Wood 4
+  m_Name: Wood 16
   m_EditorClassIdentifier: 
   name: Seed
   description: 
-  ID: 68
+  ID: 88
   stackMax: 50
-  icon: {fileID: 993144141, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: -442051466, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
   - itemID: 0
     number: 0

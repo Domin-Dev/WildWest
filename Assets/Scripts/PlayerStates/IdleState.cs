@@ -23,13 +23,21 @@ public class IdleState : HeroState
         controller.UpdateFlip();
         controller.UpdateCharacterSprites();
 
-        if(Input.GetMouseButton(0) && controller.handsController.canAttack)
-        {    
-            heroStateMachine.ChangeState(controller.attackState);
-            controller.handsController.Use();
+        if (controller.handsController.canAttack)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                heroStateMachine.ChangeState(controller.attackState);
+                controller.handsController.Use();
+            }
+            else if (Input.GetMouseButton(1))
+            {
+                heroStateMachine.ChangeState(controller.sideActionState);
+                controller.handsController.Use();
+            }
         }
 
-        if(Input.GetKeyDown(KeyCode.R) && controller.handsController.CanReload())
+        if (Input.GetKeyDown(KeyCode.R) && controller.handsController.CanReload())
         {
             heroStateMachine.ChangeState(controller.reloadingState);
         }

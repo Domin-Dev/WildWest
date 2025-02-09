@@ -30,6 +30,7 @@ MonoBehaviour:
       itemID: 42
       number: 3
   texture: {fileID: 2800000, guid: c5a6fc0172e160f4ba651d2fd14720af, type: 3}
+  toolRequired: 0
   HitParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
   objectVariants:
   - variants:
@@ -42,8 +43,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0, y: 0.305}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: 9e8acaae7398edf48ae90ecabaccd82c, type: 2}
-  isObjectCovering: 0
+      sprite: {fileID: 21300000, guid: bb6fd4418337cfc4f8b73d3d7d8cc0c2, type: 2}
   shadowPixels: 19
   size:
     x: 27

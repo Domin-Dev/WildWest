@@ -167,6 +167,22 @@ public class Actions : MonoBehaviour
             }
         }
     }
+    public void SideAction(ItemStats itemStats)
+    {
+
+        Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(pos);
+        Tool item = null;
+        if (itemStats != null) item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
+        if (gridTile == null) return;
+       
+        switch (itemStats)
+        {
+            case LiquidContainerItem:
+                PourWater((LiquidContainerItem)itemStats, gridTile);
+                break;
+        }      
+    }
 
     private void FillLiquidContainer(LiquidContainerItem item, GridTile gridTile)
     {
@@ -176,6 +192,31 @@ public class Actions : MonoBehaviour
             float water = LiquidsManager.instance.DecreaseWater(hole.waterHoleID, gridTile, free);
             item.Inecrease(water);
         }
+    }
+    private void PourWater(LiquidContainerItem item, GridTile gridTile)
+    {
+        float water = item.currentFill;
+        if (water == 0) return;
+        switch (gridTile.gridObject)
+        {
+            case GridHole:
+                LiquidsManager.instance.WaterTransfer(gridTile, water);
+                item.Decrease(water);
+                break;
+            case GridFarmland:
+                WaterFarmland(item, gridTile);
+                break;
+        }
+    }
+
+    private void WaterFarmland(LiquidContainerItem item, GridTile gridTile)
+    {
+        gridTile.GridObjectIsType(out GridFarmland farmland);
+        farmland.Water();
+        Vector2 pos = GridVisualization.instance.GetWorldPosition(gridTile.x, gridTile.y);
+        Instantiate(ParticleAssets.instance.water, pos + new Vector2(0,0.14f), Quaternion.identity);
+        GridVisualization.instance.UpdateMesh(gridTile.x, gridTile.y, false,true);
+        item.Decrease(50);
     }
 
 }

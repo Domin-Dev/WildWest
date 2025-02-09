@@ -9,25 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8e0be7e15a922e4fba3b0072447ef13, type: 3}
-  m_Name: Floor 5
+  m_Script: {fileID: 11500000, guid: 4a9accff18c090f4a98a32b51ab4ecad, type: 3}
+  m_Name: Farmland
   m_EditorClassIdentifier: 
-  name: FarmLand
+  name: Farmland
   description: 
   ID: 74
   stackMax: 50
-  icon: {fileID: 1019810992, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
-  crafingIngredients:
-  - itemID: 42
-    number: 1
-  craftTables: ffffffff
+  icon: {fileID: 447292367, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  crafingIngredients: []
+  craftTables: 
   numberItem: 1
-  durability: 0
+  durability: 20
   drop: []
   texture: {fileID: 2800000, guid: af8938e036f46bb49b958a88dccd0f31, type: 3}
   toolRequired: 0
-  grassTexture: {fileID: 0}
   chanceOfDefaultTile: 0.5
-  diggingParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
+  diggingParticles: {fileID: 2410313160909664484, guid: 7b51f7b11a756e742b19f544e69a0ab3, type: 3}
   canBeCultivated: 0
   swapForSecondLayerFloorID: 21
+  wateredFarmland: {fileID: 2800000, guid: 20603b10b18d853428c6d51bf5a4c458, type: 3}

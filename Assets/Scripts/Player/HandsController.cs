@@ -116,7 +116,7 @@ public class HandsController : MonoBehaviour
         {
             EndReloading();
         }
-        else if(characterController.heroStateMachine.currentState is AttackState)
+        else if(characterController.heroStateMachine.currentState is ActionState)
         {
             ResetAttack();
         }

@@ -2,7 +2,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public interface IGetBarValue
+public interface IHitPoints
 {
     public float GetBarValue();
     public void IncreaseHitPoints(float value);
@@ -24,14 +24,12 @@ public class GridDoor : GridObject
         this.doorIsClosed = doorIsClosed;
     }
 }
-
 public class GridWall : GridObject
 {
     public GridWall(int ID, int indexVariant, Transform obj,Vector2 mainPosition, int stateIndex = 0) : base(ID, indexVariant, obj, mainPosition , stateIndex)
     {
     }
 }
-
 public class GridSurface : GridObject
 {
     public GridSurface(int ID) : base(ID){}
@@ -40,7 +38,6 @@ public class GridSurface : GridObject
         GridVisualization.instance.DestroySurface(gridTile);
     }
 }
-
 public class GridHole : GridObject
 {
     public int waterHoleID;
@@ -56,8 +53,7 @@ public class GridHole : GridObject
     }
 
 }
-
-public class GridObject: IGetBarValue
+public class GridObject: IHitPoints
 {
     public int ID;
     public int variantIndex;
@@ -129,6 +125,20 @@ public class GridObject: IGetBarValue
     public override string ToString()
     {
         return ItemsAsset.instance.GetItem(ID).name;
+    }
+}
+
+public class GridFarmland : GridSurface
+{
+    public bool watered { private set; get; }
+    public GridFarmland(int ID,bool watered = false) : base(ID)
+    {
+        this.watered = watered;
+    }
+
+    public void Water()
+    {
+        watered = true;
     }
 }
 

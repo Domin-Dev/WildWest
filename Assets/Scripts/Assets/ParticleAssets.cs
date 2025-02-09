@@ -25,4 +25,5 @@ public class ParticleAssets : MonoBehaviour
     public GameObject shotSmoke;
     public GameObject shotFire;
     public GameObject gunShells;
+    public GameObject water;
 }

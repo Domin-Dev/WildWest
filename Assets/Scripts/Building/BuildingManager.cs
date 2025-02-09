@@ -144,7 +144,7 @@ public class BuildingManager : MonoBehaviour
         var obj = GridVisualization.instance.GetTileByGridPosition(startPos);
         if (obj.IsGridObjectClass())
         {
-            TurnOnBuildingBar(obj.gridObject.objectTransform.position + new Vector3(0, 0.5f), (obj.gridObject as IGetBarValue).GetBarValue());
+            TurnOnBuildingBar(obj.gridObject.objectTransform.position + new Vector3(0, 0.5f), (obj.gridObject as IHitPoints).GetBarValue());
         }
         else
         {
@@ -306,13 +306,12 @@ public class BuildingManager : MonoBehaviour
         if (gridTile.tileID >= 0 && ItemsAsset.instance.GetItem<Floor>(gridTile.tileID).canBeCultivated)
         {
             gridTile.SetTileID(74);
+            gridTile.SetGridObject(new GridFarmland(74), true);
             gridTile.variant = RandomVariant(74);
             GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
             Sounds.instance.Hammer();
         }
     }
-
-
     private void BuildFloor(Vector2 posXY)
     {
         GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
@@ -339,7 +338,6 @@ public class BuildingManager : MonoBehaviour
             builtObject(this, null);
         }
     }
-
     private int CalculateVariant(int floorID)
     {
         var tileUV =  GridVisualization.instance.TilesUV[floorID];
@@ -355,7 +353,6 @@ public class BuildingManager : MonoBehaviour
         else
             return 0;
     }
-
     private int RandomVariant(int floorID)
     {
         var tileUV =  GridVisualization.instance.TilesUV[floorID];
@@ -367,7 +364,6 @@ public class BuildingManager : MonoBehaviour
         else
             return 0;
     }
-
     private void BuildObject(Vector2 posXY)
     {
         if (GridVisualization.instance.GetTileByGridPosition(posXY).IsGridObjectClass()) return;
@@ -404,7 +400,6 @@ public class BuildingManager : MonoBehaviour
         GridVisualization.instance.MoveWorldItems(posXY);
         builtObject(this, null);
     }
-
     private void CreateGridObject(int itemID,Vector2 posXY,int indexVariant, Transform buildingObj)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);

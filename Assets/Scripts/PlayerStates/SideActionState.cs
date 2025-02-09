@@ -1,9 +1,9 @@
 ﻿using System;
 using UnityEngine;
-public class AttackState : HeroState
+public class SideActionState : HeroState
 {
     CharacterController controller;
-    public AttackState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
+    public SideActionState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
     {
         this.controller = controller;
     }
@@ -13,7 +13,7 @@ public class AttackState : HeroState
         if (!controller.handsController.isGun)
         {
             controller.handsController.SetAttackVector(new Vector3(0, 0, 100), new Vector3(0.06f, 0, 0));
-            Actions.instance.Action(controller.handsController.selectedItem);
+            Actions.instance.SideAction(controller.handsController.selectedItem);
         }
         else
         {

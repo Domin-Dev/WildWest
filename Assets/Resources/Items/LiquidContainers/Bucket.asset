@@ -22,4 +22,4 @@ MonoBehaviour:
     number: 2
   craftTables: ffffffff
   numberItem: 1
-  capacity: 200
+  capacity: 500

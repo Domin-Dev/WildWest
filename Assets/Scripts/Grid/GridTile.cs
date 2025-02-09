@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [System.Serializable]
-public class GridTile : IGetBarValue
+public class GridTile : IHitPoints
 {
     public int tileID {private set; get; }
     public int secondLayerID { private set; get; }
@@ -62,7 +62,7 @@ public class GridTile : IGetBarValue
     public bool IsGridObjectClass()
     {
         if (gridObject == null) return false;
-        return gridObject.GetType() != typeof(GridSurface);
+        return !(gridObject is GridSurface);
     }
 
     public void SetGridObject(GridObject gridObject, bool isWalkable = false)

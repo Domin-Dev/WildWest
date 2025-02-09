@@ -200,7 +200,7 @@ public class LiquidsManager : MonoBehaviour
     }
     public void RemoveHole(GridTile gridTile)
     {
-        if(gridTile != null && gridTile.GridObjectIsType(out GridHole hole))
+        if(gridTile != null && gridTile.GridObjectIsType(out GridHole hole) && hole.waterHoleID >= 0)
         {
             WaterBody waterBody = waterBodies[hole.waterHoleID];
             if (waterBody.Decrease(waterBody.GetFillTile(),1))
