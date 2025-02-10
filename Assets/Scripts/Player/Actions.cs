@@ -1,4 +1,5 @@
 
+using System;
 using UnityEngine;
 
 public class Actions : MonoBehaviour
@@ -8,6 +9,8 @@ public class Actions : MonoBehaviour
     Transform pointerTransform;
     //public static Grid<GridTile> grid { private set; get; }
     public static Actions instance { private set; get; }
+   
+    public event EventHandler useItem;
 
     Vector2 lastPos;
 
@@ -83,15 +86,17 @@ public class Actions : MonoBehaviour
     {
         Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
         GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(pos);
-        Tool item = null;
-        if(itemStats != null) item = ItemsAsset.instance.GetItem(itemStats.itemID) as Tool;
+        Item item = null;
+
+        if (itemStats != null) item = ItemsAsset.instance.GetItem(itemStats.itemID);
+        else return;
         if (gridTile == null ) return;
 
         GridObject gridObject;
-        if (gridTile.IsGridObjectClass(out gridObject) && !(gridObject is GridHole))
+        if (gridTile.IsGridObjectClass(out gridObject) && !(gridObject is GridHole) && item is Tool)
         {
             var type = ItemsAsset.instance.GetToolRequired(gridObject.ID);
-            if (type != ToolType.None && (item == null || type != item.toolType))
+            if (type != ToolType.None && (item == null || type != ((Tool)item)?.toolType))
             {
                 Sounds.instance.Sword();
                 return;
@@ -147,24 +152,33 @@ public class Actions : MonoBehaviour
         }
         else if (item != null)
         {
-            switch (item.toolType)
+
+            switch (item)
             {
-                case ToolType.Shovel:
-                    BuildingManager.instance.Digging(pos);
-                    break;
-                case ToolType.Hoe:
-                    BuildingManager.instance.Hoeing(pos);
-                    break;
-            }
-        }
-        else
-        {
-            switch (itemStats)
-            {
-                case LiquidContainerItem:
+                case LiquidContainer:
                     FillLiquidContainer((LiquidContainerItem)itemStats, gridTile);
                     break;
+                case Tool:
+                    ToolAction(pos,(Tool)item);
+                    break;
+                case Seed:
+                    SeedAction(pos,item);
+                    break;
             }
+
+        }
+    }
+
+    private void ToolAction(Vector2 pos, Tool tool)
+    {
+        switch (tool.toolType)
+        {
+            case ToolType.Shovel:
+                BuildingManager.instance.Digging(pos);
+                break;
+            case ToolType.Hoe:
+                BuildingManager.instance.Hoeing(pos);
+                break;
         }
     }
     public void SideAction(ItemStats itemStats)
@@ -184,6 +198,10 @@ public class Actions : MonoBehaviour
         }      
     }
 
+    private void SeedAction(Vector2 posXY, Item item)
+    {
+        BuildingManager.instance.Seeding(posXY,(Seed)item);
+    }
     private void FillLiquidContainer(LiquidContainerItem item, GridTile gridTile)
     {
         float free = item.GetFreeFill();

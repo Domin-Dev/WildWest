@@ -1,13 +1,8 @@
 
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public interface IHitPoints
-{
-    public float GetBarValue();
-    public void IncreaseHitPoints(float value);
-    public bool DecreaseHitPoints(float value);
-}
 public class GridContainer : GridObject
 {
     public ItemStats[] items;
@@ -28,6 +23,7 @@ public class GridWall : GridObject
 {
     public GridWall(int ID, int indexVariant, Transform obj,Vector2 mainPosition, int stateIndex = 0) : base(ID, indexVariant, obj, mainPosition , stateIndex)
     {
+
     }
 }
 public class GridSurface : GridObject
@@ -66,6 +62,11 @@ public class GridObject: IHitPoints
     public Vector2 mainPosition;
 
     public GridObject(int ID,int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0)
+    {
+        SetObject(ID, indexVariant, obj, mainPosition, stateIndex);
+    }
+
+    protected void SetObject(int ID, int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex)
     {
         this.ID = ID;
         this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
@@ -127,21 +128,46 @@ public class GridObject: IHitPoints
         return ItemsAsset.instance.GetItem(ID).name;
     }
 }
-
-public class GridFarmland : GridSurface
+public class GridFarmland : GridSurface, IWater
 {
-    public bool watered { private set; get; }
+    private bool watered;
     public GridFarmland(int ID,bool watered = false) : base(ID)
     {
         this.watered = watered;
     }
-
     public void Water()
     {
         watered = true;
     }
+
+    public bool IsWatered()
+    {
+        return watered;
+    }
+    public void Dry()
+    {
+        watered = false;
+    }
 }
-
-
+public class GridPlant : GridObject,IWater
+{
+    private bool watered;
+    public GridPlant(bool watered,int ID, int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0): base(ID,indexVariant,obj,mainPosition,stateIndex)
+    {
+        this.watered = watered;
+    }
+    public void Water()
+    {
+        watered = true;
+    }
+    public bool IsWatered()
+    {
+        return watered;
+    }
+    public void Dry()
+    {
+        watered = false;
+    }
+}
 
 

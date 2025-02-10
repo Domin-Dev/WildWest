@@ -20,7 +20,7 @@ public class BuildingManager : MonoBehaviour
 
     Vector2 startPos;
     Vector2 shadowOffset;
-    Action<Vector2> build;
+    Action<Vector2,int,int> build;
     Vector2 lastPos;
 
 
@@ -82,7 +82,7 @@ public class BuildingManager : MonoBehaviour
                 {
                     if (GridVisualization.instance.GetTileByGridPosition(pos) != null)
                     {
-                        build(pos);
+                        build(pos,selectedObjectID, rotation % rotationStates);
                         planObject.gameObject.SetActive(false);
                         UIManager.instance.PrintTileInfo();
                     }
@@ -210,7 +210,7 @@ public class BuildingManager : MonoBehaviour
             rotation = 0;
         }
     }
-    private void BuildWall(Vector2 posXY)
+    private void BuildWall(Vector2 posXY, int itemID, int variantIndex)
     {
         var gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
         if (gridTile == null || gridTile.IsGridObjectClass()) return;
@@ -312,7 +312,19 @@ public class BuildingManager : MonoBehaviour
             Sounds.instance.Hammer();
         }
     }
-    private void BuildFloor(Vector2 posXY)
+
+    public void Seeding(Vector2 posXY, Seed seed)
+    {
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
+        if (gridTile == null) return;
+        Item tile = ItemsAsset.instance.GetItem(gridTile.tileID);
+
+        if (tile is Farmland && gridTile.GridObjectIsType(out GridFarmland farmland)) 
+        {
+            BuildObject(posXY, seed.plantID.itemID, 4);
+        }
+    }
+    private void BuildFloor(Vector2 posXY, int itemID, int variant)
     {
         GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
         if (gridTile.tileID != selectedObjectID || (gridTile.secondLayerID == -1))
@@ -364,12 +376,13 @@ public class BuildingManager : MonoBehaviour
         else
             return 0;
     }
-    private void BuildObject(Vector2 posXY)
+    private void BuildObject(Vector2 posXY,int itemID, int variantIndex)
     {
         if (GridVisualization.instance.GetTileByGridPosition(posXY).IsGridObjectClass()) return;
 
-        VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(selectedObjectID);
-        Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
+        VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(itemID);
+        Variant variant = item.objectVariants[variantIndex].variants[0];
+       // Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
 
 
         for (int i = 0; i < variant.objectPoints.Length; i++)
@@ -382,8 +395,6 @@ public class BuildingManager : MonoBehaviour
         obj.tag = "BuildObject";
         SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
 
-
-
         if (variant.CoveringPoints != null)
         {
             for (int i = 0; i < variant.CoveringPoints.Length; i++)
@@ -395,7 +406,7 @@ public class BuildingManager : MonoBehaviour
         spriteRenderer.sprite = variant.sprite;
         if (variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
         else Destroy(obj.GetComponent<PolygonCollider2D>());
-        CreateGridObject(selectedObjectID,posXY, rotation % rotationStates, obj.parent);
+        CreateGridObject(itemID, posXY, variantIndex, obj.parent);
         MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
         GridVisualization.instance.MoveWorldItems(posXY);
         builtObject(this, null);
@@ -403,20 +414,24 @@ public class BuildingManager : MonoBehaviour
     private void CreateGridObject(int itemID,Vector2 posXY,int indexVariant, Transform buildingObj)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
-        GridTile gridObject = GridVisualization.instance.GetTileByGridPosition(posXY);
+        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
 
         switch (item)
         {
             case DoorItem:
-                gridObject.SetGridObject(new GridDoor(itemID, indexVariant, buildingObj,posXY), true);
+                gridTile.SetGridObject(new GridDoor(itemID, indexVariant, buildingObj,posXY), true);
                 return;
             case ContainerItem : 
-                gridObject.SetGridObject(new GridContainer(itemID, indexVariant, buildingObj,(item as ContainerItem).capacity,posXY),true);
+                gridTile.SetGridObject(new GridContainer(itemID, indexVariant, buildingObj,(item as ContainerItem).capacity,posXY),true);
+                return;
+            case Plant:
+                IWater water = gridTile.gridObject as IWater;
+                gridTile.SetGridObject(new GridPlant(water.IsWatered(), itemID, indexVariant, buildingObj,posXY), true);
                 return;
         }
 
         GridObject gridObj = new GridObject(itemID, indexVariant, buildingObj,posXY);
-        gridObject.SetGridObject(gridObj);
+        gridTile.SetGridObject(gridObj);
 
         Variant variant = ((VariantItem)item).objectVariants[indexVariant].variants[0];
         if (variant.objectPoints != null)

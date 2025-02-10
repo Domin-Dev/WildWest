@@ -298,7 +298,8 @@ public class EquipmentManager : MonoBehaviour
     public void SetUpEvent(HandsController handsController)
     {
         handsController.UseItem += UseSelectedItem;
-        BuildingManager.instance.builtObject += BuiltObject;
+        BuildingManager.instance.builtObject += UseItem;
+        Actions.instance.useItem += UseItem;
     }
 
     public void MoveUpItem(SlotPosition slotPosition)
@@ -482,7 +483,7 @@ public class EquipmentManager : MonoBehaviour
     {
         return HasPlaceholders(slotPosition.gridIndex);
     }
-    private void BuiltObject(object sender, EventArgs e)
+    public void UseItem(object sender, EventArgs e)
     {
         if (DecreaseItemCount(new SlotPosition(0, slotInHand), 1) <= 0)
             UpdateItemInHand(this, new ItemStatsArgs(equipmentBar[slotInHand]));

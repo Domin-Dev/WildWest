@@ -525,9 +525,10 @@ public class GridVisualization : MonoBehaviour
     private void GetUVTile(GridTile gridTile,out Vector2 uv00, out Vector2 uv11)
     {
         Vector2 uv;
-        if (gridTile.GridObjectIsType(out GridFarmland farmland))
+        IWater water = gridTile.gridObject as IWater;
+        if (water != null)
         {
-            if(farmland.watered)
+            if(water.IsWatered())
                 uv = (Vector2)TilesUV[gridTile.tileID].uv00second;
             else
                 uv = TilesUV[gridTile.tileID].uv00;
