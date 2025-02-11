@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6770b8fc01bffa6439b92a89f4e48f80, type: 3}
+  m_Name: Potato
+  m_EditorClassIdentifier: 
+  name: Potato
+  description: 
+  ID: 97
+  stackMax: 50
+  icon: {fileID: -220352005, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  crafingIngredients: []
+  craftTables: 
+  numberItem: 1
+  durability: 0
+  drop: []
+  texture: {fileID: 2800000, guid: aa17653713f50ed4f9464a4c00ef1941, type: 3}
+  toolRequired: 0
+  HitParticles: {fileID: 8377258103205601058, guid: fb21eabfabc89c544a71fc84c24bc9f2, type: 3}
+  objectVariants:
+  - variants:
+    - hitbox:
+      - {x: -0.03, y: 0.085}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: -0.04, y: 0.085}
+      minY: 0.085
+      sprite: {fileID: 21300000, guid: e8ae7b9594bd64a40ab69ef9da65d679, type: 2}
+  - variants:
+    - hitbox:
+      - {x: 0.04, y: 0.145}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.03, y: 0.145}
+      minY: 0.145
+      sprite: {fileID: 21300000, guid: 20e33a399d244634a8673012a5f43a8f, type: 2}
+  - variants:
+    - hitbox:
+      - {x: 0, y: 0.21499999}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: -0.01, y: 0.21499999}
+      minY: 0.21499999
+      sprite: {fileID: 21300000, guid: 612369a4786ea6f4084e9f39a93ade5e, type: 2}
+  - variants:
+    - hitbox:
+      - {x: 0.04, y: 0.16499999}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.03, y: 0.16499999}
+      minY: 0.16499999
+      sprite: {fileID: 21300000, guid: e6e0716cb7957dd4ca1a094ea20cb2a6, type: 2}
+  - variants:
+    - hitbox:
+      - {x: 0.04, y: 0.095}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.03, y: 0.095}
+      minY: 0.095
+      sprite: {fileID: 21300000, guid: 07c01d2081ec4e24489e2442f484dd15, type: 2}
+  - variants:
+    - hitbox:
+      - {x: -0.02, y: 0.16499999}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: -0.03, y: 0.16499999}
+      minY: 0.16499999
+      sprite: {fileID: 21300000, guid: 6fb02b51c05ee234fbea6ef09380021c, type: 2}
+  shadowPixels: 0
+  size:
+    x: 27
+    y: 35
+  growthTime: 10
