@@ -2,6 +2,7 @@
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class GridContainer : GridObject
 {
@@ -139,7 +140,6 @@ public class GridFarmland : GridSurface, IWater
     {
         watered = true;
     }
-
     public bool IsWatered()
     {
         return watered;
@@ -152,9 +152,41 @@ public class GridFarmland : GridSurface, IWater
 public class GridPlant : GridObject,IWater
 {
     private bool watered;
+    private float toGrowth;
     public GridPlant(bool watered,int ID, int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0): base(ID,indexVariant,obj,mainPosition,stateIndex)
     {
         this.watered = watered;
+        toGrowth = 0;
+        TimeTickSystem.OnTick += Tick;   
+    }
+
+    private void Tick(object sender, TimeTickSystem.OnTickArgs e)
+    {
+        int stage = GetCurrentStage(toGrowth);
+        if(watered)
+            toGrowth += 0.01f;
+        else
+            toGrowth += 0.005f;
+
+        int newStage = GetCurrentStage(toGrowth);
+        if(stage != newStage)
+        {
+            if(newStage == 4) 
+            {
+                TimeTickSystem.OnTick -= Tick;        
+            }
+            variantIndex = newStage;
+            BuildingManager.instance.ChangeSprite(this);
+        }
+    }
+
+    private int GetCurrentStage(float toGrowth)
+    {
+        if (toGrowth >= 1) return 4;
+        else if (toGrowth >= 0.7f) return 3;
+        else if (toGrowth >= 0.5f) return 2;
+        else if (toGrowth >= 0.1f) return 1;
+        else  return 0;
     }
     public void Water()
     {
@@ -167,6 +199,10 @@ public class GridPlant : GridObject,IWater
     public void Dry()
     {
         watered = false;
+    }
+    public override void Destory(GridTile gridTile)
+    {
+        GridVisualization.instance.DestroyPlant(gridTile);
     }
 }
 

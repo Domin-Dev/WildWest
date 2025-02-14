@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   durabilityBarColor: {r: 0.01182553, g: 0.8396226, b: 0, a: 1}
   liquidCapacityBarColor: {r: 0, g: 0.30396703, b: 0.9716981, a: 1}
+  shelfLifeBarColor: {r: 1, g: 0.7565238, b: 0.088679194, a: 1}

@@ -169,6 +169,11 @@ public class Actions : MonoBehaviour
         }
     }
 
+    private void Hit()
+    {
+
+    }
+
     private void ToolAction(Vector2 pos, Tool tool)
     {
         switch (tool.toolType)

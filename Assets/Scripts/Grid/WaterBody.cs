@@ -86,7 +86,6 @@ public class WaterBody
     public int GetWaterLevel()
     {
         double level = (fill / (float)tileCount) / 1000f;
-        Debug.Log(level);
         if (level >= 0.75f)
             return 4;
         else if (level >= 0.5f)

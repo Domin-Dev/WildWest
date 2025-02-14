@@ -321,7 +321,7 @@ public class BuildingManager : MonoBehaviour
 
         if (tile is Farmland && gridTile.GridObjectIsType(out GridFarmland farmland)) 
         {
-            BuildObject(posXY, seed.plantID.itemID, 4);
+            BuildObject(posXY, seed.plantID.itemID,0);
         }
     }
     private void BuildFloor(Vector2 posXY, int itemID, int variant)
@@ -365,7 +365,7 @@ public class BuildingManager : MonoBehaviour
         else
             return 0;
     }
-    private int RandomVariant(int floorID)
+    public static int RandomVariant(int floorID)
     {
         var tileUV =  GridVisualization.instance.TilesUV[floorID];
         if (tileUV != null)
@@ -382,7 +382,6 @@ public class BuildingManager : MonoBehaviour
 
         VariantItem item = (VariantItem)ItemsAsset.instance.GetItem(itemID);
         Variant variant = item.objectVariants[variantIndex].variants[0];
-       // Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
 
 
         for (int i = 0; i < variant.objectPoints.Length; i++)
@@ -442,23 +441,30 @@ public class BuildingManager : MonoBehaviour
             }
         }
     }
-    public void ChangeSprite(Vector2 posXY, int index)
+    public void ChangeSprite(Vector2 posXY, int index = 0)
     {
         GridObject gridObject = GridVisualization.instance.GetTileByGridPosition(posXY).gridObject;
-        Variant  variant = ItemsAsset.instance.GetObjectVariant(gridObject.ID, gridObject.variantIndex).variants[index];
+        ChangeSprite(gridObject, index);
+    }
+    public void ChangeSprite(GridObject gridObject, int index = 0)
+    {
+        Variant variant = ItemsAsset.instance.GetObjectVariant(gridObject.ID, gridObject.variantIndex).variants[index];
 
         Transform obj = null;
         for (int i = 0; i < gridObject.objectTransform.childCount; i++)
         {
             if (gridObject.objectTransform.GetChild(i).CompareTag("BuildObject"))
-            obj = gridObject.objectTransform.GetChild(i);
+                obj = gridObject.objectTransform.GetChild(i);
         }
 
         obj.GetComponent<SpriteRenderer>().sprite = variant.sprite;
         PolygonCollider2D polygonCollider2D = obj.GetComponent<PolygonCollider2D>();
-        polygonCollider2D.points = variant.hitbox;
-        polygonCollider2D.usedByComposite = false;
-        Timer.Create(2f, () => { if(polygonCollider2D != null) polygonCollider2D.usedByComposite = true; return false; });
+        if (polygonCollider2D != null)
+        {
+            polygonCollider2D.points = variant.hitbox;
+            polygonCollider2D.usedByComposite = false;
+            Timer.Create(2f, () => { if (polygonCollider2D != null) polygonCollider2D.usedByComposite = true; return false; });
+        }
         MyTools.ChangePositionPivot(gridObject.objectTransform, obj.TransformPoint(0, variant.minY, 0));
     }
 }

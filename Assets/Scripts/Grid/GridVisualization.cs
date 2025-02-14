@@ -808,6 +808,35 @@ public class GridVisualization : MonoBehaviour
     {
         ground.SetGridObject(null,true);
     }
+    public void DestroyPlant(GridTile gridTile)
+    {
+        int id = gridTile.gridObject.ID;
+        bool isWatered = (gridTile.gridObject as IWater).IsWatered();
+        Item item = ItemsAsset.instance.GetItem(id);
+        Vector2 vector2 = new Vector2(gridTile.x, gridTile.y);
+        Destroy(gridTile.gridObject.objectTransform.gameObject);
+        DestroyDrop(gridTile.gridObject, vector2);
+
+        if (gridTile.gridObject.variantIndex >= 0)
+        {
+            Variant variant = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
+            Vector2 mainPos = gridTile.gridObject.mainPosition;
+            GetTileByGridPosition(mainPos)?.SetGridObject(null);
+            for (int i = 0; i < variant.objectPoints.Length; i++)
+            {
+                GetTileByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);
+            }
+        }
+
+        if (gridTile.tileID >= 0 && ItemsAsset.instance.GetItem<Farmland>(gridTile.tileID) != null)
+        {
+            gridTile.SetTileID(gridTile.tileID);
+            gridTile.SetGridObject(new GridFarmland(gridTile.tileID, isWatered), true);
+            gridTile.variant =  BuildingManager.RandomVariant(gridTile.tileID);
+            UpdateMesh(gridTile.x,gridTile.y, true);
+            Sounds.instance.Hammer();
+        }
+    }
     public void DestroyDrop(GridObject gridObject, Vector2 pos)
     {
         BuildingItem item = (BuildingItem)ItemsAsset.instance.GetItem(gridObject.ID);
@@ -838,13 +867,6 @@ public class GridVisualization : MonoBehaviour
                 }
             }
         }
-
-        if(item.drop.Length == 0)
-        {
-            Vector2 target = GetWorldPosition(pos + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
-            CreateWorldItem(new ItemStats(gridObject.ID), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
-        }
-
     }
     public void UpdateNeighbors(Vector2 positionXY, int ID)
     {
