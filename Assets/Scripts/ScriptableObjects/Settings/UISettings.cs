@@ -7,6 +7,6 @@ public class UISettings : ScriptableObject
 {
     public Color durabilityBarColor;
     public Color liquidCapacityBarColor;
-    public Color shelfLifeBarColor;
+    public Color ShelfLifeBarColor;
 }
 
