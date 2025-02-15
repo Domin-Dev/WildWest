@@ -167,7 +167,7 @@ public class UIManager : MonoBehaviour
         eqManager.CreateMainBarItem += CreateMainBarItem;
         eqManager.RemoveMainBarItem += RemoveMainBarItem;
         eqManager.UpdateMainBarItemCount += UpdateMainBarItemCount;
-        eqManager.UpdateItemLifeBar += UpdateItemLifeBar;
+        eqManager.UpdateItemBar += UpdateItemLifeBar;
         eqManager.TurnPlaceholder += TurnPlaceholder;
 
 

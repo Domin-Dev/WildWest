@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
 
@@ -197,7 +198,7 @@ public class EquipmentManager : MonoBehaviour
 
     public event EventHandler<PlaceholderArgs> TurnPlaceholder;
 
-    public event EventHandler<LifeBarArgs> UpdateItemLifeBar;
+    public event EventHandler<LifeBarArgs> UpdateItemBar;
 
     public event EventHandler<ItemStatsArgs> UpdateItemInHand;
 
@@ -258,6 +259,38 @@ public class EquipmentManager : MonoBehaviour
         placeholderGrids.Add(2);
 
         ChangeSelectedSlot(0);
+        TimeTickSystem.OnTick += TickUpdate;
+    }
+
+    private void Spoilage(FoodItem foodItem,SlotPosition slotPosition)
+    {
+        foodItem.Decrease(1f);
+        float value = foodItem.GetBarValue();
+        if(value <= 0)
+        {
+            RemoveItem(slotPosition);
+            AddItemToGrid(slotPosition, ItemsAsset.instance.GetItemStats(118, foodItem.itemCount));
+        }
+        else
+            UpdateItemBar(this, new LifeBarArgs(slotPosition, value));
+    }
+    private void TickUpdate(object sender, TimeTickSystem.OnTickArgs e)
+    {
+        if(selectedItemStats is FoodItem)
+        {
+           (selectedItemStats as FoodItem).Decrease(1f);
+        }
+        for (int i = 0; i < 2; i++)
+        {
+            ItemStats [] items = GetGrid(i);
+            for (int j = 0; j < items.Length; j++)
+            {
+                if (items[j] is FoodItem)
+                {
+                    Spoilage(items[j] as FoodItem, new SlotPosition(i,j));
+                }
+            }
+        }
     }
 
     private void Update()
@@ -295,13 +328,14 @@ public class EquipmentManager : MonoBehaviour
         }
     }
 
+
+  
     public void SetUpEvent(HandsController handsController)
     {
         handsController.UseItem += UseSelectedItem;
         BuildingManager.instance.builtObject += UseItem;
         Actions.instance.useItem += UseItem;
     }
-
     public void MoveUpItem(SlotPosition slotPosition)
     {
         if (container != null)
@@ -323,7 +357,6 @@ public class EquipmentManager : MonoBehaviour
                 FindGoodSlot(slotPosition, new int[] { 0});
         }
     }
-
     public void MoveUpItems(SlotPosition slotPosition)
     {
         if (slotPosition.gridIndex == 2) return;
@@ -352,12 +385,10 @@ public class EquipmentManager : MonoBehaviour
         }
 
     }
-
     private void FindGoodSlots(int itemID, int from, int to)
     {
         FindGoodSlots(itemID,new int[] { from }, new int[] { to } );
     }
-
     private void FindGoodSlots(int itemID, int[] gridsFrom, int[] gridsTo)
     {
         var items = FindItems(itemID, gridsFrom);
@@ -425,7 +456,6 @@ public class EquipmentManager : MonoBehaviour
         }
         return false;
     }
-
     private void MoveItem(SlotPosition from, SlotPosition to)
     {
         if(IsFreeSlot(to))
@@ -495,7 +525,7 @@ public class EquipmentManager : MonoBehaviour
         IBarValue item = equipmentBar[slotInHand] as IBarValue;
         if (item != null)
         {
-            UpdateItemLifeBar(this, new LifeBarArgs(new SlotPosition(0, slotInHand), item.GetBarValue()));
+            UpdateItemBar(this, new LifeBarArgs(new SlotPosition(0, slotInHand), item.GetBarValue()));
         }
     }
     public void UnselectedSlot()
@@ -548,7 +578,8 @@ public class EquipmentManager : MonoBehaviour
         }
 
         int half = itemStats.itemCount / 2;
-        selectedItemStats = new ItemStats(itemStats.itemID, itemStats.itemCount - half);
+
+        selectedItemStats = ItemsAsset.instance.GetItemStats(itemStats.itemID, itemStats.itemCount - half);
         itemStats.itemCount = half;
 
         NewItemUI(itemStats, selectedSlotInEQ, true);
@@ -588,33 +619,45 @@ public class EquipmentManager : MonoBehaviour
             UpdateItemInHand(this, new ItemStatsArgs(equipmentBar[newSlot]));
         }
     }
-
-    private bool CheckTab(ItemStats[] items,int gridIndex,ItemStats itemStats,int stackMax)
+    private bool CheckTab(ItemStats[] items, int gridIndex, ItemStats itemStats, int stackMax)
     {
         for (int i = 0; i < items.Length; i++)
         {
             if (items[i] == null)
             {
-                if (itemStats.itemCount > stackMax)
-                {
-                    itemStats.itemCount -= stackMax;
-                    ItemStats newItem = itemStats.Clon();
-                    newItem.itemCount = stackMax;
-
-                    items[i] = newItem;
-                    NewItemUI(newItem, new SlotPosition(gridIndex, i), false);
-                }
-                else
-                {
-                    items[i] = itemStats;
-                    NewItemUI(itemStats, new SlotPosition(gridIndex, i), false);
-                    UIManager.instance.CheckRecipesWithItem(itemStats.itemID, true);
+                if (AddItemToGrid(items,gridIndex,i,itemStats,stackMax))
                     return true;
-                }
             }
         }
         return false;
     }
+
+    private bool AddItemToGrid(ItemStats[] items, int gridIndex, int slotIndex, ItemStats itemStats, int stackMax)
+    {
+        if (itemStats.itemCount > stackMax)
+        {
+            itemStats.itemCount -= stackMax;
+            ItemStats newItem = itemStats.Clon();
+            newItem.itemCount = stackMax;
+            items[slotIndex] = newItem;
+            NewItemUI(newItem, new SlotPosition(gridIndex, slotIndex), false);
+            return false;
+        }
+        else
+        {
+            items[slotIndex] = itemStats;
+            NewItemUI(itemStats, new SlotPosition(gridIndex, slotIndex), false);
+            UIManager.instance.CheckRecipesWithItem(itemStats.itemID, true);
+            return true;
+        }
+    }
+
+    private bool AddItemToGrid(SlotPosition slotPosition, ItemStats itemStats)
+    {
+        int stackMax = ItemsAsset.instance.GetStackMax(itemStats.itemID);
+        return AddItemToGrid(GetGrid(slotPosition.gridIndex),slotPosition.gridIndex,slotPosition.slotIndex, itemStats, stackMax);
+    }
+
     public bool AddNewItem(ItemStats itemStats)
     {
         if(itemStats == null) return false;

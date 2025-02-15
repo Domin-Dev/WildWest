@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Runtime.ConstrainedExecution;
 
 public class TimeTickSystem : MonoBehaviour
 {
@@ -11,8 +12,10 @@ public class TimeTickSystem : MonoBehaviour
         public int tick;
     }
 
+    public static event EventHandler<OnTickArgs> OnMinuteTick;
     public static event EventHandler<OnTickArgs> OnTick;
-    private const float TickTimerMax = 0.2f;
+    private const float TickTimerMax = 0.1f;
+    private const int TicksPerMinute = (int)(60f/TickTimerMax);
 
     private int tick;
     private float tickTimer;
@@ -31,6 +34,10 @@ public class TimeTickSystem : MonoBehaviour
             tickTimer = 0;
             tick++;
             OnTick?.Invoke(this,new OnTickArgs(tick));
+            if(tick % TicksPerMinute == 0)
+            {
+                OnMinuteTick?.Invoke(this,new OnTickArgs(tick));
+            }
         }
     }
 }
