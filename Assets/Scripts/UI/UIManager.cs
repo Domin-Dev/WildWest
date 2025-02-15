@@ -509,6 +509,9 @@ public class UIManager : MonoBehaviour
             case DestroyableItem:
                 image.color = uISettings.durabilityBarColor;
                 break;
+            case FoodItem:
+                image.color = uISettings.shelfLifeBarColor;
+                break;
         }
     }
    

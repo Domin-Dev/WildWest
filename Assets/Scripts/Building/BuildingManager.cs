@@ -269,7 +269,8 @@ public class BuildingManager : MonoBehaviour
 
         if (gridTile.secondLayerID >= 0)
         {
-            GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
+
+            GridVisualization.instance.CreateWorldItem(ItemsAsset.instance.GetItemStats(gridTile.tileID), posXY);
             gridTile.SetTileID(gridTile.secondLayerID);
             gridTile.variant = CalculateVariant(gridTile.secondLayerID);
             gridTile.SetGridObject(new GridSurface(gridTile.secondLayerID),true);
@@ -285,7 +286,7 @@ public class BuildingManager : MonoBehaviour
             Sounds.instance.Hammer();
             if (!gridTile.DecreaseHitPoints(20))
             {
-                GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
+                GridVisualization.instance.CreateWorldItem(ItemsAsset.instance.GetItemStats(gridTile.tileID), posXY);
                 int id = 60;
                 gridTile.SetTileID(60);
                 gridTile.variant = CalculateVariant(id);

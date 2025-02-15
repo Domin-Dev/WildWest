@@ -863,7 +863,7 @@ public class GridVisualization : MonoBehaviour
                 for (int j = 0; j < number; j++)
                 {
                     Vector2 target = GetWorldPosition(pos + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
-                    CreateWorldItem(new ItemStats(drop.ingredient.itemID), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
+                    CreateWorldItem(ItemsAsset.instance.GetItemStats(drop.ingredient.itemID), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
                 }
             }
         }
