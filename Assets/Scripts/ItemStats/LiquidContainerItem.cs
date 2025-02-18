@@ -43,4 +43,14 @@ public class LiquidContainerItem : ItemStats, IBarValue
     {
         return maxCapacity - currentFill;
     }
+
+    public float GetCurrentValue()
+    {
+        return currentFill;
+    }
+
+    public void SetCurrentValue(float value)
+    {
+        currentFill = value;
+    }
 }

@@ -259,7 +259,7 @@ public class EquipmentManager : MonoBehaviour
         placeholderGrids.Add(2);
 
         ChangeSelectedSlot(0);
-        TimeTickSystem.OnTick += TickUpdate;
+        TimeTickSystem.On10Tick += TickUpdate;
     }
 
     private void Spoilage(FoodItem foodItem,SlotPosition slotPosition)
@@ -417,7 +417,7 @@ public class EquipmentManager : MonoBehaviour
                     if (itemStats.itemCount > free)
                     {
                         itemStats.itemCount -= free;
-                        IncreaseItemCount(itemList[i], free);
+                        IncreaseItemCount(itemList[i], free,itemStats);
                     }
                     else
                     {
@@ -425,7 +425,7 @@ public class EquipmentManager : MonoBehaviour
                         {
                             TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
                         }
-                        IncreaseItemCount(itemList[i], itemStats.itemCount);
+                        IncreaseItemCount(itemList[i], itemStats.itemCount, itemStats);
                         ClearSlot(slotPosition);
                         RemoveItemUI(this, new PositionArgs(slotPosition)); 
                         return true;
@@ -576,12 +576,11 @@ public class EquipmentManager : MonoBehaviour
             SelectedSlotTakeAll(slotPosition);
             return;
         }
-
         int half = itemStats.itemCount / 2;
+        selectedItemStats = itemStats.Clon();
+        selectedItemStats.itemCount =- half;
 
-        selectedItemStats = ItemsAsset.instance.GetItemStats(itemStats.itemID, itemStats.itemCount - half);
         itemStats.itemCount = half;
-
         NewItemUI(itemStats, selectedSlotInEQ, true);
         UpdateCount(selectedSlotInEQ);
         UpdateDragCount(selectedItemStats.itemCount);
@@ -678,11 +677,11 @@ public class EquipmentManager : MonoBehaviour
                         if (itemStats.itemCount > free)
                         {
                             itemStats.itemCount -= free;
-                            IncreaseItemCount(itemList[i], free);
+                            IncreaseItemCount(itemList[i], free, itemStats);
                         }
                         else
                         {
-                            IncreaseItemCount(itemList[i], itemStats.itemCount);
+                            IncreaseItemCount(itemList[i], itemStats.itemCount, itemStats);
                             UIManager.instance.CheckRecipesWithItem(itemStats.itemID, true);
                             UIManager.instance.NewCollectedItem(itemStats.itemID,startCount);
                             return true;
@@ -896,15 +895,10 @@ public class EquipmentManager : MonoBehaviour
             else
             {
                 itemStats = GetItemStats(position);
-                if (itemStats.itemID != selectedItemStats.itemID || itemStats.itemCount >= stackMax)
-                {
-                    return;
-                }
-                itemStats.itemCount += 1;
+                if (itemStats.itemID != selectedItemStats.itemID || itemStats.itemCount >= stackMax) return;
+                IncreaseItemCount(position, 1, selectedItemStats);
             }
             selectedItemStats.itemCount--;
-            UpdateCount(position);
-
 
             if (selectedItemStats.itemCount <= 0)
             {
@@ -933,12 +927,12 @@ public class EquipmentManager : MonoBehaviour
         {
             if (free >= item.itemCount)
             {
-                IncreaseItemCount(target, item.itemCount);
+                IncreaseItemCount(target, item.itemCount,item);
             }
             else
             {
                 item.itemCount -= free;
-                IncreaseItemCount(target, free);
+                IncreaseItemCount(target, free,item);
                 FindSlotForIt(item, lastPosition);
             }
         }
@@ -1005,14 +999,14 @@ public class EquipmentManager : MonoBehaviour
                     if (item.itemCount == stackMax) continue;
                     if (item.itemCount > free)
                     {
-                        itemStats.itemCount += free;
                         item.itemCount -= free;
+                        IncreaseItemCount(position, free, item);
                         UpdateCount(itemPosition);
                         break;
                     }
                     else
                     {
-                        itemStats.itemCount += item.itemCount;
+                        IncreaseItemCount(position, item.itemCount, item);
                         free -= item.itemCount;
                         ClearSlot(itemPosition);
                         RemoveItem(itemPosition);
@@ -1156,12 +1150,17 @@ public class EquipmentManager : MonoBehaviour
     {
         RemoveMainBarItem(this, new PositionArgs(position));
     }
-    private void IncreaseItemCount(SlotPosition position, int value)
+    private void IncreaseItemCount(SlotPosition position, int number, ItemStats itemStats)
     {
-        GetItemStats(position).itemCount += value;
+        ItemStats item = GetItemStats(position);
+        if (item is IStackingBarValues)
+        {
+            (item as IStackingBarValues).Stacking(number, (itemStats as IBarValue).GetCurrentValue());
+            UpdateItemBar(this, new LifeBarArgs(position, (item as IBarValue).GetBarValue()));
+        }
+        item.itemCount += number; 
         UpdateCount(position);
     }
-
     private void DecreaseItemCount(int itemID, int value = 1)
     {
         var list = FindItems(itemID, false);
@@ -1214,6 +1213,10 @@ public class EquipmentManager : MonoBehaviour
         if (itemStats == null) return null;
         else
         {
+            if (itemStats is IBarValue)
+            {
+                return new TooltipInfo((itemStats as IBarValue).GetBarValue().ToString());
+            }
             return ItemsAsset.instance.GetTooltipInfo(itemStats.itemID);
         }
     }

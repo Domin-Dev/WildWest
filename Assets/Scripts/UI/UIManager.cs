@@ -398,13 +398,11 @@ public class UIManager : MonoBehaviour
     private void UpdateItemCount(object sender, UpdateItemCountArgs e)
     {
         Transform grid = GetGrid(e.position.gridIndex);
-        
         UpdateCount(grid, e);
         if(e.position.gridIndex == 0)
         {
             UpdateCount(mainItemBar,e);
         }    
-        
     }
     private void UpdateCount(Transform gridUI, UpdateItemCountArgs e)
     {
@@ -654,6 +652,7 @@ public class UIManager : MonoBehaviour
         Transform parent = null;
         if (position.gridIndex == 0) parent = equipmentItemBar;
         else if (position.gridIndex == 1) parent = equipmentItemSlots;
+        else if (position.gridIndex == 3) parent = equipmentContainer;
 
         if(parent != null)
         {

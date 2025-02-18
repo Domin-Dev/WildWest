@@ -23,4 +23,4 @@ MonoBehaviour:
   craftTables: ffffffff
   numberItem: 1
   saturation: 5
-  shelfLife: 80
+  shelfLife: 40

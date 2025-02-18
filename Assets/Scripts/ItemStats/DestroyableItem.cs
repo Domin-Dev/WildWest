@@ -34,4 +34,14 @@ public class DestroyableItem : ItemStats, IBarValue
     {
         currentLifePoints = math.clamp(currentLifePoints - value, 0, maxLifePonits);
     }
+
+    public float GetCurrentValue()
+    {
+        return currentLifePoints;
+    }
+
+    public void SetCurrentValue(float value)
+    {
+        currentLifePoints = value;
+    }
 }

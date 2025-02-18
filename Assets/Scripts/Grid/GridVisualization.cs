@@ -848,7 +848,7 @@ public class GridVisualization : MonoBehaviour
                 if (container.items[i] != null)
                 {
                     Vector2 target = GetWorldPosition(pos + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
-                    CreateWorldItem(new ItemStats(container.items[i]), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
+                    CreateWorldItem(container.items[i].Clon(), GetWorldPosition(pos + new Vector2(0, 0.5f)), target);
                 }
             }
         }

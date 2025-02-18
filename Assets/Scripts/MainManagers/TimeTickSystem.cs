@@ -14,6 +14,7 @@ public class TimeTickSystem : MonoBehaviour
 
     public static event EventHandler<OnTickArgs> OnMinuteTick;
     public static event EventHandler<OnTickArgs> OnTick;
+    public static event EventHandler<OnTickArgs> On10Tick;
     private const float TickTimerMax = 0.1f;
     private const int TicksPerMinute = (int)(60f/TickTimerMax);
 
@@ -38,6 +39,8 @@ public class TimeTickSystem : MonoBehaviour
             {
                 OnMinuteTick?.Invoke(this,new OnTickArgs(tick));
             }
+            if(tick % 10 == 0)
+                On10Tick?.Invoke(this, new OnTickArgs(tick));
         }
     }
 }
