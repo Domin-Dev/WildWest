@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Pathfinding
 {
@@ -22,11 +23,10 @@ public class Pathfinding
 
     public List<GridTile> FindPath(int startX,int startY,int endX,int endY)
     {
+        Debug.Log(endX + " " + endY);
         GridTile startNode = gridVisualization.GetGridTileByPositionXY(startX, startY);
         GridTile endNode = gridVisualization.GetGridTileByPositionXY(endX, endY);
         if(startNode == null || endNode == null) return null; 
-
-
 
         openList = new List<GridTile>() { startNode };
         closedList = new List<GridTile>();
@@ -38,6 +38,7 @@ public class Pathfinding
 
         while(openList.Count > 0)
         {
+            Debug.Log(closedList.Count);
             GridTile currentNode = GetLowestFCostNode(openList);
             if(currentNode == endNode)
             {

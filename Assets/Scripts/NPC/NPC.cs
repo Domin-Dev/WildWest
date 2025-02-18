@@ -11,6 +11,7 @@ public class NPC : MonoBehaviour
     [SerializeField] NPCSpriteController characterSpriteController;
 
     public List<GridTile> path;
+    public GridTile gridTile;
     
     private void Start()
     {
@@ -37,7 +38,6 @@ public class NPC : MonoBehaviour
         Vector2 vector2 = target - (Vector2)transform.position;
         rigidbody2D.velocity = vector2.normalized * 0.4f;
         characterSpriteController.UpdateSprite(vector2.normalized, vector2.normalized);
-        //Debug.Log(transform.position + " " + target + " = " + Vector2.Distance(transform.position, target));
         if (Vector2.Distance(transform.position, target) <= 0.01)
         {
             path.RemoveAt(0);
@@ -59,16 +59,18 @@ public class NPC : MonoBehaviour
     public void NewPath(int x,int y)
     {
         Vector2 xy = GridVisualization.instance.GetGridPosition(transform.position);
-        path = GridVisualization.instance.pathfinding.FindPath((int)xy.x, (int)xy.y,x, y);
-        if (path != null && path.Count > 0)
+        if (GridVisualization.instance.GetTileByGridPosition(xy).isWalkable)
         {
-            NextTarget();
+            gridTile = GridVisualization.instance.GetTileByGridPosition(xy);
+            path = GridVisualization.instance.pathfinding.FindPath((int)xy.x, (int)xy.y, x, y);
+            if (path != null && path.Count > 0)
+            {
+                NextTarget();
+                return;
+            }
         }
-        else
-        {
-            Debug.Log(x + "  " +  y + " " + gameObject.name);
-            NewPath(Random.Range(0, 20), Random.Range(0, 20));
-        }
+        Debug.Log(x + "  " + y + " " + gameObject.name);
+        NewPath(Random.Range(0, 20), Random.Range(0, 20));
     }
 
     private void NextTarget()
