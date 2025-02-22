@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Runtime.ConstrainedExecution;
+using Cinemachine.Utility;
 
 public class TimeTickSystem : MonoBehaviour
 {
@@ -15,8 +15,8 @@ public class TimeTickSystem : MonoBehaviour
     public static event EventHandler<OnTickArgs> OnMinuteTick;
     public static event EventHandler<OnTickArgs> OnTick;
     public static event EventHandler<OnTickArgs> On10Tick;
-    private const float TickTimerMax = 0.1f;
-    private const int TicksPerMinute = (int)(60f/TickTimerMax);
+    public static int TicksPerMinute = 600;
+    public static float TickTimerMax = 60f/TicksPerMinute;
 
     private int tick;
     private float tickTimer;
@@ -24,7 +24,6 @@ public class TimeTickSystem : MonoBehaviour
     private void Awake()
     {
         tick = 0;
-
     }
 
     private void Update()
