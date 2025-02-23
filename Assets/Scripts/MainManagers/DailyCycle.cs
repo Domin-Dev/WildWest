@@ -6,27 +6,63 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
+
+
+public class Thermometer
+{
+    public RectTransform bar;
+    public Image image;
+    public float pointZero;
+    public float range;
+    Color low,high;
+    bool isLow;
+    public Thermometer(RectTransform rect, float pointMax, float pointZero, Color low,Color high)
+    {
+        this.bar = rect;
+        this.pointZero = pointZero;
+        range = pointMax - pointZero;
+        this.low = low;
+        this.high = high;
+        image = bar.GetComponent<Image>();
+        isLow = false; 
+        image.color = high;
+    }
+    public void SetValue(float value)
+    {
+        float posY = range * value;
+        if (value >= 0.5f  && isLow)
+        {
+            image.color = high;
+            isLow = false;
+        }
+        else if (value < 0.5f && !isLow)
+        {
+            image.color = low;
+            isLow = true;
+        }
+        this.bar.sizeDelta = new Vector2(bar.sizeDelta.x, posY + pointZero);
+    }
+}
+
 [System.Serializable]
 public class MyBar
 {
     public RectTransform pointer;
     public float pointZero;
-    public float pointMax;
+    public float range;
 
     public MyBar(RectTransform pointer, float pointMax)
     {
         this.pointer = pointer;
         this.pointZero = pointer.anchoredPosition.x;
-        this.pointMax = pointZero + pointMax;
+        this.range = pointMax;
     }
     public void SetValue(float value)
     {
-        float posX = (pointMax - pointZero) * value;
+        float posX = range * value;
         this.pointer.anchoredPosition = new Vector2(posX + pointZero, this.pointer.anchoredPosition.y);
     }
 }
-
-
 [System.Serializable]
 public class DayTime
 {
@@ -62,36 +98,43 @@ public class DailyCycle : MonoBehaviour
     [SerializeField] private RectTransform timeOfDayTransform;
     [SerializeField] private RectTransform timeOfDayPointer;
     [SerializeField] private RectTransform timeOfSesonsDayPointer;
+    [SerializeField] private RectTransform thermometerTransform;
 
     [SerializeField] private Light2D light;
 
     [SerializeField] private TextMeshProUGUI dayCounterText;
+
+    [SerializeField] private Color highTemperatureColor;
+    [SerializeField] private Color lowTemperatureColor;
 
     public const int seasonDuration = 2;
     public const int minutesPerDay = 1;
     public readonly int ticksPerDay = TimeTickSystem.TicksPerMinute * minutesPerDay;
     public readonly int ticksPerGameHour = (int)(TimeTickSystem.TicksPerMinute * (minutesPerDay / 24f));
     
-    public int  dayTimeInTicks = 0;
-    public int  dayCounter = 1;
-   
-    public int [] seasonTimeArray = new int[3];
+    int dayTimeInTicks = 0;
+    int dayCounter = 1;
+    int currentSeson = 0;
+
+
+    int [] seasonTimeArray = new int[3];
     DayTime currentDayTime;
-    public Color targetColor;
+    Color targetColor;
     bool isColorChanging = false;
 
     MyBar timeOfDayBar;
     MyBar timeOfSesonsBar;
+    Thermometer thermometer;
+
+
 
     public void Start()
     {
         SetUp();
-        LoadSeason(seasons[0]);
+        LoadSeason(0);
         UpdateDayCounter();
         TimeTickSystem.OnTick += IncreaseTime; 
     }
-
-    
     private void IncreaseTime(object sender, TimeTickSystem.OnTickArgs e)
     {
         dayTimeInTicks += 10;
@@ -101,9 +144,18 @@ public class DailyCycle : MonoBehaviour
             dayTimeInTicks = 0;
             dayCounter++;
             UpdateDayCounter();
-            timeOfSesonsBar.SetValue(GetSeasonValue());
+            float value = GetSeasonValue();
+
+            timeOfSesonsBar.SetValue(value);
+            int index = (int)(value / 0.25f);
+            if (index < 4 && index != currentSeson)
+            {
+                LoadSeason(index);
+            }
         }
         timeOfDayBar.SetValue(dayTimeInTicks / (float)ticksPerDay);
+        thermometer.SetValue(dayTimeInTicks / (float)ticksPerDay);
+
         CheckColorChanging();
     }
     private void CheckColorChanging()
@@ -141,19 +193,22 @@ public class DailyCycle : MonoBehaviour
         max = 160;
         timeOfSesonsBar = new MyBar(timeOfSesonsDayPointer, max);
         timeOfSesonsBar.SetValue(GetSeasonValue());
-    }
 
+        thermometer = new Thermometer(thermometerTransform,67, 19,lowTemperatureColor,highTemperatureColor);
+
+    }
     private float GetSeasonValue()
     {
         int mod = dayCounter % (4 * seasonDuration);
         if (mod == 0) return 1f;
         return mod /(float)(4 * seasonDuration);
     }
-    private void LoadSeason(DayTime season)
+    private void LoadSeason(int seasonIndex)
     {
-        currentDayTime = season;
+        currentSeson = seasonIndex;
+        currentDayTime = seasons[seasonIndex];
         float hourWidth = timeOfDayTransform.sizeDelta.x / 24;
-        float[] times = season.GetTimes();
+        float[] times = currentDayTime.GetTimes();
        
         SetTimeBar(0, hourWidth * times[0]);
         seasonTimeArray[0] = 0;
