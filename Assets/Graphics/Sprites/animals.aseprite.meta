@@ -77,6 +77,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -89,6 +90,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -103,6 +105,7 @@ ScriptedImporter:
     pivot: {x: 0, y: 0}
     alignment: 0
     border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
     rect:
       serializedVersion: 2
       x: 0
@@ -121,15 +124,16 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: animals
     originalName: 
-    pivot: {x: 0.57528955, y: -1.4308943}
+    pivot: {x: 0.57528955, y: -1.0067114}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
     rect:
       serializedVersion: 2
       x: 4
       y: 4
       width: 259
-      height: 123
+      height: 149
     spriteID: 7ab7a01457672f74d8432d6dfe0d538d
     spriteBone: []
     spriteOutline: []
@@ -150,15 +154,17 @@ ScriptedImporter:
     cells:
     - name: animals
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 1
-        y: 176
+        y: 150
         width: 259
-        height: 123
+        height: 149
       spriteId: 7ab7a01457672f74d8432d6dfe0d538d
     linkedCells: []
     parentIndex: -1
   platformSettings: []
+  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 300, y: 300}

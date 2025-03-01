@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
@@ -16,8 +17,10 @@ public class Thermometer
     public float range;
     Color low,high;
     bool isLow;
-    public Thermometer(RectTransform rect, float pointMax, float pointZero, Color low,Color high)
+    WhiteBalance whiteBalance;
+    public Thermometer(WhiteBalance volume,RectTransform rect, float pointMax, float pointZero, Color low,Color high)
     {
+        this.whiteBalance = volume;
         this.bar = rect;
         this.pointZero = pointZero;
         range = pointMax - pointZero;
@@ -27,9 +30,13 @@ public class Thermometer
         isLow = false; 
         image.color = high;
     }
-    public void SetValue(float value)
+
+
+    public void SetValue(int value)
     {
-        float posY = range * value;
+        float posY = range * (value / DailyCycle.maxTemperature);
+        //whiteBalance.temperature = value * ()
+
         if (value >= 0.5f  && isLow)
         {
             image.color = high;
@@ -40,6 +47,7 @@ public class Thermometer
             image.color = low;
             isLow = true;
         }
+
         this.bar.sizeDelta = new Vector2(bar.sizeDelta.x, posY + pointZero);
     }
 }
@@ -101,6 +109,7 @@ public class DailyCycle : MonoBehaviour
     [SerializeField] private RectTransform thermometerTransform;
 
     [SerializeField] private Light2D light;
+    [SerializeField] private WhiteBalance whiteBalance;
 
     [SerializeField] private TextMeshProUGUI dayCounterText;
 
@@ -109,6 +118,9 @@ public class DailyCycle : MonoBehaviour
 
     public const int seasonDuration = 2;
     public const int minutesPerDay = 1;
+
+    public const int maxTemperature = 40;
+
     public readonly int ticksPerDay = TimeTickSystem.TicksPerMinute * minutesPerDay;
     public readonly int ticksPerGameHour = (int)(TimeTickSystem.TicksPerMinute * (minutesPerDay / 24f));
     
@@ -154,7 +166,6 @@ public class DailyCycle : MonoBehaviour
             }
         }
         timeOfDayBar.SetValue(dayTimeInTicks / (float)ticksPerDay);
-        thermometer.SetValue(dayTimeInTicks / (float)ticksPerDay);
 
         CheckColorChanging();
     }
@@ -194,7 +205,7 @@ public class DailyCycle : MonoBehaviour
         timeOfSesonsBar = new MyBar(timeOfSesonsDayPointer, max);
         timeOfSesonsBar.SetValue(GetSeasonValue());
 
-        thermometer = new Thermometer(thermometerTransform,67, 19,lowTemperatureColor,highTemperatureColor);
+        thermometer = new Thermometer(whiteBalance, thermometerTransform,67, 19,lowTemperatureColor,highTemperatureColor);
 
     }
     private float GetSeasonValue()
