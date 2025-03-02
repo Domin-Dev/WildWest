@@ -2,8 +2,8 @@
 using UnityEngine;
 public class ActionState : HeroState
 {
-    CharacterController controller;
-    public ActionState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
+    MyCharacterController controller;
+    public ActionState(MyCharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
     {
         this.controller = controller;
     }

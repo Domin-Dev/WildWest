@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class CharacterController: NetworkBehaviour, ILifePoints, IUsesWeapons
+public class MyCharacterController: NetworkBehaviour, ILifePoints, IUsesWeapons
 {
 
     [SerializeField] private int maxHP;

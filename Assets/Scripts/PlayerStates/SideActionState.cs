@@ -2,8 +2,8 @@
 using UnityEngine;
 public class SideActionState : HeroState
 {
-    CharacterController controller;
-    public SideActionState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
+    MyCharacterController controller;
+    public SideActionState(MyCharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
     {
         this.controller = controller;
     }

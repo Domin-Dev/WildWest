@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class IdleState : HeroState
 {
-    private CharacterController controller;
-    public IdleState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
+    private MyCharacterController controller;
+    public IdleState(MyCharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
     {
         this.controller = controller;
     }

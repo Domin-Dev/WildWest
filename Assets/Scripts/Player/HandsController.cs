@@ -89,7 +89,7 @@ public class HandsController : MonoBehaviour
     public bool canAttack { get; private set; } = true;
     private const float setTime = 0.45f;
 
-    private CharacterController characterController;
+    private MyCharacterController characterController;
     public GameObject bullet;
 
     private void Awake()
@@ -100,7 +100,7 @@ public class HandsController : MonoBehaviour
     }
     private void Start()
     {
-        characterController = GetComponent<CharacterController>();
+        characterController = GetComponent<MyCharacterController>();
         SetUpEvents();
         UIManager.instance.SetUpUIPlayer(this);
         EquipmentManager.instance.SetUpEvent(this);

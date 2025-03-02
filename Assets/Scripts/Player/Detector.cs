@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Detector : MonoBehaviour
 {
-    CharacterController controller;
+    MyCharacterController controller;
     private void Start()
     {
-        controller = transform.parent.GetComponent<CharacterController>();
+        controller = transform.parent.GetComponent<MyCharacterController>();
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {

@@ -5,7 +5,7 @@ using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 
 
-public class Tree : MonoBehaviour, ILifePoints,ITransparent
+public class GameTree : MonoBehaviour, ILifePoints,ITransparent
 {
     SpriteRenderer renderer;
     [SerializeField] private int maxLifePoints;

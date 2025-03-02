@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class ReloadingState : HeroState
 {
-    private CharacterController controller;
-    public ReloadingState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
+    private MyCharacterController controller;
+    public ReloadingState(MyCharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
     {
         this.controller = controller;
     }

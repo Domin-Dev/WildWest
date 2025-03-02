@@ -56,7 +56,7 @@ public class DebugController : MonoBehaviour
         {
             string text = $"Teleport to [{x},{y}] :\n";
             Vector2 vec = GridVisualization.instance.GetWorldPosition(x, y);
-            FindAnyObjectByType<CharacterController>().SetPosition(vec);
+            FindAnyObjectByType<MyCharacterController>().SetPosition(vec);
             ChatManager.instance.Print(text);
         }));
         commandList.Add(new DebugCommand<int,int,int>("wt", "Water transfer ", "[TileX] [TileY] [Number]", (x,y, water) =>

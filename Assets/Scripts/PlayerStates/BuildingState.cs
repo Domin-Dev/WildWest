@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class BuildingState : HeroState
 {
-    private CharacterController controller;
+    private MyCharacterController controller;
 
-    public BuildingState(CharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
+    public BuildingState(MyCharacterController controller, HeroStateMachine heroStateMachine) : base(heroStateMachine)
     {
         this.controller = controller;
     }
