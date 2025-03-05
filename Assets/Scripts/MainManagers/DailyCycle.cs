@@ -32,12 +32,12 @@ public class Thermometer
         float posY = range * value;
         if (value >= 0.5f  && isLow)
         {
-            image.color = high;
+          //  image.color = high;
             isLow = false;
         }
         else if (value < 0.5f && !isLow)
         {
-            image.color = low;
+          //  image.color = low;
             isLow = true;
         }
         this.bar.sizeDelta = new Vector2(bar.sizeDelta.x, posY + pointZero);

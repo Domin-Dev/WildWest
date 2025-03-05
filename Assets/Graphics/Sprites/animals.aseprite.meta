@@ -124,7 +124,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: animals
     originalName: 
-    pivot: {x: 0.57528955, y: -1.4308943}
+    pivot: {x: 0.57528955, y: -0.8805031}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -133,7 +133,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 259
-      height: 123
+      height: 159
     spriteID: 7ab7a01457672f74d8432d6dfe0d538d
     spriteBone: []
     spriteOutline: []
@@ -157,9 +157,9 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 1
-        y: 176
+        y: 140
         width: 259
-        height: 123
+        height: 159
       spriteId: 7ab7a01457672f74d8432d6dfe0d538d
     linkedCells: []
     parentIndex: -1
