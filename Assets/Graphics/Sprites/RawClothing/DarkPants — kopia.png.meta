@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 5c793ce734c6b0545b8a6de33fcfe877
+guid: 277e9f213e49c63419c150154a9a4128
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2600934756426494818
-    second: "pants \u2014 kopia_0"
+      213: 4973609849551035494
+    second: "DarkPants \u2014 kopia_0"
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -178,7 +178,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "pants \u2014 kopia_0"
+      name: "DarkPants \u2014 kopia_0"
       rect:
         serializedVersion: 2
         x: 0
@@ -193,8 +193,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 263b4c07160681420800000000000000
-      internalID: 2600934756426494818
+      spriteID: 66c9fdd8ecfc50540800000000000000
+      internalID: 4973609849551035494
       vertices: []
       indices: 
       edges: []

@@ -98,7 +98,7 @@ public class UIManager : MonoBehaviour
         else Destroy(gameObject);
 
         SetGrids();
-        SetUpNetworkUI();
+       // SetUpNetworkUI();
         SetUpNotices();
         LoadRecipes();
     }
@@ -138,18 +138,7 @@ public class UIManager : MonoBehaviour
     }
     private void SetUpNetworkUI()
     {
-        ServerButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.StartServer();
-        });
-        HostButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.StartHost();
-        });
-        ClientButton.onClick.AddListener(() =>
-        {
-            NetworkManager.Singleton.StartClient();
-        });
+      
     }
     public void SetUpUIEquipment(EquipmentManager eqManager)
     { 
