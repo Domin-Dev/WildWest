@@ -22,23 +22,23 @@ MonoBehaviour:
   numberItem: 1
   durability: 50
   drop: []
-  texture: {fileID: 2800000, guid: c5a6fc0172e160f4ba651d2fd14720af, type: 3}
+  texturePath: 
   toolRequired: 0
   HitParticles: {fileID: 0}
   objectVariants:
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.385}
-      - {x: -0.12, y: 0.49499997}
-      - {x: -0.01, y: 0.49499997}
-      - {x: 0, y: 0.48499998}
-      - {x: 0.01, y: 0.49499997}
-      - {x: 0.12, y: 0.49499997}
-      - {x: 0.12, y: 0.385}
+      - {x: -0.04, y: 0.445}
+      - {x: -0.04, y: 0.49499997}
+      - {x: -0.02, y: 0.49499997}
+      - {x: -0.01, y: 0.48499998}
+      - {x: 0, y: 0.49499997}
+      - {x: 0.04, y: 0.49499997}
+      - {x: 0.04, y: 0.445}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0, y: 0.49499997}
-      minY: 0.385
+      particlePoint: {x: -0.01, y: 0.49499997}
+      minY: 0.445
       sprite: {fileID: 21300000, guid: 225224b7bdd47bb499892e22450543f3, type: 2}
   shadowPixels: 19
   size:

@@ -113,7 +113,9 @@ public class GridVisualization : MonoBehaviour
     {
         TilesUV = new Dictionary<int, TileUV>();
         Floor[] array = ItemsAsset.instance.GetItemsByType<Floor>();
-        Texture2D texture = new Texture2D(MaxWidth(array), sizeTile * (CountTextures(array) + 1));
+        Dictionary<int,Texture2D> textures = TextureLoader.LoadFloors(array);
+
+        Texture2D texture = new Texture2D(MaxWidth(textures), sizeTile * (textures.Count + 1));
         texture.filterMode = FilterMode.Point;
 
         textureWidth = texture.width;
@@ -134,6 +136,8 @@ public class GridVisualization : MonoBehaviour
         for (int i = 0; i < array.Length; i++)
         {
             Floor floor = array[i];
+            Texture2D floorTexture = textures[floor.ID];
+
             Vector2? UVsecond = null;
             if ((floor as Farmland)?.wateredFarmland != null)
             {
@@ -141,45 +145,25 @@ public class GridVisualization : MonoBehaviour
                 CopyTexture(ref k, sizeTile, (floor as Farmland).wateredFarmland, texture);
             }
             uv00 = new Vector2(0, (float)k * sizeTile / textureHeight);
-            CopyTexture(ref k, sizeTile, floor.texture, texture);
-            variants = floor.texture.width / sizeTile;
+            CopyTexture(ref k, sizeTile, floorTexture, texture);
+            variants = floorTexture.width / sizeTile;
 
             if(floor.ID >= 0) TilesUV.Add(floor.ID, new TileUV(uv00, variants, UVsecond));
         }
         texture.Apply(true, true);
         mapTexture = texture;
-    }
-    private int CountTextures(Floor[] array)
-    {
-        int counter = 0;
-        foreach (Floor floor in array)
-        {
-            if (floor.texture != null)
-            {
-                counter++;
-                if ((floor as Farmland)?.wateredFarmland != null)
-                {
-                    counter++;
-                }
-            }
-        }
-        return counter;
+
+        TextureLoader.UnloadFloors(textures);
     }
 
-    private int MaxWidth(Floor[] array)
+   
+    private int MaxWidth(Dictionary<int, Texture2D> array)
     {
         int max = linesTexture.width;
-        foreach (Floor floor in array)
+        foreach(var floor in array)
         {
-            if (floor.texture != null)
-            {
-                if(max < floor.texture.width) max = floor.texture.width;
-                var texture = (floor as Farmland)?.wateredFarmland;
-                if (texture != null)
-                {
-                    if (max < texture.width) max = texture.width;
-                }
-            }
+            Debug.Log(floor.Key);
+            if (max < floor.Value.width) max = floor.Value.width;                 
         }
         return max;
     }

@@ -29,7 +29,7 @@ MonoBehaviour:
     ingredient:
       itemID: 42
       number: 1
-  texture: {fileID: 2800000, guid: 51550981a0ee56645b5e2a23f17bdc07, type: 3}
+  texturePath: Textures/RawBuildingObjects 1/workshop
   toolRequired: 0
   HitParticles: {fileID: 8377258103205601058, guid: fb21eabfabc89c544a71fc84c24bc9f2, type: 3}
   objectVariants:
@@ -39,13 +39,11 @@ MonoBehaviour:
       - {x: -0.04, y: 0.33499998}
       - {x: 0.04, y: 0.33499998}
       - {x: 0.04, y: 0.255}
-      CoveringPoints:
-      - {x: 0, y: 1}
-      - {x: 0, y: 0}
+      CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.01, y: 0.305}
       minY: 0.255
-      sprite: {fileID: 21300000, guid: 1d941e2230af29b4a894733a1d87c939, type: 2}
+      sprite: {fileID: 21300000, guid: 29ee2c50fee2def4eb95c54842a5abd0, type: 2}
   shadowPixels: 19
   size:
     x: 27

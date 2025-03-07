@@ -22,6 +22,9 @@ MonoBehaviour:
   numberItem: 1
   durability: 0
   drop: []
-  texture: {fileID: 2800000, guid: eb878be65c7528e4997d36a681d6f516, type: 3}
-  grassTexture: {fileID: 0}
+  texturePath: Textures/Floor/hot5
+  toolRequired: 0
   chanceOfDefaultTile: 0
+  diggingParticles: {fileID: 0}
+  canBeCultivated: 0
+  swapForSecondLayerFloorID: -1

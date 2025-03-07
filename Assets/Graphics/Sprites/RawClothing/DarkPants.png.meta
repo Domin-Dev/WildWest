@@ -210,7 +210,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      DarkPants_0: 4685127777799466886
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

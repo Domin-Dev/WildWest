@@ -1,5 +1,5 @@
+
 using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,13 +16,32 @@ public class VariantItemEditor : ItemEditor
     {
         variantItem = target as VariantItem;
     }
+
+    Texture2D texture;
     public override void OnInspectorGUI()
     {
-        if (GUILayout.Button("Cut Sprites"))
+        EditorGUILayout.BeginHorizontal();
+        EditorGUILayout.PrefixLabel("Building Object Texture");
+
+        if (GUILayout.Button("Select texture"))
         {
-            CutSpritesWall(variantItem.texture);
-            NewSaveChanges();
+            string path = EditorUtility.OpenFilePanel("Select texture", "Assets/Resources/Textures", "png,jpg");
+
+            if (!string.IsNullOrEmpty(path))
+            {
+                string relativePath = "Assets" + path.Substring(Application.dataPath.Length);
+                texture = AssetDatabase.LoadAssetAtPath<Texture2D>(relativePath);
+                if (texture != null)
+                {
+                    variantItem.texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png", "");
+                    Debug.Log("The texture is set");
+                    CutSpritesWall(texture);
+                    NewSaveChanges();
+                }
+            }
         }
+
+        EditorGUILayout.EndHorizontal();
         serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
     }

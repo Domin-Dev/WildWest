@@ -310,7 +310,12 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "coat \u2014 kopia_0": -3924255519739122882
+      "coat \u2014 kopia_1": 2157577547726934531
+      "coat \u2014 kopia_2": -4215482032470676186
+      "coat \u2014 kopia_3": -9179262181337904242
+      "coat \u2014 kopia_4": -6064797171303784494
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

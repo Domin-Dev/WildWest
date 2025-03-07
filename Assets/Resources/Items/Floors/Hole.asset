@@ -24,10 +24,10 @@ MonoBehaviour:
   numberItem: 1
   durability: 0
   drop: []
-  texture: {fileID: 2800000, guid: c42065dbbb1dac54695212b67a9eac95, type: 3}
+  texturePath: Textures/Floor/hole
   toolRequired: 0
-  grassTexture: {fileID: 0}
   chanceOfDefaultTile: 0
   diggingParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
+  canBeCultivated: 0
   waterTexture: {fileID: 2800000, guid: d639c36d92670f9488f8a2d88d9d01a1, type: 3}
   capacity: 1000

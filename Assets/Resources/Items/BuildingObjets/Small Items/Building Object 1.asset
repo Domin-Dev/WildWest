@@ -22,14 +22,9 @@ MonoBehaviour:
     number: 0
   craftTables: ffffffff
   numberItem: 1
-  durability: 0
-  drop:
-  - maxNumber: 4
-    probability: 1
-    ingredient:
-      itemID: 42
-      number: 1
-  texture: {fileID: 2800000, guid: e5792e582c08a4a449f82a647ec9a4dd, type: 3}
+  durability: 50
+  drop: []
+  texturePath: Textures/RawBuildingObjects 1/workshop
   toolRequired: 0
   HitParticles: {fileID: 8377258103205601058, guid: fb21eabfabc89c544a71fc84c24bc9f2, type: 3}
   objectVariants:

@@ -210,7 +210,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "DarkPants \u2014 kopia_0": 4973609849551035494
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
