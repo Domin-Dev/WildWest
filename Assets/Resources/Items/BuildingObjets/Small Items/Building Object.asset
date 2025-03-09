@@ -29,7 +29,6 @@ MonoBehaviour:
     ingredient:
       itemID: 42
       number: 1
-  texturePath: Textures/RawBuildingObjects 1/workshop
   toolRequired: 0
   HitParticles: {fileID: 8377258103205601058, guid: fb21eabfabc89c544a71fc84c24bc9f2, type: 3}
   objectVariants:

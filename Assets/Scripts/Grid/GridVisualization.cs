@@ -162,7 +162,6 @@ public class GridVisualization : MonoBehaviour
         int max = linesTexture.width;
         foreach(var floor in array)
         {
-            Debug.Log(floor.Key);
             if (max < floor.Value.width) max = floor.Value.width;                 
         }
         return max;
@@ -781,6 +780,7 @@ public class GridVisualization : MonoBehaviour
             Variant variant = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
             Vector2 mainPos = gridTile.gridObject.mainPosition;
             GetTileByGridPosition(mainPos)?.SetGridObject(null);
+            Debug.Log(variant);
             for (int i = 0; i < variant.objectPoints.Length; i++)
             {
                 GetTileByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);

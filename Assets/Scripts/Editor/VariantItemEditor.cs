@@ -33,7 +33,7 @@ public class VariantItemEditor : ItemEditor
                 texture = AssetDatabase.LoadAssetAtPath<Texture2D>(relativePath);
                 if (texture != null)
                 {
-                    variantItem.texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png", "");
+                   // variantItem.texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png", "");
                     Debug.Log("The texture is set");
                     CutSpritesWall(texture);
                     NewSaveChanges();

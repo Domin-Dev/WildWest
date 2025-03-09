@@ -210,7 +210,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "Farmland \u2014 kopia (2) \u2014 kopia_0": -2279741144297084349
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

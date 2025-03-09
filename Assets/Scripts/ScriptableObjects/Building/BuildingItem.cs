@@ -16,7 +16,7 @@ public abstract class BuildingItem : Item
     public int durability;
     [Header("Drop")]
     public Drop[] drop;
-    public string texturePath;
+    //public string texturePath;
     public ToolType toolRequired = ToolType.None;
 }
 public abstract class VariantItem : BuildingItem

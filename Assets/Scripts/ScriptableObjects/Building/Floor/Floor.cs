@@ -7,5 +7,6 @@ public class Floor : BuildingItem
     public float chanceOfDefaultTile;
     public GameObject diggingParticles;
     public bool canBeCultivated;
-}
+    public string texturePath;
+} 
 

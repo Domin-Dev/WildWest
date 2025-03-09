@@ -29,7 +29,6 @@ MonoBehaviour:
     ingredient:
       itemID: 32
       number: 1
-  texture: {fileID: 2800000, guid: bbc58a2074a55a84282aeb8fd8118e1e, type: 3}
   toolRequired: 0
   HitParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
   objectVariants:
@@ -40,7 +39,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: -0.04, y: 0.065}
       minY: 0.065
-      sprite: {fileID: 21300000, guid: c409d2a9794ea1d498d2b543f4886e4c, type: 2}
+      sprite: {fileID: 21300000, guid: 825308b8f9c7cde46b15382f2b608f8e, type: 2}
   - variants:
     - hitbox:
       - {x: 0.04, y: 0.125}
@@ -48,7 +47,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.125}
       minY: 0.125
-      sprite: {fileID: 21300000, guid: 3656ed66e17d2294cb7f407ffdd65c7a, type: 2}
+      sprite: {fileID: 21300000, guid: 5ff07029fc092e7489e6891c8cfb1d72, type: 2}
   - variants:
     - hitbox:
       - {x: 0, y: 0.195}
@@ -56,15 +55,15 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: -0.01, y: 0.195}
       minY: 0.195
-      sprite: {fileID: 21300000, guid: c00cfb8428418984fb8c604b06919590, type: 2}
+      sprite: {fileID: 21300000, guid: 2455d51444e61664cbb145784f60e18a, type: 2}
   - variants:
     - hitbox:
-      - {x: 0.04, y: 0.145}
+      - {x: 0.07, y: 0.175}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.03, y: 0.145}
-      minY: 0.145
-      sprite: {fileID: 21300000, guid: 48093ebb467992b46baf3c048f9afb2b, type: 2}
+      particlePoint: {x: 0.06, y: 0.175}
+      minY: 0.175
+      sprite: {fileID: 21300000, guid: fa3d17f6e993a704e85e1d75909fe33b, type: 2}
   - variants:
     - hitbox:
       - {x: 0.04, y: 0.074999996}
@@ -72,7 +71,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.074999996}
       minY: 0.074999996
-      sprite: {fileID: 21300000, guid: ca6907be81657cf4a97441a284e2bcce, type: 2}
+      sprite: {fileID: 21300000, guid: 358cbf785aab3774e9eee9636f731952, type: 2}
   - variants:
     - hitbox:
       - {x: -0.02, y: 0.145}
@@ -80,7 +79,7 @@ MonoBehaviour:
       objectPoints: []
       particlePoint: {x: -0.03, y: 0.145}
       minY: 0.145
-      sprite: {fileID: 21300000, guid: c355f9c0a3275ee4098f3a5174695662, type: 2}
+      sprite: {fileID: 21300000, guid: 9bf2832acf9b5654e9011c7aa00b68dd, type: 2}
   shadowPixels: 0
   size:
     x: 27

@@ -32,22 +32,20 @@ MonoBehaviour:
     ingredient:
       itemID: 43
       number: 1
-  texture: {fileID: 2800000, guid: 0b6998d3ebb818947b3cdc558cdaa526, type: 3}
   toolRequired: 3
   HitParticles: {fileID: 8503829923926787638, guid: 42ce0afd134097f4aa18bf9920ec5927, type: 3}
   objectVariants:
   - variants:
     - hitbox:
-      - {x: -0.099999994, y: 0.12323529}
-      - {x: -0.099999994, y: 0.28323528}
-      - {x: 0.11, y: 0.28323528}
-      - {x: 0.11, y: 0.12323529}
+      - {x: -0.099999994, y: 0.125}
+      - {x: -0.099999994, y: 0.285}
+      - {x: 0.11, y: 0.285}
+      - {x: 0.11, y: 0.125}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.01, y: 0.2332353}
-      minY: 0.12323529
-      sprite: {fileID: 21300000, guid: 8ffe02dd15ffa0f478808d4a402c36ac, type: 2}
-  isObjectCovering: 0
+      particlePoint: {x: 0.01, y: 0.235}
+      minY: 0.125
+      sprite: {fileID: 21300000, guid: 3c3cd4334de247b46814f5f60b9f2d90, type: 2}
   shadowPixels: 9
   size:
     x: 27

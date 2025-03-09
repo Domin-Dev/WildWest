@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Scenes;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -60,6 +61,7 @@ public class MyBar
     public void SetValue(float value)
     {
         float posX = range * value;
+      //  Debug.Log(this.pointer.anchoredPosition);
         this.pointer.anchoredPosition = new Vector2(posX + pointZero, this.pointer.anchoredPosition.y);
     }
 }
@@ -138,7 +140,6 @@ public class DailyCycle : MonoBehaviour
     private void IncreaseTime(object sender, TimeTickSystem.OnTickArgs e)
     {
         dayTimeInTicks += 10;
-
         if (dayTimeInTicks > ticksPerDay)
         {
             dayTimeInTicks = 0;
@@ -156,29 +157,29 @@ public class DailyCycle : MonoBehaviour
         timeOfDayBar.SetValue(dayTimeInTicks / (float)ticksPerDay);
         thermometer.SetValue(dayTimeInTicks / (float)ticksPerDay);
 
-        CheckColorChanging();
+     //   CheckColorChanging();
     }
-    private void CheckColorChanging()
-    {
-        if (isColorChanging)
-        {
-            light.color = Color.Lerp(light.color, targetColor, 0.05f);
-            if (light.color == targetColor) isColorChanging = false;
-        }
-        else
-        {
-            for (int i = 0; i < 3; i++)
-            { 
-                int result = seasonTimeArray[i] - dayTimeInTicks;
-                if (result < 0 &&  Math.Abs(result) < ticksPerGameHour)
-                {
-                    isColorChanging = true;
-                    targetColor = currentDayTime.GetColors()[i];
-                    break;
-                }
-            }
-        }
-    }
+    //private void CheckColorChanging()
+    //{
+    //    if (isColorChanging)
+    //    {
+    //        light.color = Color.Lerp(light.color, targetColor, 0.05f);
+    //        if (light.color == targetColor) isColorChanging = false;
+    //    }
+    //    else
+    //    {
+    //        for (int i = 0; i < 3; i++)
+    //        { 
+    //            int result = seasonTimeArray[i] - dayTimeInTicks;
+    //            if (result < 0 &&  Math.Abs(result) < ticksPerGameHour)
+    //            {
+    //                isColorChanging = true;
+    //                targetColor = currentDayTime.GetColors()[i];
+    //                break;
+    //            }
+    //        }
+    //    }
+    //}
     private void UpdateDayCounter()
     {
         dayCounterText.text = "Day: " + dayCounter;
