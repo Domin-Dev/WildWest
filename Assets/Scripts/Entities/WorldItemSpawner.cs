@@ -10,7 +10,6 @@ public class WorldItemSpawner : MonoBehaviour
 
     private EntitiesReferences entitiesReferences;
     private EntityManager entityManager;
-    [SerializeField] private SubScene subScenes;
     int i = 0;
 
 

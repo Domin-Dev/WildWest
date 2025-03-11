@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 
   ID: 42
   stackMax: 50
-  icon: {fileID: 1664496798, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: 2051067808, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
   - itemID: 0
     number: 0

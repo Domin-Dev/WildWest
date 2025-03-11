@@ -7,6 +7,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
 {
     public GameObject shadowPrefab;
     public GameObject worldItemPrefab;
+    public GameObject characterPrefab;
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
