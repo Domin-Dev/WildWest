@@ -16,6 +16,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
             AddComponent(entity, new EntitiesReferences{
                 shadowEntity = GetEntity(authoring.shadowPrefab, TransformUsageFlags.Dynamic),
                 worldItemEntity = GetEntity(authoring.worldItemPrefab, TransformUsageFlags.Dynamic),
+                characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
             });
         }
     }
@@ -24,4 +25,5 @@ public struct EntitiesReferences : IComponentData
 {
     public Entity shadowEntity;
     public Entity worldItemEntity;
+    public Entity characterEntity;
 }

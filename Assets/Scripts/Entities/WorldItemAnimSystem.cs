@@ -21,8 +21,9 @@ partial struct WorldItemAnimSystem : ISystem
         time += SystemAPI.Time.DeltaTime;
         WorldItemAnimJob job = new WorldItemAnimJob()
         {
-            elapsedTime = time
-        };
+            elapsedTime = time,
+            deltaTime = SystemAPI.Time.DeltaTime
+    };
         job.ScheduleParallel();
 
         //foreach (RefRW<LocalTransform> localTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithPresent<WorldItemAnim>())
@@ -49,11 +50,17 @@ public partial struct WorldItemAnimJob : IJobEntity
     private const float maxDistance = 0.007f;
     public const float basePos = -0.01f;
 
+
+
     public float elapsedTime;
+    public float deltaTime;
     public void Execute(ref LocalTransform localTransform, WorldItemAnim worldItemAnim)
     {
         float pingPongValue = math.sin(elapsedTime / cycleTime * math.PI);
         float targetY = pingPongValue * maxDistance;
         localTransform.Position = new float3(localTransform.Position.x, basePos + targetY, localTransform.Position.y);
+
+       // quaternion rotationStep = quaternion.Euler(0, deltaTime * math.radians(180), 0); // 180 stopni na sekundê
+        //localTransform.Rotation = math.mul(localTransform.Rotation, rotationStep);
     }
 }

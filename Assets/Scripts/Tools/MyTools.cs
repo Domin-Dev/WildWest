@@ -3,6 +3,7 @@ using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
+using Unity.Burst;
 
 public static class MyTools 
 {
@@ -36,6 +37,8 @@ public static class MyTools
         new Vector2(-1,-1),
         new Vector2(-1,1)
     };
+
+    [BurstCompile]
     public static Vector3 GetMouseWorldPosition()
     {
         Vector3 pos = Input.mousePosition;

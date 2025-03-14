@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_Head
+  m_Name: Head
   m_Shader: {fileID: -6465566751694194690, guid: 3bd2cf92488dc314a88fbdaa14dea5cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -43,6 +43,26 @@ Material:
         m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_0f88998cc3b14c29aee6171c4dff36f6_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: b9d10b42d5501f24ea792c98bf190ced, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_34ba96f1cc4345838b51cd37e6c51bfc_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 24a474b0410ab7f4c997ab5f1e2cc91d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_542310d721c844a1b5a30a99e3acf826_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_8ddd215fa65346779ebf0072e57238de_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_f518cf5937a5450e83ccd899942e92da_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Hat:
         m_Texture: {fileID: 2800000, guid: 71253a8602cd87e4d8a8abf368fa2363, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -52,7 +72,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 1a79d5ec2a8250e4f856baa10f181480, type: 3}
+        m_Texture: {fileID: 2800000, guid: 06b7de5baa8708b4c82842dced14366a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
@@ -79,8 +99,16 @@ Material:
         m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Texture2D_1:
+    - _Texture2DAsset_16b7ec7a9ed9436a8752939cde2bc562_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 2802e128b3a0cea4cb0dca733b6b8717, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_c4bd2a317c50426db6e8cdcb84cb12b4_Out_0_Texture2D:
         m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2D_1:
+        m_Texture: {fileID: 2800000, guid: af8938e036f46bb49b958a88dccd0f31, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TextureSize_1ea5cb0fecba45d98fa621abd87ba34f_Texture_1_Texture2D:
@@ -117,23 +145,23 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BeardIndex: 0
+    - _BeardIndex: 3
     - _Boolean: 0
     - _Direction: 0
     - _Eyes: 0
     - _EyesIndex: 1
     - _Front: 0
-    - _HairIndex: 4
+    - _HairIndex: 2
     - _HairUnderHat: 1
     - _Index: 0
     - _MouthIndex: 2
-    - _PaintingsIndex: 8
+    - _PaintingsIndex: 99
     - _Side: 1
     m_Colors:
-    - _HairColor: {r: 0.5764706, g: 0.39058638, b: 0.16862743, a: 1}
-    - _HatColor: {r: 0.5999999, g: 0.016981026, b: 0.4197695, a: 1}
-    - _MaskColor: {r: 0.5622641, g: 0.08805263, b: 0.36670232, a: 1}
-    - _SkinColor: {r: 0.85660374, g: 0.6966874, b: 0.43799922, a: 1}
+    - _HairColor: {r: 0.4188679, g: 0.25924072, b: 0.16991809, a: 1}
+    - _HatColor: {r: 0, g: 0.381132, b: 0.038759153, a: 1}
+    - _MaskColor: {r: 0.0529718, g: 0.2981131, b: 0, a: 1}
+    - _SkinColor: {r: 0.9450981, g: 0.7058824, b: 0.454902, a: 1}
     - _Vector2: {r: 0, g: 0, b: 0, a: 0}
     - _Vector2_1: {r: -0.27, g: 0.33333, b: 0, a: 0}
   m_BuildTextureStacks: []
