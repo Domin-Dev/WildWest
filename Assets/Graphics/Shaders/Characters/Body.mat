@@ -32,36 +32,36 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: _ShirtColor
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Accessory:
-        m_Texture: {fileID: 2800000, guid: 327110ee272d8bc418d95c10fc7316b3, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Bag:
-        m_Texture: {fileID: 2800000, guid: a67e58016d3ad2648a30a69b702e3f64, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Belt:
-        m_Texture: {fileID: 2800000, guid: 145517cec53756b4887b18f5319caf01, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _GetTexture2D_f899bd620aa542a0bc00ca30cc0498fd_Texture2D_1871122832_Texture2D:
         m_Texture: {fileID: 2800000, guid: 0a6c38328901d3143998582ee9608c95, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Outerwear:
-        m_Texture: {fileID: 2800000, guid: a36e14d38d224914586472ad0d251245, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Pants:
+    - _Texture2DAsset_313e285a0c224a34b7f7ee7a587d7323_Out_0_Texture2D:
         m_Texture: {fileID: 2800000, guid: 9120b075130c5ae489052937aa58e305, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Shirt:
+    - _Texture2DAsset_4571df314033434182a64334162595f3_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: a36e14d38d224914586472ad0d251245, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_72d57b6bc7e249d78332b7f4871c79b0_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 327110ee272d8bc418d95c10fc7316b3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_94a32e2b8a5c4157af81fe73652372aa_Out_0_Texture2D:
         m_Texture: {fileID: 2800000, guid: 28c6f965f17710d44880343aa5553c38, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_c18170eb946641e19c2d569e5403c325_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 145517cec53756b4887b18f5319caf01, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_cfece45d77e24138833fb244c9ac5c0b_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2DAsset_dd8953edc144483996216ba8943d7e15_Out_0_Texture2D:
@@ -84,13 +84,13 @@ Material:
     m_Floats:
     - _Direction: 0
     m_Colors:
-    - _AccessoryColor: {r: 0.381132, g: 0.20351009, b: 0.20351009, a: 0}
-    - _BagColor: {r: 0.5499093, g: 0.5137255, b: 0.6666667, a: 0}
-    - _BeltColor: {r: 0.6226415, g: 0.27607688, b: 0.27607688, a: 1}
-    - _OuterwearColor: {r: 0.554717, g: 0.08891881, b: 0, a: 1}
-    - _PantsColor: {r: 0.24083304, g: 0.24083304, b: 0.2830189, a: 1}
-    - _ShirtColor: {r: 0.7660377, g: 0.7660377, b: 0.7660377, a: 1}
-    - _SkinColor: {r: 0.854902, g: 0.69803923, b: 0.43529415, a: 1}
-    - _UnderwearColor: {r: 0.6528301, g: 0.6528301, b: 0.6528301, a: 1}
+    - _AccessoryColor: {r: 0, g: 0, b: 0, a: 0}
+    - _BagColor: {r: 0.7886792, g: 0.058034778, b: 0.058034778, a: 1}
+    - _BeltColor: {r: 0.27547166, g: 0.27547166, b: 0.27547166, a: 1}
+    - _OuterwearColor: {r: 0.427451, g: 0.32156864, b: 0.20392159, a: 1}
+    - _PantsColor: {r: 0.12410327, g: 0.09803919, b: 0.47843134, a: 1}
+    - _ShirtColor: {r: 0.27547166, g: 0.27547166, b: 0.27547166, a: 1}
+    - _SkinColor: {r: 1, g: 0, b: 0.03870964, a: 1}
+    - _UnderwearColor: {r: 0.4641509, g: 0.02364539, b: 0.02364539, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -19,8 +19,6 @@ MonoBehaviour:
     rid: 6437353649549082645
   m_Scenes:
   - m_enabled: 1
-    m_path: Assets/Scenes/Game.unity
-  - m_enabled: 1
     m_path: Assets/Scenes/Debug UI.unity
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:

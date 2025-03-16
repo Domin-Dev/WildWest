@@ -15,17 +15,24 @@ partial struct CharacterAimSystem : ISystem
         float deltaTime = SystemAPI.Time.DeltaTime;
         float3 target = (float3)MyTools.GetMouseWorldPosition();
 
-        foreach ((RefRW<LocalTransform> localTransform, 
-            RefRO<CharacterAim> CharacterAim, 
-            RefRW<LocalToWorld> localToWorld
-             ) in SystemAPI.Query<RefRW<LocalTransform>,RefRO<CharacterAim>,RefRW<LocalToWorld>>())
-        {
 
-            float3 currentPosition = localToWorld.ValueRO.Position; // Pobranie globalnej pozycji
+
+        foreach (RefRO<Hands> Hands in SystemAPI.Query<RefRO<Hands>>())
+        { 
+            if(Hands.ValueRO.main == Entity.Null)
+            {
+              //  Debug.Log("NuLL");
+                continue;
+            }
+
+           LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.main);
+            LocalToWorld localToWorld = state.EntityManager.GetComponentData<LocalToWorld>(Hands.ValueRO.main);
+
+            float3 currentPosition = localToWorld.Position; // Pobranie globalnej pozycji
             float3 direction = target - currentPosition;
 
             if (!math.any(direction))
-                continue;
+                    continue;
 
             direction.z = 0; // Ignorujemy oœ Z, obracamy tylko w 2D
             direction = math.normalize(direction);
@@ -33,30 +40,54 @@ partial struct CharacterAimSystem : ISystem
             float angle = math.atan2(direction.y, direction.x); // Oblicz k¹t obrotu w 2D
             quaternion targetRotation = quaternion.Euler(0, 0, angle);
 
-            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRW.Rotation, targetRotation, deltaTime * 15f);
+            localTransform.Rotation = math.slerp(localTransform.Rotation, targetRotation, deltaTime * 3f);
+          //  Debug.Log("dziala");
+            state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.main, localTransform);
         }
-    }
+
+
+            //foreach ((RefRW<LocalTransform> localTransform, 
+            //    RefRO<CharacterAim> CharacterAim, 
+            //    RefRW<LocalToWorld> localToWorld
+            //     ) in SystemAPI.Query<RefRW<LocalTransform>,RefRO<CharacterAim>,RefRW<LocalToWorld>>())
+            //{
+
+            //    float3 currentPosition = localToWorld.ValueRO.Position; // Pobranie globalnej pozycji
+            //    float3 direction = target - currentPosition;
+
+            //    if (!math.any(direction))
+            //        continue;
+
+            //    direction.z = 0; // Ignorujemy oœ Z, obracamy tylko w 2D
+            //    direction = math.normalize(direction);
+
+            //    float angle = math.atan2(direction.y, direction.x); // Oblicz k¹t obrotu w 2D
+            //    quaternion targetRotation = quaternion.Euler(0, 0, angle);
+
+            //    localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRW.Rotation, targetRotation, deltaTime * 3f);
+            //}
+        }
 
 
 
-    //private float GetAngle(Vector3 mousePos, Transform aimTransform, float addValue)
-    //{
-    //    Vector3 aimDir = (mousePos - aimTransform.position).normalized;
-    //    float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
-    //    angle += addValue;
-    //    if (angle < 0) angle = 180 + (180 + angle);
-    //    if (aimTransform.eulerAngles.z - angle > 180)
-    //    {
-    //        angle = 360 + angle;
-    //    }
-    //    else if (aimTransform.eulerAngles.z - angle < -180)
-    //    {
-    //        angle = -(360 - angle);
-    //    }
-    //    return angle;
-    //}
+        //private float GetAngle(Vector3 mousePos, Transform aimTransform, float addValue)
+        //{
+        //    Vector3 aimDir = (mousePos - aimTransform.position).normalized;
+        //    float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
+        //    angle += addValue;
+        //    if (angle < 0) angle = 180 + (180 + angle);
+        //    if (aimTransform.eulerAngles.z - angle > 180)
+        //    {
+        //        angle = 360 + angle;
+        //    }
+        //    else if (aimTransform.eulerAngles.z - angle < -180)
+        //    {
+        //        angle = -(360 - angle);
+        //    }
+        //    return angle;
+        //}
 
-    [BurstCompile]
+        [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
 

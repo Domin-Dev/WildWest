@@ -4,23 +4,20 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
-public class aaa : MonoBehaviour
+public class HeadAuthoring : MonoBehaviour
 {
-    public class Baker : Baker<aaa>
+    public class Baker : Baker<HeadAuthoring>
     {
-        public override void Bake(aaa authoring)
+        public override void Bake(HeadAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new aa
+            AddComponent(entity, new Head
             {
-              
+
             });
         }
     }
 }
-
-public struct aa : IComponentData
-{
-    public float3 target;
-}
+public struct Head: IComponentData
+{}
 
