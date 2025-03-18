@@ -2547,7 +2547,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "_Dark",
     "m_StageCapability": 3,
-    "m_Value": 0.6000000238418579,
+    "m_Value": 0.5,
     "m_DefaultValue": 0.0,
     "m_Labels": []
 }
@@ -4574,7 +4574,7 @@
     "m_Hidden": false,
     "m_ShaderOutputName": "_Dark",
     "m_StageCapability": 3,
-    "m_Value": 0.699999988079071,
+    "m_Value": 0.6000000238418579,
     "m_DefaultValue": 0.0,
     "m_Labels": []
 }

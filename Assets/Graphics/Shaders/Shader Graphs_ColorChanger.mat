@@ -32,7 +32,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: 
+  m_LockedProperties: _SkinColor
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -61,7 +61,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
-        m_Texture: {fileID: 2800000, guid: dad0c82c6dce6a34eb87107877394c46, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_2d3b75146b134d128baacd0c46a6ebff_Texture_1_Texture2D:
@@ -86,17 +86,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BeardIndex: 0
-    - _Direction: 0
+    - _BeardIndex: 10
+    - _Direction: 1
     - _EyesIndex: 2
-    - _HairIndex: 1
+    - _HairIndex: 7
     - _HairUnderHat: 0
-    - _MouthIndex: 3
+    - _MouthIndex: 2
     - _PaintingsIndex: 99
     m_Colors:
-    - _HairColor: {r: 0.3962264, g: 0.22913846, b: 0.062050518, a: 1}
+    - _HairColor: {r: 0.335849, g: 0.26025474, b: 0.23509428, a: 1}
     - _HatColor: {r: 0.4264151, g: 0.32019907, b: 0.20516196, a: 1}
     - _MaskColor: {r: 0.18490559, g: 0.18490559, b: 0.18490559, a: 1}
-    - _SkinColor: {r: 0.80377346, g: 0.59834296, b: 0.34425768, a: 1}
+    - _SkinColor: {r: 0.83396226, g: 0.67637944, b: 0.4767746, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
