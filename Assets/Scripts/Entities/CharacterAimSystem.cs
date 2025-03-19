@@ -1,4 +1,4 @@
-using TMPro;
+
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -9,7 +9,7 @@ partial struct CharacterAimSystem : ISystem
 {
 
 
-
+    private static float leftSide = math.PI / 2f;
     public void OnUpdate(ref SystemState state)
     {
         float deltaTime = SystemAPI.Time.DeltaTime;
@@ -21,11 +21,11 @@ partial struct CharacterAimSystem : ISystem
         { 
             if(Hands.ValueRO.main == Entity.Null)
             {
-              //  Debug.Log("NuLL");
                 continue;
             }
 
-           LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.main);
+            LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.main);
+            LocalTransform localSide = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.side);
             LocalToWorld localToWorld = state.EntityManager.GetComponentData<LocalToWorld>(Hands.ValueRO.main);
 
             float3 currentPosition = localToWorld.Position; // Pobranie globalnej pozycji
@@ -38,11 +38,37 @@ partial struct CharacterAimSystem : ISystem
             direction = math.normalize(direction);
 
             float angle = math.atan2(direction.y, direction.x); // Oblicz k¹t obrotu w 2D
-            quaternion targetRotation = quaternion.Euler(0, 0, angle);
+            quaternion mainTargetRotation;
+            quaternion sideTargetRotation;
+            LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.itemInHand);
+            if (math.abs(angle) > leftSide)
+            {
+                sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
+                angle = -angle;
+              //  if(localMain.Rotation.value.x == 0) localMain.Rotation = math.mul(localMain.Rotation.value, quaternion.Euler(math.radians(180), 0, 0));
+                mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
 
-            localTransform.Rotation = math.slerp(localTransform.Rotation, targetRotation, deltaTime * 3f);
-          //  Debug.Log("dziala");
-            state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.main, localTransform);
+            }
+            else
+            {
+                //local.Rotation = quaternion.Euler(0, 0, 0);
+                sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
+                mainTargetRotation = quaternion.Euler(0, 0, angle);
+               // if (localMain.Rotation.value.x > 0) localMain.Rotation = math.mul(localMain.Rotation.value, quaternion.Euler(math.radians(180), 0, 0));
+
+            }
+            state.EntityManager.SetComponentData(Hands.ValueRO.itemInHand, local);
+            
+
+            Debug.Log("Kat :" + angle);
+            Debug.Log(mainTargetRotation + " " +  localSide.Rotation);
+            
+            localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 10f);
+            localSide.Rotation = math.slerp(localSide.Rotation, sideTargetRotation, deltaTime * 2f);
+
+
+            state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.main, localMain);
+            state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.side, localSide);
         }
 
 
@@ -70,24 +96,24 @@ partial struct CharacterAimSystem : ISystem
 
 
 
-        //private float GetAngle(Vector3 mousePos, Transform aimTransform, float addValue)
-        //{
-        //    Vector3 aimDir = (mousePos - aimTransform.position).normalized;
-        //    float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
-        //    angle += addValue;
-        //    if (angle < 0) angle = 180 + (180 + angle);
-        //    if (aimTransform.eulerAngles.z - angle > 180)
-        //    {
-        //        angle = 360 + angle;
-        //    }
-        //    else if (aimTransform.eulerAngles.z - angle < -180)
-        //    {
-        //        angle = -(360 - angle);
-        //    }
-        //    return angle;
-        //}
+    //private float GetAngle(Vector3 mousePos, Transform aimTransform, float addValue)
+    //{
+    //    Vector3 aimDir = (mousePos - aimTransform.position).normalized;
+    //    float angle = Mathf.Atan2(aimDir.y, aimDir.x) * Mathf.Rad2Deg;
+    //    angle += addValue;
+    //    if (angle < 0) angle = 180 + (180 + angle);
+    //    if (aimTransform.eulerAngles.z - angle > 180)
+    //    {
+    //        angle = 360 + angle;
+    //    }
+    //    else if (aimTransform.eulerAngles.z - angle < -180)
+    //    {
+    //        angle = -(360 - angle);
+    //    }
+    //    return angle;
+    //}
 
-        [BurstCompile]
+    [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
 

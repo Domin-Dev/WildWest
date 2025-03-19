@@ -54,6 +54,7 @@ public class WorldItemSpawner : MonoBehaviour
                         var mpb = new MaterialPropertyBlock();
 
                         spriteRenderer.GetPropertyBlock(mpb);
+                        mpb.SetInt("_HairIndex", UnityEngine.Random.Range(14, 31));
                         mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         mpb.SetColor("_HairColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                        // mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
@@ -78,6 +79,7 @@ public class WorldItemSpawner : MonoBehaviour
                     else if (entityManager.HasComponent<MainHand>(child.Value))
                     {
                         hands.main = child.Value;
+                        hands.itemInHand = entityManager.GetBuffer<Child>(child.Value)[0].Value;
                     }
                     else if(entityManager.HasComponent<SideHand>(child.Value))
                     {
@@ -94,7 +96,7 @@ public class WorldItemSpawner : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.K) && isReady) {
 
-            for (int j = 0; j < 100; j++)
+            for (int j = 0; j < 1; j++)
             {
                 SpawnCharacter();
                 // Spawn(sprite1, new Vector2((i % 40 )* 0.2f, (i / 40) * 1f));

@@ -86,17 +86,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BeardIndex: 10
-    - _Direction: 1
+    - _BeardIndex: 99
+    - _Direction: 0
     - _EyesIndex: 2
-    - _HairIndex: 7
+    - _HairIndex: 23
     - _HairUnderHat: 0
     - _MouthIndex: 2
     - _PaintingsIndex: 99
     m_Colors:
-    - _HairColor: {r: 0.335849, g: 0.26025474, b: 0.23509428, a: 1}
+    - _HairColor: {r: 0.4339623, g: 0.3138796, b: 0.08761124, a: 1}
     - _HatColor: {r: 0.4264151, g: 0.32019907, b: 0.20516196, a: 1}
-    - _MaskColor: {r: 0.18490559, g: 0.18490559, b: 0.18490559, a: 1}
+    - _MaskColor: {r: 0.6301887, g: 0.08917756, b: 0.08917756, a: 1}
     - _SkinColor: {r: 0.83396226, g: 0.67637944, b: 0.4767746, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
