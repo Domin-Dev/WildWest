@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -20,9 +21,9 @@ public class WorldItemSpawner : MonoBehaviour
 
     private NativeList<Entity> createdCharacters;
 
-    
-   
 
+
+    private const float playerSpeed = 1.0f;
 
     private void Awake()
     {
@@ -98,11 +99,36 @@ public class WorldItemSpawner : MonoBehaviour
 
             for (int j = 0; j < 1; j++)
             {
-                SpawnCharacter();
+                SpawnPlayer(false);
                 // Spawn(sprite1, new Vector2((i % 40 )* 0.2f, (i / 40) * 1f));
               //  Debug.Log(i);
             }
         }
+    }
+
+    private void SpawnPlayer(bool player)
+    {
+        Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
+
+        entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3((i % 50) * 0.2f, (i / 50) * 0.2f, 0)));
+
+        if(player) entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
+
+        entityManager.AddComponentData(character, new PhysicsVelocity { Linear = float3.zero, Angular = float3.zero });
+        entityManager.AddComponentData(character, new PhysicsMass { InverseMass = 1f, InverseInertia = new float3(1f, 1f, 1f) });
+        entityManager.AddComponentData(character, new PhysicsDamping { Linear = 0.01f, Angular = 0.01f });
+
+        BoxGeometry boxGeometry = new BoxGeometry
+        {
+            Center = float3.zero,         
+            Size = new float3(1f, 1f, 0f), 
+            Orientation = quaternion.identity, 
+            BevelRadius = 0           
+        };
+        BlobAssetReference<Unity.Physics.Collider> collider = Unity.Physics.BoxCollider.Create(boxGeometry);
+        entityManager.AddComponentData(character, new PhysicsCollider { Value = collider });
+        i++;
+        createdCharacters.Add(character);
     }
 
     private void SpawnCharacter()
@@ -122,8 +148,15 @@ public class WorldItemSpawner : MonoBehaviour
         {
             SetUp(query);
             CancelInvoke("WaitForEntity");
+            StartGame();
         }
     }
+
+    private void StartGame()
+    {
+        SpawnPlayer(true);
+    }
+
     private void SetUp(EntityQuery entityQuery)
     {
         ChatManager.instance.Print("Udalo sie wczytac");

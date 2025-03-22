@@ -28,13 +28,13 @@ partial struct CharacterAimSystem : ISystem
             LocalTransform localSide = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.side);
             LocalToWorld localToWorld = state.EntityManager.GetComponentData<LocalToWorld>(Hands.ValueRO.main);
 
-            float3 currentPosition = localToWorld.Position; // Pobranie globalnej pozycji
+            float3 currentPosition = localToWorld.Position; 
             float3 direction = target - currentPosition;
 
             if (!math.any(direction))
                     continue;
 
-            direction.z = 0; // Ignorujemy oœ Z, obracamy tylko w 2D
+            direction.z = 0; 
             direction = math.normalize(direction);
 
             float angle = math.atan2(direction.y, direction.x); // Oblicz k¹t obrotu w 2D

@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 9218306444142144571}
   - component: {fileID: 8804016238017560453}
   - component: {fileID: 6566186299068100765}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Body
   m_TagString: Body
   m_Icon: {fileID: 0}
@@ -563,8 +563,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7504337897155031083}
-  - component: {fileID: 1003710735619245238}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Character
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -592,33 +591,6 @@ Transform:
   - {fileID: 2496902785029448389}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!50 &1003710735619245238
-Rigidbody2D:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3773562619657541914}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDrag: 2
-  m_AngularDrag: 0.5
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 4
 --- !u!1 &4052707354229184416
 GameObject:
   m_ObjectHideFlags: 0
@@ -631,7 +603,7 @@ GameObject:
   - component: {fileID: 4922326486425063010}
   - component: {fileID: 2088386101350207638}
   - component: {fileID: 1463187940231101080}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Head
   m_TagString: Head
   m_Icon: {fileID: 0}
@@ -776,7 +748,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7205225625394121074}
   - component: {fileID: 7052186180017741201}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -822,7 +794,7 @@ GameObject:
   - component: {fileID: 2920395995175801465}
   - component: {fileID: 2480187752297436952}
   - component: {fileID: 3298480343695589182}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Hitbox
   m_TagString: Sword
   m_Icon: {fileID: 0}
@@ -1040,7 +1012,7 @@ GameObject:
   - component: {fileID: 8916067156873248734}
   - component: {fileID: 7209615216392776098}
   - component: {fileID: 5669832324804269681}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: SecondHand
   m_TagString: Shield
   m_Icon: {fileID: 0}
