@@ -22,10 +22,10 @@ partial struct PlayerMovementSystem : ISystem
         if (math.lengthsq(input) > 1) input = math.normalize(input);
         float deltaTime = SystemAPI.Time.DeltaTime;
 
-        foreach ((RefRW <LocalTransform> transform, RefRW < PhysicsVelocity > velocity, RefRO <Player> player ) in SystemAPI.Query<RefRW<LocalTransform>, RefRW<PhysicsVelocity>, RefRO<Player>>())
+        foreach ((RefRW <LocalTransform> transform, RefRW <Velocity2D> velocity, RefRO <Player> player ) in SystemAPI.Query<RefRW<LocalTransform>, RefRW<Velocity2D>, RefRO<Player>>())
         {
             float2 float2 = input * player.ValueRO.speed * deltaTime;
-            velocity.ValueRW.Linear = new float3(float2.x, float2.y, 0f); 
+            velocity.ValueRW.Value = new float2(float2.x, float2.y); 
         } 
     }
 

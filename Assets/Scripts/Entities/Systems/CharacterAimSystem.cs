@@ -60,8 +60,8 @@ partial struct CharacterAimSystem : ISystem
             state.EntityManager.SetComponentData(Hands.ValueRO.itemInHand, local);
             
 
-            Debug.Log("Kat :" + angle);
-            Debug.Log(mainTargetRotation + " " +  localSide.Rotation);
+         //   Debug.Log("Kat :" + angle);
+         //   Debug.Log(mainTargetRotation + " " +  localSide.Rotation);
             
             localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 10f);
             localSide.Rotation = math.slerp(localSide.Rotation, sideTargetRotation, deltaTime * 2f);
