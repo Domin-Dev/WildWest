@@ -7,8 +7,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.Search.SearchColumn;
+
 
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
@@ -27,6 +26,8 @@ public partial struct CollisionSystem : ISystem
         public float2 size;
         public float2 velocity;
     };
+
+    static int k = 0;
     public void OnUpdate(ref SystemState state)
     {
         var entities = SystemAPI.QueryBuilder().WithAll<LocalTransform, Velocity2D, Hitbox2D>().Build();
@@ -37,7 +38,6 @@ public partial struct CollisionSystem : ISystem
         var velocities = entities.ToComponentDataArray<Velocity2D>(Allocator.TempJob);
         var hitboxes = entities.ToComponentDataArray<Hitbox2D>(Allocator.TempJob);
 
-        float deltaTime = SystemAPI.Time.DeltaTime;
         NativeArray<float3> mtvMax = new NativeArray<float3>(entityArray.Length, Allocator.TempJob);
 
         for (int i = 0; i < entityArray.Length; i++)
@@ -52,8 +52,10 @@ public partial struct CollisionSystem : ISystem
                 tempTransform1.Position.y + tempHitbox1.size.y * 0.5f
                 );
 
+            float3 largestMTV = float3.zero;
 
 
+            k++;
             for (int j = i + 1; j < entityArray.Length; j++)
             {
                 LocalTransform tempTransform2 = transforms[j];
@@ -68,29 +70,44 @@ public partial struct CollisionSystem : ISystem
                 Box box1 = new Box(new float2(topLeft1.x, topLeft1.y),tempHitbox1.size,velocity1);
                 Box box2 = new Box(new float2(topLeft2.x, topLeft2.y),tempHitbox2.size, velocities[j].Value);
                 float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
-                
-                tempTransform1.Position.x += box1.velocity.x * collisiontime;
-                tempTransform1.Position.y += box1.velocity.y * collisiontime;
-                
-                float remainingtime = 1.0f - collisiontime;
-                velocity1.y *= remainingtime;
-                velocity1.x *= remainingtime;
-                
-                if (normalx > 0.0001f)
-                    velocity1.x = 0.01f;
-                else if (normalx < -0.0001f)
-                    velocity1.x = -0.01f;
 
-                if (normaly > 0.0001f)
-                    velocity1.y = 0.01f;
-                else if (normaly < -0.0001f)
-                    velocity1.y = -0.01f;
+                float2 offset;
 
-                Debug.Log(velocity1 + " " + normalx + "  " + normaly);
-                Debug.Log(entityArray[i] + " " + entityArray[j]);
+
+                if (collisiontime < 1f)
+                {
+                    if(i == 0)
+                    {
+                        Debug.LogWarning(k + " kolizja " + j);
+                    }
+                    tempTransform1.Position.x += box1.velocity.x * collisiontime;
+                    tempTransform1.Position.y += box1.velocity.y * collisiontime;
+                    float remainingtime = 1.0f - collisiontime;
+                    velocity1.y *= remainingtime;
+                    velocity1.x *= remainingtime;
+
+                    if (normalx > 0)
+                    {
+                        velocity1.x = 0.1f;
+                    }
+                    else if (normalx < 0)
+                    {
+                        velocity1.x = -0.1f;
+                    }
+                    if (normaly > 0)
+                    {
+                        velocity1.y = 0.1f;
+                    }
+                    else if (normaly < 0)
+                    {
+                        velocity1.y = -0.1f;
+                    }
+                }
+               
+
             }
-  
-            tempTransform1.Position += new float3(velocity1.x, velocity1.y, 0);   
+
+            tempTransform1.Position += new float3(velocity1.x,velocity1.y,0);
             state.EntityManager.SetComponentData(entityArray[i], tempTransform1);
         }
 
@@ -139,6 +156,7 @@ public partial struct CollisionSystem : ISystem
         float entryTime = Mathf.Max(xEntry, yEntry);
         float exitTime = Mathf.Min(xExit, yExit);
 
+        Debug.Log(entryTime + " " + exitTime);
         if (entryTime <= exitTime && entryTime <= 1f && entryTime >= 0f && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, xEntry, yEntry))
         {
             if (entryTime == xEntry)
@@ -150,6 +168,14 @@ public partial struct CollisionSystem : ISystem
                 normaly = (b1.velocity.y > 0) ? -1 : 1; 
             }
             return entryTime;
+        }
+
+        if (StaticAABB(b1, b2))
+        {
+            Debug.Log("Statyczna kolizja wykryta!");
+            normalx = (b1.pos.x < b2.pos.x) ? -1 : 1;
+            normaly = (b1.pos.y < b2.pos.y) ? -1 : 1;
+            return 0; 
         }
         return 1;
     }
@@ -171,5 +197,29 @@ public partial struct CollisionSystem : ISystem
             return MyTools.HaveOppositeSigns(yInvEntry, yInvExit);
         }
         return MyTools.HaveOppositeSigns(yInvEntry, yInvExit) && MyTools.HaveOppositeSigns(yInvEntry, yInvExit);
+    }
+    private bool StaticAABB(Box b1, Box b2)
+    {
+        return (b1.pos.x < b2.pos.x + b2.size.x &&
+                b1.pos.x + b1.size.x > b2.pos.x &&
+                b1.pos.y < b2.pos.y + b2.size.y &&
+                b1.pos.y + b1.size.y > b2.pos.y);
+    }
+
+    private float3 GetMTV(Box b1, Box b2)
+    {
+        float2 min1 = new float2(b1.pos.x, b1.pos.y - b1.size.y);
+        float2 max1 = new float2(b1.pos.x + b1.size.x, b1.pos.y);
+
+        float2 min2 = new float2(b2.pos.x, b2.pos.y - b2.size.y);
+        float2 max2 = new float2(b2.pos.x + b2.size.x, b2.pos.y);
+
+        float overlapX = System.Math.Min(max1.x - min2.x, max2.x - min1.x);
+        float overlapY = System.Math.Min(max1.y - min2.y, max2.y - min1.y);
+
+        if (overlapX < overlapY)
+            return new float3(overlapX * (min1.x < min2.x ? -1 : 1), 0, 0);
+        else
+            return new float3(0, overlapY * (min1.y < min2.y ? -1 : 1), 0);
     }
 }

@@ -101,18 +101,14 @@ public class WorldItemSpawner : MonoBehaviour
             }
         }
    
-
-
         if(Input.GetKeyDown(KeyCode.K) && isReady) {
 
             for (int j = 0; j < 1; j++)
             {
                 SpawnPlayer(false, new float3((i % 40) * 0.2f, (i / 40) * 1f,0));
-
             }
         }
     }
-
     private void SpawnEntity()
     {
         // 1️⃣ Tworzymy archetyp encji
@@ -148,7 +144,7 @@ public class WorldItemSpawner : MonoBehaviour
         });
         entityManager.SetComponentData(character, new PhysicsCollider { Value = collider });
 
-        // 5️⃣ Dodajemy grafikę (Mesh + Material)
+       
         entityManager.SetSharedComponentManaged(character, new RenderMesh
         {
             mesh = quadMesh,
