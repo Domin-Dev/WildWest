@@ -107,9 +107,8 @@ public class WorldItemSpawner : MonoBehaviour
 
             for (int j = 0; j < 1; j++)
             {
-                SpawnPlayer(false);
-                // Spawn(sprite1, new Vector2((i % 40 )* 0.2f, (i / 40) * 1f));
-              //  Debug.Log(i);
+                SpawnPlayer(false, new float3((i % 40) * 0.2f, (i / 40) * 1f,0));
+
             }
         }
     }
@@ -170,12 +169,13 @@ public class WorldItemSpawner : MonoBehaviour
         blobAssetStore.Dispose();
     }
 
-    private void SpawnPlayer(bool tr )
+    private void SpawnPlayer(bool tr , float3 pozycja)
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3(0, 0, 0)));
+        entityManager.SetComponentData(character, LocalTransform.FromPosition(pozycja));
         if(tr) entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
         createdCharacters.Add(character);
+        i++;
     }
     private void SpawnCharacter()
     {
@@ -200,7 +200,7 @@ public class WorldItemSpawner : MonoBehaviour
 
     private void StartGame()
     {
-        SpawnPlayer(true);
+        SpawnPlayer(true,float3.zero);
     }
 
     private void SetUp(EntityQuery entityQuery)

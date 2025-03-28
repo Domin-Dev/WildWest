@@ -13,7 +13,7 @@ public class PlayerAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Player
             {
-                speed = 1,  
+                speed = 2f,  
             });
         }
     }

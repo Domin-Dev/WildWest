@@ -7,11 +7,26 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.Search.SearchColumn;
 
 
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 public partial struct CollisionSystem : ISystem
 {
+
+    struct Box
+    {
+        public Box(float2 pos, float2 size, float2 velocity)
+        {
+            this.pos = pos;
+            this.size = size;
+            this.velocity = velocity;
+        }
+        public float2 pos;
+        public float2 size;
+        public float2 velocity;
+    };
     public void OnUpdate(ref SystemState state)
     {
         var entities = SystemAPI.QueryBuilder().WithAll<LocalTransform, Velocity2D, Hitbox2D>().Build();
@@ -22,67 +37,61 @@ public partial struct CollisionSystem : ISystem
         var velocities = entities.ToComponentDataArray<Velocity2D>(Allocator.TempJob);
         var hitboxes = entities.ToComponentDataArray<Hitbox2D>(Allocator.TempJob);
 
+        float deltaTime = SystemAPI.Time.DeltaTime;
         NativeArray<float3> mtvMax = new NativeArray<float3>(entityArray.Length, Allocator.TempJob);
 
         for (int i = 0; i < entityArray.Length; i++)
         {
-            LocalTransform tempTransform = transforms[i];
-            float2 velocity2D = velocities[i].Value;
-            Hitbox2D tempHitbox = hitboxes[i];
-            float2 min1, max1;
-            float offsetX, offsetY;
+            LocalTransform tempTransform1 = transforms[i];
+            float2 velocity1 = velocities[i].Value;
+            Hitbox2D tempHitbox1 = hitboxes[i];
 
-            offsetX = tempHitbox.size.x * 0.5f;
-            offsetY = tempHitbox.size.y * 0.5f;
+            float2 topLeft1 = 
+                new float2(
+                tempTransform1.Position.x - tempHitbox1.size.x * 0.5f,
+                tempTransform1.Position.y + tempHitbox1.size.y * 0.5f
+                );
 
-            min1.x = tempTransform.Position.x + velocity2D.x - offsetX;
-            min1.y = tempTransform.Position.y + velocity2D.y - offsetY;
-            max1.x = tempTransform.Position.x + velocity2D.x + offsetX;
-            max1.y = tempTransform.Position.y + velocity2D.y + offsetY;
 
-            float3 largestMTV = float3.zero;
 
             for (int j = i + 1; j < entityArray.Length; j++)
             {
-                float2 min2, max2;
-                LocalTransform transform2 = transforms[j];
-                Hitbox2D hitbox2 = hitboxes[j];
-                float2 velocity2 = velocities[j].Value;
+                LocalTransform tempTransform2 = transforms[j];
+                Hitbox2D tempHitbox2 = hitboxes[j];
 
-                offsetX = hitbox2.size.x * 0.5f;
-                offsetY = hitbox2.size.y * 0.5f;
+                float2 topLeft2 =
+                new float2(
+                tempTransform2.Position.x - tempHitbox2.size.x * 0.5f,
+                tempTransform2.Position.y + tempHitbox2.size.y * 0.5f
+                );
 
-                min2.x = transform2.Position.x + velocity2.x - offsetX;
-                min2.y = transform2.Position.y + velocity2.y - offsetY;
-                max2.x = transform2.Position.x + velocity2.x + offsetX;
-                max2.y = transform2.Position.y + velocity2.y + offsetY;
+                Box box1 = new Box(new float2(topLeft1.x, topLeft1.y),tempHitbox1.size,velocity1);
+                Box box2 = new Box(new float2(topLeft2.x, topLeft2.y),tempHitbox2.size, velocities[j].Value);
+                float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
+                
+                tempTransform1.Position.x += box1.velocity.x * collisiontime;
+                tempTransform1.Position.y += box1.velocity.y * collisiontime;
+                
+                float remainingtime = 1.0f - collisiontime;
+                velocity1.y *= remainingtime;
+                velocity1.x *= remainingtime;
+                
+                if (normalx > 0.0001f)
+                    velocity1.x = 0.01f;
+                else if (normalx < -0.0001f)
+                    velocity1.x = -0.01f;
 
-                if (CheckCollision(min1, max1, min2, max2))
-                {
-                    float3 offset = GetMTV(min1, max1, min2, max2);
-                    collidingPairs.Add(new int2(i, j));
+                if (normaly > 0.0001f)
+                    velocity1.y = 0.01f;
+                else if (normaly < -0.0001f)
+                    velocity1.y = -0.01f;
 
-                    // Zamiast sumowaæ MTV, bierzemy ten o najwiêkszej wartoœci
-                    if (math.abs(offset.x) > math.abs(largestMTV.x))
-                    {
-                        largestMTV.x = offset.x;
-                    }
-                    if (math.abs(offset.y) > math.abs(largestMTV.y))
-                    {
-                        largestMTV.y = offset.y;
-                    }
-
-                }
+                Debug.Log(velocity1 + " " + normalx + "  " + normaly);
+                Debug.Log(entityArray[i] + " " + entityArray[j]);
             }
-
-            tempTransform.Position += largestMTV;
-            tempTransform.Position += new float3(velocity2D.x, velocity2D.y, 0);
-            state.EntityManager.SetComponentData(entityArray[i], tempTransform);
-        }
-
-        foreach (var pair in collidingPairs)
-        {
-          //  Debug.Log($"Collision detected between {entityArray[pair.x]} and {entityArray[pair.y]}");
+  
+            tempTransform1.Position += new float3(velocity1.x, velocity1.y, 0);   
+            state.EntityManager.SetComponentData(entityArray[i], tempTransform1);
         }
 
         entityArray.Dispose();
@@ -92,57 +101,75 @@ public partial struct CollisionSystem : ISystem
         collidingPairs.Dispose();
         mtvMax.Dispose();
     }
-
-
-    private bool CheckCollision(float2 min1, float2 max1 ,float2 min2 , float2 max2)
+    private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly)
     {
-        return (min1.x <= max2.x && max1.x >= min2.x) &&
-               (min1.y <= max2.y && max1.y >= min2.y);
-    }
+        float xInvEntry, yInvEntry;
+        float xInvExit, yInvExit;
+        normalx = 0;  
+        normaly = 0;  
 
-
-    public float3 GetMTV(float2 min1, float2 max1, float2 min2, float2 max2)
-    {
-        float overlapX = System.Math.Min(max1.x - min2.x, max2.x - min1.x);
-        float overlapY = System.Math.Min(max1.y - min2.y, max2.y - min1.y);
-
-        if (overlapX < overlapY)
-            return new float3(overlapX * (min1.x < min2.x ? -1 : 1), 0, 0);
-        else
-            return new float3(0, overlapY * (min1.y < min2.y ? -1 : 1), 0);
-    }
-
-    public bool SweptAABB(float2 min1, float2 max1, float2 velocity, float2 min2, float2 max2, out float tCollision)
-    {
-        float2 invEntry, invExit;
-        float2 entry, exit;
-
-        // Obliczamy moment wejœcia i wyjœcia na ka¿dej osi
-        invEntry.x = (velocity.x > 0) ? (min2.x - max1.x) : (max2.x - min1.x);
-        invExit.x = (velocity.x > 0) ? (max2.x - min1.x) : (min2.x - max1.x);
-
-        invEntry.y = (velocity.y > 0) ? (min2.y - max1.y) : (max2.y - min1.y);
-        invExit.y = (velocity.y > 0) ? (max2.y - min1.y) : (min2.y - max1.y);
-
-        entry.x = (velocity.x == 0) ? float.NegativeInfinity : invEntry.x / velocity.x;
-        exit.x = (velocity.x == 0) ? float.PositiveInfinity : invExit.x / velocity.x;
-
-        entry.y = (velocity.y == 0) ? float.NegativeInfinity : invEntry.y / velocity.y;
-        exit.y = (velocity.y == 0) ? float.PositiveInfinity : invExit.y / velocity.y;
-
-        float entryTime = math.max(entry.x, entry.y);
-        float exitTime = math.min(exit.x, exit.y);
-
-        // Jeœli moment wejœcia jest póŸniejszy ni¿ moment wyjœcia, nie ma kolizji
-        if (entryTime > exitTime || (entry.x < 0 && entry.y < 0) || entry.x > 1 || entry.y > 1)
+        if (b1.velocity.x > 0.0f)
         {
-            tCollision = 1; // Brak kolizji
-            return false;
+            xInvEntry = b2.pos.x - (b1.pos.x + b1.size.x);
+            xInvExit = (b2.pos.x + b2.size.x) - b1.pos.x;
+        }
+        else
+        {
+            xInvEntry = (b2.pos.x + b2.size.x) - b1.pos.x;
+            xInvExit = b2.pos.x - (b1.pos.x + b1.size.x);
         }
 
-        // Kolizja nast¹pi³a
-        tCollision = math.clamp(entryTime, 0, 1);
-        return true;
-    }
+        if (b1.velocity.y > 0.0f)
+        {
+            yInvEntry = b2.pos.y - (b1.pos.y + b1.size.y);
+            yInvExit = (b2.pos.y + b2.size.y) - b1.pos.y;
+        }
+        else
+        {
+            yInvEntry = (b2.pos.y + b2.size.y) - b1.pos.y;
+            yInvExit = b2.pos.y - (b1.pos.y + b1.size.y);
+        }
 
+        float xEntry = (b1.velocity.x == 0.0f) ? -Mathf.Infinity : xInvEntry / b1.velocity.x;
+        float xExit = (b1.velocity.x == 0.0f) ? Mathf.Infinity : xInvExit / b1.velocity.x;
+
+        float yEntry = (b1.velocity.y == 0.0f) ? -Mathf.Infinity : yInvEntry / b1.velocity.y;
+        float yExit = (b1.velocity.y == 0.0f) ? Mathf.Infinity : yInvExit / b1.velocity.y;
+
+        float entryTime = Mathf.Max(xEntry, yEntry);
+        float exitTime = Mathf.Min(xExit, yExit);
+
+        if (entryTime <= exitTime && entryTime <= 1f && entryTime >= 0f && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, xEntry, yEntry))
+        {
+            if (entryTime == xEntry)
+            {
+                normalx = (b1.velocity.x > 0) ? -1 : 1; 
+            }
+            else
+            {
+                normaly = (b1.velocity.y > 0) ? -1 : 1; 
+            }
+            return entryTime;
+        }
+        return 1;
+    }
+    private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit, float xEntry, float yEntry)
+    {
+        bool xCollision = math.abs(xEntry) != Mathf.Infinity;
+        bool yCollision = math.abs(yEntry) != Mathf.Infinity;
+
+        if (xCollision && yCollision)
+        {
+            return true;
+        }
+        else if (yCollision)
+        {
+            return MyTools.HaveOppositeSigns(xInvEntry, xInvExit);
+        }
+        else if (xCollision)
+        {
+            return MyTools.HaveOppositeSigns(yInvEntry, yInvExit);
+        }
+        return MyTools.HaveOppositeSigns(yInvEntry, yInvExit) && MyTools.HaveOppositeSigns(yInvEntry, yInvExit);
+    }
 }

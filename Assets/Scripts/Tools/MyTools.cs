@@ -4,6 +4,7 @@ using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 using Unity.Burst;
+using System;
 
 public static class MyTools 
 {
@@ -66,4 +67,12 @@ public static class MyTools
         transform.position = newPosition;
         child.SetParent(transform);
     }
+
+    public static bool HaveOppositeSigns<T>(T a, T b) where T : struct, IComparable<T>
+    {
+        double x = Convert.ToDouble(a);
+        double y = Convert.ToDouble(b);
+        return (x >= 0 && y < 0) || (x < 0 && y >= 0);
+    }
+
 }
