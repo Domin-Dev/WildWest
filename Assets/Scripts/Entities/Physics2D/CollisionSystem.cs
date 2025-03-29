@@ -46,13 +46,16 @@ public partial struct CollisionSystem : ISystem
             float2 velocity1 = velocities[i].Value;
             Hitbox2D tempHitbox1 = hitboxes[i];
 
+            int m = 0;
             float2 topLeft1 = 
                 new float2(
                 tempTransform1.Position.x - tempHitbox1.size.x * 0.5f,
                 tempTransform1.Position.y + tempHitbox1.size.y * 0.5f
                 );
 
-            float3 largestMTV = float3.zero;
+            float2 totalNormal = float2.zero;
+            float minCollisionTime = 1f;
+            Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
 
 
             k++;
@@ -67,44 +70,48 @@ public partial struct CollisionSystem : ISystem
                 tempTransform2.Position.y + tempHitbox2.size.y * 0.5f
                 );
 
-                Box box1 = new Box(new float2(topLeft1.x, topLeft1.y),tempHitbox1.size,velocity1);
                 Box box2 = new Box(new float2(topLeft2.x, topLeft2.y),tempHitbox2.size, velocities[j].Value);
                 float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
 
                 float2 offset;
 
-
-                if (collisiontime < 1f)
+                if (collisiontime <= minCollisionTime)
                 {
-                    if(i == 0)
-                    {
-                        Debug.LogWarning(k + " kolizja " + j);
-                    }
-                    tempTransform1.Position.x += box1.velocity.x * collisiontime;
-                    tempTransform1.Position.y += box1.velocity.y * collisiontime;
-                    float remainingtime = 1.0f - collisiontime;
-                    velocity1.y *= remainingtime;
-                    velocity1.x *= remainingtime;
-
-                    if (normalx > 0)
-                    {
-                        velocity1.x = 0.1f;
-                    }
-                    else if (normalx < 0)
-                    {
-                        velocity1.x = -0.1f;
-                    }
-                    if (normaly > 0)
-                    {
-                        velocity1.y = 0.1f;
-                    }
-                    else if (normaly < 0)
-                    {
-                        velocity1.y = -0.1f;
-                    }
+                    minCollisionTime = collisiontime;
+                    m = j;
+                    totalNormal += new float2(normalx, normaly);
                 }
-               
+            }
 
+            if (minCollisionTime < 1f)
+            {
+                if(i == 0)
+                {
+                    Debug.LogWarning(i + " kolizja" + m);
+                }
+
+                tempTransform1.Position.x += box1.velocity.x * minCollisionTime;
+                tempTransform1.Position.y += box1.velocity.y * minCollisionTime;
+                float remainingtime = 1.0f - minCollisionTime;
+                velocity1.y *= remainingtime;
+                velocity1.x *= remainingtime;
+
+                if (totalNormal.x > 0)
+                {
+                    velocity1.x = 0.01f;
+                }
+                else if (totalNormal.x < 0)
+                {
+                    velocity1.x = -0.01f;
+                }
+                if (totalNormal.y > 0)
+                {
+                    velocity1.y = 0.01f;
+                }
+                else if (totalNormal.y < 0)
+                {
+                    velocity1.y = -0.01f;
+                }
             }
 
             tempTransform1.Position += new float3(velocity1.x,velocity1.y,0);
