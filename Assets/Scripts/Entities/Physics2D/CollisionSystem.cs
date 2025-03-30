@@ -1,5 +1,6 @@
 using NUnit.Framework.Interfaces;
 using System;
+using System.Numerics;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -73,7 +74,7 @@ public partial struct CollisionSystem : ISystem
                 tempTransform1.Position.y + tempHitbox1.size.y * 0.5f
                 );
 
-            float3 vel = float3.zero;
+            float3 vel = new float3(0,0,0);
             float3 pos = float3.zero;
             float3 offset = float3.zero;
 
@@ -101,40 +102,64 @@ public partial struct CollisionSystem : ISystem
                 if (collisiontime < 1f )
                 {
                     collisions.Add(j, collisiontime);
-                    if (collisiontime < minTime)
+                    if (collisiontime <= minTime)
                     {
+                       
                         if (collisiontime < minTime)
                         {
-                            vel = float3.zero;
                             pos = tempTransform1.Position;
+                            vel = new float3(0, 0, 0);
                         }
                         minTime = collisiontime;
 
+                       // float2 tempPos;
                         pos.x = tempTransform1.Position.x + box1.velocity.x * collisiontime;
                         pos.y = tempTransform1.Position.y + box1.velocity.y * collisiontime;
+
+
+                        Debug.Log(velocity1);
                         float remainingtime = 1.0f - collisiontime;
 
+                        float2 tempVel = float2.zero;
+                       
                         if (normaly != 0 && normalx != 0)
                         {
-                            float3 vector = GetMTV(box1, box2);
-                            if (vector.x == 0)
-                                vel.x = velocity1.x * remainingtime;
-                            else
-                                vel.x = 0;
+                            Box tempBox = box1;
+                            tempBox.pos += box1.velocity * collisiontime;
 
-                            if (vector.y == 0)
-                                vel.y = velocity1.y * remainingtime;
+                            float2 vector = CheckEdges(tempBox, box2);
+                            Debug.Log(GetMTV(tempBox, box2));
+                            Debug.Log(vector);
+                            if (vector.x == 0 || normalx * velocity1.x >= 0)
+                                tempVel.x = velocity1.x * remainingtime;
                             else
-                                vel.y = 0;
+                                tempVel.x = 0;
+
+                            if (vector.y == 0 || normaly * velocity1.y >= 0)
+                                tempVel.y = velocity1.y * remainingtime;
+                            else
+                                tempVel.y = 0;
                         }
                         else
                         {
-                            if (normalx == 0) vel.x = velocity1.x * remainingtime;
-                            else vel.x = 0;
+                            if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
+                            else tempVel.x = 0;
 
-                            if (normaly == 0) vel.y = velocity1.y * remainingtime;
-                            else vel.y = 0;
+                            if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
+                            else tempVel.y = 0;
                         }
+
+
+                         Debug.Log(tempVel);
+                        if (math.abs(tempVel.x) > math.abs(vel.x))
+                        {
+                            vel.x = tempVel.x;
+                        }
+                        if (math.abs(tempVel.y) > math.abs(vel.y))
+                        {
+                            vel.y = tempVel.y;
+                        }
+                        Debug.Log(k + " " + entityArray[j].Index + " " + normalx + " " + normaly + " " + collisiontime + " " + vel);
                     }
                 }
             }
@@ -148,9 +173,11 @@ public partial struct CollisionSystem : ISystem
                 );
 
                 Box box1 = new Box(new float2(topLeft.x + vel.x, topLeft.y + vel.y), tempHitbox1.size, velocity1);
+                Debug.Log(minTime + " "+ pos + " "+ vel );
                 foreach (var item in collisions)
                 {
-                    Debug.Log(item.Value);
+                   
+                   // Debug.Log(item.Value);
                     LocalTransform tempTransform2 = transforms[item.Key];
                     Hitbox2D tempHitbox2 = hitboxes[item.Key];
                     float2 topLeft2 =
@@ -245,8 +272,9 @@ public partial struct CollisionSystem : ISystem
 
         if (StaticAABB(b1, b2))
         {
-            normalx = (b1.pos.x < b2.pos.x) ? -1 : 1;
-            normaly = (b1.pos.y < b2.pos.y) ? -1 : 1;
+            float2 normal = GetCollisionNormal(b1, b2);
+            normalx = normal.x;
+            normaly = normal.y;
             return 0;
         }
         return 1;
@@ -288,9 +316,59 @@ public partial struct CollisionSystem : ISystem
         float overlapX = System.Math.Min(max1.x - min2.x, max2.x - min1.x);
         float overlapY = System.Math.Min(max1.y - min2.y, max2.y - min1.y);
 
+        
         if (overlapX < overlapY)
             return new float3(overlapX * (min1.x < min2.x ? -1 : 1), 0, 0);
         else
             return new float3(0, overlapY * (min1.y < min2.y ? -1 : 1), 0);
     }
+    private float2 CheckEdges(Box b1, Box b2)
+    {
+        float2 min1 = new float2(b1.pos.x, b1.pos.y - b1.size.y);
+        float2 max1 = new float2(b1.pos.x + b1.size.x, b1.pos.y);
+
+        float2 min2 = new float2(b2.pos.x, b2.pos.y - b2.size.y);
+        float2 max2 = new float2(b2.pos.x + b2.size.x, b2.pos.y);
+
+        float overlapX = System.Math.Min(max1.x - min2.x, max2.x - min1.x);
+        float overlapY = System.Math.Min(max1.y - min2.y, max2.y - min1.y);
+
+        return new float2(overlapY >= 0 ? 1 : 0, overlapY >= 0 ? 1 : 0);
+    }
+
+    private float2 GetCollisionNormal(Box b1, Box b2)
+    {
+        float2 normal = float2.zero;
+
+        float left1 = b1.pos.x;
+        float right1 = b1.pos.x + b1.size.x;
+        float bottom1 = b1.pos.y - b1.size.y;
+        float top1 = b1.pos.y;
+
+        float left2 = b2.pos.x;
+        float right2 = b2.pos.x + b2.size.x;
+        float bottom2 = b2.pos.y - b2.size.y;
+        float top2 = b2.pos.y;
+
+        if (Mathf.Approximately(right1, left2))
+        {
+            normal = new float2(1, 0);  
+        }
+        else if (Mathf.Approximately(left1, right2))
+        {
+            normal = new float2(-1, 0);
+        }
+
+        if (Mathf.Approximately(top1, bottom2))
+        {
+            normal = new float2(0, -1); 
+        }
+        else if (Mathf.Approximately(bottom1, top2))
+        {
+            normal = new float2(0, 1);
+        }
+
+        return normal;  
+    }
+
 }

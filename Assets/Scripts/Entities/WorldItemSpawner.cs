@@ -105,7 +105,7 @@ public class WorldItemSpawner : MonoBehaviour
 
             for (int j = 0; j < 1; j++)
             {
-                SpawnPlayer(false, new float3((i % 40) * 0.2f, (i / 40) * 1f,0));
+                SpawnPlayer(false, new float3((i % 40) * 0.2f, (i / 3) * 0.1f,0));
             }
         }
     }
