@@ -135,7 +135,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 54676bc5b73ca1e40bff8765382938be, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -156,7 +156,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 5909386111918227354, guid: 982e3de6479d1b94d8ebb82273cd46cf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6faebc123c1dc0b46ad71a62ebae4e56, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -204,8 +204,8 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0}
-    oldSize: {x: 0.21, y: 0.21}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.1, y: 0.1}
     newSize: {x: 0.11, y: 0.13}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -605,8 +605,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hitboxSize:
-    x: 0.2
-    y: 0.2
+    x: 0.11
+    y: 0.1
 --- !u!1 &4052707354229184416
 GameObject:
   m_ObjectHideFlags: 0

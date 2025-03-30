@@ -7,12 +7,18 @@ using UnityEngine;
 public struct Hitbox2D : IComponentData
 {
     public float2 size;
+    public int2 cellIndex;
 }
 public struct Velocity2D : IComponentData
 {
     public float2 Value;
 }
+public struct Trigger2D : IComponentData
+{
+    public float2 Value;
+}
 
+public struct IsChanged : IComponentData, IEnableableComponent { } 
 public class Physics2DAuthoring : MonoBehaviour
 {
     [SerializeField] float2 hitboxSize; 
@@ -22,7 +28,10 @@ public class Physics2DAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Velocity2D() { Value = float2.zero});
-            AddComponent(entity, new Hitbox2D() {size = authoring.hitboxSize }); 
+            AddComponent(entity, new IsChanged());
+            AddComponent(entity, new Hitbox2D() {
+                size = authoring.hitboxSize,
+            }); 
         }
     }
 
