@@ -103,9 +103,9 @@ public class WorldItemSpawner : MonoBehaviour
    
         if(Input.GetKeyDown(KeyCode.K) && isReady) {
 
-            for (int j = 0; j < 1; j++)
+            for (int j = 0; j < 6; j++) 
             {
-                SpawnPlayer(false, new float3((i % 40) * 0.12f + 0.2f, (i / 3) * 0.1f + 0.2f,0));
+                SpawnPlayer(false, new float3( i * 0.13f + 0.2f,( i %1)* 0.13f + 0.2f,0));
             }
         }
     }

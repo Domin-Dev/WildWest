@@ -106,7 +106,8 @@ public partial struct CollisionSystem : ISystem
 
                 Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
                 Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, velocities[j].Value);
-                float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
+                float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly,true);
+
 
                 if (collisiontime < 1f )
                 {
@@ -129,17 +130,21 @@ public partial struct CollisionSystem : ISystem
                         float remainingtime = 1.0f - collisiontime;
 
                         float2 tempVel = float2.zero;
-                       
-                       
+
+
+                        Box tempBox = box1;
+                        tempBox.pos += box1.velocity * collisiontime;
+
+                        var mtv = GetMTV(tempBox, box2);
+
                         if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
                         else tempVel.x = 0;
 
                         if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
                         else tempVel.y = 0;
-                       
 
 
-                         Debug.Log(tempVel);
+                        Debug.Log(tempVel);
                         if (math.abs(tempVel.x) > math.abs(vel.x))
                         {
                             vel.x = tempVel.x;
@@ -182,9 +187,9 @@ public partial struct CollisionSystem : ISystem
                         tempTransform2.Position.y + tempHitbox2.size.y * 0.5f
                         );
 
-                         box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
+                        box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
                         Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, velocities[j].Value);
-                        float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
+                        float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly,true);
 
                         if (collisiontime < 1f)
                         {
@@ -215,16 +220,14 @@ public partial struct CollisionSystem : ISystem
                                 Box tempBox = box1;
                                 tempBox.pos += box1.velocity * collisiontime;
 
-                                float2 vector = CheckEdges(tempBox, box2);
-                                Debug.Log(GetMTV(tempBox, box2));
+                                var mtv = GetMTV(tempBox, box2);
 
                                 if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
                                 else tempVel.x = 0;
 
                                 if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
                                 else tempVel.y = 0;
-                                
-
+                             
 
                                 Debug.Log(tempVel);
                                 if (math.abs(tempVel.x) > math.abs(vel.x))
@@ -289,7 +292,7 @@ public partial struct CollisionSystem : ISystem
         velocities.Dispose();
         hitboxes.Dispose();
     }
-    private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly)
+    private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly,bool secondCheck = false)
     {
         float xInvEntry, yInvEntry;
         float xInvExit, yInvExit;
@@ -331,10 +334,26 @@ public partial struct CollisionSystem : ISystem
         {
             if (entryTime == xEntry)
             {
+                Debug.Log("TIme x ");
+                Debug.Log(xInvEntry + " , " + xInvExit);   
+                Debug.Log(yInvEntry + " , " + yInvExit);
+                if (Mathf.Approximately(Mathf.Abs(yInvEntry), b2.size.y * 2) || Mathf.Approximately(Mathf.Abs(yInvExit), b2.size.y * 2))
+                {
+                    return 1;
+                }
                 normalx = (b1.velocity.x > 0) ? -1 : 1; 
             }
             else
             {
+                Debug.Log("TIme y ");
+                Debug.Log(xInvEntry + " , " + xInvExit);
+                Debug.Log(yInvEntry + " , " + yInvExit);
+                Debug.Log(Mathf.Abs(xInvExit) + " " + b2.size.x * 2);
+                Debug.Log(Mathf.Approximately(Mathf.Abs(xInvExit), b2.size.x * 2));
+                if (Mathf.Approximately(Mathf.Abs(xInvEntry), b2.size.x * 2) || Mathf.Approximately(Mathf.Abs(xInvExit), b2.size.x * 2))
+                {
+                    return 1;
+                }
                 normaly = (b1.velocity.y > 0) ? -1 : 1; 
             }
             Debug.Log("col");
@@ -344,11 +363,14 @@ public partial struct CollisionSystem : ISystem
 
         if (StaticAABB(b1, b2))
         {
-            float2 normal = GetCollisionNormal(b1, b2);
-            normalx = normal.x;
-            normaly = normal.y;
-            Debug.Log(b1 + "\n" + b2);
-            Debug.Log("stat");
+
+                float2 normal = GetCollisionNormal(b1, b2);
+                normalx = normal.x;
+                normaly = normal.y;
+
+                Debug.Log(b1 + "\n" + b2);
+                Debug.Log("stat");
+           
             return 0;
         }
 
