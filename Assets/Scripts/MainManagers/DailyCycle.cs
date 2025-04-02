@@ -62,7 +62,7 @@ public class MyBar
     {
         float posX = range * value;
       //  Debug.Log(this.pointer.anchoredPosition);
-        this.pointer.anchoredPosition = new Vector2(posX + pointZero, this.pointer.anchoredPosition.y);
+       this.pointer.anchoredPosition = new Vector2(posX + pointZero, this.pointer.anchoredPosition.y);
     }
 }
 [System.Serializable]

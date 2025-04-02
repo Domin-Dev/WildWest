@@ -165,11 +165,16 @@ public class WorldItemSpawner : MonoBehaviour
         blobAssetStore.Dispose();
     }
 
-    private void SpawnPlayer(bool tr , float3 pozycja)
+    private void SpawnPlayer(bool tr, float3 pozycja)
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
         entityManager.SetComponentData(character, LocalTransform.FromPosition(pozycja));
-        if(tr) entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
+        if (tr)
+        {
+            entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
+            var physics = entityManager.GetComponentData<Physics2D>(character);
+            entityManager.AddComponentData(character, physics);
+        }
         createdCharacters.Add(character);
         i++;
     }

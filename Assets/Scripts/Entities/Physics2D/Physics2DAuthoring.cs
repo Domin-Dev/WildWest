@@ -37,7 +37,10 @@ public class Physics2DAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Velocity2D() { Value = float2.zero});
             AddComponent(entity, new IsChanged());
-            AddComponent(entity, new Physics2D() { layer = authoring.physicsLayer });
+            AddComponent(entity, new Physics2D() { 
+                layer = authoring.physicsLayer, 
+                cellIndex = new int2(int.MinValue, int.MinValue)    
+            });
             AddComponent(entity, new Hitbox2D() {
                 size = authoring.hitboxSize,
             }); 
