@@ -36,8 +36,44 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _GetTexture2D_0f88998cc3b14c29aee6171c4dff36f6_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: b9d10b42d5501f24ea792c98bf190ced, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_34ba96f1cc4345838b51cd37e6c51bfc_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 24a474b0410ab7f4c997ab5f1e2cc91d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_542310d721c844a1b5a30a99e3acf826_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_8ddd215fa65346779ebf0072e57238de_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_f518cf5937a5450e83ccd899942e92da_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Hat:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTax:
         m_Texture: {fileID: 2800000, guid: 08a628bdc6ef514429d9670ebdee1e39, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Mask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_2d3b75146b134d128baacd0c46a6ebff_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: c7d364db91d0ef44d8b4eb5f5cd23ffb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_16b7ec7a9ed9436a8752939cde2bc562_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 2802e128b3a0cea4cb0dca733b6b8717, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -53,7 +89,18 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
-    m_Floats: []
-    m_Colors: []
+    m_Floats:
+    - _BeardIndex: 0
+    - _Direction: 0
+    - _EyesIndex: 2
+    - _HairIndex: 3
+    - _HairUnderHat: 1
+    - _MouthIndex: 0
+    - _PaintingsIndex: 3
+    m_Colors:
+    - _HairColor: {r: 0.45660365, g: 0.26073897, b: 0.054275475, a: 1}
+    - _HatColor: {r: 0.43396226, g: 0.048308954, b: 0.21363688, a: 1}
+    - _MaskColor: {r: 0.8784314, g: 0.19940385, b: 0.19940385, a: 1}
+    - _SkinColor: {r: 0.80377346, g: 0.59834296, b: 0.34425768, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
