@@ -11,11 +11,12 @@ public class PlayerAuthoring : MonoBehaviour
         public override void Bake(PlayerAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+            AddComponent(entity, new Hands());
+
             AddComponent(entity, new Player
             {
                 speed = 2f,  
-            });
-        }
+            });        }
     }
 }
 public struct Player : IComponentData

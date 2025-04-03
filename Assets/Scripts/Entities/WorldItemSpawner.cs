@@ -66,7 +66,7 @@ public class WorldItemSpawner : MonoBehaviour
                         mpb.SetInt("_HairIndex", UnityEngine.Random.Range(14, 31));
                         mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         mpb.SetColor("_HairColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                       // mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
+                        // mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         spriteRenderer.SetPropertyBlock(mpb);
                     }
                     else if (entityManager.HasComponent<Body>(child.Value))
@@ -87,15 +87,16 @@ public class WorldItemSpawner : MonoBehaviour
                     }
                     else if (entityManager.HasComponent<MainHand>(child.Value))
                     {
+
                         hands.main = child.Value;
-                        hands.itemInHand = entityManager.GetBuffer<Child>(child.Value)[0].Value;
+                        hands.itemInHand = GetChild(child.Value, 3);
                     }
-                    else if(entityManager.HasComponent<SideHand>(child.Value))
+                    else if (entityManager.HasComponent<SideHand>(child.Value))
                     {
                         hands.side = child.Value;
                     }
                 }
-                entityManager.AddComponent<Hands>(entity);
+                entityManager.AddComponentData(entity,new Hands());
                 entityManager.SetComponentData(entity, hands);
                 createdCharacters.RemoveAt(j);
             }
@@ -108,6 +109,15 @@ public class WorldItemSpawner : MonoBehaviour
                 SpawnPlayer(false, new float3( i * 0.13f + 0.2f,( i %1)* 0.13f + 0.2f,0));
             }
         }
+    }
+
+    private Entity GetChild(Entity parent,int depth)
+    {
+        for (int i = 0; i < depth; i++)
+        {
+            parent = entityManager.GetBuffer<Child>(parent)[0].Value;
+        }
+        return parent;
     }
     private void SpawnEntity()
     {

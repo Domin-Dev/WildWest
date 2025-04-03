@@ -15,9 +15,7 @@ partial struct CharacterAimSystem : ISystem
         float deltaTime = SystemAPI.Time.DeltaTime;
         float3 target = (float3)MyTools.GetMouseWorldPosition();
 
-
-
-        foreach (RefRO<Hands> Hands in SystemAPI.Query<RefRO<Hands>>())
+        foreach ((RefRO<Hands> Hands, LocalToWorld worldPos) in SystemAPI.Query<RefRO<Hands>, LocalToWorld>())
         { 
             if(Hands.ValueRO.main == Entity.Null)
             {
@@ -37,34 +35,37 @@ partial struct CharacterAimSystem : ISystem
             direction.z = 0; 
             direction = math.normalize(direction);
 
-            float angle = math.atan2(direction.y, direction.x); // Oblicz k¹t obrotu w 2D
+            float angle = math.atan2(direction.y, direction.x); 
             quaternion mainTargetRotation;
             quaternion sideTargetRotation;
-            LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.itemInHand);
+           // LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.itemInHand);
+
             if (math.abs(angle) > leftSide)
             {
                 sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
                 angle = -angle;
-              //  if(localMain.Rotation.value.x == 0) localMain.Rotation = math.mul(localMain.Rotation.value, quaternion.Euler(math.radians(180), 0, 0));
                 mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
-
             }
             else
             {
-                //local.Rotation = quaternion.Euler(0, 0, 0);
                 sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
                 mainTargetRotation = quaternion.Euler(0, 0, angle);
-               // if (localMain.Rotation.value.x > 0) localMain.Rotation = math.mul(localMain.Rotation.value, quaternion.Euler(math.radians(180), 0, 0));
-
             }
-            state.EntityManager.SetComponentData(Hands.ValueRO.itemInHand, local);
+           // state.EntityManager.SetComponentData(Hands.ValueRO.itemInHand, local);
+            
             
 
-         //   Debug.Log("Kat :" + angle);
-         //   Debug.Log(mainTargetRotation + " " +  localSide.Rotation);
-            
+
+
             localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 10f);
             localSide.Rotation = math.slerp(localSide.Rotation, sideTargetRotation, deltaTime * 2f);
+
+
+            LocalToWorld toWorld = worldPos;
+            LocalToWorld toWorld2 = state.EntityManager.GetComponentData<LocalToWorld>(Hands.ValueRO.itemInHand);
+            float offset =   toWorld2.Position.y - toWorld.Position.y;
+            Debug.Log(offset + " " + toWorld.Position + " " + toWorld2.Position);
+            localMain.Position = new float3(localMain.Position.x, localMain.Position.y, 0.14f + offset);
 
 
             state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.main, localMain);
