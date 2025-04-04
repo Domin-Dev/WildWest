@@ -13,7 +13,6 @@ public class MainHandAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new MainHand
             {
-
             });
         }
     }

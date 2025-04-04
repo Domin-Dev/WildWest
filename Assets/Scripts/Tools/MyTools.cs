@@ -7,6 +7,8 @@ using Unity.Burst;
 using System;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.Transforms;
+using Newtonsoft.Json.Linq;
 
 public static class MyTools 
 {
@@ -89,6 +91,16 @@ public static class MyTools
         float z = math.atan2(siny_cosp, cosy_cosp);
 
         return new float3(x, y, z);
+    }
+
+    public static bool EqualQuaternions(quaternion q1, quaternion q2, float toleranceThreshold = 0.999f)
+    {
+        float dot = math.dot(q1.value, q2.value);
+        return math.abs(dot) > toleranceThreshold;
+    }
+    public static bool EqualFloat3(float3 a, float3 b, float tolerance = 0.001f)
+    {
+        return math.all(math.abs(a - b) < new float3(tolerance));
     }
 
 }

@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -16,13 +17,9 @@ public class WorldItemSpawner : MonoBehaviour
 
     private EntitiesReferences entitiesReferences;
     private EntityManager entityManager;
-    private BlobAssetStore blobAssetStore;
 
 
-    public Mesh quadMesh; // ✅ Siatka dla encji (np. kwadrat)
-    public UnityEngine.Material entityMaterial; // ✅ Materiał encji
-
-
+    public Entity player;
     int i = 0;
 
 
@@ -35,7 +32,6 @@ public class WorldItemSpawner : MonoBehaviour
     private void Awake()
     {
         createdCharacters = new NativeList<Entity>(Allocator.Persistent);
-        blobAssetStore = new BlobAssetStore();
     }
 
     private bool isReady = false;
@@ -87,9 +83,9 @@ public class WorldItemSpawner : MonoBehaviour
                     }
                     else if (entityManager.HasComponent<MainHand>(child.Value))
                     {
-
                         hands.main = child.Value;
                         hands.itemInHand = GetChild(child.Value, 4);
+                        hands.hand = GetChild(child.Value, 1);
                     }
                     else if (entityManager.HasComponent<SideHand>(child.Value))
                     {
@@ -119,62 +115,6 @@ public class WorldItemSpawner : MonoBehaviour
         }
         return parent;
     }
-    private void SpawnEntity()
-    {
-        // 1️⃣ Tworzymy archetyp encji
-        EntityArchetype archetype = entityManager.CreateArchetype(
-            typeof(LocalTransform),
-            typeof(RenderMesh),      // ✅ Dodajemy grafikę (Mesh)
-            typeof(RenderBounds),    // ✅ Potrzebne do renderowania
-            typeof(LocalToWorld),
-            typeof(PhysicsVelocity),
-            typeof(PhysicsMass),
-            typeof(PhysicsDamping),
-            typeof(PhysicsGravityFactor),
-            typeof(Simulate),
-            typeof(PhysicsCollider)
-        );
-
-        // 2️⃣ Tworzymy encję
-        Entity character = entityManager.CreateEntity(archetype);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3(0, 2, 0)));
-
-        // 3️⃣ Dodajemy fizykę (Rigidbody 2D)
-        entityManager.SetComponentData(character, PhysicsMass.CreateDynamic(new Unity.Physics.MassProperties(), 1f));
-        entityManager.SetComponentData(character, new PhysicsDamping { Linear = 0.05f, Angular = 0.05f });
-        entityManager.SetComponentData(character, new PhysicsGravityFactor { Value = 1f });
-
-        // 4️⃣ Tworzymy BoxCollider
-        BlobAssetReference<Unity.Physics.Collider> collider = Unity.Physics.BoxCollider.Create(new BoxGeometry
-        {
-            Center = float3.zero,
-            Size = new float3(1f, 1f, 0.1f),
-            Orientation = quaternion.identity,
-            BevelRadius = 0f
-        });
-        entityManager.SetComponentData(character, new PhysicsCollider { Value = collider });
-
-       
-        entityManager.SetSharedComponentManaged(character, new RenderMesh
-        {
-            mesh = quadMesh,
-            material = entityMaterial
-        });
-
-        // 6️⃣ Ustawiamy RenderBounds (potrzebne dla renderera)
-        entityManager.SetComponentData(character, new RenderBounds
-        {
-            Value = new AABB { Center = float3.zero, Extents = new float3(0.5f, 0.5f, 0.1f) }
-        });
-
-        Debug.Log("Stworzono encję z grafiką i fizyką 2D!");
-    }
-
-    private void OnDestroy()
-    {
-        blobAssetStore.Dispose();
-    }
-
     private void SpawnPlayer(bool tr, float3 pozycja)
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
@@ -184,6 +124,8 @@ public class WorldItemSpawner : MonoBehaviour
             entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
             var physics = entityManager.GetComponentData<Physics2D>(character);
             entityManager.AddComponentData(character, physics);
+            player = character;
+            this.AddComponent<CharacterManager>().SetUp(player);
         }
         createdCharacters.Add(character);
         i++;
@@ -208,12 +150,10 @@ public class WorldItemSpawner : MonoBehaviour
             StartGame();
         }
     }
-
     private void StartGame()
     {
         SpawnPlayer(true,float3.zero);
     }
-
     private void SetUp(EntityQuery entityQuery)
     {
         ChatManager.instance.Print("Udalo sie wczytac");

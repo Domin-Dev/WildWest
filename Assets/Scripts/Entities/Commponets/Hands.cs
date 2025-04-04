@@ -1,0 +1,25 @@
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
+using UnityEngine;
+
+public struct Hands : IComponentData
+{
+    public Entity main;
+    public Entity side;
+    public Entity itemInHand;
+
+    public Entity hand;
+
+
+    public int actionStatus;
+    public quaternion targetRotation;
+    public float3 targetPosition;
+
+    public float3 lastPosition;
+
+    public bool rotated;
+    public int itemID;
+}
+

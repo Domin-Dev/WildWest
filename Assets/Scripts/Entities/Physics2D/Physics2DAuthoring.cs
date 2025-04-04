@@ -25,7 +25,6 @@ public struct IsChanged : IComponentData, IEnableableComponent { }
 
 
 
-
 public class Physics2DAuthoring : MonoBehaviour
 {
     [SerializeField] float2 hitboxSize; 

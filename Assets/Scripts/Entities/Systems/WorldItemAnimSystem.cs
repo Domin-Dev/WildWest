@@ -18,6 +18,7 @@ partial struct WorldItemAnimSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        
         time += SystemAPI.Time.DeltaTime;
         WorldItemAnimJob job = new WorldItemAnimJob()
         {

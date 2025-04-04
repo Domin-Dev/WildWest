@@ -35,13 +35,15 @@ partial struct PlayerMovementSystem : ISystem
         if (math.lengthsq(input) > 1) input = math.normalize(input);
         float deltaTime = SystemAPI.Time.DeltaTime;
 
-        foreach (var (velocity, player, entity)
-         in SystemAPI.Query<RefRW<Velocity2D>, RefRO<Player>>().WithEntityAccess())
+        foreach (var (velocity, player,character, entity)
+         in SystemAPI.Query<RefRW<Velocity2D>, RefRO<Player>, RefRW<Character>>().WithEntityAccess())
         {
             float2 vector = input * player.ValueRO.speed * deltaTime * x;
             velocity.ValueRW.Value = vector;
             bool shouldBeChanged = !(vector.x == 0 && vector.y == 0);
+
             state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+            character.ValueRW.isMove = shouldBeChanged;
         } 
     }
 
