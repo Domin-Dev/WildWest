@@ -89,7 +89,7 @@ public class WorldItemSpawner : MonoBehaviour
                     {
 
                         hands.main = child.Value;
-                        hands.itemInHand = GetChild(child.Value, 3);
+                        hands.itemInHand = GetChild(child.Value, 4);
                     }
                     else if (entityManager.HasComponent<SideHand>(child.Value))
                     {

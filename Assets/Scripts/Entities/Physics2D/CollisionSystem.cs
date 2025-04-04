@@ -42,6 +42,7 @@ public partial struct CollisionSystem : ISystem
     {
         entityMap = new NativeHashMap<int2, NativeList<Entity>>(100, Allocator.Persistent);
 
+
     }
     public void OnDestroy(ref SystemState state)
     {
@@ -303,7 +304,9 @@ public partial struct CollisionSystem : ISystem
             else
                 tempTransform1.Position += new float3(velocity1.x,velocity1.y,0);
 
-
+            float3 postion = tempTransform1.Position;
+            postion.z = postion.y;
+            tempTransform1.Position = postion;
 
             state.EntityManager.SetComponentData(entityArray[i], tempTransform1);
             state.EntityManager.SetComponentEnabled(entityArray[i],typeof(IsChanged), false);

@@ -1,21 +1,32 @@
 
+using System;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 partial struct CharacterAimSystem : ISystem
 {
 
 
     private static float leftSide = math.PI / 2f;
+    private static float max = 0;
+
+    static bool a = false;
+    public void OnCreate(ref SystemState state)
+    {
+        max = 0;
+    }
     public void OnUpdate(ref SystemState state)
     {
+       
         float deltaTime = SystemAPI.Time.DeltaTime;
         float3 target = (float3)MyTools.GetMouseWorldPosition();
 
-        foreach ((RefRO<Hands> Hands, LocalToWorld worldPos) in SystemAPI.Query<RefRO<Hands>, LocalToWorld>())
+        foreach ((RefRW<Hands> Hands, LocalToWorld worldPos) in SystemAPI.Query<RefRW<Hands>, LocalToWorld>())
         { 
             if(Hands.ValueRO.main == Entity.Null)
             {
@@ -38,38 +49,64 @@ partial struct CharacterAimSystem : ISystem
             float angle = math.atan2(direction.y, direction.x); 
             quaternion mainTargetRotation;
             quaternion sideTargetRotation;
-           // LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.itemInHand);
+            LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(Hands.ValueRO.itemInHand);
 
             if (math.abs(angle) > leftSide)
             {
+                if (Hands.ValueRO.rotated)
+                {
+                    localMain = localMain.RotateX(math.radians(180));
+                    Hands.ValueRW.rotated = false;
+                    var p = local.Position;
+                    p.z = -0.0001f;
+                    local.Position = p;
+                }
+               
                 sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
                 angle = -angle;
                 mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
             }
             else
             {
+                if (!Hands.ValueRO.rotated)
+                {
+                    localMain = localMain.RotateX(math.radians(-180));
+                    Hands.ValueRW.rotated = true;
+                    var p = local.Position;
+                    p.z = 0.0001f;
+                    local.Position = p;
+                }
                 sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
                 mainTargetRotation = quaternion.Euler(0, 0, angle);
             }
-           // state.EntityManager.SetComponentData(Hands.ValueRO.itemInHand, local);
-            
-            
+            // state.EntityManager.SetComponentData(Hands.ValueRO.itemInHand, local);
 
 
-
+            Debug.Log(mainTargetRotation);
             localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 10f);
             localSide.Rotation = math.slerp(localSide.Rotation, sideTargetRotation, deltaTime * 2f);
 
 
             LocalToWorld toWorld = worldPos;
             LocalToWorld toWorld2 = state.EntityManager.GetComponentData<LocalToWorld>(Hands.ValueRO.itemInHand);
-            float offset =   toWorld2.Position.y - toWorld.Position.y;
-            Debug.Log(offset + " " + toWorld.Position + " " + toWorld2.Position);
-            localMain.Position = new float3(localMain.Position.x, localMain.Position.y, 0.14f + offset);
+            // float offset =   toWorld2.Position.y - toWorld.Position.y;
+            //  Debug.Log(offset + " " + toWorld.Position + " " + toWorld2.Position);
+            //if (math.abs(toWorld2.Position.z) > math.abs(max))
+            //{
+            //    max = toWorld2.Position.z;
+            //    Debug.Log(max);
+            //}
+            //Debug.Log(toWorld2.Position.z);
+            //var x = localMain.Position;
+            //x.z =  -(worldPos.Position.z - toWorld2.Position.z);
+            //localMain.Position = x;
 
+            //  localMain.Position = new float3(localMain.Position.x, localMain.Position.y, offset + 0.0001f);
 
+            //0.265
             state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.main, localMain);
             state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.side, localSide);
+            state.EntityManager.SetComponentData<LocalTransform>(Hands.ValueRO.itemInHand, local);
         }
 
 

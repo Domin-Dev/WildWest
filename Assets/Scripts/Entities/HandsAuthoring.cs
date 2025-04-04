@@ -23,5 +23,8 @@ public struct Hands : IComponentData
     public Entity main;
     public Entity side;
     public Entity itemInHand;
+    public Entity hand;
+
+    public bool rotated;
 }
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using Unity.Burst;
 using System;
 using Unity.Collections;
+using Unity.Mathematics;
 
 public static class MyTools 
 {
@@ -73,6 +74,21 @@ public static class MyTools
         double x = Convert.ToDouble(a);
         double y = Convert.ToDouble(b);
         return (x >= 0 && y < 0) || (x < 0 && y >= 0);
+    }
+    public static float3 QuaternionToEuler(quaternion q)
+    {
+        float sinr_cosp = 2 * (q.value.w * q.value.x + q.value.y * q.value.z);
+        float cosr_cosp = 1 - 2 * (q.value.x * q.value.x + q.value.y * q.value.y);
+        float x = math.atan2(sinr_cosp, cosr_cosp);
+
+        float sinp = 2 * (q.value.w * q.value.y - q.value.z * q.value.x);
+        float y = math.abs(sinp) >= 1 ? math.sign(sinp) * math.PI / 2 : math.asin(sinp);
+
+        float siny_cosp = 2 * (q.value.w * q.value.z + q.value.x * q.value.y);
+        float cosy_cosp = 1 - 2 * (q.value.y * q.value.y + q.value.z * q.value.z);
+        float z = math.atan2(siny_cosp, cosy_cosp);
+
+        return new float3(x, y, z);
     }
 
 }
