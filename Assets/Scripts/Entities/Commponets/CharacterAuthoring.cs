@@ -16,7 +16,9 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Character
             {
                 isMove = false
+                
             });
+            AddComponent(entity, new Hands());
         }
     }
 }
@@ -28,5 +30,16 @@ public struct Player : IComponentData
 public struct Character : IComponentData
 {
     public bool isMove;
+
+    public float startAnim;
+
+    public int directionHead;
+    public int directionBody;
+
+    public Entity body;
+    public Entity headParent;
+    public Entity head;
+
+
 }
 

@@ -27,7 +27,7 @@ public class WorldItemSpawner : MonoBehaviour
 
 
 
-    private const float playerSpeed = 2.0f;
+    private const float playerSpeed = 1.0f;
 
     private void Awake()
     {
@@ -50,6 +50,9 @@ public class WorldItemSpawner : MonoBehaviour
                 Entity entity = createdCharacters[j];   
                 var childs = entityManager.GetBuffer<Child>(entity);
                 Hands hands = new Hands();
+                Character character = new Character();
+
+
                 foreach (var child in childs)
                 {
                     if (entityManager.HasComponent<Head>(child.Value))
@@ -64,6 +67,9 @@ public class WorldItemSpawner : MonoBehaviour
                         mpb.SetColor("_HairColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         // mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         spriteRenderer.SetPropertyBlock(mpb);
+
+                        character.headParent = child.Value;
+                        character.head = spr.Value;
                     }
                     else if (entityManager.HasComponent<Body>(child.Value))
                     {
@@ -79,20 +85,24 @@ public class WorldItemSpawner : MonoBehaviour
                         mpb.SetColor("_AccessoryColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         mpb.SetColor("_BagColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
                         mpb.SetInt("_Direction", 0);
+                        //character.directionHead
                         spriteRenderer.SetPropertyBlock(mpb);
+
+                        character.body = child.Value;
                     }
                     else if (entityManager.HasComponent<MainHand>(child.Value))
                     {
                         hands.main = child.Value;
                         hands.itemInHand = GetChild(child.Value, 4);
-                        hands.hand = GetChild(child.Value, 1);
+                        hands.mainhand = GetChild(child.Value, 1);
                     }
                     else if (entityManager.HasComponent<SideHand>(child.Value))
                     {
                         hands.side = child.Value;
+                        hands.sidehand = GetChild(child.Value, 1);
                     }
                 }
-                entityManager.AddComponentData(entity,new Hands());
+                entityManager.SetComponentData(entity, character);
                 entityManager.SetComponentData(entity, hands);
                 createdCharacters.RemoveAt(j);
             }
@@ -115,10 +125,10 @@ public class WorldItemSpawner : MonoBehaviour
         }
         return parent;
     }
-    private void SpawnPlayer(bool tr, float3 pozycja)
+    private void SpawnPlayer(bool tr, float3 pos)
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(pozycja));
+        entityManager.SetComponentData(character, LocalTransform.FromPosition(pos));
         if (tr)
         {
             entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
@@ -130,6 +140,12 @@ public class WorldItemSpawner : MonoBehaviour
         createdCharacters.Add(character);
         i++;
     }
+
+    private void SpawnBuildObject(float3 position)
+    {
+
+    }
+
     private void SpawnCharacter()
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);

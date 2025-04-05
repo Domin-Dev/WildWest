@@ -17426,6 +17426,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1185682178850172863, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -1329511708, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+    - target: {fileID: 2150181456313004916, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2150181456313004916, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 3773562619657541914, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
       propertyPath: m_Name
       value: Character
@@ -17440,7 +17452,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7504337897155031083, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1600
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7504337897155031083, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
       propertyPath: m_LocalRotation.w
@@ -36447,7 +36459,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1017828613}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.00000019392655
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

@@ -27,12 +27,6 @@ partial struct WorldItemAnimSystem : ISystem
     };
         job.ScheduleParallel();
 
-        //foreach (RefRW<LocalTransform> localTransform in SystemAPI.Query<RefRW<LocalTransform>>().WithPresent<WorldItemAnim>())
-        //{
-        //    float pingPongValue = math.sin(elapsedTime / cycleTime * math.PI); 
-        //    float targetY = pingPongValue * maxDistance;
-        //    localTransform.ValueRW.Position = new float3(localTransform.ValueRW.Position.x, basePos + targetY, localTransform.ValueRW.Position.y); 
-        //}
     }
 
     [BurstCompile]
@@ -60,8 +54,5 @@ public partial struct WorldItemAnimJob : IJobEntity
         float pingPongValue = math.sin(elapsedTime / cycleTime * math.PI);
         float targetY = pingPongValue * maxDistance;
         localTransform.Position = new float3(localTransform.Position.x, basePos + targetY, localTransform.Position.y);
-
-       // quaternion rotationStep = quaternion.Euler(0, deltaTime * math.radians(180), 0); // 180 stopni na sekundê
-        //localTransform.Rotation = math.mul(localTransform.Rotation, rotationStep);
     }
 }

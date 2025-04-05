@@ -8,7 +8,10 @@ using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+using UnityEngine.UIElements;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
 partial struct CharacterAimSystem : ISystem
@@ -30,7 +33,7 @@ partial struct CharacterAimSystem : ISystem
         bool hit = Input.GetMouseButtonDown(0);
 
 
-        foreach ((RefRW<Hands> hands, LocalToWorld worldPos) in SystemAPI.Query<RefRW<Hands>, LocalToWorld>())
+        foreach ((RefRW<Hands> hands, RefRW<Character> character, LocalToWorld worldPos) in SystemAPI.Query<RefRW<Hands>, RefRW<Character>, LocalToWorld>())
         { 
             if(hands.ValueRO.main == Entity.Null) continue;
             if (hands.ValueRO.actionStatus != 0)
@@ -41,12 +44,12 @@ partial struct CharacterAimSystem : ISystem
             if (hit)
             {
 
-                LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.hand);
+                LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
                 quaternion addedRotation = quaternion.Euler(0, 0, math.radians(-110));
                 hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
                 hands.ValueRW.lastPosition = transform.Position;
-                hands.ValueRW.targetPosition = transform.Position + new float3(0.04f, 0,0);
+                hands.ValueRW.targetPosition = transform.Position + new float3(0.06f, 0,0);
                 hands.ValueRW.actionStatus = 1;
             }
 
@@ -104,12 +107,13 @@ partial struct CharacterAimSystem : ISystem
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.main, localMain);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSide);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, local);
+            UpdateDirectionIndex(new float2(direction.x,direction.y), character,ref state);
         }
     }
 
     public void ActionUpdate(RefRW<Hands> hands, ref SystemState state)
     {
-        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.hand);
+        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
         localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, deltaTime * 15f);
         localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, deltaTime * 20);
@@ -128,23 +132,32 @@ partial struct CharacterAimSystem : ISystem
             hands.ValueRW.targetRotation = quaternion.identity;
             hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
         }
-        state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.hand, localTransform);
+        state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.mainhand, localTransform);
     }
 
- 
-
-    public void SetAttackVector(Vector3 Angle, Vector3 position)
+    private void UpdateDirectionIndex(float2 dir, RefRW<Character> character, ref SystemState state)
     {
-        //canAttack = false;
-        //Timer.Create(setTime, () => { canAttack = true; return false; });
-        //attackItem = fliper;
-
-        //attackAngle = hand.localEulerAngles - Angle;
-        //this.firstHand.AttackSwitch(true);
-        //lastWeaponPosition = attackItem.localPosition;
-        //attackVector = position + attackItem.localPosition;
+        int newDirIndex = PlayerMovementSystem.GetDirectionIndex(dir);
+        if (newDirIndex != character.ValueRO.directionHead)
+        {
+            character.ValueRW.directionHead = newDirIndex;
+            SetDirection(character.ValueRO.head, newDirIndex, ref state);
+            if(!character.ValueRO.isMove)
+            {
+                SetDirection(character.ValueRO.body, newDirIndex, ref state);
+                character.ValueRW.directionBody = newDirIndex;
+            }
+        }
     }
 
+    public static void SetDirection(Entity entity,int newIndex, ref SystemState state)
+    {
+        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(entity);
+        MaterialPropertyBlock materialProperty = new MaterialPropertyBlock();
+        spriteRenderer.GetPropertyBlock(materialProperty);
+        materialProperty.SetInt("_Direction", newIndex);
+        spriteRenderer.SetPropertyBlock(materialProperty);
+    }
 
 
     [BurstCompile]
