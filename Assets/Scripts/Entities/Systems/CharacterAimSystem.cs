@@ -31,6 +31,7 @@ partial struct CharacterAimSystem : ISystem
         float3 target = (float3)MyTools.GetMouseWorldPosition();
 
         bool hit = Input.GetMouseButtonDown(0);
+        bool shoot = Input.GetMouseButtonDown(1);
 
 
         foreach ((RefRW<Hands> hands, RefRW<Character> character, LocalToWorld worldPos) in SystemAPI.Query<RefRW<Hands>, RefRW<Character>, LocalToWorld>())
@@ -52,6 +53,19 @@ partial struct CharacterAimSystem : ISystem
                 hands.ValueRW.targetPosition = transform.Position + new float3(0.06f, 0,0);
                 hands.ValueRW.actionStatus = 1;
             }
+            if (shoot)
+            {
+
+                LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
+
+                quaternion addedRotation = quaternion.Euler(0, 0, math.radians(70));
+                hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
+                hands.ValueRW.lastPosition = transform.Position;
+                hands.ValueRW.targetPosition = transform.Position - new float3(0.06f, 0, 0);
+                hands.ValueRW.actionStatus = 2;
+            }
+
+
 
 
             LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.main);

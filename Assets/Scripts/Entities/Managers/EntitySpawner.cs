@@ -9,9 +9,10 @@ using Unity.Rendering;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 
-public class WorldItemSpawner : MonoBehaviour
+public class EntitySpawner : MonoBehaviour
 {
     [SerializeField] Sprite sprite1;
 
@@ -115,6 +116,11 @@ public class WorldItemSpawner : MonoBehaviour
                 SpawnPlayer(false, new float3( i * 0.13f + 0.2f,( i %1)* 0.13f + 0.2f,0));
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.L) && isReady)
+        {
+            SpawnBuildObject(new float3(0f,0f,0f), 7,0);
+        }
     }
 
     private Entity GetChild(Entity parent,int depth)
@@ -141,9 +147,15 @@ public class WorldItemSpawner : MonoBehaviour
         i++;
     }
 
-    private void SpawnBuildObject(float3 position)
+    private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
     {
+        VariantItem buildingItem = ItemsAsset.instance.GetItem<VariantItem>(objectID);
+        Variant variant = buildingItem.objectVariants[variantIndex].variants[0];
+        
 
+        position.z = position.y;
+        Entity character = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
+        entityManager.SetComponentData(character, LocalTransform.FromPosition(position));
     }
 
     private void SpawnCharacter()
@@ -178,4 +190,5 @@ public class WorldItemSpawner : MonoBehaviour
         ChatManager.instance.Print("wszystko gotowe");
         isReady = true;
     }
+
 }

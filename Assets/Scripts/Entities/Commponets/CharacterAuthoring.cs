@@ -39,7 +39,5 @@ public struct Character : IComponentData
     public Entity body;
     public Entity headParent;
     public Entity head;
-
-
 }
 

@@ -13,8 +13,10 @@ public struct Hands : IComponentData
     public Entity sidehand;
 
     public int actionStatus;
+
     public quaternion targetRotation;
     public float3 targetPosition;
+
     public float3 lastPosition;
 
     public bool rotated;

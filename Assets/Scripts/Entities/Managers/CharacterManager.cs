@@ -58,16 +58,22 @@ public class CharacterManager : MonoBehaviour
         LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(hands.itemInHand);
         LocalTransform sideHandTransform = entityManager.GetComponentData<LocalTransform>(hands.sidehand);
 
-
-        localTransform.Position.x = -weapon.gripPoint1.x;
-        localTransform.Position.y = -weapon.gripPoint1.y;
+        if (weapon is RangedWeapon)
+        {
+            SetRangedWeaponInHand(weapon as RangedWeapon, ref localTransform);
+        }
+        else
+        {
+            localTransform.Position.x = -weapon.gripPoint1.x;// - 0.01f;
+            localTransform.Position.y = -weapon.gripPoint1.y;
+        }
         spriteRenderer.sprite = weapon.weaponImage;
 
         if (weapon.gripPoint2.x != -100)
         {
             Entity entity1 = entityManager.GetComponentData<Parent>(hands.itemInHand).Value;
              entityManager.SetComponentData(hands.sidehand, new Parent { Value = entity1 });
-             sideHandTransform.Position = new float3(-weapon.gripPoint2.x, -weapon.gripPoint2.y,0);
+             sideHandTransform.Position = new float3(weapon.gripPoint2.x - weapon.gripPoint1.x, weapon.gripPoint2.y - weapon.gripPoint1.y, 0);
         }
         else
         {
@@ -101,12 +107,10 @@ public class CharacterManager : MonoBehaviour
         sideHandTransform.Position = float3.zero;
     }
 
-    //private void SetRangedWeaponInHand(RangedWeapon rangedWeapon)
-    //{
-    //    float posY = Mathf.Abs(rangedWeapon.aimPoint.y - rangedWeapon.gripPoint1.y);
-    //    SetTransformHand(posY);
-    //    aimPoint.localPosition = (Vector2)itemInHand.transform.localPosition + rangedWeapon.aimPoint;
-    //    reloadPoint.localPosition = (Vector2)itemInHand.transform.localPosition + rangedWeapon.reloadPoint;
-    //}
+    private void SetRangedWeaponInHand(RangedWeapon rangedWeapon, ref LocalTransform localTransform)
+    {
+        localTransform.Position.y = rangedWeapon.aimPoint.y - rangedWeapon.gripPoint1.y;
+        localTransform.Position.x = -rangedWeapon.gripPoint1.x;
+    }
 
 }
