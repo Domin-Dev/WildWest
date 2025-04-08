@@ -63,6 +63,7 @@ partial struct CharacterAimSystem : ISystem
                 hands.ValueRW.lastPosition = transform.Position;
                 hands.ValueRW.targetPosition = transform.Position - new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 2;
+                EntitySpawner.instance.SpawnParticle(0, new float3(0,0.1f,0) + transform.Position);
             }
 
 

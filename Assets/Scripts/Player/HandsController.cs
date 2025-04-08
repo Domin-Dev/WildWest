@@ -190,7 +190,7 @@ public class HandsController : MonoBehaviour
         {
             secondHand.parent = itemInHand.transform;
             secondHand.localEulerAngles = Vector3.zero;
-            secondHand.localPosition = weapon.gripPoint2;
+            secondHand.localPosition = weapon.gripPoint2;          
         }
         else
         {

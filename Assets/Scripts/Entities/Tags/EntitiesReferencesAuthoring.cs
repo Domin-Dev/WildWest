@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class EntitiesReferencesAuthoring : MonoBehaviour
 {
+    [Header("Prefabs")]
     public GameObject shadowPrefab;
     public GameObject worldItemPrefab;
     public GameObject characterPrefab;
     public GameObject buildObjectEntityPrefab;
+    [Header("Particle Prefab")]
+    public GameObject shotSmoke;
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
@@ -19,6 +22,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 worldItemEntity = GetEntity(authoring.worldItemPrefab, TransformUsageFlags.Dynamic),
                 characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
+                shotSmoke = GetEntity(authoring.shotSmoke, TransformUsageFlags.Dynamic),
             });
         }
     }
@@ -29,4 +33,7 @@ public struct EntitiesReferences : IComponentData
     public Entity worldItemEntity;
     public Entity characterEntity;
     public Entity buildObjectEntity;
+    [Space]
+    public Entity shotSmoke;
+
 }

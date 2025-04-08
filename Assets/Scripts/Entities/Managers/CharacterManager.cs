@@ -77,7 +77,7 @@ public class CharacterManager : MonoBehaviour
         }
         else
         {
-            ResetSideHand(hands,sideHandTransform);
+            ResetSideHand(hands,ref sideHandTransform);
         }
 
 
@@ -93,7 +93,7 @@ public class CharacterManager : MonoBehaviour
         LocalTransform sideHandTransform = entityManager.GetComponentData<LocalTransform>(hands.sidehand);
 
 
-        ResetSideHand(hands, sideHandTransform);
+        ResetSideHand(hands,ref sideHandTransform);
         localTransform.Position.x = 0;
         localTransform.Position.y = -0.1f;
         spriteRenderer.sprite = item.icon;
@@ -101,10 +101,10 @@ public class CharacterManager : MonoBehaviour
         entityManager.SetComponentData(hands.sidehand, sideHandTransform);
     }
 
-    private void ResetSideHand(Hands hands, LocalTransform sideHandTransform)
+    private void ResetSideHand(Hands hands,ref LocalTransform sideHandTransform)
     {
         entityManager.SetComponentData(hands.sidehand, new Parent { Value = hands.side });
-        sideHandTransform.Position = float3.zero;
+        sideHandTransform.Position = new float3(-0.09f,0,0);
     }
 
     private void SetRangedWeaponInHand(RangedWeapon rangedWeapon, ref LocalTransform localTransform)

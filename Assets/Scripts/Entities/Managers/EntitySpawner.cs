@@ -9,7 +9,7 @@ using Unity.Rendering;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
+using UnityEngine.UIElements;
 
 
 public class EntitySpawner : MonoBehaviour
@@ -21,7 +21,7 @@ public class EntitySpawner : MonoBehaviour
 
 
     public Entity player;
-    int i = 0;
+    int counter = 0;
 
 
     private NativeList<Entity> createdCharacters;
@@ -30,8 +30,21 @@ public class EntitySpawner : MonoBehaviour
 
     private const float playerSpeed = 1.0f;
 
+
+    private static EntitySpawner i;
+    public static EntitySpawner instance
+    {
+        get
+        {
+            return i;
+        }
+    }
     private void Awake()
     {
+        if (i == null)
+        {
+            i = this;
+        }
         createdCharacters = new NativeList<Entity>(Allocator.Persistent);
     }
 
@@ -52,7 +65,7 @@ public class EntitySpawner : MonoBehaviour
                 var childs = entityManager.GetBuffer<Child>(entity);
                 Hands hands = new Hands();
                 Character character = new Character();
-
+                hands.rotated = true;
 
                 foreach (var child in childs)
                 {
@@ -113,7 +126,7 @@ public class EntitySpawner : MonoBehaviour
 
             for (int j = 0; j < 6; j++) 
             {
-                SpawnPlayer(false, new float3( i * 0.13f + 0.2f,( i %1)* 0.13f + 0.2f,0));
+                SpawnPlayer(false, new float3( counter * 0.13f + 0.2f,( counter %1)* 0.13f + 0.2f,0));
             }
         }
 
@@ -144,7 +157,7 @@ public class EntitySpawner : MonoBehaviour
             this.AddComponent<CharacterManager>().SetUp(player);
         }
         createdCharacters.Add(character);
-        i++;
+        counter++;
     }
 
     private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
@@ -161,8 +174,8 @@ public class EntitySpawner : MonoBehaviour
     private void SpawnCharacter()
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3((i % 50) * 0.2f, (i / 50) * 0.2f, 0)));
-        i++;
+        entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3((counter % 50) * 0.2f, (counter / 50) * 0.2f, 0)));
+        counter++;
         createdCharacters.Add(character);
     }
     private void WaitForEntity()
@@ -180,6 +193,7 @@ public class EntitySpawner : MonoBehaviour
     }
     private void StartGame()
     {
+        Debug.Log("Spraw");
         SpawnPlayer(true,float3.zero);
     }
     private void SetUp(EntityQuery entityQuery)
@@ -191,4 +205,23 @@ public class EntitySpawner : MonoBehaviour
         isReady = true;
     }
 
+    public void SpawnParticle(int indexParticle, float3 position)
+    {
+        Entity prefab = GetParticleIndex(indexParticle);
+        Entity entity = entityManager.Instantiate(prefab);
+        position.z = position.y;
+        entityManager.SetComponentData(entity, LocalTransform.FromPosition(position));
+        Particles particles = entityManager.GetComponentData<Particles>(entity);
+        particles.finishParticles += Time.time;
+        entityManager.SetComponentData(entity, particles);
+    }
+
+    private Entity GetParticleIndex(int index)
+    {
+        switch (index)
+        { 
+            case 0: return entitiesReferences.shotSmoke;
+        }
+        return Entity.Null;
+    }
 }

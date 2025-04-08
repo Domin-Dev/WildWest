@@ -24,7 +24,7 @@ partial struct WorldItemAnimSystem : ISystem
         {
             elapsedTime = time,
             deltaTime = SystemAPI.Time.DeltaTime
-    };
+        };
         job.ScheduleParallel();
 
     }

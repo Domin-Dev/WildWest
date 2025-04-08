@@ -111,7 +111,6 @@ public partial struct CollisionSystem : ISystem
             k++;
 
             NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
-            Debug.Log(potentialCollisions.Length);
 
             for (int j = 0; j < potentialCollisions.Length; j++)
             {
