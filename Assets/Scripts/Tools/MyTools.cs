@@ -1,14 +1,10 @@
-using System.Reflection;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
-using UnityEngine.Rendering;
 using System.Collections.Generic;
 using Unity.Burst;
-using System;
 using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Transforms;
-using Newtonsoft.Json.Linq;
+using System;
 
 public static class MyTools 
 {
@@ -71,12 +67,6 @@ public static class MyTools
         transform.position = newPosition;
         child.SetParent(transform);
     }
-    public static bool HaveOppositeSigns<T>(T a, T b) where T : struct, IComparable<T>
-    {
-        double x = Convert.ToDouble(a);
-        double y = Convert.ToDouble(b);
-        return (x >= 0 && y < 0) || (x < 0 && y >= 0);
-    }
     public static float3 QuaternionToEuler(quaternion q)
     {
         float sinr_cosp = 2 * (q.value.w * q.value.x + q.value.y * q.value.z);
@@ -92,7 +82,6 @@ public static class MyTools
 
         return new float3(x, y, z);
     }
-
     public static bool EqualQuaternions(quaternion q1, quaternion q2, float toleranceThreshold = 0.999f)
     {
         float dot = math.dot(q1.value, q2.value);
@@ -102,5 +91,10 @@ public static class MyTools
     {
         return math.all(math.abs(a - b) < new float3(tolerance));
     }
-
+    public static bool HaveOppositeSigns<T>(T a, T b) where T : struct, IComparable<T>
+    {
+        double x = Convert.ToDouble(a);
+        double y = Convert.ToDouble(b);
+        return (x >= 0 && y < 0) || (x < 0 && y >= 0);
+    }
 }

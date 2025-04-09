@@ -159,7 +159,6 @@ public class EntitySpawner : MonoBehaviour
         createdCharacters.Add(character);
         counter++;
     }
-
     private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
     {
         VariantItem buildingItem = ItemsAsset.instance.GetItem<VariantItem>(objectID);
@@ -170,7 +169,6 @@ public class EntitySpawner : MonoBehaviour
         Entity character = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
         entityManager.SetComponentData(character, LocalTransform.FromPosition(position));
     }
-
     private void SpawnCharacter()
     {
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
@@ -204,7 +202,6 @@ public class EntitySpawner : MonoBehaviour
         ChatManager.instance.Print("wszystko gotowe");
         isReady = true;
     }
-
     public void SpawnParticle(int indexParticle, float3 position)
     {
         Entity prefab = GetParticleIndex(indexParticle);
@@ -215,7 +212,6 @@ public class EntitySpawner : MonoBehaviour
         particles.finishParticles += Time.time;
         entityManager.SetComponentData(entity, particles);
     }
-
     private Entity GetParticleIndex(int index)
     {
         switch (index)

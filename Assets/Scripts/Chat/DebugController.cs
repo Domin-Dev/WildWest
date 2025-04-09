@@ -1,7 +1,6 @@
 
 using System;
 using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,7 +15,7 @@ public class DebugController : MonoBehaviour
         }));
         commandList.Add(new DebugCommand("host", "Start host", "", () =>
         {
-            NetworkManager.Singleton.StartHost();
+        //    NetworkManager.Singleton.StartHost();
         }));
         commandList.Add(new DebugCommand<int>("spawn", "Spawn", "[Number]", (x) =>
         {
