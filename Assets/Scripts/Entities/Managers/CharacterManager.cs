@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
@@ -18,7 +19,7 @@ public class CharacterManager : MonoBehaviour
 
     private void Start()
     {
-        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
     }
 
     public void SetUp(Entity player)

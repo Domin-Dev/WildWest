@@ -30,6 +30,7 @@ public class Thermometer
     }
     public void SetValue(float value)
     {
+        if (bar == null) return;
         float posY = range * value;
         if (value >= 0.5f  && isLow)
         {
@@ -60,6 +61,7 @@ public class MyBar
     }
     public void SetValue(float value)
     {
+        if (this.pointer == null) return;
         float posX = range * value;
       //  Debug.Log(this.pointer.anchoredPosition);
        this.pointer.anchoredPosition = new Vector2(posX + pointZero, this.pointer.anchoredPosition.y);

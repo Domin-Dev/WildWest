@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
@@ -61,7 +62,9 @@ public class EntitySpawner : MonoBehaviour
         {
             for (int j = createdCharacters.Length - 1; j >= 0; j--)
             {
-                Entity entity = createdCharacters[j];   
+                Entity entity = createdCharacters[j];
+                if (!entityManager.HasComponent<Child>(entity)) continue;
+
                 var childs = entityManager.GetBuffer<Child>(entity);
                 Hands hands = new Hands();
                 Character character = new Character();
@@ -136,6 +139,10 @@ public class EntitySpawner : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        createdCharacters.Dispose();
+    }
     private Entity GetChild(Entity parent,int depth)
     {
         for (int i = 0; i < depth; i++)
@@ -146,6 +153,7 @@ public class EntitySpawner : MonoBehaviour
     }
     private void SpawnPlayer(bool tr, float3 pos)
     {
+        Debug.Log("Spawn Player");
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
         entityManager.SetComponentData(character, LocalTransform.FromPosition(pos));
         if (tr)
@@ -156,7 +164,7 @@ public class EntitySpawner : MonoBehaviour
             player = character;
             this.AddComponent<CharacterManager>().SetUp(player);
         }
-        createdCharacters.Add(character);
+       // createdCharacters.Add(character);
         counter++;
     }
     private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
@@ -178,7 +186,7 @@ public class EntitySpawner : MonoBehaviour
     }
     private void WaitForEntity()
     {
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        EntityManager entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
         var query = entityManager.CreateEntityQuery(typeof(EntitiesReferences));
         if (query.IsEmpty)
             ChatManager.instance.Print("Czekam na załadowanie komponentu EntitiesReferences...");
@@ -192,12 +200,12 @@ public class EntitySpawner : MonoBehaviour
     private void StartGame()
     {
         Debug.Log("Spraw");
-        SpawnPlayer(true,float3.zero);
+   //     SpawnPlayer(true,float3.zero);
     }
     private void SetUp(EntityQuery entityQuery)
     {
         ChatManager.instance.Print("Udalo sie wczytac");
-        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
         entitiesReferences = entityManager.GetComponentData<EntitiesReferences>(entityQuery.GetSingletonEntity());
         ChatManager.instance.Print("wszystko gotowe");
         isReady = true;

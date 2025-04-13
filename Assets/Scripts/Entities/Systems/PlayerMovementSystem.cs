@@ -4,6 +4,8 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct PlayerMovementSystem : ISystem
 {
 

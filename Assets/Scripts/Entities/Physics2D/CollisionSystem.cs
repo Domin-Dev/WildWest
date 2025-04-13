@@ -6,7 +6,10 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
+
+
 [UpdateInGroup(typeof(SimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;

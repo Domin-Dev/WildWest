@@ -431,6 +431,8 @@ GameObject:
   - component: {fileID: 7504337897155031083}
   - component: {fileID: 4970134060249165646}
   - component: {fileID: 8106486671510003875}
+  - component: {fileID: 6310104120586983719}
+  - component: {fileID: 6046341490708631108}
   m_Layer: 0
   m_Name: Character
   m_TagString: Player
@@ -487,6 +489,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e8a38be81b2a5e4e82a5161aac65408, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6310104120586983719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773562619657541914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6046341490708631108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773562619657541914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultGhostMode: 0
+  SupportedGhostModes: 3
+  OptimizationMode: 0
+  Importance: 1
+  prefabId: eaa2acfd5439f23489d47f713a799302
+  HasOwner: 0
+  SupportAutoCommandTarget: 1
+  TrackInterpolationDelay: 0
+  GhostGroup: 0
+  UsePreSerialization: 0
 --- !u!1 &4777841050756482901
 GameObject:
   m_ObjectHideFlags: 0
