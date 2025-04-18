@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,6 +13,12 @@ partial struct PlayerMovementSystem : ISystem
 
     private static float leftSide = math.PI / 2f;
     static float x = 1;
+
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<NetworkId>();
+    }
+
     public void OnUpdate(ref SystemState state)
     {
         float2 input = float2.zero;
@@ -32,30 +39,35 @@ partial struct PlayerMovementSystem : ISystem
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);
         float deltaTime = SystemAPI.Time.DeltaTime;
+        int localNetworkId = SystemAPI.GetSingleton<NetworkId>().Value;
 
-        foreach (var (velocity, player, character, entity)
-         in SystemAPI.Query<RefRW<Velocity2D>, RefRO<Player>, RefRW<Character>>().WithEntityAccess())
+        foreach (var (velocity, player, owner,character,entity)
+         in SystemAPI.Query<RefRW<Velocity2D>, RefRW<Player>,GhostOwner, RefRW<Character>>().WithEntityAccess())
         {
+          //  if (localNetworkId != owner.NetworkId) continue;
+            player.ValueRW.speed = 200;
+
+
             float2 vector = input * player.ValueRO.speed * deltaTime * x;
             velocity.ValueRW.Value = vector;
             bool shouldBeChanged = !(vector.x == 0 && vector.y == 0);
-
+            Debug.Log(vector);
             state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
-            if (character.ValueRW.isMove)
-            {
-                if (!shouldBeChanged)
-                {
-                    ResetAnim(character, ref state);
-                }
-            }
-            else
-            {
-                if (shouldBeChanged)
-                {
-                    StartAnim(character, ref state);
-                }
-            }
-            if(shouldBeChanged) UpdateDirectionIndex(vector, character, ref state);
+            //if (character.ValueRW.isMove)
+            //{
+            //    if (!shouldBeChanged)
+            //    {
+            //        ResetAnim(character, ref state);
+            //    }
+            //}
+            //else
+            //{
+            //    if (shouldBeChanged)
+            //    {
+            //        StartAnim(character, ref state);
+            //    }
+            //}
+            //if(shouldBeChanged) UpdateDirectionIndex(vector, character, ref state);
         }
     }
 

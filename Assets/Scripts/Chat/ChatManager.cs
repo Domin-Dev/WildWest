@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using System;
+using Unity.Entities;
 
 public class ChatManager : MonoBehaviour
 {
@@ -219,8 +220,9 @@ public class ChatManager : MonoBehaviour
 
     public void Print(string text)
     {
+        string name = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(PlayerName)).GetSingleton<PlayerName>().name.ToString();
         Transform message = Instantiate(messagePrefab, content).transform;
-        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = text;
+        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"<Color=#8E21E5>{name}</color>: {text}";
         chatScrollbar.value = 0;
         SetTimerToDisappear();
     }

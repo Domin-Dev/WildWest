@@ -32,9 +32,8 @@ partial struct WorldItemAnimSystem : ISystem
     [BurstCompile]
     public void OnDestroy(ref SystemState state)
     {
-  }
 
-
+    }
 }
 
 
@@ -44,7 +43,6 @@ public partial struct WorldItemAnimJob : IJobEntity
     private const float cycleTime = 0.5f;
     private const float maxDistance = 0.007f;
     public const float basePos = -0.01f;
-
 
 
     public float elapsedTime;

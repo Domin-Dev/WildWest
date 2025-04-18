@@ -22,11 +22,14 @@ partial struct TestCilientSystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
         {
+       //     Debug.Log(networkId)
             entityCommandBuffer.AddComponent<NetworkStreamInGame>(entity);
-            Debug.Log("Connected! " + entity + " " + networkId.ValueRO.Value);
+            Debug.Log("Connected! " + entity.ToString() + " " + networkId.ValueRO.Value);
 
             Entity rpcEntity = entityCommandBuffer.CreateEntity();
-            entityCommandBuffer.AddComponent<GoInGameRequestRPC>(rpcEntity);
+            PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
+
+            entityCommandBuffer.AddComponent(rpcEntity,new GoInGameRequestRPC() {playerName = playerName.name });
             entityCommandBuffer.AddComponent<SendRpcCommandRequest>(rpcEntity);
         }
         entityCommandBuffer.Playback(state.EntityManager);

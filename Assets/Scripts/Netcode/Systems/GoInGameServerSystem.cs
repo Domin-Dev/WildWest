@@ -1,7 +1,9 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -10,6 +12,7 @@ partial struct GoInGameServerSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
+       // state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<GoInGameRequestRPC>().WithAll<ReceiveRpcCommandRequest>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
@@ -20,12 +23,23 @@ partial struct GoInGameServerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, Entity entity) in 
-        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>>().WithAll<GoInGameRequestRPC>().WithEntityAccess())
+        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, GoInGameRequestRPC requestRPC, Entity entity) in
+        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, GoInGameRequestRPC>().WithEntityAccess())
         {
             entityCommandBuffer.AddComponent<NetworkStreamInGame>(rpcCommandRequest.ValueRO.SourceConnection);
-            Debug.Log("Client conneted to server!");
+            Debug.Log("Client conneted to server!H Hello " + requestRPC.playerName + " !");
             entityCommandBuffer.DestroyEntity(entity);
+
+            var networkId = state.EntityManager.GetComponentData<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
+
+            Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
+            entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(networkId * 0.5f, 0, 0)));
+
+            entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
+            entityCommandBuffer.SetComponent(character, new Player() { speed = 1f, playerName = requestRPC.playerName });
+
+
+            entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

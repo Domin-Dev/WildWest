@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Transforms;
 using System;
+using System.Text;
 
 public static class MyTools 
 {
@@ -96,5 +97,19 @@ public static class MyTools
         double x = Convert.ToDouble(a);
         double y = Convert.ToDouble(b);
         return (x >= 0 && y < 0) || (x < 0 && y >= 0);
+    }
+
+    public static FixedString64Bytes ToFixedString64_Safe(this string s)
+    {
+        var utf8 = Encoding.UTF8;
+        var fs = new FixedString64Bytes();
+        foreach (var ch in s)
+        {
+            int byteCount = utf8.GetByteCount(new[] { ch });
+            if (fs.Length + byteCount > fs.Capacity - 1)
+                break;
+            fs.Append(ch);
+        }
+        return fs;
     }
 }

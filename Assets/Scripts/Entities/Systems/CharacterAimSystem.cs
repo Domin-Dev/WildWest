@@ -10,9 +10,6 @@ using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UIElements;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 partial struct CharacterAimSystem : ISystem
 {

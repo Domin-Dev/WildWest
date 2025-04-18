@@ -19,5 +19,6 @@ public class BodyAuthoring : MonoBehaviour
     }
 }
 public struct Body: IComponentData
-{}
+{
+}
 

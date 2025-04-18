@@ -76,8 +76,6 @@ public partial struct CollisionSystem : ISystem
         var getPhysics = state.GetComponentLookup<Physics2D>();
 
 
-
-
         if (Input.GetKeyDown(KeyCode.X))
         {
             foreach (var item in entityMap)

@@ -151,7 +151,7 @@ public class EntitySpawner : MonoBehaviour
         }
         return parent;
     }
-    private void SpawnPlayer(bool tr, float3 pos)
+    public void SpawnPlayer(bool tr, float3 pos)
     {
         Debug.Log("Spawn Player");
         Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);

@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
@@ -15,13 +16,13 @@ public struct Physics2D : IComponentData
 }
 public struct Velocity2D : IComponentData
 {
-    public float2 Value;
+   [GhostField] public float2 Value;
 }
 public struct Trigger2D : IComponentData
 {
     public float2 Value;
 }
-public struct IsChanged : IComponentData, IEnableableComponent { } 
+public struct IsChanged : IComponentData, IEnableableComponent {  } 
 
 
 

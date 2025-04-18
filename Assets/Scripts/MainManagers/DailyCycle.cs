@@ -135,7 +135,7 @@ public class DailyCycle : MonoBehaviour
     public void Start()
     {
         SetUp();
-        LoadSeason(0);
+       //LoadSeason(0);
         UpdateDayCounter();
         TimeTickSystem.OnTick += IncreaseTime; 
     }
@@ -153,7 +153,7 @@ public class DailyCycle : MonoBehaviour
             int index = (int)(value / 0.25f);
             if (index < 4 && index != currentSeson)
             {
-                LoadSeason(index);
+                //LoadSeason(index);
             }
         }
         timeOfDayBar.SetValue(dayTimeInTicks / (float)ticksPerDay);
@@ -208,6 +208,7 @@ public class DailyCycle : MonoBehaviour
     }
     private void LoadSeason(int seasonIndex)
     {
+        if (timeOfDayTransform == null) return;
         currentSeson = seasonIndex;
         currentDayTime = seasons[seasonIndex];
         float hourWidth = timeOfDayTransform.sizeDelta.x / 24;
