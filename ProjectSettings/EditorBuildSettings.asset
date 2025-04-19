@@ -14,11 +14,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Debug UI.unity
     guid: bc9db532229d7a0498a1b24388adc0c6
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Game/EntitiesSubScene.unity
     guid: fadc1d218d8ba3a48b165c70be944db5
-  - enabled: 0
-    path: Assets/Scenes/Game/New Sub Scene.unity
-    guid: ebb5af5ae5c36a24c80635591cdc223c
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using System;
 using Unity.Entities;
+using Unity.NetCode;
 
 public class ChatManager : MonoBehaviour
 {
@@ -193,7 +194,7 @@ public class ChatManager : MonoBehaviour
     {
         if (chatInputField.text.Length > 0)
         {
-            Print(chatInputField.text);
+            SendRPC(chatInputField.text);
             SaveToHistory();
             CheckCommands();
         }
@@ -217,12 +218,30 @@ public class ChatManager : MonoBehaviour
             history[LastHistory] = chatInputField.text;
         }
     }
+    private void SendRPC(string value)
+    {
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        Entity messageEntity = entityCommandBuffer.CreateEntity();
+        entityCommandBuffer.AddComponent(messageEntity, new NewMessageRPC() { message = value.Substring(0, Math.Min(511, value.Length)) });
+        entityCommandBuffer.AddComponent(messageEntity, new SendRpcCommandRequest());
 
+        entityCommandBuffer.Playback(World.DefaultGameObjectInjectionWorld.EntityManager);
+        entityCommandBuffer.Dispose();
+    }
     public void Print(string text)
     {
-        string name = World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(PlayerName)).GetSingleton<PlayerName>().name.ToString();
         Transform message = Instantiate(messagePrefab, content).transform;
-        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"<Color=#8E21E5>{name}</color>: {text}";
+        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = text;
+        chatScrollbar.value = 0;
+        SetTimerToDisappear();
+    }
+    public void PrintPlayerMessage(long time,string text, string player)
+    {
+        DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
+        DateTime localTime = date.ToLocalTime().DateTime;
+
+        Transform message = Instantiate(messagePrefab, content).transform;
+        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"[{localTime.ToString("HH:mm:ss")}] <Color=#E68D31>{player}</color>: {text}";
         chatScrollbar.value = 0;
         SetTimerToDisappear();
     }
@@ -295,7 +314,6 @@ public class ChatManager : MonoBehaviour
             PrintHint(item);
         }
     }
-
     private void PrintHint(CommandBase commandBase)
     {
         Print($"/{commandBase.commandId} {commandBase.commandFormat}");

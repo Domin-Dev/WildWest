@@ -22,6 +22,7 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Hands());
             AddComponent(entity, new Player() { speed = 1f});
             AddComponent(entity, new NewPlayerTag());
+            AddComponent(entity, new PlayerInput());
 
         }
     }

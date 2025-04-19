@@ -9,17 +9,15 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct GoInGameServerSystem : ISystem
 {
-    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-       // state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<GoInGameRequestRPC>().WithAll<ReceiveRpcCommandRequest>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -27,12 +25,15 @@ partial struct GoInGameServerSystem : ISystem
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, GoInGameRequestRPC>().WithEntityAccess())
         {
             entityCommandBuffer.AddComponent<NetworkStreamInGame>(rpcCommandRequest.ValueRO.SourceConnection);
-            Debug.Log("Client conneted to server!H Hello " + requestRPC.playerName + " !");
+            entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection, new PlayerName() { name = requestRPC.playerName });
+
+        //    Debug.Log("Client conneted to server!H Hello " + requestRPC.playerName + " !");
             entityCommandBuffer.DestroyEntity(entity);
 
             var networkId = state.EntityManager.GetComponentData<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
+            ChatManager.instance.Print("New Player!!!");
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(networkId * 0.5f, 0, 0)));
 
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });

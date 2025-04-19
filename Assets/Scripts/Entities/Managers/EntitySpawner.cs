@@ -129,13 +129,13 @@ public class EntitySpawner : MonoBehaviour
 
             for (int j = 0; j < 6; j++) 
             {
-                SpawnPlayer(false, new float3( counter * 0.13f + 0.2f,( counter %1)* 0.13f + 0.2f,0));
+              //  SpawnPlayer(false, new float3( counter * 0.13f + 0.2f,( counter %1)* 0.13f + 0.2f,0));
             }
         }
 
         if (Input.GetKeyDown(KeyCode.L) && isReady)
         {
-            SpawnBuildObject(new float3(0f,0f,0f), 7,0);
+          //  SpawnBuildObject(new float3(0f,0f,0f), 7,0);
         }
     }
 
@@ -151,39 +151,39 @@ public class EntitySpawner : MonoBehaviour
         }
         return parent;
     }
-    public void SpawnPlayer(bool tr, float3 pos)
-    {
-        Debug.Log("Spawn Player");
-        Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(pos));
-        if (tr)
-        {
-            entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
-            var physics = entityManager.GetComponentData<Physics2D>(character);
-            entityManager.AddComponentData(character, physics);
-            player = character;
-            this.AddComponent<CharacterManager>().SetUp(player);
-        }
-       // createdCharacters.Add(character);
-        counter++;
-    }
-    private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
-    {
-        VariantItem buildingItem = ItemsAsset.instance.GetItem<VariantItem>(objectID);
-        Variant variant = buildingItem.objectVariants[variantIndex].variants[0];
+    //public void SpawnPlayer(bool tr, float3 pos)
+    //{
+    //    Debug.Log("Spawn Player");
+    //    Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
+    //    entityManager.SetComponentData(character, LocalTransform.FromPosition(pos));
+    //    if (tr)
+    //    {
+    //        entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
+    //        var physics = entityManager.GetComponentData<Physics2D>(character);
+    //        entityManager.AddComponentData(character, physics);
+    //        player = character;
+    //        this.AddComponent<CharacterManager>().SetUp(player);
+    //    }
+    //   // createdCharacters.Add(character);
+    //    counter++;
+    //}
+    //private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
+    //{
+    //    VariantItem buildingItem = ItemsAsset.instance.GetItem<VariantItem>(objectID);
+    //    Variant variant = buildingItem.objectVariants[variantIndex].variants[0];
         
 
-        position.z = position.y;
-        Entity character = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(position));
-    }
-    private void SpawnCharacter()
-    {
-        Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-        entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3((counter % 50) * 0.2f, (counter / 50) * 0.2f, 0)));
-        counter++;
-        createdCharacters.Add(character);
-    }
+    //    position.z = position.y;
+    //    Entity character = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
+    //    entityManager.SetComponentData(character, LocalTransform.FromPosition(position));
+    //}
+    //private void SpawnCharacter()
+    //{
+    //    Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
+    //    entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3((counter % 50) * 0.2f, (counter / 50) * 0.2f, 0)));
+    //    counter++;
+    //    createdCharacters.Add(character);
+    //}
     private void WaitForEntity()
     {
         EntityManager entityManager = ClientServerBootstrap.ClientWorld.EntityManager;

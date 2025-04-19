@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+[UpdateInGroup(typeof(GhostInputSystemGroup))]
 partial struct PlayerMovementSystem : ISystem
 {
 
@@ -41,18 +41,14 @@ partial struct PlayerMovementSystem : ISystem
         float deltaTime = SystemAPI.Time.DeltaTime;
         int localNetworkId = SystemAPI.GetSingleton<NetworkId>().Value;
 
-        foreach (var (velocity, player, owner,character,entity)
-         in SystemAPI.Query<RefRW<Velocity2D>, RefRW<Player>,GhostOwner, RefRW<Character>>().WithEntityAccess())
+        foreach (var (playerInput, player,character,entity)
+         in SystemAPI.Query<RefRW<PlayerInput>, RefRW<Player>, RefRW<Character>>().WithAll<GhostOwnerIsLocal>().WithEntityAccess())
         {
-          //  if (localNetworkId != owner.NetworkId) continue;
-            player.ValueRW.speed = 200;
-
-
-            float2 vector = input * player.ValueRO.speed * deltaTime * x;
-            velocity.ValueRW.Value = vector;
+   
+            float2 vector = input;// * player.ValueRO.speed; //* deltaTime * x;
+            playerInput.ValueRW.movementDir = vector;
             bool shouldBeChanged = !(vector.x == 0 && vector.y == 0);
-            Debug.Log(vector);
-            state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+
             //if (character.ValueRW.isMove)
             //{
             //    if (!shouldBeChanged)

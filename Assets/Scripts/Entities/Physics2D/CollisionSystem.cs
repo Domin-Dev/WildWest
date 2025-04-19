@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
 
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
@@ -44,8 +44,6 @@ public partial struct CollisionSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         entityMap = new NativeHashMap<int2, NativeList<Entity>>(100, Allocator.Persistent);
-
-
     }
     public void OnDestroy(ref SystemState state)
     {
@@ -60,7 +58,7 @@ public partial struct CollisionSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged, Velocity2D, Hitbox2D,LocalTransform,Physics2D>().Build();
+        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged, Velocity2D, Hitbox2D,LocalTransform,Physics2D,Simulate>().Build();
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
         NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
