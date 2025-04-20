@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using UnityEngine;
@@ -135,7 +136,6 @@ public class MenuManager : MonoBehaviour
     private void OnButtonConnect()
     {
         SceneManager.LoadScene(1);
-
         switch (connectionMode.value)
         {
             case 0:
@@ -153,56 +153,21 @@ public class MenuManager : MonoBehaviour
                 break;
         }
     }
-    //private static void DestroyLocalSimulationWorld()
-    //{
-    //    foreach (var world in World.All)
-    //    {
-    //        if (world.Flags == WorldFlags)
-    //        {
-    //            world.Dispose();
-    //            break;
-    //        }
-    //    }
-    //}
-    //private void StartServer()
-    //{
-    //    var serverWorld = ClientServerBootstrap.CreateServerWorld(" Server World");
-
-    //    var serverEndpoint = NetworkEndpoint.AnyIpv4.WithPort(ushort.Parse(portInput.text));
-    //    {
-    //        using var networkDriverQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-    //        networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(serverEndpoint);
-    //    }
-    //}
-    //private void StartClient()
-    //{
-    //    var clientWorld = ClientServerBootstrap.CreateClientWorld("Client World");
-
-    //    var connectionEndpoint = NetworkEndpoint.Parse(adressIPInput.text,ushort.Parse(portInput.text));
-    //    {
-    //        using var networkDriverQuery = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-    //        networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager, connectionEndpoint);
-    //    }
-
-    //    World.DefaultGameObjectInjectionWorld = clientWorld;
-
-
-    //    Entity entity = clientWorld.EntityManager.CreateEntity();
-    //    clientWorld.EntityManager.AddComponentData(entity, new PlayerName() {name = playerNameInput.text.ToString()});
-    //}
-
     private void Join()
     {
-        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
-
-        foreach (World world in World.All)
+        for (int i = World.All.Count - 1; i >= 0; i--)
         {
-            if (world.Flags == WorldFlags.GameClient)
+            Debug.Log(i + " " + World.All[i] + " " + World.All[i].Flags);
+            World world = World.All[i];
+            if (world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
             {
-                world.Dispose();
-                break;
+                World.All[i].Dispose();
             }
         }
+
+        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
+
+
 
         if (World.DefaultGameObjectInjectionWorld == null)
         {
@@ -226,11 +191,10 @@ public class MenuManager : MonoBehaviour
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
     }
-
     private void RunServer()
-    {    
+    {
         World serverWorld = ClientServerBootstrap.CreateServerWorld("Server wild world");
-       
+
         World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
         Debug.Log(serverWorld.Flags + " " + serverWorld);
         foreach (World world in World.All)
@@ -252,18 +216,74 @@ public class MenuManager : MonoBehaviour
         ushort port = ushort.Parse(portInput.text);
 
 
-        RefRW<NetworkStreamDriver> networkStreamDriver = 
+        RefRW<NetworkStreamDriver> networkStreamDriver =
             serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
         networkStreamDriver.ValueRW.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
 
         NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
         networkStreamDriver =
             clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-        networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager,networkEndpoint);
+        networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
 
-       
+
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
     }
+    //private void RunServer()
+    //{
+
+    //    Debug.Log("Running!");
+
+    //    Debug.Log(World.All.Count);
+    //    for (int i = World.All.Count - 1; i >= 0; i--)
+    //    {
+    //        World world = World.All[i];
+    //        if (world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
+    //        {
+    //            World.All[i].Dispose();
+    //            break;
+    //        }
+    //    }
+
+
+
+    //    World serverWorld = ClientServerBootstrap.CreateServerWorld("Server wild world");
+    //    World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
+
+    //    Debug.Log("Worlds created!");
+
+
+
+
+    //    if (World.DefaultGameObjectInjectionWorld == null)
+    //    {
+    //        World.DefaultGameObjectInjectionWorld = serverWorld;
+    //    }
+
+    //    Debug.Log("Default set!");
+
+
+    //    SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+
+    //    ushort port = ushort.Parse(portInput.text);
+
+
+
+    //    RefRW<NetworkStreamDriver> networkStreamDriver = 
+    //    serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+    //    networkStreamDriver.ValueRW.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
+
+    //    Debug.Log("server run!");
+
+    //    NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
+    //    networkStreamDriver =
+    //        clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+    //    networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager,networkEndpoint);
+
+    //    Debug.Log("connection!");
+
+    //    Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+    //    ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
+    //}
 }

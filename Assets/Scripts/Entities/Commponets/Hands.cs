@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.XR;
 
 public struct Hands : IComponentData
 {
@@ -21,5 +22,8 @@ public struct Hands : IComponentData
 
     public bool rotated;
     public int itemID;
+
+
+
 }
 

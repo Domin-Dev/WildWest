@@ -9,6 +9,8 @@ partial struct TestCilientSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
+        Debug.Log("client !!!");
+        state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));

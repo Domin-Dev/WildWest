@@ -114,6 +114,7 @@ public partial struct CollisionSystem : ISystem
             for (int j = 0; j < potentialCollisions.Length; j++)
             {
                 Entity entityToCheck = potentialCollisions[j];
+                if (!SystemAPI.Exists(entityToCheck)) continue;
                 if (entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer,layer]) continue;
 
 

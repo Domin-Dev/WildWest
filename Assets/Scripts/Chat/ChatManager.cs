@@ -220,12 +220,13 @@ public class ChatManager : MonoBehaviour
     }
     private void SendRPC(string value)
     {
+        Debug.Log("new rpc");
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         Entity messageEntity = entityCommandBuffer.CreateEntity();
         entityCommandBuffer.AddComponent(messageEntity, new NewMessageRPC() { message = value.Substring(0, Math.Min(511, value.Length)) });
         entityCommandBuffer.AddComponent(messageEntity, new SendRpcCommandRequest());
 
-        entityCommandBuffer.Playback(World.DefaultGameObjectInjectionWorld.EntityManager);
+        entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
         entityCommandBuffer.Dispose();
     }
     public void Print(string text)

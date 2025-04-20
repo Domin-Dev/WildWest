@@ -22,7 +22,7 @@ public struct Velocity2D : IComponentData
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct PlayerInput : IInputComponentData
 {
-   [GhostField(Quantization = 0)] public float2 movementDir;
+   /*[GhostField(Quantization = 0)] */public float2 movementDir;
 }
 
 

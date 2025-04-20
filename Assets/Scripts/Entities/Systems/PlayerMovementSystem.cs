@@ -16,7 +16,8 @@ partial struct PlayerMovementSystem : ISystem
 
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkId>();
+        state.RequireForUpdate<NetworkStreamInGame>();
+        state.RequireForUpdate<PlayerInput>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -42,7 +43,7 @@ partial struct PlayerMovementSystem : ISystem
         int localNetworkId = SystemAPI.GetSingleton<NetworkId>().Value;
 
         foreach (var (playerInput, player,character,entity)
-         in SystemAPI.Query<RefRW<PlayerInput>, RefRW<Player>, RefRW<Character>>().WithAll<GhostOwnerIsLocal>().WithEntityAccess())
+         in SystemAPI.Query<RefRW<PlayerInput>, RefRW<Player>, RefRW<Character>>().WithAll<GhostOwnerIsLocal,Simulate>().WithEntityAccess())
         {
    
             float2 vector = input;// * player.ValueRO.speed; //* deltaTime * x;

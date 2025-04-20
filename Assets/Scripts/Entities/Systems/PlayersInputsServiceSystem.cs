@@ -17,12 +17,15 @@ partial struct PlayersInputsServiceSystem : ISystem
     {
         float deltaTime = SystemAPI.Time.DeltaTime;
 
-        foreach (var (playerInput,player,velocity,entity)
-         in SystemAPI.Query<RefRO<PlayerInput>,RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate,GhostOwnerIsLocal>().WithEntityAccess())
+        foreach (var (playerInput, player,local, velocity,entity)
+         in SystemAPI.Query<RefRO<PlayerInput>,RefRO<Player>, RefRW<LocalTransform>, RefRW<Velocity2D>>().WithAll<Simulate,GhostOwnerIsLocal>().WithEntityAccess())
         {
-            velocity.ValueRW.Value = playerInput.ValueRO.movementDir * deltaTime * player.ValueRO.speed;
-            bool shouldBeChanged = !(velocity.ValueRO.Value.x == 0 && velocity.ValueRO.Value.y == 0);
-            state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+            // velocity.ValueRW.Value = playerInput.ValueRO.movementDir * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
+            float3 vector = new float3(playerInput.ValueRO.movementDir.x, playerInput.ValueRO.movementDir.y, 0);
+            local.ValueRW.Position += vector * 1f * SystemAPI.Time.DeltaTime;
+
+            // bool shouldBeChanged = !(velocity.ValueRO.Value.x == 0 && velocity.ValueRO.Value.y == 0);
+            //state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
         }
     }
 }
