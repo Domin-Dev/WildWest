@@ -2,8 +2,12 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
+
+[UpdateInGroup(typeof(PresentationSystemGroup),OrderLast = true)]
 
 partial struct CharacterAnimationSystem : ISystem
 {
@@ -28,7 +32,8 @@ partial struct CharacterAnimationSystem : ISystem
 
             LocalTransform bodyTransform = state.EntityManager.GetComponentData<LocalTransform>(character.ValueRO.body);
             LocalTransform headTransform = state.EntityManager.GetComponentData<LocalTransform>(character.ValueRO.headParent);
-            
+
+            Debug.Log(SystemAPI.Time.ElapsedTime + " " + character.ValueRO.startAnim);
             float localTime = time - character.ValueRO.startAnim;
 
             float angle = math.sin(localTime * speedRotationBody) * math.radians(8);

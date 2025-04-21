@@ -19,12 +19,6 @@ public struct Velocity2D : IComponentData
     public float2 Value;
 }
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct PlayerInput : IInputComponentData
-{
-   /*[GhostField(Quantization = 0)] */public float2 movementDir;
-}
-
 
 public struct Trigger2D : IComponentData
 {

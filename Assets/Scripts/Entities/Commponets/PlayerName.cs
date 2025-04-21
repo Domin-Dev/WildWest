@@ -7,4 +7,6 @@ public struct PlayerName : IComponentData
 }
 
 public struct NewPlayerTag : IComponentData
-{}
+{
+
+}

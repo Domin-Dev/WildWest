@@ -23,15 +23,32 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Player() { speed = 1f});
             AddComponent(entity, new NewPlayerTag());
             AddComponent(entity, new PlayerInput());
+            AddComponent(entity, new PlayerInputSync());
 
         }
     }
 }
 
+
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+public struct PlayerInput : IInputComponentData
+{
+ /*   [GhostField(Quantization = 0)]*/ public float2 movementDir;
+}
+
+
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
+public struct PlayerInputSync : IComponentData
+{
+    [GhostField] public float2 movementDir;
+}
+
+
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
 public struct Player : IComponentData
 {
-    [GhostField] public float speed;
+    public float speed;
     [GhostField] public FixedString64Bytes playerName;
 }
 public struct Character : IComponentData

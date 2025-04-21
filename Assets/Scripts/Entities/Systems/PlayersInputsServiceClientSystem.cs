@@ -3,52 +3,32 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
-[UpdateInGroup(typeof(GhostInputSystemGroup))]
-partial struct PlayerMovementSystem : ISystem
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderFirst = true)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+partial struct PlayersInputsServiceClientSystem : ISystem
 {
-
-
-    private static float leftSide = math.PI / 2f;
-    static float x = 1;
-
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkStreamInGame>();
-        state.RequireForUpdate<PlayerInput>();
+        state.RequireForUpdate<NetworkId>();
+        state.RequireForUpdate<Player>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        float2 input = float2.zero;
-
-        if (Input.GetKey(KeyCode.W)) input.y += 1;
-
-
-
-        if (Input.GetKeyDown(KeyCode.E))
+        foreach (var (playerInput, player, character, velocity,entity)
+         in SystemAPI.Query<RefRO<PlayerInputSync>,RefRO<Player>, RefRW<Character> , RefRW<Velocity2D>>().WithAll<Simulate>().WithEntityAccess())
         {
-            if (x == 1) x = 20;
-            else x = 1;
-        }
+            if (SystemAPI.HasComponent<GhostOwnerIsLocal>(entity)) 
+            {
+                velocity.ValueRW.Value = playerInput.ValueRO.movementDir * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
+            }
 
-        if (Input.GetKey(KeyCode.S)) input.y -= 1;
-        if (Input.GetKey(KeyCode.A)) input.x -= 1;
-        if (Input.GetKey(KeyCode.D)) input.x += 1;
-
-        if (math.lengthsq(input) > 1) input = math.normalize(input);
-        float deltaTime = SystemAPI.Time.DeltaTime;
-        int localNetworkId = SystemAPI.GetSingleton<NetworkId>().Value;
-
-        foreach (var (playerInput, player,character,entity)
-         in SystemAPI.Query<RefRW<PlayerInput>, RefRW<Player>, RefRW<Character>>().WithAll<GhostOwnerIsLocal,Simulate>().WithEntityAccess())
-        {
-   
-            float2 vector = input;// * player.ValueRO.speed; //* deltaTime * x;
-            playerInput.ValueRW.movementDir = vector;
-            bool shouldBeChanged = !(vector.x == 0 && vector.y == 0);
+            bool shouldBeChanged = !(playerInput.ValueRO.movementDir.x == 0 && playerInput.ValueRO.movementDir.y == 0);
+            state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
 
             //if (character.ValueRW.isMove)
             //{
@@ -64,18 +44,18 @@ partial struct PlayerMovementSystem : ISystem
             //        StartAnim(character, ref state);
             //    }
             //}
-            //if(shouldBeChanged) UpdateDirectionIndex(vector, character, ref state);
+            if (shouldBeChanged) UpdateDirectionIndex(playerInput.ValueRO.movementDir, character, ref state);
         }
     }
 
-    private void ResetAnim(RefRW<Character> character,ref SystemState state)
+    private void ResetAnim(RefRW<Character> character, ref SystemState state)
     {
         LocalTransform body = state.EntityManager.GetComponentData<LocalTransform>(character.ValueRO.body);
         LocalTransform head = state.EntityManager.GetComponentData<LocalTransform>(character.ValueRO.headParent);
-        
+
         body.Rotation = quaternion.identity;
         head.Rotation = quaternion.identity;
-        head.Position = new float3(0,CharacterAnimationSystem.headOffsetY, 0);
+        head.Position = new float3(0, CharacterAnimationSystem.headOffsetY, 0);
 
         character.ValueRW.directionBody = character.ValueRO.directionHead;
         CharacterAimSystem.SetDirection(character.ValueRO.body, character.ValueRO.directionHead, ref state);
@@ -101,7 +81,7 @@ partial struct PlayerMovementSystem : ISystem
         else return 3;
     }
 
-    private  void UpdateDirectionIndex(float2 dir, RefRW<Character> character, ref SystemState state)
+    private void UpdateDirectionIndex(float2 dir, RefRW<Character> character, ref SystemState state)
     {
         int newDirIndex = GetDirectionIndex(dir);
         if (newDirIndex != character.ValueRO.directionBody)
@@ -110,6 +90,4 @@ partial struct PlayerMovementSystem : ISystem
             CharacterAimSystem.SetDirection(character.ValueRO.body, newDirIndex, ref state);
         }
     }
-
-
 }

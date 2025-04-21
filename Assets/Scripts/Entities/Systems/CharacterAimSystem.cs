@@ -11,10 +11,10 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
+
+[UpdateInGroup(typeof(PresentationSystemGroup))]
 partial struct CharacterAimSystem : ISystem
 {
-
-
     private static float leftSide = math.PI / 2f;
 
     private float deltaTime;
@@ -150,7 +150,7 @@ partial struct CharacterAimSystem : ISystem
 
     private void UpdateDirectionIndex(float2 dir, RefRW<Character> character, ref SystemState state)
     {
-        int newDirIndex = PlayerMovementSystem.GetDirectionIndex(dir);
+        int newDirIndex = PlayersInputsServiceClientSystem.GetDirectionIndex(dir);
         if (newDirIndex != character.ValueRO.directionHead)
         {
             character.ValueRW.directionHead = newDirIndex;
