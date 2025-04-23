@@ -8,7 +8,7 @@ public class NPC : MonoBehaviour
     Rigidbody2D rigidbody2D;
     [SerializeField] Vector2 target; 
     [SerializeField] Vector2 newX;
-    [SerializeField] NPCSpriteController characterSpriteController;
+//    [SerializeField] NPCSpriteController characterSpriteController;
 
     public List<GridTile> path;
     public GridTile gridTile;
@@ -16,7 +16,7 @@ public class NPC : MonoBehaviour
     private void Start()
     {
         rigidbody2D = GetComponent<Rigidbody2D>();
-        characterSpriteController = GetComponent<NPCSpriteController>();
+     //   characterSpriteController = GetComponent<NPCSpriteController>();
         NewPath(10,0);
     }
 
@@ -37,7 +37,7 @@ public class NPC : MonoBehaviour
     {
         Vector2 vector2 = target - (Vector2)transform.position;
         rigidbody2D.velocity = vector2.normalized * 0.4f;
-        characterSpriteController.UpdateSprite(vector2.normalized, vector2.normalized);
+      //  characterSpriteController.UpdateSprite(vector2.normalized, vector2.normalized);
         if (Vector2.Distance(transform.position, target) <= 0.01)
         {
             path.RemoveAt(0);

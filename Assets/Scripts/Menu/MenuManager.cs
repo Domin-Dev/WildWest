@@ -31,15 +31,14 @@ public class MenuManager : MonoBehaviour
     [Space]
     [SerializeField] private TextMeshProUGUI errorMessage;
 
-    private void Awake()
+    private void Start()
     {
         SetUpUI();
         errorMessage.gameObject.SetActive(false);
-    }
 
-    private async void OnEnable()
-    {
         buttonMultiplayer.onClick.AddListener(OpenMultiplayerWindow);
+        buttonSingleplayer.onClick.AddListener(OnButtonCreateGame);
+
         buttonConnet.onClick.AddListener(OnButtonConnect);
         buttonQuit.onClick.AddListener(Quit);
 
@@ -47,16 +46,7 @@ public class MenuManager : MonoBehaviour
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
     }
 
-    private void OnDisable()
-    {
-        buttonMultiplayer.onClick.RemoveAllListeners();
-        buttonConnet.onClick.RemoveAllListeners();
-        buttonQuit.onClick.RemoveAllListeners();
 
-
-        adressIPInput.onValueChanged.RemoveAllListeners();
-
-    }
 
     private void SetUpUI()
     {
@@ -135,23 +125,36 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonConnect()
     {
-        SceneManager.LoadScene(1);
-        switch (connectionMode.value)
-        {
-            case 0:
-                Join();
-                break;
-            case 1:
-                RunServer();
-                break;
-            case 2:
-                RunServer();
-                //StartServer();
-                break;
-            default:
-                Debug.LogError("Error: Unknown connection mode", gameObject);
-                break;
-        }
+        GameInfo.Instance.multiplayerMode = true;
+        GameInfo.Instance.nextScene = 2;
+
+        SceneManager.LoadScene("Loading");
+
+        ////SceneManager.LoadScene(1);
+        //switch (connectionMode.value)
+        //{
+        //    case 0:
+        //        Join();
+        //        break;
+        //    case 1:
+        //        RunServer();
+        //        break;
+        //    case 2:
+        //        RunServer();
+        //        //StartServer();
+        //        break;
+        //    default:
+        //        Debug.LogError("Error: Unknown connection mode", gameObject);
+        //        break;
+        //}
+    }
+    private void OnButtonCreateGame()
+    {
+        GameInfo.Instance.multiplayerMode = false;
+        GameInfo.Instance.nextScene = 1;
+        SceneManager.LoadScene("Loading");
+
+
     }
     private void Join()
     {

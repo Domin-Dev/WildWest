@@ -64,7 +64,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Hat:
-        m_Texture: {fileID: 2800000, guid: 71253a8602cd87e4d8a8abf368fa2363, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTax:
@@ -145,22 +145,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BeardIndex: 3
+    - _BeardIndex: 1
     - _Boolean: 0
     - _Direction: 0
     - _Eyes: 0
     - _EyesIndex: 1
     - _Front: 0
-    - _HairIndex: 2
-    - _HairUnderHat: 1
+    - _HairIndex: 23
+    - _HairUnderHat: 0
     - _Index: 0
     - _MouthIndex: 2
-    - _PaintingsIndex: 99
+    - _PaintingsIndex: -1
     - _Side: 1
     m_Colors:
     - _HairColor: {r: 0.4188679, g: 0.25924072, b: 0.16991809, a: 1}
     - _HatColor: {r: 0, g: 0.381132, b: 0.038759153, a: 1}
-    - _MaskColor: {r: 0.0529718, g: 0.2981131, b: 0, a: 1}
+    - _MaskColor: {r: 0.43303162, g: 0.7056604, b: 0.37147027, a: 1}
     - _SkinColor: {r: 0.9450981, g: 0.7058824, b: 0.454902, a: 1}
     - _Vector2: {r: 0, g: 0, b: 0, a: 0}
     - _Vector2_1: {r: -0.27, g: 0.33333, b: 0, a: 0}

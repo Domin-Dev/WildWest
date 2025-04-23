@@ -93,7 +93,7 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
     }
     public void UpdateCharacterSprites()
     {
-        characterSpriteController.UpdateSprite(moveDir, (sightDir - (Vector2)center.position).normalized);
+      //  characterSpriteController.UpdateSprite(moveDir, (sightDir - (Vector2)center.position).normalized);
     }
 
     #region Movement

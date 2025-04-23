@@ -9,7 +9,7 @@ using UnityEngine;
 
 
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
@@ -58,7 +58,29 @@ public partial struct CollisionSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged, Velocity2D, Hitbox2D,LocalTransform,Physics2D,Simulate>().Build();
+        if (state.World.Flags == WorldFlags.GameServer)
+        {
+            foreach (var(playerInputSync, playerInput,player , velocity, entity)
+                in SystemAPI.Query<RefRW<PlayerInputSync>,RefRW<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate>().WithEntityAccess())
+            {
+                playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
+                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
+                bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
+                state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+            }
+        } 
+        else
+        {
+            foreach (var (playerInput, player, velocity, entity)
+            in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
+            {
+                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
+                bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
+                state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+            }
+        }
+
+        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged,Velocity2D, Hitbox2D,LocalTransform,Physics2D,Simulate>().Build();
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
         NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
@@ -73,18 +95,6 @@ public partial struct CollisionSystem : ISystem
         var getHitbox = state.GetComponentLookup<Hitbox2D>();
         var getPhysics = state.GetComponentLookup<Physics2D>();
 
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            foreach (var item in entityMap)
-            {
-                Debug.Log("### " + item.Key);
-                foreach (var item2 in item.Value)
-                {
-                    Debug.Log("@ " + item2.Index);
-                }
-            }
-        }
         NativeHashMap<int,float> collisions = new NativeHashMap<int,float>(20, Allocator.TempJob);
 
         for (int i = 0; i < entityArray.Length; i++)

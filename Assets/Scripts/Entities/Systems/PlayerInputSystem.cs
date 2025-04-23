@@ -28,11 +28,18 @@ partial struct PlayerInputSystem : ISystem
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
+        float3 target = (float3)MyTools.GetMouseWorldPosition();
+        float2 sightDirection = new float2(target.x,target.y);
+
+
         foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync) in 
             SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>>().WithAll<GhostOwnerIsLocal,Simulate>())
         {
-            playerInput.ValueRW.movementDir = input;
+            playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
+
+            playerInput.ValueRW.sightDirection = sightDirection;
+            playerInputSync.ValueRW.sightDirection = sightDirection;
         }
     }
 }

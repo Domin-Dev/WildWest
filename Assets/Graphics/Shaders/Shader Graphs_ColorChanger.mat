@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Shader Graphs_ColorChanger
-  m_Shader: {fileID: -6465566751694194690, guid: 3bd2cf92488dc314a88fbdaa14dea5cb, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 91e3a89a42f588d45b79a1efcc38f2d2, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -32,7 +32,7 @@ Material:
   m_CustomRenderQueue: -1
   stringTagMap: {}
   disabledShaderPasses: []
-  m_LockedProperties: _SkinColor
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -56,6 +56,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _GetTexture2D_f899bd620aa542a0bc00ca30cc0498fd_Texture2D_1871122832_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 0a6c38328901d3143998582ee9608c95, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Hat:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -72,6 +76,34 @@ Material:
         m_Texture: {fileID: 2800000, guid: 2802e128b3a0cea4cb0dca733b6b8717, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_313e285a0c224a34b7f7ee7a587d7323_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_4571df314033434182a64334162595f3_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_72d57b6bc7e249d78332b7f4871c79b0_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_94a32e2b8a5c4157af81fe73652372aa_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_c18170eb946641e19c2d569e5403c325_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_cfece45d77e24138833fb244c9ac5c0b_Out_0_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_dd8953edc144483996216ba8943d7e15_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 982e3de6479d1b94d8ebb82273cd46cf, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -86,17 +118,25 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BeardIndex: 99
+    - _BeardIndex: 1
+    - _BodyIndex: 0
     - _Direction: 0
     - _EyesIndex: 2
-    - _HairIndex: 23
+    - _HairIndex: 22
     - _HairUnderHat: 0
     - _MouthIndex: 2
-    - _PaintingsIndex: 99
+    - _PaintingsIndex: -1
     m_Colors:
+    - _AccessoryColor: {r: 0, g: 0, b: 0, a: 0}
+    - _BagColor: {r: 0.7886792, g: 0.058034778, b: 0.058034778, a: 1}
+    - _BeltColor: {r: 0.27547166, g: 0.27547166, b: 0.27547166, a: 1}
     - _HairColor: {r: 0.4339623, g: 0.3138796, b: 0.08761124, a: 1}
     - _HatColor: {r: 0.4264151, g: 0.32019907, b: 0.20516196, a: 1}
-    - _MaskColor: {r: 0.6301887, g: 0.08917756, b: 0.08917756, a: 1}
-    - _SkinColor: {r: 0.83396226, g: 0.67637944, b: 0.4767746, a: 1}
+    - _MaskColor: {r: 0.7433963, g: 0.57844293, b: 0.07153434, a: 1}
+    - _OuterwearColor: {r: 0.27547166, g: 0.27547166, b: 0.27547166, a: 1}
+    - _PantsColor: {r: 0.12410327, g: 0.09803919, b: 0.47843134, a: 1}
+    - _ShirtColor: {r: 0.27547166, g: 0.27547166, b: 0.27547166, a: 1}
+    - _SkinColor: {r: 0.82641506, g: 0.7152765, b: 0.5784905, a: 1}
+    - _UnderwearColor: {r: 0.4641509, g: 0.02364539, b: 0.02364539, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

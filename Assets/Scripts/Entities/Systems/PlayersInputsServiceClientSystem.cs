@@ -1,49 +1,48 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEngine.EventSystems.EventTrigger;
 
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderFirst = true)]
+
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateAfter(typeof(CollisionSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct PlayersInputsServiceClientSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkId>();
-        state.RequireForUpdate<Player>();
+
+        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
+        .WithAll<PlayerInputSync, Character, Simulate>();
+        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+        entityQueryBuilder.Dispose();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (playerInput, player, character, velocity,entity)
-         in SystemAPI.Query<RefRO<PlayerInputSync>,RefRO<Player>, RefRW<Character> , RefRW<Velocity2D>>().WithAll<Simulate>().WithEntityAccess())
+        foreach (var (playerInput,character,entity)
+         in SystemAPI.Query<RefRO<PlayerInputSync>, RefRW<Character>>().WithAll<Simulate>().WithEntityAccess())
         {
-            if (SystemAPI.HasComponent<GhostOwnerIsLocal>(entity)) 
-            {
-                velocity.ValueRW.Value = playerInput.ValueRO.movementDir * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
-            }
-
             bool shouldBeChanged = !(playerInput.ValueRO.movementDir.x == 0 && playerInput.ValueRO.movementDir.y == 0);
-            state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
 
-            //if (character.ValueRW.isMove)
-            //{
-            //    if (!shouldBeChanged)
-            //    {
-            //        ResetAnim(character, ref state);
-            //    }
-            //}
-            //else
-            //{
-            //    if (shouldBeChanged)
-            //    {
-            //        StartAnim(character, ref state);
-            //    }
-            //}
+            if (character.ValueRW.isMove)
+            {
+                if (!shouldBeChanged)
+                {
+                    ResetAnim(character, ref state);
+                }
+            }
+            else
+            {
+                if (shouldBeChanged)
+                {
+                    StartAnim(character, ref state);
+                }
+            }
             if (shouldBeChanged) UpdateDirectionIndex(playerInput.ValueRO.movementDir, character, ref state);
         }
     }

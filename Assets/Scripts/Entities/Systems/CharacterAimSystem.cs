@@ -4,15 +4,17 @@ using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Mathematics.Geometry;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
 
 [UpdateInGroup(typeof(PresentationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+
 partial struct CharacterAimSystem : ISystem
 {
     private static float leftSide = math.PI / 2f;
@@ -25,13 +27,13 @@ partial struct CharacterAimSystem : ISystem
     {
        
         deltaTime = SystemAPI.Time.DeltaTime;
-        float3 target = (float3)MyTools.GetMouseWorldPosition();
 
         bool hit = Input.GetMouseButtonDown(0);
         bool shoot = Input.GetMouseButton(1);
 
 
-        foreach ((RefRW<Hands> hands, RefRW<Character> character, LocalToWorld worldPos) in SystemAPI.Query<RefRW<Hands>, RefRW<Character>, LocalToWorld>())
+        foreach ((RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, LocalToWorld worldPos) 
+            in SystemAPI.Query < RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, LocalToWorld>())
         { 
             if(hands.ValueRO.main == Entity.Null) continue;
             if (hands.ValueRO.actionStatus != 0)
@@ -73,12 +75,12 @@ partial struct CharacterAimSystem : ISystem
             LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInHand);
 
             float3 currentPosition = localToWorld.Position; 
-            float3 direction = target - currentPosition;
+            float2 direction = playerInput.ValueRO.sightDirection - new float2(currentPosition.x,currentPosition.y);
+
 
             if (!math.any(direction))
                     continue;
-
-            direction.z = 0; 
+ 
             direction = math.normalize(direction);
 
             float angle = math.atan2(direction.y, direction.x); 
@@ -165,11 +167,14 @@ partial struct CharacterAimSystem : ISystem
 
     public static void SetDirection(Entity entity,int newIndex, ref SystemState state)
     {
-        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(entity);
-        MaterialPropertyBlock materialProperty = new MaterialPropertyBlock();
-        spriteRenderer.GetPropertyBlock(materialProperty);
-        materialProperty.SetInt("_Direction", newIndex);
-        spriteRenderer.SetPropertyBlock(materialProperty);
+        if (state.EntityManager.HasComponent<SpriteRenderer>(entity))
+        {
+            SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(entity);
+            MaterialPropertyBlock materialProperty = new MaterialPropertyBlock();
+            spriteRenderer.GetPropertyBlock(materialProperty);
+            materialProperty.SetInt("_Direction", newIndex);
+            spriteRenderer.SetPropertyBlock(materialProperty);
+        }
     }
 
 

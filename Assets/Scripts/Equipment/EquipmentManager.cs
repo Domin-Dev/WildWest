@@ -448,7 +448,7 @@ public class EquipmentManager : MonoBehaviour
                     if (slotPosition.gridIndex == 2)
                     {
                         Garment garment = (Garment)ItemsAsset.instance.GetItem(itemStats.itemID);
-                        player.RemoveClothes((int)garment.type);
+                   //     player.RemoveClothes((int)garment.type);
                     }
                 }
                 return true;
@@ -1055,12 +1055,12 @@ public class EquipmentManager : MonoBehaviour
         if (position.gridIndex == 2)
         {
             Garment garment = (Garment)ItemsAsset.instance.GetItem(itemStats.itemID);
-            player.SetClothes((int)garment.type, garment.ID);
+        //    player.SetClothes((int)garment.type, garment.ID);
         }
         else if (selectedSlotInEQ.gridIndex == 2)
         {
             Garment garment = (Garment)ItemsAsset.instance.GetItem(itemStats.itemID);
-            player.RemoveClothes((int)garment.type);
+         //   player.RemoveClothes((int)garment.type);
         }
 
         return GetGrid(position.gridIndex)[position.slotIndex] = itemStats;
@@ -1296,10 +1296,10 @@ public class EquipmentManager : MonoBehaviour
         if(selectedSlotInEQ.gridIndex == 2)
         {
             Garment garment = (Garment)ItemsAsset.instance.GetItem(selectedItemStats.itemID);
-            player.RemoveClothes((int)garment.type);
+       //     player.RemoveClothes((int)garment.type);
         }
 
-        GridVisualization.instance.CreateWorldItem(selectedItemStats, (Vector2)player.transform.position , player.GetThrowDir(UnityEngine.Random.Range(0.25f,0.5f)));  
+       // GridVisualization.instance.CreateWorldItem(selectedItemStats, (Vector2)player.transform.position , player.GetThrowDir(UnityEngine.Random.Range(0.25f,0.5f)));  
         if(selectedSlotInEQ.gridIndex == 0 && slotInHand == selectedSlotInEQ.slotIndex)
         {
             UpdateItemInHand(null, new ItemStatsArgs(GetItemStats(selectedSlotInEQ)));

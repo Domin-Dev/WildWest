@@ -33,15 +33,16 @@ public class CharacterAuthoring : MonoBehaviour
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct PlayerInput : IInputComponentData
 {
- /*   [GhostField(Quantization = 0)]*/ public float2 movementDir;
+    [GhostField(Quantization = 0)] public float2 movementDirection;
+    [GhostField(Quantization = 0)] public float2 sightDirection;
 }
 
 
-
-[GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients,OwnerSendType = SendToOwnerType.SendToNonOwner)]
 public struct PlayerInputSync : IComponentData
 {
     [GhostField] public float2 movementDir;
+    [GhostField] public float2 sightDirection;
 }
 
 

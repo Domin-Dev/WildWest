@@ -12,13 +12,9 @@ public class CharacterEditorSettings : ScriptableObject
     public static readonly Sprite emptySprite = Sprite.Create(null, new Rect(), Vector2.zero);
 
     [SerializeField] public Texture2D hairstylesTexture;
-    [SerializeField] public States[] hairstyles;
+    [SerializeField] public Texture2D beardTexture;
+    [SerializeField] public Texture2D faceDetailsTexture;
     [Space]
-    [SerializeField] public Sprite[] bodies;
-    [SerializeField] public Sprite[] heads;
-    [SerializeField] public Sprite[] eyes;
-    [SerializeField] public Sprite[] mouth;
-
     [SerializeField] public Sprite[] underwear;
 }
 
