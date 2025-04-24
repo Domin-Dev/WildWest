@@ -19,6 +19,7 @@ public class HeroEditor: MonoBehaviour
     [SerializeField] private Switch hairSwitch; 
     [SerializeField] private Switch beardSwitch;
     [SerializeField] private Switch faceDetailsSwitch;
+    [SerializeField] private BaseSwitch DirectionSwitch;
     [Space]
 
     [SerializeField] private Button saveButton;
@@ -33,11 +34,12 @@ public class HeroEditor: MonoBehaviour
     [SerializeField] private SpriteRenderer hand1;
     [SerializeField] private SpriteRenderer hand2;
 
-
+    private static int[] dirs = {0,2,1,3};
 
     private Image skinColorSelected;
     private Image hairColorSelected;
     private Image underwearColorSelected;
+
 
     public static HeroEditor instance { private set; get; }
 
@@ -63,6 +65,7 @@ public class HeroEditor: MonoBehaviour
         hairSwitch.SetUpSwitch(0, characterEditorSettings.hairstylesTexture.height / 21, "Hairstyle");
         beardSwitch.SetUpSwitch(0, characterEditorSettings.beardTexture.height / 21, "Beard");
         faceDetailsSwitch.SetUpSwitch(0, characterEditorSettings.faceDetailsTexture.height / 21, "Facial details");
+        DirectionSwitch.SetUpSwitch(0,4);
         LoadColors();
     }
     private void LoadColors()
@@ -98,7 +101,7 @@ public class HeroEditor: MonoBehaviour
             transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 Image selectedColor = transform.GetComponent<Image>();
-             //   ChangeUnderwearColor(player, selectedColor.color);
+                ChangeUnderwearColor(selectedColor.color);
                 SelectNew(selectedColor, ref underwearColorSelected);
             });
         }
@@ -107,24 +110,8 @@ public class HeroEditor: MonoBehaviour
         hairSwitch.OnChangedValue += ChangeHair;
         beardSwitch.OnChangedValue += ChangeBeard;
         faceDetailsSwitch.OnChangedValue += ChangeFaceDetails;
+        DirectionSwitch.OnChangedValue += ChangeDirection;
     }
-
-    
-    private void ChangeHair(object sender, SwitchArgs e)
-    {
-        ChangeHair(e.newValue);
-    }
-
-    private void ChangeBeard(object sender, SwitchArgs e)
-    {
-        ChangeBeard(e.newValue);
-    }
-
-    private void ChangeFaceDetails(object sender, SwitchArgs e)
-    {
-        ChangeFaceDetails(e.newValue);
-    }
-
     private void SelectNew(Image newSelected,ref Image currentSelected)
     {
         if(currentSelected != null)
@@ -135,70 +122,67 @@ public class HeroEditor: MonoBehaviour
         currentSelected = border;
         border.sprite = selected;
     }
-
-
-
-    public void SetCharacterSpriteProperties(int hair,int hairColor,int underwearColor,int skinColor)
-    {
-     //   ChangeHair(hair);
-     //   ChangeHairColor(characterEditorSettings.hairColors[hairColor]);
-     //   ChangeUnderwearColor(characterEditorSettings.clothesColors[underwearColor]);
-     //   ChangeSkinColor(characterEditorSettings.skinColors[skinColor]);
-    }
-    public void ChangeHair(int value)
-    {
-        Debug.Log(value);
-        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetInt("_HairIndex", value);
-        head.SetPropertyBlock(materialPropertyBlock);
-    }
-    public void ChangeBeard(int value)
+   
+    public void SetCharacterSpriteProperties()
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetInt("_BeardIndex", value);
-        head.SetPropertyBlock(materialPropertyBlock);
-    }
-
-    public void ChangeFaceDetails(int value)
-    {
-        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetInt("_PaintingsIndex", value);
-        head.SetPropertyBlock(materialPropertyBlock);
-    }
-
-    public void ChangeUnderwearColor(Color color)
-    {
-        //ChangeColor(characterSpriteController.underwear, color);
-    }
-    public void ChangeSkinColor(Color color)
-    {
-        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetColor("_SkinColor", color);
         head.SetPropertyBlock(materialPropertyBlock);
         body.SetPropertyBlock(materialPropertyBlock);
-
-        materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetColor("_Color", color);
         hand1.SetPropertyBlock(materialPropertyBlock);
         hand2.SetPropertyBlock(materialPropertyBlock);
     }
-
-    private void ChangeHairColor(Color color)
+  
+    public void ChangeHair(object sender,int value)
     {
-        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetColor("_HairColor", color);
-        head.SetPropertyBlock(materialPropertyBlock);
+        SetMaterialInt(head, "_HairIndex", value);
     }
-    private void ChangeColor(SpriteRenderer spriteRenderer,Color color,float darkValue = 1f)
+    public void ChangeBeard(object sender, int value)
+    {
+        SetMaterialInt(head, "_BeardIndex", value);
+    }
+    public void ChangeFaceDetails(object sender, int value)
+    {
+        SetMaterialInt(head,"_PaintingsIndex", value);
+    }
+    public void ChangeDirection(object sender, int value)
+    {
+        SetMaterialInt(head, "_Direction", dirs[value]);
+        SetMaterialInt(body, "_Direction", dirs[value]);
+    }
+
+    private void SetMaterialInt(SpriteRenderer spriteRenderer,string name, int newValue)
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
-        materialPropertyBlock.SetColor("_Color", color);
-        materialPropertyBlock.SetTexture("_MainTex", spriteRenderer.sprite.texture);
-        materialPropertyBlock.SetFloat("_DarkValue", darkValue);
+        spriteRenderer.GetPropertyBlock(materialPropertyBlock);
+        materialPropertyBlock.SetInt(name, newValue);
         spriteRenderer.SetPropertyBlock(materialPropertyBlock);
     }
+    private void SetMaterialColor(SpriteRenderer spriteRenderer, string name, Color value)
+    {
+        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
+        spriteRenderer.GetPropertyBlock(materialPropertyBlock);
+        materialPropertyBlock.SetColor(name, value);
+        spriteRenderer.SetPropertyBlock(materialPropertyBlock);
+    }
+    public void ChangeUnderwearColor(Color color)
+    {
+        SetMaterialColor(body, "_UnderwearColor", color);
+    }
+    public void ChangeSkinColor(Color color)
+    {
+        SetMaterialColor(head, "_SkinColor", color);
+        SetMaterialColor(body, "_SkinColor", color);
+        SetMaterialColor(hand1, "_Color", color);
+        SetMaterialColor(hand2, "_Color", color);
+    }
+    private void ChangeHairColor(Color color)
+    {
+        SetMaterialColor(head, "_HairColor",color);
+    }
 
-
-
+    private void SetPlayerLook()
+    {
+        
+    }
 }
 

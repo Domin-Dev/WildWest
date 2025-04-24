@@ -145,17 +145,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BeardIndex: 1
+    - _BeardIndex: 0
     - _Boolean: 0
     - _Direction: 0
     - _Eyes: 0
-    - _EyesIndex: 1
+    - _EyesIndex: 2
     - _Front: 0
-    - _HairIndex: 23
+    - _HairIndex: 0
     - _HairUnderHat: 0
     - _Index: 0
     - _MouthIndex: 2
-    - _PaintingsIndex: -1
+    - _PaintingsIndex: 0
     - _Side: 1
     m_Colors:
     - _HairColor: {r: 0.4188679, g: 0.25924072, b: 0.16991809, a: 1}

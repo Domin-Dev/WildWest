@@ -14,19 +14,17 @@ public class SwitchArgs : EventArgs
     }
 }
 
-public class Switch : MonoBehaviour
+public class Switch : BaseSwitch
 {
-    [SerializeField] private Button left;
-    [SerializeField] private Button rigth;
     [SerializeField] private TextMeshProUGUI text;
-    [Space]
-    [SerializeField] private int value = 0;
-    [Space]
-    [SerializeField] private int minValue;
-    [SerializeField] private int maxValue;
     [SerializeField] private string nameSwitch;
 
-    public event EventHandler<SwitchArgs> OnChangedValue;
+    public void SetUpSwitch(int minValue, int maxValue,string name)
+    {
+        nameSwitch = name;
+        ChangSwitchText(null, value);
+        base.SetUpSwitch(minValue, maxValue);
+    }
 
     private void Start()
     {
@@ -43,41 +41,8 @@ public class Switch : MonoBehaviour
         OnChangedValue += ChangSwitchText;
     }
 
-    private void ChangSwitchText(object sender, SwitchArgs e)
+    private void ChangSwitchText(object sender, int e)
     {
-        text.text = nameSwitch + " " + e.newValue.ToString();
-    }
-
-    public void SetUpSwitch(int minValue,int maxValue,string nameSwitch)
-    {
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-        this.nameSwitch = nameSwitch;
-    }
-
-    private void DecreaseValue()
-    {
-        if(value == minValue)
-        {
-            value = maxValue - 1;
-        }
-        else
-        {
-            value--;
-        }
-        OnChangedValue?.Invoke(this, new SwitchArgs(value));
-    }
-
-    private void IncreaseValue()
-    {
-        if (value + 1 >= maxValue)
-        {
-            value = minValue;
-        }
-        else
-        {
-            value++;
-        }
-        OnChangedValue?.Invoke(this, new SwitchArgs(value));
+        text.text = nameSwitch + " " + e.ToString();
     }
 }
