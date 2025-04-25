@@ -44,6 +44,10 @@ public partial struct CollisionSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         entityMap = new NativeHashMap<int2, NativeList<Entity>>(100, Allocator.Persistent);
+        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<NetworkId,NetworkStreamInGame>();
+        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+        entityQueryBuilder.Dispose();
     }
     public void OnDestroy(ref SystemState state)
     {

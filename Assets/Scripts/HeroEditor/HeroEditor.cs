@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class HeroEditor: MonoBehaviour
@@ -54,22 +58,16 @@ public class HeroEditor: MonoBehaviour
             Destroy(gameObject);
         }
         characterEditorSettings = Resources.Load<CharacterEditorSettings>("CharacterParts/CharacterEditorSettings");
-    }
-    private void Start()
-    {
-        saveButton.onClick.AddListener(() =>
-        {
-            UIEditor.gameObject.SetActive(false);
-        });
-
         hairSwitch.SetUpSwitch(0, characterEditorSettings.hairstylesTexture.height / 21, "Hairstyle");
         beardSwitch.SetUpSwitch(0, characterEditorSettings.beardTexture.height / 21, "Beard");
         faceDetailsSwitch.SetUpSwitch(0, characterEditorSettings.faceDetailsTexture.height / 21, "Facial details");
-        DirectionSwitch.SetUpSwitch(0,4);
+        DirectionSwitch.SetUpSwitch(0, 4);
         LoadColors();
     }
+
     private void LoadColors()
     {
+        SetCharacterSpriteProperties();
         for (int i = 0; i < characterEditorSettings.skinColors.Length; i++)
         {
             Transform transform = Instantiate(colorToSelectPrefab, skinColors).transform;
@@ -105,12 +103,11 @@ public class HeroEditor: MonoBehaviour
                 SelectNew(selectedColor, ref underwearColorSelected);
             });
         }
-
-   //     SetCharacterSpriteProperties(player, 1, 1, 1, 1);
         hairSwitch.OnChangedValue += ChangeHair;
         beardSwitch.OnChangedValue += ChangeBeard;
         faceDetailsSwitch.OnChangedValue += ChangeFaceDetails;
         DirectionSwitch.OnChangedValue += ChangeDirection;
+        saveButton.onClick.AddListener(SetPlayerLook);
     }
     private void SelectNew(Image newSelected,ref Image currentSelected)
     {
@@ -122,7 +119,6 @@ public class HeroEditor: MonoBehaviour
         currentSelected = border;
         border.sprite = selected;
     }
-   
     public void SetCharacterSpriteProperties()
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
@@ -130,8 +126,15 @@ public class HeroEditor: MonoBehaviour
         body.SetPropertyBlock(materialPropertyBlock);
         hand1.SetPropertyBlock(materialPropertyBlock);
         hand2.SetPropertyBlock(materialPropertyBlock);
-    }
-  
+
+        ChangeHair(null, 0);
+        ChangeBeard(null, 0);
+        ChangeFaceDetails(null, 0);
+        ChangeSkinColor(characterEditorSettings.skinColors[0]);
+        ChangeHairColor(characterEditorSettings.hairColors[0]);
+        ChangeUnderwearColor(characterEditorSettings.clothesColors[0]);
+
+    } 
     public void ChangeHair(object sender,int value)
     {
         SetMaterialInt(head, "_HairIndex", value);
@@ -149,20 +152,32 @@ public class HeroEditor: MonoBehaviour
         SetMaterialInt(head, "_Direction", dirs[value]);
         SetMaterialInt(body, "_Direction", dirs[value]);
     }
-
-    private void SetMaterialInt(SpriteRenderer spriteRenderer,string name, int newValue)
+    public static void SetMaterialInt(SpriteRenderer spriteRenderer,string name, int newValue)
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
         spriteRenderer.GetPropertyBlock(materialPropertyBlock);
         materialPropertyBlock.SetInt(name, newValue);
         spriteRenderer.SetPropertyBlock(materialPropertyBlock);
     }
-    private void SetMaterialColor(SpriteRenderer spriteRenderer, string name, Color value)
+    public static void SetMaterialColor(SpriteRenderer spriteRenderer, string name, Color value)
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
         spriteRenderer.GetPropertyBlock(materialPropertyBlock);
         materialPropertyBlock.SetColor(name, value);
         spriteRenderer.SetPropertyBlock(materialPropertyBlock);
+    }
+    private int GetMaterialInt(SpriteRenderer spriteRenderer, string name)
+    {
+        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
+        spriteRenderer.GetPropertyBlock(materialPropertyBlock);
+        return materialPropertyBlock.GetInt(name);
+    }
+    private float3 GetMaterialFloat3(SpriteRenderer spriteRenderer, string name)
+    {
+        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
+        spriteRenderer.GetPropertyBlock(materialPropertyBlock);
+        Color color = materialPropertyBlock.GetColor(name);
+        return new float3(color.r, color.g, color.b);
     }
     public void ChangeUnderwearColor(Color color)
     {
@@ -182,7 +197,18 @@ public class HeroEditor: MonoBehaviour
 
     private void SetPlayerLook()
     {
-        
+        GameInfo.LoadScene(1);
+        LocalPlayerLook playerLook = new LocalPlayerLook();
+        playerLook.characterLook.skinColor = GetMaterialFloat3(head, "_SkinColor");
+        playerLook.characterLook.underwearColor = GetMaterialFloat3(body, "_UnderwearColor");
+        playerLook.characterLook.hairColor = GetMaterialFloat3(head, "_HairColor");
+
+        playerLook.characterLook.beardndex = GetMaterialInt(head, "_BeardIndex");
+        playerLook.characterLook.faceDetailsIndex = GetMaterialInt(head, "_PaintingsIndex");
+        playerLook.characterLook.hairIndex = GetMaterialInt(head, "_HairIndex");
+
+        Entity e = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(e, playerLook);
     }
 }
 

@@ -22,6 +22,8 @@ partial struct VariableSynchronizationServerSystem : ISystem
         {
             playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
             playerInputSync.ValueRW.sightDirection = playerInput.ValueRO.sightDirection;
+            playerInputSync.ValueRW.leftButton = playerInput.ValueRO.leftButton;
+            playerInputSync.ValueRW.rightButton = playerInput.ValueRO.rightButton;
         }
 
         entityCommandBuffer.Playback(state.EntityManager);

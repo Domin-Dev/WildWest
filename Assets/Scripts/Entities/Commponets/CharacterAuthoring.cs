@@ -24,6 +24,7 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new NewPlayerTag());
             AddComponent(entity, new PlayerInput());
             AddComponent(entity, new PlayerInputSync());
+            AddComponent(entity, new PlayerLook());
 
         }
     }
@@ -35,6 +36,8 @@ public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
     [GhostField(Quantization = 0)] public float2 sightDirection;
+    public InputEvent rightButton;
+    public InputEvent leftButton;
 }
 
 
@@ -43,6 +46,14 @@ public struct PlayerInputSync : IComponentData
 {
     [GhostField] public float2 movementDir;
     [GhostField] public float2 sightDirection;
+    [GhostField] public InputEvent rightButton;
+    [GhostField] public InputEvent leftButton;
+}
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
+public struct PlayerLook : IComponentData
+{
+    [GhostField] public CharacterLook look;
 }
 
 

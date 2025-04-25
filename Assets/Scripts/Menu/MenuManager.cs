@@ -125,34 +125,32 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonConnect()
     {
-        GameInfo.Instance.multiplayerMode = true;
+        GameInfo.Instance.isConnecting = true;
         GameInfo.Instance.nextScene = 2;
-
-        SceneManager.LoadScene("Loading");
-
-        ////SceneManager.LoadScene(1);
-        //switch (connectionMode.value)
-        //{
-        //    case 0:
-        //        Join();
-        //        break;
-        //    case 1:
-        //        RunServer();
-        //        break;
-        //    case 2:
-        //        RunServer();
-        //        //StartServer();
-        //        break;
-        //    default:
-        //        Debug.LogError("Error: Unknown connection mode", gameObject);
-        //        break;
-        //}
+        SceneManager.LoadScene(3);
+       
+        switch (connectionMode.value)
+        {
+            case 0:
+                Join();
+                break;
+            case 1:
+                RunServer();
+                break;
+            case 2:
+                //RunServer();
+                //Join();
+                break;
+            default:
+                Debug.LogError("Error: Unknown connection mode", gameObject);
+                break;
+        }
     }
     private void OnButtonCreateGame()
     {
-        GameInfo.Instance.multiplayerMode = false;
-        GameInfo.Instance.nextScene = 1;
-        SceneManager.LoadScene("Loading");
+        GameInfo.Instance.isConnecting = false;
+        GameInfo.Instance.nextScene = 2;
+        SceneManager.LoadScene(3);
 
 
     }
@@ -160,7 +158,6 @@ public class MenuManager : MonoBehaviour
     {
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
-            Debug.Log(i + " " + World.All[i] + " " + World.All[i].Flags);
             World world = World.All[i];
             if (world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
             {
@@ -170,19 +167,13 @@ public class MenuManager : MonoBehaviour
 
         World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
 
-
-
         if (World.DefaultGameObjectInjectionWorld == null)
         {
             World.DefaultGameObjectInjectionWorld = clientWorld;
         }
 
-        SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
-
         ushort port = ushort.Parse(portInput.text);
         string ip = adressIPInput.text;
-
-
 
         NetworkEndpoint networkEndpoint = NetworkEndpoint.Parse(ip, port);
         RefRW<NetworkStreamDriver> networkStreamDriver =
@@ -190,16 +181,14 @@ public class MenuManager : MonoBehaviour
         networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
 
-
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
+        Debug.Log("Próba po³¹czenia");
+        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
+
     private void RunServer()
     {
-        World serverWorld = ClientServerBootstrap.CreateServerWorld("Server wild world");
-
-        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
-        Debug.Log(serverWorld.Flags + " " + serverWorld);
         foreach (World world in World.All)
         {
             if (world.Flags == WorldFlags.GameClient)
@@ -209,12 +198,18 @@ public class MenuManager : MonoBehaviour
             }
         }
 
+        World serverWorld = ClientServerBootstrap.CreateServerWorld("Server wild world");
+
+        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
+        
+
+
         if (World.DefaultGameObjectInjectionWorld == null)
         {
             World.DefaultGameObjectInjectionWorld = serverWorld;
         }
 
-        SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
+     //   SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
 
         ushort port = ushort.Parse(portInput.text);
 
@@ -232,6 +227,8 @@ public class MenuManager : MonoBehaviour
 
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
+        Debug.Log("Próba po³¹czenia");
+        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
    
 }

@@ -12,7 +12,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-[UpdateInGroup(typeof(PresentationSystemGroup))]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 
 partial struct CharacterAimSystem : ISystem
@@ -27,34 +27,33 @@ partial struct CharacterAimSystem : ISystem
     {
        
         deltaTime = SystemAPI.Time.DeltaTime;
-
-        bool hit = Input.GetMouseButtonDown(0);
-        bool shoot = Input.GetMouseButton(1);
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
 
         foreach ((RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, LocalToWorld worldPos) 
-            in SystemAPI.Query < RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, LocalToWorld>())
-        { 
-            if(hands.ValueRO.main == Entity.Null) continue;
+        in SystemAPI.Query < RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, LocalToWorld>().WithNone<NewPlayerTag>().WithAll<Simulate>())
+        {
+            if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
+
             if (hands.ValueRO.actionStatus != 0)
             {
                 ActionUpdate(hands, ref state);
                 continue;
             }
-            if (hit)
-            {
 
+            
+            if (playerInput.ValueRO.leftButton.IsSet)
+            {
                 LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
                 quaternion addedRotation = quaternion.Euler(0, 0, math.radians(-110));
                 hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
                 hands.ValueRW.lastPosition = transform.Position;
-                hands.ValueRW.targetPosition = transform.Position + new float3(0.06f, 0,0);
+                hands.ValueRW.targetPosition = transform.Position + new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 1;
             }
-            if (shoot)
+            if (playerInput.ValueRO.rightButton.IsSet)
             {
-                
                 LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
                 LocalToWorld worldPosMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.mainhand);
 
@@ -63,12 +62,11 @@ partial struct CharacterAimSystem : ISystem
                 hands.ValueRW.lastPosition = transform.Position;
                 hands.ValueRW.targetPosition = transform.Position - new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 2;
-                EntitySpawner.instance.SpawnParticle(0, new float3(0,0.1f,0) + worldPosMainHand.Position);
+                EntitySpawner.instance.SpawnParticle(0, new float3(0, 0.1f, 0) + worldPosMainHand.Position);
             }
+            
 
-
-
-
+       
             LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.main);
             LocalTransform localSide = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
             LocalToWorld localToWorld = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);

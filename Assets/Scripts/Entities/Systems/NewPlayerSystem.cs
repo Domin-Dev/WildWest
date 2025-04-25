@@ -1,11 +1,11 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
-
-
+using UnityEngine.XR;
 
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 partial struct NewPlayerSystem : ISystem
@@ -20,7 +20,7 @@ partial struct NewPlayerSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach ((RefRO<Player> player, Entity entity) in SystemAPI.Query<RefRO<Player>>().WithAll<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRO<Player> player, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>, RefRW<PlayerLook>>().WithAll<NewPlayerTag>().WithEntityAccess())
         {
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
@@ -49,6 +49,7 @@ partial struct NewPlayerSystem : ISystem
             else
             {
                 SetName(ref children, ref state, player.ValueRO.playerName.ToString());
+                SetPlayerLook(ref playerLook.ValueRW,ref hands, ref character, ref state);
             }
 
             entityCommandBuffer.SetComponent(entity, hands);
@@ -59,6 +60,34 @@ partial struct NewPlayerSystem : ISystem
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
+    }
+
+    private void SetPlayerLook(ref PlayerLook playerLook,ref Hands hands, ref Character character, ref SystemState state)
+    {
+        state.EntityManager.GetComponentObject<SpriteRenderer>(character.body);
+        SetMaterialColor(ref state, character.head, "_SkinColor", playerLook.look.skinColor);
+        SetMaterialColor(ref state, character.body, "_SkinColor", playerLook.look.skinColor);
+        SetMaterialColor(ref state, hands.sidehand, "_Color", playerLook.look.skinColor);
+        SetMaterialColor(ref state, hands.mainhand, "_Color", playerLook.look.skinColor);
+
+        SetMaterialColor(ref state, character.body, "_UnderwearColor", playerLook.look.underwearColor);
+
+        SetMaterialColor(ref state, character.head, "_HairColor", playerLook.look.hairColor);
+
+        SetMaterialIndex(ref state, character.head, "_HairIndex", playerLook.look.hairIndex);
+        SetMaterialIndex(ref state, character.head, "_BeardIndex", playerLook.look.beardndex);
+        SetMaterialIndex(ref state, character.head, "_PaintingsIndex", playerLook.look.faceDetailsIndex);
+    }
+
+    private void SetMaterialColor(ref SystemState state, Entity entity ,string name, float3 color)
+    {
+        var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(entity);
+        HeroEditor.SetMaterialColor(sprite,name,new Color(color.x,color.y,color.z));
+    }
+    private void SetMaterialIndex(ref SystemState state, Entity entity, string name, int index)
+    {
+        var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(entity);
+        HeroEditor.SetMaterialInt(sprite, name, index);
     }
 
     private void SetName(ref DynamicBuffer<Child> children, ref SystemState state, string name)
@@ -73,7 +102,6 @@ partial struct NewPlayerSystem : ISystem
             }
         }
     }
-
     private void SetUpPlayer(ref DynamicBuffer<Child> children,ref SystemState state, ref Hands hands, ref Character character)
     {
         foreach (var child in children)
@@ -126,7 +154,6 @@ partial struct NewPlayerSystem : ISystem
             }
         }
     }
-
     private Entity GetChild(Entity parent, int depth, ref SystemState state)
     {
         for (int i = 0; i < depth; i++)

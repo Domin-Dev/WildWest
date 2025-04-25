@@ -25,6 +25,9 @@ partial struct PlayerInputSystem : ISystem
         if (Input.GetKey(KeyCode.A)) input.x -= 1;
         if (Input.GetKey(KeyCode.D)) input.x += 1;
 
+        bool left = Input.GetMouseButtonDown(0);
+        bool right = Input.GetMouseButtonDown(1);
+
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
@@ -40,6 +43,29 @@ partial struct PlayerInputSystem : ISystem
 
             playerInput.ValueRW.sightDirection = sightDirection;
             playerInputSync.ValueRW.sightDirection = sightDirection;
+
+            if (left)
+            {
+                playerInput.ValueRW.leftButton.Set();
+                playerInputSync.ValueRW.leftButton.Set();
+            }
+            else
+            {
+                playerInput.ValueRW.leftButton = default;
+                playerInputSync.ValueRW.leftButton = default;
+            }
+
+            if (right)
+            {
+                playerInput.ValueRW.rightButton.Set();
+                playerInputSync.ValueRW.rightButton.Set();
+            }
+            else
+            {
+                playerInput.ValueRW.rightButton = default;
+                playerInputSync.ValueRW.rightButton = default;
+            }
+
         }
     }
 }

@@ -18,7 +18,10 @@ partial struct CharacterAnimationSystem : ISystem
     private const float speedRotationHead = 4f;
     private const float speedHead = 2f;
 
-
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<Character>();
+    }
     public void OnUpdate(ref SystemState state)
     {
         float time = (float)SystemAPI.Time.ElapsedTime;
@@ -33,7 +36,6 @@ partial struct CharacterAnimationSystem : ISystem
             LocalTransform bodyTransform = state.EntityManager.GetComponentData<LocalTransform>(character.ValueRO.body);
             LocalTransform headTransform = state.EntityManager.GetComponentData<LocalTransform>(character.ValueRO.headParent);
 
-            Debug.Log(SystemAPI.Time.ElapsedTime + " " + character.ValueRO.startAnim);
             float localTime = time - character.ValueRO.startAnim;
 
             float angle = math.sin(localTime * speedRotationBody) * math.radians(8);
@@ -49,7 +51,6 @@ partial struct CharacterAnimationSystem : ISystem
             state.EntityManager.SetComponentData(character.ValueRO.headParent,headTransform);
         }
     }
-
 }
 
 

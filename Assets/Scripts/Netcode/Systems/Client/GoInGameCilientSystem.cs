@@ -5,11 +5,12 @@ using Unity.NetCode;
 using Unity.Collections;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-partial struct TestCilientSystem : ISystem
+partial struct GoInGameCilientSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<LocalPlayerLook>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
@@ -26,8 +27,12 @@ partial struct TestCilientSystem : ISystem
 
             Entity rpcEntity = entityCommandBuffer.CreateEntity();
             PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
+            LocalPlayerLook look = SystemAPI.GetSingleton<LocalPlayerLook>();
 
-            entityCommandBuffer.AddComponent(rpcEntity,new GoInGameRequestRPC() { playerName = playerName.name });
+            entityCommandBuffer.AddComponent(rpcEntity,new GoInGameRequestRPC() {
+                playerName = playerName.name, 
+                characterLook = look.characterLook
+            });
             entityCommandBuffer.AddComponent<SendRpcCommandRequest>(rpcEntity);
         }
         entityCommandBuffer.Playback(state.EntityManager);
