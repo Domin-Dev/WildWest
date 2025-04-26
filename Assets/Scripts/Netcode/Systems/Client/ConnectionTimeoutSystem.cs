@@ -64,7 +64,6 @@ public partial class ConnectionTimeoutSystem : SystemBase
 
         }
     }
-
     private void Connected()
     {
         Debug.Log("? Po³¹czenie nawi¹zane!");

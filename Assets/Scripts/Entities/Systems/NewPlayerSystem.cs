@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.XR;
 
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
@@ -13,6 +14,7 @@ partial struct NewPlayerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NewPlayerTag>();
+        state.RequireForUpdate<Player>();
     }
 
 
@@ -24,9 +26,13 @@ partial struct NewPlayerSystem : ISystem
         {
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
+            Debug.Log("new player setinng");
             Hands hands = new Hands() { rotated = true };
             Character character = new Character() { isMove = false };
             var children = SystemAPI.GetBuffer<Child>(entity);
+
+
+            Debug.Log(children.Length);
 
             SetUpPlayer(ref children, ref state, ref hands, ref character);
 
@@ -64,7 +70,23 @@ partial struct NewPlayerSystem : ISystem
 
     private void SetPlayerLook(ref PlayerLook playerLook,ref Hands hands, ref Character character, ref SystemState state)
     {
-        state.EntityManager.GetComponentObject<SpriteRenderer>(character.body);
+
+        var mpb = new MaterialPropertyBlock();
+
+        Debug.Log("settings");
+        Debug.Log(character.head);
+        Debug.Log(character.body);
+        Debug.Log(hands.mainhand);
+        Debug.Log(hands.sidehand);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(character.head).SetPropertyBlock(mpb);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(character.body).SetPropertyBlock(mpb);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.mainhand).SetPropertyBlock(mpb);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.sidehand).SetPropertyBlock(mpb);
+
+
+
+        Debug.Log("colors");
+
         SetMaterialColor(ref state, character.head, "_SkinColor", playerLook.look.skinColor);
         SetMaterialColor(ref state, character.body, "_SkinColor", playerLook.look.skinColor);
         SetMaterialColor(ref state, hands.sidehand, "_Color", playerLook.look.skinColor);
@@ -92,8 +114,10 @@ partial struct NewPlayerSystem : ISystem
 
     private void SetName(ref DynamicBuffer<Child> children, ref SystemState state, string name)
     {
+        Debug.Log(children.Length);
         foreach (var item in children)
         {
+            Debug.Log(item.Value);
             if (state.EntityManager.HasComponent(item.Value, typeof(TextMesh)))
             {
                 var textMesh = state.EntityManager.GetComponentObject<TextMesh>(item.Value);
@@ -109,36 +133,11 @@ partial struct NewPlayerSystem : ISystem
             if (SystemAPI.HasComponent<Head>(child.Value))
             {
                 var spr = SystemAPI.GetBuffer<Child>(child.Value)[0];
-                var spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(spr.Value);
-                var mpb = new MaterialPropertyBlock();
-
-                spriteRenderer.GetPropertyBlock(mpb);
-                mpb.SetInt("_HairIndex", UnityEngine.Random.Range(14, 31));
-                mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_HairColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                // mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                spriteRenderer.SetPropertyBlock(mpb);
-
                 character.headParent = child.Value;
                 character.head = spr.Value;
             }
             else if (SystemAPI.HasComponent<Body>(child.Value))
             {
-                var spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(child.Value);
-                var mpb = new MaterialPropertyBlock();
-                spriteRenderer.GetPropertyBlock(mpb);
-                mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_OuterwearColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_UnderwearColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_PantsColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_ShirtColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_BeltColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_AccessoryColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetColor("_BagColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                mpb.SetInt("_Direction", 0);
-                //character.directionHead
-                spriteRenderer.SetPropertyBlock(mpb);
-
                 character.body = child.Value;
             }
             else if (SystemAPI.HasComponent<MainHand>(child.Value))

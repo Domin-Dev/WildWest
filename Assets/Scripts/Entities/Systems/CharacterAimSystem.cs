@@ -20,9 +20,7 @@ partial struct CharacterAimSystem : ISystem
     private static float leftSide = math.PI / 2f;
 
     private float deltaTime;
-    public void OnCreate(ref SystemState state)
-    {
-    }
+
     public void OnUpdate(ref SystemState state)
     {
        

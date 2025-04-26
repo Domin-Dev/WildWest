@@ -64,7 +64,6 @@ public class MenuManager : MonoBehaviour
           + @"(25[0-5]|2[0-4]\d|[01]?\d?\d)$",
             RegexOptions.Compiled
         );
-
     private void PrintError(string value)
     {
         errorMessage.gameObject.SetActive(true);
@@ -82,7 +81,6 @@ public class MenuManager : MonoBehaviour
             }
         }
     }
-
     private bool CheckIP(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -125,10 +123,8 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonConnect()
     {
-        GameInfo.Instance.isConnecting = true;
-        GameInfo.Instance.nextScene = 2;
-        SceneManager.LoadScene(3);
-       
+        GameInfo.LoadScene(2, 0);
+
         switch (connectionMode.value)
         {
             case 0:
@@ -148,9 +144,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonCreateGame()
     {
-        GameInfo.Instance.isConnecting = false;
-        GameInfo.Instance.nextScene = 2;
-        SceneManager.LoadScene(3);
+        GameInfo.LoadScene(2, 1);
 
 
     }
@@ -186,7 +180,6 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Próba po³¹czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
-
     private void RunServer()
     {
         foreach (World world in World.All)
@@ -230,5 +223,4 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Próba po³¹czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
-   
 }

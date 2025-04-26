@@ -25,8 +25,8 @@ partial struct PlayerInputSystem : ISystem
         if (Input.GetKey(KeyCode.A)) input.x -= 1;
         if (Input.GetKey(KeyCode.D)) input.x += 1;
 
-        bool left = Input.GetMouseButtonDown(0);
-        bool right = Input.GetMouseButtonDown(1);
+        bool left = Input.GetMouseButton(0);
+        bool right = Input.GetMouseButton(1);
 
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);

@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
+
 public class MapGenerator : MonoBehaviour
 {
     [Header("Seed Settings")]
@@ -154,7 +155,6 @@ public class MapGenerator : MonoBehaviour
             }
         }
     }
-
     private List<int> GetNumberVariants()
     {
         List<int> list = new List<int>();
@@ -164,7 +164,6 @@ public class MapGenerator : MonoBehaviour
         }
         return list;
     }
-
     private List<float> GetChanceOfDefaultTile()
     {
         List<float> list = new List<float>();
@@ -252,7 +251,6 @@ public class MapGenerator : MonoBehaviour
         float value = Mathf.PerlinNoise(xf,yf);
         return value;
     }
-
     private float Generate(int x, int y, Vector2 offset, float scale)
     {
         float xf = ((float)x + offset.x) / chunkSize * scale;

@@ -197,7 +197,8 @@ public class HeroEditor: MonoBehaviour
 
     private void SetPlayerLook()
     {
-        GameInfo.LoadScene(1);
+        GameInfo.LoadScene(1,1);
+
         LocalPlayerLook playerLook = new LocalPlayerLook();
         playerLook.characterLook.skinColor = GetMaterialFloat3(head, "_SkinColor");
         playerLook.characterLook.underwearColor = GetMaterialFloat3(body, "_UnderwearColor");

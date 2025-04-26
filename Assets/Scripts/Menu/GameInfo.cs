@@ -4,14 +4,14 @@ using UnityEngine.SceneManagement;
 
 public class GameInfo : MonoBehaviour 
 {
-    public bool isConnecting;
+    public int loadingMode;
     public int nextScene;
     public static GameInfo Instance { get; private set; }
 
 
-    public static void LoadScene(int newScene)
+    public static void LoadScene(int newScene, int loadingMode)
     {
-        GameInfo.Instance.isConnecting = false;
+        GameInfo.Instance.loadingMode = loadingMode;
         GameInfo.Instance.nextScene = newScene;
         SceneManager.LoadScene(3);
     }

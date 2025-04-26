@@ -30,17 +30,18 @@ partial struct GoInGameServerSystem : ISystem
 
             var networkId = state.EntityManager.GetComponentData<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
-
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
             ChatManager.instance.Print("New Player!!!");
-           
-            
-            
+        
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(networkId * 0.5f, 0, 0)));
             entityCommandBuffer.SetComponent(character, new PlayerLook() { look = requestRPC.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
             entityCommandBuffer.SetComponent(character, new Player() { speed = 1f, playerName = requestRPC.playerName });
             entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
+
+            Entity confirmation = entityCommandBuffer.CreateEntity();
+            entityCommandBuffer.AddComponent<YouAreInGameRPC>(confirmation);
+            entityCommandBuffer.AddComponent(confirmation, new SendRpcCommandRequest() { TargetConnection = rpcCommandRequest.ValueRO.SourceConnection});
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
