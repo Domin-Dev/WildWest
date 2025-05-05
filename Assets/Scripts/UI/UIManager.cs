@@ -49,9 +49,9 @@ public class UIManager : MonoBehaviour
     #endregion
     #region Stats UI
     [Header("Stats UI")]
-    [SerializeField] private Button ServerButton;
-    [SerializeField] private Button HostButton;
-    [SerializeField] private Button ClientButton;
+    [SerializeField] private Bullet ServerButton;
+    [SerializeField] private Bullet HostButton;
+    [SerializeField] private Bullet ClientButton;
     [SerializeField] Sprite selected;
     [SerializeField] Sprite unSelected;
     #endregion

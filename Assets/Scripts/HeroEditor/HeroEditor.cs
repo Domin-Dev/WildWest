@@ -133,7 +133,6 @@ public class HeroEditor: MonoBehaviour
         ChangeSkinColor(characterEditorSettings.skinColors[0]);
         ChangeHairColor(characterEditorSettings.hairColors[0]);
         ChangeUnderwearColor(characterEditorSettings.clothesColors[0]);
-
     } 
     public void ChangeHair(object sender,int value)
     {
@@ -197,7 +196,7 @@ public class HeroEditor: MonoBehaviour
 
     private void SetPlayerLook()
     {
-        GameInfo.LoadScene(1,1);
+        GameInfo.LoadScene(1,1,0.5f);
 
         LocalPlayerLook playerLook = new LocalPlayerLook();
         playerLook.characterLook.skinColor = GetMaterialFloat3(head, "_SkinColor");

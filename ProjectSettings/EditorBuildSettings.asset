@@ -18,6 +18,9 @@ EditorBuildSettings:
     path: Assets/SceneDependencyCache/Scenes/Loading.unity
     guid: b2771527603dcb847bf1e92406d9b100
   - enabled: 1
+    path: Assets/SceneDependencyCache/Scenes/WorldSetup.unity
+    guid: 7efe076e6c956d643b1236d36d8d25ae
+  - enabled: 1
     path: Assets/SceneDependencyCache/Scenes/Debug UI.unity
     guid: bc9db532229d7a0498a1b24388adc0c6
   - enabled: 1

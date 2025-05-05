@@ -1,35 +1,34 @@
-
-using System;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Mathematics.Geometry;
 using Unity.NetCode;
-using Unity.Physics;
-using Unity.Rendering;
 using Unity.Transforms;
-using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 
 partial struct CharacterAimSystem : ISystem
 {
     private static float leftSide = math.PI / 2f;
 
     private float deltaTime;
-
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<EntitiesReferences>();
+    }
     public void OnUpdate(ref SystemState state)
     {
        
         deltaTime = SystemAPI.Time.DeltaTime;
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
-
-        foreach ((RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, LocalToWorld worldPos) 
-        in SystemAPI.Query < RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, LocalToWorld>().WithNone<NewPlayerTag>().WithAll<Simulate>())
+        foreach ((RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, RefRO<LocalToWorld> worldPos , RefRO<GhostOwner> ghostOwner, Entity entity) 
+        in SystemAPI.Query < RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>,RefRO<LocalToWorld>, RefRO<GhostOwner>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
 
@@ -42,8 +41,8 @@ partial struct CharacterAimSystem : ISystem
             
             if (playerInput.ValueRO.leftButton.IsSet)
             {
-                LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
+                LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
                 quaternion addedRotation = quaternion.Euler(0, 0, math.radians(-110));
                 hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
                 hands.ValueRW.lastPosition = transform.Position;
@@ -52,6 +51,22 @@ partial struct CharacterAimSystem : ISystem
             }
             if (playerInput.ValueRO.rightButton.IsSet)
             {
+                if(state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
+                { 
+                    Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
+                    entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = ghostOwner.ValueRO.NetworkId });
+                    entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(worldPos.ValueRO.Position));
+
+                    if (state.World.Flags == WorldFlags.GameServer)
+                    {
+                        entityCommandBuffer.AddComponent(bullet, new EntityToHide());
+                        Bullet bulletComp = SystemAPI.GetComponent<Bullet>(bullet);
+                        bulletComp.time = 20;
+                        entityCommandBuffer.SetComponent(bullet, bulletComp);
+                    }
+                }
+
+
                 LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
                 LocalToWorld worldPosMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.mainhand);
 
@@ -120,6 +135,9 @@ partial struct CharacterAimSystem : ISystem
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, local);
             UpdateDirectionIndex(new float2(direction.x,direction.y), character,ref state);
         }
+
+        entityCommandBuffer.Playback(state.EntityManager);
+        entityCommandBuffer.Dispose();
     }
 
     public void ActionUpdate(RefRW<Hands> hands, ref SystemState state)

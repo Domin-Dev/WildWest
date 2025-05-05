@@ -5,14 +5,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class MapGenerator : MonoBehaviour
+public class MapGenerator 
 {
     [Header("Seed Settings")]
-    [SerializeField] private int seed;
-    [SerializeField] private bool randomSeed;
+    private int seed;
     [Header("Map Size( in chunks )")]
-    [SerializeField] private int widthInChunks = 256;
-    [SerializeField] private int heightInChunks = 256;
+    private int widthInChunks = 256;
+    private int heightInChunks = 256;
     [Header("Map Generator Settings")]
     [SerializeField] private float scale = 20;
     [SerializeField] private Vector2 offset;
@@ -31,21 +30,12 @@ public class MapGenerator : MonoBehaviour
     private static readonly Vector2 gridOffset = new Vector2(0,0); 
 
     private MapGeneratorSettings mapGeneratorSettings;
-    GridVisualization gridVisualization;
-    Grid<GridTile> grid;
 
 
-    private void Awake()
+    public void StartGenerator()
     {
-        if(randomSeed)
-        {
-            seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-        }
-    }
-    private void Start()
-    {
-        gridVisualization = GridVisualization.instance;
-        mapGeneratorSettings = gridVisualization.id;
+        seed = GameInfo.instance.seed;
+        mapGeneratorSettings = GridVisualization.instance.id;
 
         var rand = new System.Random(seed);
         offset.x = rand.Next(-100000, 100000);
@@ -65,12 +55,10 @@ public class MapGenerator : MonoBehaviour
         chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21); 
         chunk.grid[x,y].variant = variant;
     }
-    
     private void SetBuildingObject(Chunk chunk, int x, int y,int index)
     {
         chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
-
     private void SetBuildingObject(Chunk chunk, int x, int y, int index, int variant)
     {
         chunk.grid[x, y].SetGridObject(new GridObject(index, variant, null, new Vector2(x, y)));
@@ -138,7 +126,7 @@ public class MapGenerator : MonoBehaviour
 
             
         }
-        gridVisualization.SetMap(map);
+
         foreach (var item in map.chunks)
         {
             for (int y = 0; y < chunkSize; y++)

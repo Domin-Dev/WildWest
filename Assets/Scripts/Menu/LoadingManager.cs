@@ -29,6 +29,7 @@ public class LoadingManager : MonoBehaviour
 
     private float target;
 
+    public Action gameIsReady;
 
     private void Awake()
     {
@@ -40,13 +41,13 @@ public class LoadingManager : MonoBehaviour
         loadingWindow.SetActive(true);
         errorWindow.SetActive(false);
 
-        switch (GameInfo.Instance.loadingMode)
+        switch (GameInfo.instance.loadingMode)
         {
             case 0:
                 Connecting();
                 break;
             case 1:
-                Loading(0);
+                Loading(GameInfo.instance.maxProgress);
                 break;
             case 2:
                 LoadGame();
@@ -66,89 +67,79 @@ public class LoadingManager : MonoBehaviour
         ConnectionTimeoutSystem.connectionSuccessful += Connected;
         ConnectionTimeoutSystem.connectionFailed += ConnectionFailed;
     }
-    private void Connected()
+    private async void Connected()
     {
         target = 0.5f;
+        await Task.Delay(200);
+
+        SetValue(0.5f);
+        await Task.Delay(50);
+
         loadingText.text = "Loading...";
         ConnectionTimeoutSystem.connectionSuccessful -= Connected;
-        Loading(0.5f);
+        Loading(1f,0.5f);
     }
     private void LoadGame()
     {
-        Load(GameInfo.Instance.nextScene,0.5f);
+        loadingText.text = "Configuring...";
         IsConnetedCilientSystem.youAreInGame += StartGame;
     }
-
-    private void StartGame()
+    public void SetStartValue(float value)
     {
-        Debug.Log("dzialKO!!!");
+        target = value;
+        SetValue(value);
+    }
+    private async void StartGame()
+    {
         target = 1f;
-        SetValue(1f);
-        Unload(3);
+        await Task.Delay(200);
+        SetValue(1f);        
+        await Task.Delay(100);
         IsConnetedCilientSystem.youAreInGame -= StartGame;
+        gameIsReady?.Invoke();
     }
     private void ConnectionFailed()
     {
         ConnectionTimeoutSystem.connectionFailed -= ConnectionFailed;
         PrintError("Connection failed");
     }
-    private void Loading(float progress)
+    private void Loading(float maxProgress, float startProgress = 0f)
     {
         loadingText.text = "Loading...";
-        LoadAsyncScene(GameInfo.Instance.nextScene, progress);
+        LoadAsyncScene(GameInfo.instance.nextScene, maxProgress, startProgress);
     }
     private void SetValue(float value)
     {
         loadingBar.rectTransform.anchorMax = new Vector2(value, 1);
     } 
-    private async void LoadAsyncScene(int index, float progress = 0f)
+    private async void LoadAsyncScene(int index, float maxProgress = 1f, float startProgress = 0f)
     {
         Debug.Log("wczytywanie");
         var operation = SceneManager.LoadSceneAsync(index,LoadSceneMode.Additive);
         operation.allowSceneActivation = false;
+        Debug.Log("target" + target);
 
         do
         {
             await Task.Delay(20);
-            target = progress +  Mathf.Clamp01(operation.progress / 0.9f) * (1 - progress);
+            Debug.Log("target" + target);
+            target = (startProgress + Mathf.Clamp01(operation.progress / 0.9f) * (1 -startProgress)) * maxProgress;
         }
         while (operation.progress < 0.9f);
 
         await Task.Delay(200);
+        SetValue(maxProgress);
+        target = maxProgress;
 
-        SetValue(1f);
+        Debug.Log(target + "start");
+        await Task.Delay(50);
         operation.allowSceneActivation = true;
         await operation;
         await SceneManager.UnloadSceneAsync(3);
     }
-    private async void Load(int index, float maxProgress = 1f)
-    {
-        Debug.Log("wczytywanie");
-        var operation = SceneManager.LoadSceneAsync(index, LoadSceneMode.Additive);
-        operation.allowSceneActivation = false;
-        do
-        {
-            await Task.Delay(20);
-            target =  Mathf.Clamp01(operation.progress / 0.9f) * maxProgress;
-        }
-        while (operation.progress < 0.9f);
-
-        await Task.Delay(200);
-
-        operation.allowSceneActivation = true;
-        await operation;
-    }
-    private async void Unload(int index)
-    {
-        var operation = SceneManager.UnloadSceneAsync(index);
-        await operation;
-    }
-
-
     private void Update()
     {
-        Debug.Log(target);
-        float lerp = math.lerp(loadingBar.rectTransform.anchorMax.x, target, Time.deltaTime * 6f);
+        float lerp = math.lerp(loadingBar.rectTransform.anchorMax.x, target, Time.deltaTime * 7f);
         SetValue(lerp);
     }
     private void PrintError(string message)

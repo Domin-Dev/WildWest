@@ -19,16 +19,19 @@ public partial class IsConnetedCilientSystem : SystemBase
     protected override void OnUpdate()
     {
         float deltaTime = SystemAPI.Time.DeltaTime;
+        bool inGame = false;
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (YouAreInGameRPC, e) in SystemAPI.Query<RefRO<YouAreInGameRPC>>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(e);
             youAreInGame?.Invoke();
-            this.Enabled = false;
+            inGame = true;
         }
+        
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
+        if (inGame) Enabled = false;
     }
 }
 

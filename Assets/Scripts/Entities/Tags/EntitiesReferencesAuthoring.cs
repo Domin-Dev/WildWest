@@ -10,6 +10,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject worldItemPrefab;
     public GameObject characterPrefab;
     public GameObject buildObjectEntityPrefab;
+    public GameObject bulletPrefab;
     [Header("Particle Prefab")]
     public GameObject shotSmoke;
     public class Baker : Baker<EntitiesReferencesAuthoring>
@@ -23,6 +24,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
                 shotSmoke = GetEntity(authoring.shotSmoke, TransformUsageFlags.Dynamic),
+                bulletEntity = GetEntity(authoring.bulletPrefab, TransformUsageFlags.Dynamic),
             });
         }
     }
@@ -33,6 +35,7 @@ public struct EntitiesReferences : IComponentData
     public Entity worldItemEntity;
     public Entity characterEntity;
     public Entity buildObjectEntity;
+    public Entity bulletEntity;
     [Space]
     public Entity shotSmoke;
 

@@ -4,15 +4,14 @@ using UnityEngine;
 using Unity.NetCode;
 using Unity.Collections;
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-partial struct ChunkRequestCilientSystem : ISystem
-{
-    public void OnCreate(ref SystemState state)
-    {
-    }
+//partial struct GenerateMapServerSystem : ISystem
+//{
+//    public void OnCreate(ref SystemState state)
+//    {
+//    }
 
-    public void OnUpdate(ref SystemState state)
-    {
+//    public void OnUpdate(ref SystemState state)
+//    {
         
-    }
-}
+//    }
+//}

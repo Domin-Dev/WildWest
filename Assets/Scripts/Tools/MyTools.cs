@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.Transforms;
 using System;
 using System.Text;
+using System.Linq;
 
 public static class MyTools 
 {
@@ -98,7 +99,6 @@ public static class MyTools
         double y = Convert.ToDouble(b);
         return (x >= 0 && y < 0) || (x < 0 && y >= 0);
     }
-
     public static FixedString64Bytes ToFixedString64_Safe(this string s)
     {
         var utf8 = Encoding.UTF8;
@@ -111,5 +111,44 @@ public static class MyTools
             fs.Append(ch);
         }
         return fs;
+    }
+    public static int NextFullInt(System.Random rand)
+    {
+        var buffer = new byte[4];
+        rand.NextBytes(buffer);
+        return BitConverter.ToInt32(buffer, 0);
+    }
+    public static int GetStableHash(string input)
+    {
+        unchecked
+        {
+            int hash = 23;
+            foreach (char c in input)
+            {
+                hash = hash * 31 + c;
+            }
+            return hash;
+        }
+    }
+
+    public static int HexToInt(string hex)
+    {
+        int signedValue;
+        try
+        {
+            if (hex.Length > 8)
+                throw new ArgumentException("Hex string must be at most 8 characters (4 bytes).");
+
+            string padded = hex.PadLeft(8, '0'); 
+            uint unsigned = Convert.ToUInt32(padded, 16);
+            signedValue = unchecked((int)unsigned);
+        }
+        catch
+        {
+            signedValue = GetStableHash(hex);
+        }
+
+        Debug.Log(signedValue);
+        return signedValue;
     }
 }

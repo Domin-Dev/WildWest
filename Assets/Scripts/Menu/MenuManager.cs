@@ -45,9 +45,6 @@ public class MenuManager : MonoBehaviour
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
     }
-
-
-
     private void SetUpUI()
     {
         versionText.text = Application.productName + " " + Application.version;
@@ -123,7 +120,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonConnect()
     {
-        GameInfo.LoadScene(2, 0);
+        GameInfo.LoadScene(4, 0);
 
         switch (connectionMode.value)
         {
@@ -192,7 +189,6 @@ public class MenuManager : MonoBehaviour
         }
 
         World serverWorld = ClientServerBootstrap.CreateServerWorld("Server wild world");
-
         World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
         
 
@@ -202,7 +198,6 @@ public class MenuManager : MonoBehaviour
             World.DefaultGameObjectInjectionWorld = serverWorld;
         }
 
-     //   SceneManager.LoadSceneAsync("Game", LoadSceneMode.Single);
 
         ushort port = ushort.Parse(portInput.text);
 
@@ -216,11 +211,11 @@ public class MenuManager : MonoBehaviour
             clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
         networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
-
-
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+        
+
+
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
-        Debug.Log("Próba po³¹czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
 }
