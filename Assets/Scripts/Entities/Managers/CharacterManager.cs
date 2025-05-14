@@ -17,16 +17,71 @@ public class CharacterManager : MonoBehaviour
     EntityManager entityManager;
     Entity player;
 
+
+    public static CharacterManager instance { get; private set; }
+
+    private void Awake()
+    {
+        if (instance == null) 
+            instance = this;
+        else 
+            Destroy(this);
+    }
+
     private void Start()
     {
         entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
+        IsConnetedCilientSystem.youAreInGame += SetUp;
     }
 
-    public void SetUp(Entity player)
+   
+    private void OnDestroy()
     {
-        this.player = player;
+        IsConnetedCilientSystem.youAreInGame -= SetUp;
     }
 
+    public void SetUp()
+    {
+        //EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(Player),typeof(GhostOwnerIsLocal));
+        //var entities = entityQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
+        //player = entities[0];
+        //entityQuery.Dispose();
+        //entities.Dispose();
+
+        EquipmentManager.instance.UpdateItemInHand += UpdateItemInHand;
+    }
+
+    private void UpdateItemInHand(object sender, ItemStatsArgs e)
+    {
+        int id = -1;
+        if (e.item != null)
+        {
+            id = e.item.itemID;
+        }
+        //    ChangeItemInHand(id, player);
+        //}
+        //else
+        //    SetItemInHand(null, player);
+
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(PlayerInput), typeof(GhostOwnerIsLocal), typeof(Simulate));
+        var entities = entityQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
+        Entity entity = entities[0];
+
+        PlayerInput playerInput = entityManager.GetComponentData<PlayerInput>(entity);
+        PlayerInputSync playerInputSync = entityManager.GetComponentData<PlayerInputSync>(entity);
+
+        playerInput.itemInHand = id;
+        playerInputSync.itemInHand = id;
+
+        entityCommandBuffer.SetComponent(entity, playerInput);
+        entityCommandBuffer.SetComponent(entity, playerInputSync);
+
+        entityCommandBuffer.Playback(entityManager);
+        entityCommandBuffer.Dispose();
+        entityQuery.Dispose();
+        entities.Dispose();
+    }
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.T)) 
@@ -43,14 +98,12 @@ public class CharacterManager : MonoBehaviour
             ChangeItemInHand(36, player);
         }
     }
-
     private void ChangeItemInHand(int itemID, Entity entity)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
         if (item is Weapon) SetWeaponInHand(item as Weapon, entity);
         else SetItemInHand(item, entity);
     }
-
     private void SetWeaponInHand(Weapon weapon, Entity entity)
     {
         Hands hands = entityManager.GetComponentData<Hands>(entity);
@@ -85,7 +138,6 @@ public class CharacterManager : MonoBehaviour
         entityManager.SetComponentData(hands.itemInHand, localTransform);
         entityManager.SetComponentData(hands.sidehand, sideHandTransform);
     }
-
     private void SetItemInHand(Item item, Entity entity)
     {
         Hands hands = entityManager.GetComponentData<Hands>(entity);
@@ -93,21 +145,20 @@ public class CharacterManager : MonoBehaviour
         LocalTransform localTransform = entityManager.GetComponentData<LocalTransform>(hands.itemInHand);
         LocalTransform sideHandTransform = entityManager.GetComponentData<LocalTransform>(hands.sidehand);
 
-
         ResetSideHand(hands,ref sideHandTransform);
         localTransform.Position.x = 0;
         localTransform.Position.y = -0.1f;
-        spriteRenderer.sprite = item.icon;
+        spriteRenderer.sprite = null;
+        if (item != null)
+            spriteRenderer.sprite = item.icon;
         entityManager.SetComponentData(hands.itemInHand, localTransform);
         entityManager.SetComponentData(hands.sidehand, sideHandTransform);
     }
-
     private void ResetSideHand(Hands hands,ref LocalTransform sideHandTransform)
     {
         entityManager.SetComponentData(hands.sidehand, new Parent { Value = hands.side });
         sideHandTransform.Position = new float3(-0.09f,0,0);
     }
-
     private void SetRangedWeaponInHand(RangedWeapon rangedWeapon, ref LocalTransform localTransform)
     {
         localTransform.Position.y = rangedWeapon.aimPoint.y - rangedWeapon.gripPoint1.y;

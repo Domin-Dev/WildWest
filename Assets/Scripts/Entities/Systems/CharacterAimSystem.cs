@@ -9,6 +9,7 @@ using UnityEngine.Rendering;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateAfter(typeof(CollisionSystem))]
 
 partial struct CharacterAimSystem : ISystem
 {
@@ -148,7 +149,7 @@ partial struct CharacterAimSystem : ISystem
         localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, deltaTime * 20);
 
 
-        if (MyTools.EqualFloat3(localTransform.Position,hands.ValueRO.targetPosition,0.005f) && MyTools.EqualQuaternions(localTransform.Rotation,hands.ValueRO.targetRotation,0.985f))
+        if (MyTools.EqualFloat3(localTransform.Position,hands.ValueRO.targetPosition,0.01f) && MyTools.EqualQuaternions(localTransform.Rotation,hands.ValueRO.targetRotation,0.98f))
         {
             if (MyTools.EqualQuaternions(quaternion.identity, localTransform.Rotation))
             {

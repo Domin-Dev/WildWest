@@ -13,7 +13,7 @@ public class ActionState : HeroState
         if (!controller.handsController.isGun)
         {
             controller.handsController.SetAttackVector(new Vector3(0, 0, 100), new Vector3(0.06f, 0, 0));
-            Actions.instance.Action(controller.handsController.selectedItem);
+       //     Actions.instance.Action(controller.handsController.selectedItem);
         }
         else
         {

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
@@ -16,7 +17,18 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField] private GameObject blackBackground;
     [SerializeField] private GameObject connectionWindow;
-    [Space]
+    [SerializeField] private GameObject settingWindow;
+    [SerializeField] private GameObject worldListWindow;
+
+    [Header("Settings")]
+    [SerializeField] private Button buttonBackSettings;
+    [SerializeField] private Button buttonResetSettings;
+    [Header("Worlds")]
+    [SerializeField] private Button buttonBackWorlds;
+    [SerializeField] private Button buttonPlayWorld;
+    [SerializeField] private GameObject worldList;
+    [SerializeField] private GameObject worldSlot;
+    [Header("Connection")]
     [SerializeField] private Button buttonSingleplayer;
     [SerializeField] private Button buttonMultiplayer;
     [SerializeField] private Button buttonSettings;
@@ -31,14 +43,18 @@ public class MenuManager : MonoBehaviour
     [Space]
     [SerializeField] private TextMeshProUGUI errorMessage;
 
-    private void Start()
+    private async void Start()
     {
         SetUpUI();
         errorMessage.gameObject.SetActive(false);
 
         buttonMultiplayer.onClick.AddListener(OpenMultiplayerWindow);
         buttonSingleplayer.onClick.AddListener(OnButtonCreateGame);
+        //Settings
+        buttonSettings.onClick.AddListener(() => { SwitchSettings(true); });
+        buttonBackSettings.onClick.AddListener(() => { SwitchSettings(false); });
 
+        
         buttonConnet.onClick.AddListener(OnButtonConnect);
         buttonQuit.onClick.AddListener(Quit);
 
@@ -120,7 +136,6 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonConnect()
     {
-        GameInfo.LoadScene(4, 0);
 
         switch (connectionMode.value)
         {
@@ -142,11 +157,19 @@ public class MenuManager : MonoBehaviour
     private void OnButtonCreateGame()
     {
         GameInfo.LoadScene(2, 1);
-
-
     }
+
+    private void SwitchSettings(bool open)
+    {
+        settingWindow.SetActive(open);
+        blackBackground.SetActive(open);
+    }
+
+
     private void Join()
     {
+        GameInfo.LoadScene(2, 0);
+
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
             World world = World.All[i];
@@ -179,6 +202,9 @@ public class MenuManager : MonoBehaviour
     }
     private void RunServer()
     {
+        GameInfo.LoadScene(4, 0);
+
+
         foreach (World world in World.All)
         {
             if (world.Flags == WorldFlags.GameClient)

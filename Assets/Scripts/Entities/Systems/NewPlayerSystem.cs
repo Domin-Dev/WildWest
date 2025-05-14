@@ -102,10 +102,8 @@ partial struct NewPlayerSystem : ISystem
 
     private void SetName(ref DynamicBuffer<Child> children, ref SystemState state, string name)
     {
-        Debug.Log(children.Length);
         foreach (var item in children)
         {
-            Debug.Log(item.Value);
             if (state.EntityManager.HasComponent(item.Value, typeof(TextMesh)))
             {
                 var textMesh = state.EntityManager.GetComponentObject<TextMesh>(item.Value);

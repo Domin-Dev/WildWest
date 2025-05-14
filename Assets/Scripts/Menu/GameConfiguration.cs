@@ -1,5 +1,8 @@
 ﻿
+using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.LowLevel;
 using UnityEngine.SceneManagement;
 
 public class GameConfiguration: MonoBehaviour 
@@ -17,6 +20,7 @@ public class GameConfiguration: MonoBehaviour
         {
             Destroy(gameObj);
         };
+        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(LoadMap));
     }
 
 }

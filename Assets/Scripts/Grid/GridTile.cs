@@ -81,9 +81,7 @@ public class GridTile : IHitPoints
             objectsCovering = new List<SpriteRenderer>();
             objectsCovering.Add(spriteRenderer);
         }
-
     }
-
     public void TrunOffObjectsCovering()
     {
         if(objectsCovering != null)

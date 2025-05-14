@@ -39,29 +39,29 @@ public class Actions : MonoBehaviour
     {
         if (UIManager.instance.WindowsAreClosed())
         {
-            Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
-            if (pos != lastPos)
-            {
-                lastPos = pos;
-                SetTileInfo();
-            }
+           // Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
+            //if (pos != lastPos)
+            //{
+            //    lastPos = pos;
+            //    SetTileInfo();
+            //}
 
-            if (Input.GetMouseButtonDown(1))
-            {
-                var tile = GridVisualization.instance.GetTileByGridPosition(pos);
-                if (tile != null)
-                {
-                    GridObject gridObject = tile.gridObject;
-                    switch (gridObject)
-                    {
-                        case GridDoor:
-                            Door(gridObject as GridDoor, pos);return;
-                        case GridContainer:
-                            Container(gridObject as GridContainer);return;
-                    }
+            //if (Input.GetMouseButtonDown(1))
+            //{
+            //    var tile = GridVisualization.instance.GetTileByGridPosition(pos);
+            //    if (tile != null)
+            //    {
+            //        GridObject gridObject = tile.gridObject;
+            //        switch (gridObject)
+            //        {
+            //            case GridDoor:
+            //                Door(gridObject as GridDoor, pos);return;
+            //            case GridContainer:
+            //                Container(gridObject as GridContainer);return;
+            //        }
                     
-                }
-            }
+            //    }
+            //}
         }
     }
     private void SetTileInfo()

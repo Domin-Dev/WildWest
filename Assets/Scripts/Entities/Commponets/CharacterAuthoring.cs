@@ -36,6 +36,7 @@ public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
     [GhostField(Quantization = 0)] public float2 sightDirection;
+    [GhostField(Quantization = 0)] public int itemInHand;
     public InputEvent rightButton;
     public InputEvent leftButton;
 }
@@ -48,6 +49,7 @@ public struct PlayerInputSync : IComponentData
     [GhostField] public float2 sightDirection;
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;
+    [GhostField] public int itemInHand; 
 }
 
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
@@ -63,6 +65,8 @@ public struct Player : IComponentData
     public float speed;
     [GhostField] public FixedString64Bytes playerName;
 }
+
+
 public struct Character : IComponentData
 {
     public bool isMove;

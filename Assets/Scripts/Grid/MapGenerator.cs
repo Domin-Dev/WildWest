@@ -7,11 +7,10 @@ using UnityEngine;
 
 public class MapGenerator 
 {
-    [Header("Seed Settings")]
     private int seed;
     [Header("Map Size( in chunks )")]
-    private int widthInChunks = 256;
-    private int heightInChunks = 256;
+    private int widthInChunks = 10;
+    private int heightInChunks = 10;
     [Header("Map Generator Settings")]
     [SerializeField] private float scale = 20;
     [SerializeField] private Vector2 offset;
@@ -31,11 +30,15 @@ public class MapGenerator
 
     private MapGeneratorSettings mapGeneratorSettings;
 
-
-    public void StartGenerator()
+    public MapGenerator(int seed)
+    {
+        this.seed = seed;
+        mapGeneratorSettings = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
+        Debug.Log(mapGeneratorSettings);
+    }
+    public Map StartGenerator()
     {
         seed = GameInfo.instance.seed;
-        mapGeneratorSettings = GridVisualization.instance.id;
 
         var rand = new System.Random(seed);
         offset.x = rand.Next(-100000, 100000);
@@ -48,6 +51,8 @@ public class MapGenerator
         offsetRain.y = rand.Next(-100000, 100000);
 
         GenerateMap(0.25f, gridOffset,out Map map);
+
+        return map;
     }
 
     private void SetValue(Chunk chunk ,int x,int y,int index, int variant)
@@ -70,7 +75,7 @@ public class MapGenerator
         gridTile.SetTileID(60);
         gridTile.SetGridObject(new GridHole(60,null));
     }
-    public void GenerateMap(float cellSize, Vector2 offset, out Map map)
+    private void GenerateMap(float cellSize, Vector2 offset, out Map map)
     {
         map = new Map(offset, cellSize,chunkSize,widthInChunks,heightInChunks);
 
@@ -84,12 +89,12 @@ public class MapGenerator
         }
 
         var rand = new System.Random(seed);
-        List<int> numerVariants = GetNumberVariants();
+        //List<int> numerVariants = GetNumberVariants();
         List<float> chancesOfDefaultTile = GetChanceOfDefaultTile();
 
         foreach (var item in map.chunks)
         {
-            float value = Generate((int)item.Value.ChunkGridPosition.x,(int)item.Value.ChunkGridPosition.y, offset, scale);
+            float value = Generate((int)item.Value.chunkCoordinates.x,(int)item.Value.chunkCoordinates.y, offset, scale);
 
 
             for (int y = 0; y < chunkSize; y++)
@@ -116,11 +121,11 @@ public class MapGenerator
                     {
                         index = 3;
                     }
-
-                    if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
-                        SetValue(item.Value, x, y, index, 0);
-                    else
-                        SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));
+                    SetValue(item.Value, x, y, index, rand.Next(6));
+                    //    if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
+                    //      SetValue(item.Value, x, y, index, 0);
+                    //  else
+                    //   SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));
                 }
             }
 
@@ -135,8 +140,8 @@ public class MapGenerator
                 {
                     if (item.Value.grid[x, y].GridObjectIsType<GridHole>())
                     {
-                        int posX = x + (int)item.Value.ChunkGridPosition.x;
-                        int posY = y + (int)item.Value.ChunkGridPosition.y;
+                        int posX = x + (int)item.Value.chunkCoordinates.x;
+                        int posY = y + (int)item.Value.chunkCoordinates.y;
                         GridVisualization.instance.PourWater(1000, new Vector2(posX, posY));
                     }
                 }
@@ -148,7 +153,7 @@ public class MapGenerator
         List<int> list = new List<int>();
         for (int i = 0; i < mapGeneratorSettings.tiles.Count; i++)
         {
-            list.Add(GridVisualization.instance.TilesUV[mapGeneratorSettings.tiles[i].tileID].variants);
+            list.Add(MapVisualization.instance.TilesUV[mapGeneratorSettings.tiles[i].tileID].variants);
         }
         return list;
     }
@@ -164,8 +169,8 @@ public class MapGenerator
     private void GenerateCell(Chunk chunk, int x, int y, System.Random rand)
     {
         //float value = Generate(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, offset, scale);
-        int posX = x + (int)chunk.ChunkGridPosition.x;
-        int posY = y + (int)chunk.ChunkGridPosition.y;
+        int posX = x + (int)chunk.chunkCoordinates.x;
+        int posY = y + (int)chunk.chunkCoordinates.y;
        
         float rainValue = Generate(posX,posY, offsetRain, scaleRain);
         float tempValue = Generate(posX,posY, offsetTemp, scaleTemp);

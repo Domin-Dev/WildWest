@@ -41,6 +41,7 @@ partial struct PlayerInputSystem : ISystem
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
 
+
             playerInput.ValueRW.sightDirection = sightDirection;
             playerInputSync.ValueRW.sightDirection = sightDirection;
 

@@ -282,10 +282,10 @@ public class EquipmentManager : MonoBehaviour
         }
         for (int i = 0; i < 2; i++)
         {
-            ItemStats [] items = GetGrid(i);
+            ItemStats[] items = GetGrid(i);
             for (int j = 0; j < items.Length; j++)
             {
-                if (items[j] is FoodItem)
+                if (items[i] != null && items[j] is FoodItem)
                 {
                     Spoilage(items[j] as FoodItem, new SlotPosition(i,j));
                 }
@@ -297,7 +297,7 @@ public class EquipmentManager : MonoBehaviour
     {
         if (!ChatManager.instance.isChatting)
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeSelectedSlot(0);
+                 if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeSelectedSlot(0);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeSelectedSlot(1);
             else if (Input.GetKeyDown(KeyCode.Alpha3)) ChangeSelectedSlot(2);
             else if (Input.GetKeyDown(KeyCode.Alpha4)) ChangeSelectedSlot(3);

@@ -62,6 +62,9 @@ public class GridVisualization : MonoBehaviour
     [SerializeField] public GameObject worldItem;
     public const int renderChunks = 2;
     public const int maxLoadedChunks = 30;
+    public const int chunkSize = 10;
+
+
 
     public Map map;
     public Pathfinding pathfinding;
@@ -103,7 +106,6 @@ public class GridVisualization : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        id = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
         SetUpMapMaterial();
     }
 
@@ -155,8 +157,6 @@ public class GridVisualization : MonoBehaviour
 
         TextureLoader.UnloadFloors(textures);
     }
-
-   
     private int MaxWidth(Dictionary<int, Texture2D> array)
     {
         int max = linesTexture.width;
@@ -181,7 +181,7 @@ public class GridVisualization : MonoBehaviour
         {
             foreach (var item in map.chunks)
             {
-                CreateMesh(item.Value);
+              //  CreateMesh(item.Value);
             }
         }
         else
@@ -215,7 +215,6 @@ public class GridVisualization : MonoBehaviour
         }
         return GetChunkCoordinates(lastPlayerChunk);
     }
-
     private void CheckGridTile(Vector2 newPlayerPosition)
     {
         GridTile gridTile = GetGridTileByPositionXY(lastPlayerPosition);
@@ -223,7 +222,6 @@ public class GridVisualization : MonoBehaviour
         gridTile = GetGridTileByPositionXY(newPlayerPosition);
         gridTile?.TrunOffObjectsCovering();
     }
-
     IEnumerator LoadChunks(Vector2 posChunk)
     {  
         List<int> list = new List<int>();
@@ -253,7 +251,6 @@ public class GridVisualization : MonoBehaviour
         }
         yield return null;
     }
-
     IEnumerator TryUnloadChunks(int chunkIndex)
     {
        // List<int> chunks = new List<int>();
@@ -341,7 +338,7 @@ public class GridVisualization : MonoBehaviour
     {
         if (loadedChunks.ContainsKey(chunkIndex)) yield break;
         Chunk chunk = map.chunks[chunkIndex];
-        loadedChunks.Add(chunkIndex, new LoadedChunk((int)Time.time, CreateMesh(chunk)));
+     //   loadedChunks.Add(chunkIndex, new LoadedChunk((int)Time.time, CreateMesh(chunk)));
         for (int x = 0; x < map.chunkSize; x++)
         {
             for (int y = 0; y < map.chunkSize; y++)
@@ -349,7 +346,7 @@ public class GridVisualization : MonoBehaviour
                 var value = chunk.grid[x, y].gridObject;
                 if (value != null)
                 {
-                    BuildingManager.instance.LoadObject(value,chunk.ChunkGridPosition + new Vector2(x,y));
+                    BuildingManager.instance.LoadObject(value,chunk.chunkCoordinates + new Vector2(x,y));
                 }
 
             }
@@ -636,7 +633,7 @@ public class GridVisualization : MonoBehaviour
         Mesh mesh = new Mesh();
         Mesh linesMesh= new Mesh();
 
-        meshFilter.transform.position = new Vector3(chunk.position.x, chunk.position.y, 10);
+       // meshFilter.transform.position = new Vector3(chunk.worldPostion.x, chunk.worldPostion.y, 10);
 
         Vector3[] vertices = new Vector3[4 * (width * height)];
         int[] triangles = new int[6 * (width * height)];
@@ -662,8 +659,8 @@ public class GridVisualization : MonoBehaviour
                 triangles[index * 6 + 4] = index * 4 + 2;
                 triangles[index * 6 + 5] = index * 4 + 3;
 
-                GridTile gridTile = chunk.grid[x, y];
-                int borders = CalculateBorders(x, y, gridTile.tileID);
+                GridTile gridTile = new GridTile(0, 0);//= chunk.GetTileID(x, y);
+                int borders;// = //CalculateBorders(x, y, gridTile.tileID);
 
                 Vector2 uv11, uv00;
 
@@ -682,11 +679,11 @@ public class GridVisualization : MonoBehaviour
                 }
                 else
                     GetUVTile(gridTile, out uv00, out uv11);
-                
+
 
                 UVSet(uv, index, uv00, uv11);
 
-                borders = CalculateBorders(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, gridTile.tileID);
+                borders = CalculateBorders(x + (int)chunk.chunkCoordinates.x, y + (int)chunk.chunkCoordinates.y, gridTile.tileID);
                 GetUVLine(borders, out uv00, out uv11);
                 UVSet(linesUV, index, uv00, uv11);
             }
@@ -718,7 +715,7 @@ public class GridVisualization : MonoBehaviour
     }
     public void PlayerMovement(Vector2 worldPosition)
     {
-        CheckChunks(worldPosition);
+       // CheckChunks(worldPosition);
         onPlayerMove?.Invoke(this, new PlayerPositionArgs(GetGridPosition(worldPosition), lastPlayerChunk, GetChunkCoordinates(lastPlayerChunk)));
     }
     public Vector2 GetChunkCoordinates(int chunk)
@@ -759,7 +756,6 @@ public class GridVisualization : MonoBehaviour
     {
         return GetWorldPosition(new Vector2(x, y)); 
     }
-
     public GridTile[,] GetGridByXY(Vector2 posXY)
     {
         int x = (int)posXY.x % map.chunkSize;

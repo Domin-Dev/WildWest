@@ -14,9 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grassID: 19
   tiles:
-  - tileID: 19
-  - tileID: 21
   - tileID: 20
-  - tileID: 19
-  - tileID: 19
-  - tileID: 19
+  - tileID: 20
+  - tileID: 20
+  - tileID: 20
+  - tileID: 20
+  - tileID: 20
+  - tileID: 20
+  scale: 20
+  offset: {x: 0, y: 0}
+  scaleTemp: 20
+  offsetTemp: {x: 0, y: 0}
+  scaleRain: 20
+  offsetRain: {x: 0, y: 0}
+  scaleHeight: {x: 0, y: 0}
+  offsetHeight: {x: 0, y: 0}
+  chunkSize: 10

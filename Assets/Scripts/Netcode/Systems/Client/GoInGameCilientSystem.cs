@@ -10,7 +10,8 @@ partial struct GoInGameCilientSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
-        state.RequireForUpdate<LocalPlayerLook>();
+        state.RequireForUpdate<MapIsLoaded>();
+        state.RequireForUpdate<PlayerName>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
@@ -20,19 +21,27 @@ partial struct GoInGameCilientSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        foreach((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
+
+        foreach ((RefRO<ReceiveRpcCommandRequest> request, Entity rpc) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>>().WithAll<MapIsLoaded>().WithEntityAccess())
         {
-            entityCommandBuffer.AddComponent<NetworkStreamInGame>(entity);
+            entityCommandBuffer.DestroyEntity(rpc);
 
-            Entity rpcEntity = entityCommandBuffer.CreateEntity();
-            PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
-            LocalPlayerLook look = SystemAPI.GetSingleton<LocalPlayerLook>();
+            foreach ((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
+            {
+                entityCommandBuffer.AddComponent<NetworkStreamInGame>(entity);
 
-            entityCommandBuffer.AddComponent(rpcEntity,new GoInGameRequestRPC() {
-                playerName = playerName.name, 
-                characterLook = look.characterLook
-            });
-            entityCommandBuffer.AddComponent<SendRpcCommandRequest>(rpcEntity);
+                Entity rpcEntity = entityCommandBuffer.CreateEntity();
+
+                PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
+                LocalPlayerLook look = SystemAPI.GetSingleton<LocalPlayerLook>();
+
+                entityCommandBuffer.AddComponent(rpcEntity, new GoInGameRequestRPC()
+                {
+                    playerName = playerName.name,
+                    characterLook = look.characterLook,
+                });
+                entityCommandBuffer.AddComponent<SendRpcCommandRequest>(rpcEntity);
+            }
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

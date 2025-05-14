@@ -36,8 +36,6 @@ public class WorldSetup : MonoBehaviour
             SetWorldName(name);
         });
 
-
-
         difficultylevelSwitch.SetUpSwitch(tab,1);
         difficultylevelSwitch.OnChangedValue += (object s,int x) => 
         { 
@@ -45,10 +43,15 @@ public class WorldSetup : MonoBehaviour
         };
 
         next.onClick.AddListener(() => 
-        { 
-            GameInfo.LoadScene(2, 1);
-//new MapGenerator().StartGenerator();
+        {
+            GenerateWorld();
         });
+    }
+
+    private void GenerateWorld()
+    {
+        GameInfo.LoadScene(2, 1);
+        ClientServerBootstrap.ServerWorld.EntityManager.CreateEntity(typeof(GenerateMap));
     }
 
     private void SetSeed(int seed)

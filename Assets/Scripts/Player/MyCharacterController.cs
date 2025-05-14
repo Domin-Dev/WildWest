@@ -80,7 +80,7 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
     {
         //  if (!IsOwner) return;
         sightDir = MyTools.GetMouseWorldPosition();  
-        if(UIManager.instance.WindowsAreClosed())heroStateMachine.currentState.FrameUpdate();
+    //    if(UIManager.instance.WindowsAreClosed())heroStateMachine.currentState.FrameUpdate();
     }
     private void FixedUpdate()
     {
@@ -121,7 +121,7 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
             }
             else
             {
-                GridVisualization.instance.PlayerMovement(transform.position);
+               // GridVisualization.instance.PlayerMovement(transform.position);
                 animator.SetBool("Idle", false);
             }
         }

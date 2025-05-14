@@ -110,19 +110,15 @@ public class LoadingManager : MonoBehaviour
     }
     private void SetValue(float value)
     {
-        loadingBar.rectTransform.anchorMax = new Vector2(value, 1);
+        if(loadingBar != null) loadingBar.rectTransform.anchorMax = new Vector2(value, 1);
     } 
     private async void LoadAsyncScene(int index, float maxProgress = 1f, float startProgress = 0f)
     {
-        Debug.Log("wczytywanie");
         var operation = SceneManager.LoadSceneAsync(index,LoadSceneMode.Additive);
         operation.allowSceneActivation = false;
-        Debug.Log("target" + target);
-
         do
         {
             await Task.Delay(20);
-            Debug.Log("target" + target);
             target = (startProgress + Mathf.Clamp01(operation.progress / 0.9f) * (1 -startProgress)) * maxProgress;
         }
         while (operation.progress < 0.9f);
@@ -131,7 +127,6 @@ public class LoadingManager : MonoBehaviour
         SetValue(maxProgress);
         target = maxProgress;
 
-        Debug.Log(target + "start");
         await Task.Delay(50);
         operation.allowSceneActivation = true;
         await operation;

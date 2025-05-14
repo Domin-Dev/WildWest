@@ -23,11 +23,11 @@ partial struct NewBulletSystem : ISystem
 
         foreach ((RefRO<LocalTransform> pos, RefRO <Bullet> bullet, Entity entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Bullet>>().WithAll<NewBullet,Simulate>().WithEntityAccess())
         {
-            if(bullet.ValueRO.time >= 0)
-            {
+          //  if(bullet.ValueRO.time >= 0)
+         //   {
                 entityCommandBuffer.RemoveComponent<NewBullet>(entity);
                 HybridManager.instance.SetEntity(entity, new Vector3(pos.ValueRO.Position.x, pos.ValueRO.Position.y, 100f));
-            }
+         //   }
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

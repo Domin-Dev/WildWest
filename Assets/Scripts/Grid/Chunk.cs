@@ -18,11 +18,9 @@ public class ChunkItem
 public class Chunk
 {
     public GridTile[,] grid;
-    public Vector2 ChunkGridPosition { set; get; }
-    public Vector2 position { set; get; }
-
-    public List<ChunkItem> items { set; get;}
-
+    public Vector2 chunkCoordinates { set; get; }
+    public Vector2 worldPosition { set; get; }
+    public List<ChunkItem> items { set; get; }
     public int chunkIndex {private set; get; }
     public Chunk(int chunkIndex,int gridSize,Vector2 chunkCoordinates, Vector2 position)
     {
@@ -34,12 +32,11 @@ public class Chunk
                 grid[i, j] = new GridTile((int)chunkCoordinates.x + i, (int)chunkCoordinates.y + j);
             }
         }
-        this.ChunkGridPosition = chunkCoordinates;
-        this.position = position;
+        this.chunkCoordinates = chunkCoordinates;
+        this.worldPosition = position;
         this.chunkIndex = chunkIndex;
         items = new List<ChunkItem>();
     }
-
     public int AddItem(ChunkItem chunkItem)
     {
         for (int i = 0; i < items.Count; i++)
@@ -64,7 +61,6 @@ public class Chunk
             items[index] = null;
         }
     }
-
     public void RemoveAllItems(Vector2 posXY)
     {
         for (int i = items.Count - 1; i >= 0; i--)
@@ -90,7 +86,6 @@ public class Chunk
         }
         return null;
     }
-
     public void MoveAllItems(Vector2 posXY, Vector2 newWorldPosition, int currentChunk, int newChunk)
     {
         for (int i = 0; i < items.Count; i++)
@@ -103,4 +98,3 @@ public class Chunk
         }
     }
 }
-

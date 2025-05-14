@@ -22,7 +22,6 @@ partial struct MessageServerSystem : ISystem
         SystemAPI.Query<NewMessageRPC, ReceiveRpcCommandRequest>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(entity);
-            Debug.Log(requestRPC.message);
             var sender = SystemAPI.GetComponent<PlayerName>(receiveRpc.SourceConnection).name;
 
             foreach ((RefRO<NetworkId> networkId, Entity obj) in SystemAPI.Query<RefRO<NetworkId>>().WithAll<NetworkStreamInGame>().WithEntityAccess())
