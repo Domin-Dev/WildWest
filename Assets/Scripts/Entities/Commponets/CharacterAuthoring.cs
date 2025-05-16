@@ -17,14 +17,18 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Character
             {
                 isMove = false
-                
+
             });
             AddComponent(entity, new Hands());
-            AddComponent(entity, new Player() { speed = 1f});
+            AddComponent(entity, new Player() { speed = 1f });
             AddComponent(entity, new NewPlayerTag());
             AddComponent(entity, new PlayerInput());
             AddComponent(entity, new PlayerInputSync());
+            AddComponent(entity, new ItemInHandInput());
+            AddComponent(entity, new ItemInHandInputSync());
             AddComponent(entity, new PlayerLook());
+
+
 
         }
     }
@@ -36,9 +40,14 @@ public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
     [GhostField(Quantization = 0)] public float2 sightDirection;
-    [GhostField(Quantization = 0)] public int itemInHand;
     public InputEvent rightButton;
     public InputEvent leftButton;
+}
+
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+public struct ItemInHandInput : IInputComponentData
+{
+    [GhostField(Quantization = 0)] public int itemInHand;
 }
 
 
@@ -49,8 +58,15 @@ public struct PlayerInputSync : IComponentData
     [GhostField] public float2 sightDirection;
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;
-    [GhostField] public int itemInHand; 
 }
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToNonOwner)]
+public struct ItemInHandInputSync : IComponentData
+{
+    [GhostField] public int itemInHand;
+}
+
+
 
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
 public struct PlayerLook : IComponentData

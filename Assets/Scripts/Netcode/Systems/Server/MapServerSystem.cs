@@ -5,7 +5,7 @@ using Unity.NetCode;
 using Unity.Collections;
 using System;
 using Unity.Mathematics;
-using System.Runtime.InteropServices;
+
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapServerSystem : SystemBase
@@ -23,20 +23,28 @@ public partial class MapServerSystem : SystemBase
     {
         generator = new MapGenerator(GameInfo.instance.seed);
         map = generator.StartGenerator();
-        for (int i = 0; i < map.chunks.Count; i++)
-        {
-        //    Debug.Log( i + " " + map.chunks[i].grid[0, 0].tileID);
-        }
+        Debug.Log("Generowanie");
+        Debug.Log(map);
+        Debug.Log(map.chunks);
+        Debug.Log(map.chunks.Count);
     }
 
     protected override void OnUpdate()
     {
-        float deltaTime = SystemAPI.Time.DeltaTime;
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
+            Debug.Log("mapaa ");
+            Debug.Log(map);
+            Debug.Log(generator);
+            if (map == null) 
+            {
+                GenerateMap();
+            }
+
+
             for (int i = 0; i < map.chunks.Count; i++)
             {
                 Entity chunk = entityCommandBuffer.CreateEntity();
@@ -68,7 +76,9 @@ public partial class MapServerSystem : SystemBase
 
     private void GetChunk(int index, ref FixedChunk chunkStruct)
     {
+        Debug.Log("dziala");
         Chunk chunk = map.chunks[index];
+        Debug.Log("chunki dzalaja");
 
         chunkStruct.worldPosition = chunk.worldPosition;
         chunkStruct.chunkCoordinates = new int2((int)chunk.chunkCoordinates.x, (int)chunk.chunkCoordinates.y);

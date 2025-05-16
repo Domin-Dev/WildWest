@@ -97,7 +97,6 @@ public class UIManager : MonoBehaviour
         else Destroy(gameObject);
 
         SetGrids();
-       // SetUpNetworkUI();
         SetUpNotices();
         LoadRecipes();
     }
@@ -573,15 +572,17 @@ public class UIManager : MonoBehaviour
     }
     private void UpdateSelectedSlot(object sender, UpdateSelectedSlotInBarArgs e)
     {
-        Transform last = mainItemBar.GetChild(e.lastSlot);
-        last.GetComponent<Image>().sprite = unSelected;
+        if (e.lastSlot >= 0)
+        {
+            Transform last = mainItemBar.GetChild(e.lastSlot);
+            last.GetComponent<Image>().sprite = unSelected;
+            lastSlotUI = last.GetComponent<RectTransform>();
+        }
+
         Transform current = mainItemBar.GetChild(e.currentSlot);
         current.GetComponent<Image>().sprite = selected;
-
         if(lastSlotUI != null) lastSlotUI.localScale = new Vector3(buttonScale, buttonScale,1);
-
         currentSlotUI = current.GetComponent<RectTransform>();
-        lastSlotUI = last.GetComponent<RectTransform>();
     }
     private RectTransform lastSlotUI;
     private RectTransform currentSlotUI;
@@ -654,6 +655,7 @@ public class UIManager : MonoBehaviour
     }
     private Transform GetItemFromMainBar(SlotPosition position)
     {
+
         if (position.slotIndex < mainItemBar.childCount) return mainItemBar.GetChild(position.slotIndex).GetComponentInChildren<DragDrop>().transform;
         else return null;
     }

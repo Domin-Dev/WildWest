@@ -10,7 +10,8 @@ using Unity.Rendering;
 using Unity.Transforms;
 using UnityEditor;
 using UnityEngine;
-
+using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class CharacterManager : MonoBehaviour
 {
@@ -24,32 +25,21 @@ public class CharacterManager : MonoBehaviour
     {
         if (instance == null) 
             instance = this;
-        else 
+        else
             Destroy(this);
-    }
 
-    private void Start()
-    {
         entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
-        IsConnetedCilientSystem.youAreInGame += SetUp;
+        EquipmentManager.instance.UpdateItemInHand += UpdateItemInHand;
+
     }
 
-   
+
     private void OnDestroy()
     {
-        IsConnetedCilientSystem.youAreInGame -= SetUp;
+        EquipmentManager.instance.UpdateItemInHand -= UpdateItemInHand;
     }
 
-    public void SetUp()
-    {
-        //EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(Player),typeof(GhostOwnerIsLocal));
-        //var entities = entityQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
-        //player = entities[0];
-        //entityQuery.Dispose();
-        //entities.Dispose();
 
-        EquipmentManager.instance.UpdateItemInHand += UpdateItemInHand;
-    }
 
     private void UpdateItemInHand(object sender, ItemStatsArgs e)
     {
@@ -63,22 +53,24 @@ public class CharacterManager : MonoBehaviour
         //else
         //    SetItemInHand(null, player);
 
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         EntityQuery entityQuery = entityManager.CreateEntityQuery(typeof(PlayerInput), typeof(GhostOwnerIsLocal), typeof(Simulate));
         var entities = entityQuery.ToEntityArray(Unity.Collections.Allocator.TempJob);
-        Entity entity = entities[0];
+        if (entities.Length > 0)
+        {
+            Entity entity = entities[0];
 
-        PlayerInput playerInput = entityManager.GetComponentData<PlayerInput>(entity);
-        PlayerInputSync playerInputSync = entityManager.GetComponentData<PlayerInputSync>(entity);
+            ItemInHandInput itemInHandInput = entityManager.GetComponentData<ItemInHandInput>(entity);
+            if (itemInHandInput.itemInHand != id)
+            {
+                ItemInHandInputSync itemInHandInputSync = entityManager.GetComponentData<ItemInHandInputSync>(entity);
 
-        playerInput.itemInHand = id;
-        playerInputSync.itemInHand = id;
+                itemInHandInput.itemInHand = id;
+                itemInHandInputSync.itemInHand = id;
 
-        entityCommandBuffer.SetComponent(entity, playerInput);
-        entityCommandBuffer.SetComponent(entity, playerInputSync);
-
-        entityCommandBuffer.Playback(entityManager);
-        entityCommandBuffer.Dispose();
+                entityManager.SetComponentData(entity, itemInHandInputSync);
+                entityManager.SetComponentData(entity, itemInHandInput);
+            }
+        }
         entityQuery.Dispose();
         entities.Dispose();
     }
@@ -98,7 +90,7 @@ public class CharacterManager : MonoBehaviour
             ChangeItemInHand(36, player);
         }
     }
-    private void ChangeItemInHand(int itemID, Entity entity)
+    public void ChangeItemInHand(int itemID, Entity entity)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
         if (item is Weapon) SetWeaponInHand(item as Weapon, entity);

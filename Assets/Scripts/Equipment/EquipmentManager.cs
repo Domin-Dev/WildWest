@@ -165,7 +165,6 @@ public class UpdateAmmoBarArgs : EventArgs
         this.currentCount = currentCount;
     }
 }
-
 public class PlaceholderArgs : EventArgs
 {
     public bool turn;
@@ -177,7 +176,6 @@ public class PlaceholderArgs : EventArgs
         this.slotPosition = slotPosition;
     }
 }
-
 public class EquipmentManager : MonoBehaviour
 {
     public event EventHandler<UpdateSelectedSlotInBarArgs> UpdateSelectedSlotInBar;
@@ -258,8 +256,21 @@ public class EquipmentManager : MonoBehaviour
         selectedSlotInEQ = new SlotPosition(-1, -1);
         placeholderGrids.Add(2);
 
-        ChangeSelectedSlot(0);
         TimeTickSystem.On10Tick += TickUpdate;
+        IsConnetedCilientSystem.youAreInGame += IsPlayer;
+        ChangeSelectedSlot(0);
+    }
+
+
+    private void IsPlayer()
+    {
+        UpdateItemInHand?.Invoke(this, new ItemStatsArgs(equipmentBar[slotInHand]));
+    }
+
+    private void OnDestroy()
+    {
+        TimeTickSystem.On10Tick -= TickUpdate;
+        IsConnetedCilientSystem.youAreInGame -= IsPlayer;
     }
 
     private void Spoilage(FoodItem foodItem,SlotPosition slotPosition)
@@ -330,6 +341,9 @@ public class EquipmentManager : MonoBehaviour
 
 
   
+
+
+    ///////////////////////////////////////
     public void SetUpEvent(HandsController handsController)
     {
         handsController.UseItem += UseSelectedItem;
@@ -472,7 +486,6 @@ public class EquipmentManager : MonoBehaviour
         MoveItemUI(this,new MoveItemUIArgs(from, to));
         
     }
-
     private int FindFreeSlot(ItemStats[] items)
     {
         for (int i = 0; i < items.Length; i++)

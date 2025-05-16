@@ -21,9 +21,5 @@ public struct Hands : IComponentData
     public float3 lastPosition;
 
     public bool rotated;
-    public int itemID;
-
-
-
 }
 

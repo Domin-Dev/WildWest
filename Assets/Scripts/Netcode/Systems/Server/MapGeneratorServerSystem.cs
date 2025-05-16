@@ -20,7 +20,9 @@ public partial class MapGeneratorServerSystem : SystemBase
 
         foreach (var (generateMap, e) in SystemAPI.Query<RefRO<GenerateMap>>().WithEntityAccess())
         {
-            ClientServerBootstrap.ServerWorld.GetExistingSystemManaged<MapServerSystem>().GenerateMap();
+            ClientServerBootstrap.ServerWorld
+                .GetExistingSystemManaged<MapServerSystem>()
+                .GenerateMap(); Debug.Log("wygenerowano mape!!");
             entityCommandBuffer.DestroyEntity(e);
         }
 

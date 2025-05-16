@@ -12,7 +12,7 @@ public class BuildingState : HeroState
     }
     public override void EnterState() 
     {
-        BuildingManager.instance.StartBuildingMode(controller.handsController.selectedItem.itemID);
+     ///   BuildingManager.instance.StartBuildingMode(controller.handsController.selectedItem.itemID);
     }
     public override void ExitState() 
     {

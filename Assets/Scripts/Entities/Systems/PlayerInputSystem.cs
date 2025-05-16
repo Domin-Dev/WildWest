@@ -28,7 +28,6 @@ partial struct PlayerInputSystem : ISystem
         bool left = Input.GetMouseButton(0);
         bool right = Input.GetMouseButton(1);
 
-
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
         float3 target = (float3)MyTools.GetMouseWorldPosition();

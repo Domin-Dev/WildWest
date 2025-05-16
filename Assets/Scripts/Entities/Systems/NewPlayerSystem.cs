@@ -48,11 +48,12 @@ partial struct NewPlayerSystem : ISystem
                         state.EntityManager.GetComponentObject<SpriteRenderer>(item.Value).enabled = false;
                     }
                 }
+
             }
             else
             {
                 SetName(ref children, ref state, player.ValueRO.playerName.ToString());
-                SetPlayerLook(ref playerLook.ValueRW,ref hands, ref character, ref state);
+                SetPlayerLook(ref playerLook.ValueRW, ref hands, ref character, ref state);
             }
 
             entityCommandBuffer.SetComponent(entity, hands);

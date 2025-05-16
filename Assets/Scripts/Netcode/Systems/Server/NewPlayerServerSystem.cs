@@ -11,7 +11,6 @@ partial struct NewPlayerServerSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NewPlayerJoinRPC>().WithAll<ReceiveRpcCommandRequest>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
