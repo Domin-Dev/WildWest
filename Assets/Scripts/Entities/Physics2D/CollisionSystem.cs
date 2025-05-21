@@ -14,10 +14,13 @@ public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
 
+
+    // 2 - bullet
     readonly static bool[,] collisionTab =
-    {         // 0      1
-     /* 0 */   { false, true},
-     /* 1 */   { true , false},
+    {         // 0      1       2
+     /* 0 */   { false, true  ,false },
+     /* 1 */   { true , false ,false },
+     /* 2  */  { false, false ,false },
     };
 
     static int k = 0;
@@ -84,26 +87,26 @@ public partial struct CollisionSystem : ISystem
             }
         }
 
-        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged,Velocity2D, Hitbox2D,LocalTransform,Physics2D,Simulate>().Build();
+        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged,Velocity2D, BoxCollider2D,LocalTransform,Physics2D,Simulate>().Build();
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
         NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
         NativeArray<Velocity2D> velocities = entities.ToComponentDataArray<Velocity2D>(Allocator.TempJob);
-        NativeArray<Hitbox2D> hitboxes = entities.ToComponentDataArray<Hitbox2D>(Allocator.TempJob);
+        NativeArray<BoxCollider2D> hitboxes = entities.ToComponentDataArray<BoxCollider2D>(Allocator.TempJob);
         NativeArray<Physics2D> physics = entities.ToComponentDataArray<Physics2D>(Allocator.TempJob);
         UpdateEntityMap(ref state, entityArray, physics, transforms);
 
 
         var getVelocity = state.GetComponentLookup<Velocity2D>();
         var getPosition = state.GetComponentLookup<LocalTransform>();
-        var getHitbox = state.GetComponentLookup<Hitbox2D>();
+        var getHitbox = state.GetComponentLookup<BoxCollider2D>();
         var getPhysics = state.GetComponentLookup<Physics2D>();
 
         NativeHashMap<int,float> collisions = new NativeHashMap<int,float>(20, Allocator.TempJob);
 
         for (int i = 0; i < entityArray.Length; i++)
         {
-            Hitbox2D tempHitbox1 = hitboxes[i];
+            BoxCollider2D tempHitbox1 = hitboxes[i];
             Entity entity = entityArray[i];
             LocalTransform tempTransform1 = transforms[i];
             float2 velocity1 = velocities[i].Value; 
@@ -129,11 +132,11 @@ public partial struct CollisionSystem : ISystem
             {
                 Entity entityToCheck = potentialCollisions[j];
                 if (!SystemAPI.Exists(entityToCheck)) continue;
-                if (entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer,layer]) continue;
+                if (entityToCheck == entity || !getPhysics.HasComponent(entityToCheck) || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
 
 
                 LocalTransform tempTransform2 = getPosition[entityToCheck];
-                Hitbox2D tempHitbox2 = getHitbox[entityToCheck];
+                BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
 
                 float2 topLeft2 =
                 new float2(
@@ -217,7 +220,7 @@ public partial struct CollisionSystem : ISystem
 
 
                         LocalTransform tempTransform2 = getPosition[entityToCheck];
-                        Hitbox2D tempHitbox2 = getHitbox[entityToCheck];
+                        BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
 
                         float2 topLeft2 =
                         new float2(
@@ -289,7 +292,7 @@ public partial struct CollisionSystem : ISystem
                     Entity entityToCheck = potentialCollisions[item.Key];
 
                     LocalTransform tempTransform2 = getPosition[entityToCheck];
-                    Hitbox2D tempHitbox2 = getHitbox[entityToCheck];
+                    BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
                     float2 topLeft2 =
                     new float2(
                     tempTransform2.Position.x - tempHitbox2.size.x * 0.5f,

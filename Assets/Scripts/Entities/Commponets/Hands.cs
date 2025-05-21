@@ -13,6 +13,11 @@ public struct Hands : IComponentData
     public Entity mainhand;
     public Entity sidehand;
 
+    public Entity aimPoint;
+    public Entity reloadPoint;
+    public Entity hitboxPoint;
+
+
     public int actionStatus;
 
     public quaternion targetRotation;

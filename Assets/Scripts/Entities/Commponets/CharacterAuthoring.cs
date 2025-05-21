@@ -14,22 +14,16 @@ public class CharacterAuthoring : MonoBehaviour
         public override void Bake(CharacterAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new Character
-            {
-                isMove = false
 
-            });
             AddComponent(entity, new Hands());
+            AddComponent(entity, new Character());
             AddComponent(entity, new Player() { speed = 1f });
             AddComponent(entity, new NewPlayerTag());
             AddComponent(entity, new PlayerInput());
             AddComponent(entity, new PlayerInputSync());
-            AddComponent(entity, new ItemInHandInput());
-            AddComponent(entity, new ItemInHandInputSync());
+            AddComponent(entity, new ItemInHandInput() { itemInHand = int.MinValue });
+            AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
-
-
-
         }
     }
 }
@@ -67,7 +61,6 @@ public struct ItemInHandInputSync : IComponentData
 }
 
 
-
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
 public struct PlayerLook : IComponentData
 {
@@ -80,6 +73,7 @@ public struct Player : IComponentData
 {
     public float speed;
     [GhostField] public FixedString64Bytes playerName;
+    [GhostField] public bool isCooldown;
 }
 
 

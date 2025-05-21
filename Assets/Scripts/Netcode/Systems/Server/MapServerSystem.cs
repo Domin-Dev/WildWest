@@ -5,7 +5,9 @@ using Unity.NetCode;
 using Unity.Collections;
 using System;
 using Unity.Mathematics;
-
+using System.Collections.Generic;
+using static UnityEngine.EventSystems.EventTrigger;
+using Unity.Entities.UniversalDelegates;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapServerSystem : SystemBase
@@ -36,9 +38,6 @@ public partial class MapServerSystem : SystemBase
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
-            Debug.Log("mapaa ");
-            Debug.Log(map);
-            Debug.Log(generator);
             if (map == null) 
             {
                 GenerateMap();
@@ -51,13 +50,15 @@ public partial class MapServerSystem : SystemBase
                 FixedChunk fixedChunk = new FixedChunk();
                 GetChunk(i, ref fixedChunk);
 
-                //   entityCommandBuffer.AddComponent(chunk, fixedTileRow);
                 entityCommandBuffer.AddComponent(chunk, fixedChunk);
                 entityCommandBuffer.AddComponent(chunk, new SendRpcCommandRequest()
                 {
                     TargetConnection = entity
                 });
             }
+
+            GetChunkObjects(0,ref entityCommandBuffer, entity);
+
 
             Entity loaded = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(loaded, new MapIsLoaded());
@@ -76,9 +77,7 @@ public partial class MapServerSystem : SystemBase
 
     private void GetChunk(int index, ref FixedChunk chunkStruct)
     {
-        Debug.Log("dziala");
         Chunk chunk = map.chunks[index];
-        Debug.Log("chunki dzalaja");
 
         chunkStruct.worldPosition = chunk.worldPosition;
         chunkStruct.chunkCoordinates = new int2((int)chunk.chunkCoordinates.x, (int)chunk.chunkCoordinates.y);
@@ -87,17 +86,63 @@ public partial class MapServerSystem : SystemBase
         {
             for (int j = 0; j < 10; j++)
             {
-
                 chunkStruct[i, j] = new FixedTile(chunk.grid[i,j]);
-
-                if (chunk.grid[i,j].gridObject != null)
-                {
-               //     Debug.Log((chunk.grid[i, j].gridObject));
-                }
             }
         }
     }
+
+    private void GetChunkObjects(int index, ref EntityCommandBuffer entityCommandBuffer,Entity target)
+    {
+        Chunk chunk = map.chunks[index];
+
+        FixedBuildingObjects fixedBuildingObjects = new FixedBuildingObjects();
+        fixedBuildingObjects.chunkCoordinates = new int2((int)chunk.chunkCoordinates.x, (int)chunk.chunkCoordinates.y);
+        Entity rpc;
+
+        int counter = 0;
+
+        for (int i = 0; i < 10; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                if (chunk.grid[i, j].gridObject != null)
+                {
+                    byte[] bytes = chunk.grid[i, j].gridObject.GetBytes();
+                    Debug.Log(chunk.grid[i, j].gridObject.ToString());
+
+                    if(bytes.Length < FixedBuildingObjects.size - counter)
+                    {
+                        fixedBuildingObjects[counter] = (byte)bytes.Length;
+                        counter++;
+                        for (int k = 0; k < bytes.Length; k++)
+                        {
+                            fixedBuildingObjects[counter] = bytes[k];
+                            counter++;
+                        }
+                    }
+                    else
+                    {
+                        SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
+                        fixedBuildingObjects = new FixedBuildingObjects();
+                        counter = 0;
+                    }
+                }
+            }
+        }
+        if(counter != 0) SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
+    }
+
+    private void SendBuidlingObjectRPC(ref EntityCommandBuffer entityCommandBuffer, FixedBuildingObjects fixedBuildingObjects, ref Entity target)
+    {
+        var rpc = entityCommandBuffer.CreateEntity();
+        entityCommandBuffer.AddComponent(rpc, fixedBuildingObjects);
+        entityCommandBuffer.AddComponent(rpc, new SendRpcCommandRequest()
+        {
+            TargetConnection = target
+        });
+    }
 }
+
 
 
 

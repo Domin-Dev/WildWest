@@ -13,6 +13,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject bulletPrefab;
     [Header("Particle Prefab")]
     public GameObject shotSmoke;
+    public GameObject shotFire;
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
@@ -25,6 +26,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
                 shotSmoke = GetEntity(authoring.shotSmoke, TransformUsageFlags.Dynamic),
                 bulletEntity = GetEntity(authoring.bulletPrefab, TransformUsageFlags.Dynamic),
+                shotFire = GetEntity(authoring.shotFire, TransformUsageFlags.Dynamic),
             });
         }
     }
@@ -38,5 +40,6 @@ public struct EntitiesReferences : IComponentData
     public Entity bulletEntity;
     [Space]
     public Entity shotSmoke;
+    public Entity shotFire;
 
 }

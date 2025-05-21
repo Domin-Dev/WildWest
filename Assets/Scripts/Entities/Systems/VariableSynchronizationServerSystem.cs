@@ -18,15 +18,19 @@ partial struct VariableSynchronizationServerSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (playerInput,playerInputSync, itemInHandInput, itemInHandInputSync) in
-        SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<ItemInHandInput>, RefRW<ItemInHandInputSync>>())
+        foreach (var (playerInput,playerInputSync, itemInHandInput, itemInHandInputSync, entity) in
+        SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<ItemInHandInput>, RefRW<ItemInHandInputSync>>().WithEntityAccess())
         {
             playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
             playerInputSync.ValueRW.sightDirection = playerInput.ValueRO.sightDirection;
             playerInputSync.ValueRW.leftButton = playerInput.ValueRO.leftButton;
             playerInputSync.ValueRW.rightButton = playerInput.ValueRO.rightButton;
 
-            itemInHandInputSync.ValueRW.itemInHand = itemInHandInput.ValueRO.itemInHand;
+            if (itemInHandInputSync.ValueRW.itemInHand != itemInHandInput.ValueRO.itemInHand)
+            {
+                itemInHandInputSync.ValueRW.itemInHand = itemInHandInput.ValueRO.itemInHand;
+                CharacterManager.instance.ChangeItemInHand(itemInHandInputSync.ValueRO.itemInHand, entity, ref state);
+            }
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

@@ -14,7 +14,7 @@ public class BulletAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Bullet() { speed = 5f, time = -1});
             AddComponent(entity, new NewBullet());
-        }
+       }
     }
 }
 

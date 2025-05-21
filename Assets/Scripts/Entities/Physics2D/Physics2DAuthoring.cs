@@ -5,9 +5,10 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-public struct Hitbox2D : IComponentData
+public struct BoxCollider2D : IComponentData
 {
     public float2 size;
+    public float2 offset;
 }
 public struct Physics2D : IComponentData
 {
@@ -30,7 +31,6 @@ public struct IsChanged : IComponentData, IEnableableComponent {  }
 
 public class Physics2DAuthoring : MonoBehaviour
 {
-    [SerializeField] float2 hitboxSize; 
     [SerializeField] ushort physicsLayer;
     public class Baker : Baker<Physics2DAuthoring>
     {
@@ -43,9 +43,6 @@ public class Physics2DAuthoring : MonoBehaviour
                 layer = authoring.physicsLayer, 
                 cellIndex = new int2(int.MinValue, int.MinValue)    
             });
-            AddComponent(entity, new Hitbox2D() {
-                size = authoring.hitboxSize,
-            }); 
         }
     }
 

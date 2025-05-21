@@ -257,22 +257,20 @@ public class EquipmentManager : MonoBehaviour
         placeholderGrids.Add(2);
 
         TimeTickSystem.On10Tick += TickUpdate;
-        IsConnetedCilientSystem.youAreInGame += IsPlayer;
         ChangeSelectedSlot(0);
     }
-
-
-    private void IsPlayer()
-    {
-        UpdateItemInHand?.Invoke(this, new ItemStatsArgs(equipmentBar[slotInHand]));
-    }
-
     private void OnDestroy()
     {
         TimeTickSystem.On10Tick -= TickUpdate;
-        IsConnetedCilientSystem.youAreInGame -= IsPlayer;
     }
 
+    public int GetItemInHand()
+    {
+        int item = -1;
+        if (slotInHand >= 0 && equipmentBar[slotInHand] != null)
+            item = equipmentBar[slotInHand].itemID;
+            return item;
+    }
     private void Spoilage(FoodItem foodItem,SlotPosition slotPosition)
     {
         foodItem.Decrease(1f);

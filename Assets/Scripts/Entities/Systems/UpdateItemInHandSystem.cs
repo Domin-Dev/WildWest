@@ -11,7 +11,7 @@ partial struct UpdateItemInHandSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<ItemInHandInputSync>();;
+        state.RequireForUpdate<ItemInHandInputSync>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -20,7 +20,7 @@ partial struct UpdateItemInHandSystem : ISystem
             .WithChangeFilter<ItemInHandInputSync>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             Debug.Log("Zmiana " + itemInHandInputSync.ValueRO.itemInHand);
-            CharacterManager.instance.ChangeItemInHand(itemInHandInputSync.ValueRO.itemInHand, entity); 
+            CharacterManager.instance.ChangeItemInHand(itemInHandInputSync.ValueRO.itemInHand, entity, ref state);
         }
     }
 }

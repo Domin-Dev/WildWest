@@ -1,4 +1,4 @@
-using Unity.Burst;
+﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -22,24 +22,24 @@ partial struct CharacterAimSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-       
+
         deltaTime = SystemAPI.Time.DeltaTime;
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
 
-        foreach ((RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, RefRO<LocalToWorld> worldPos , RefRO<GhostOwner> ghostOwner, Entity entity) 
-        in SystemAPI.Query < RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>,RefRO<LocalToWorld>, RefRO<GhostOwner>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
+        foreach ((RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, RefRO<LocalToWorld> worldPos, RefRO<GhostOwner> ghostOwner, RefRW<Player> player, Entity entity)
+        in SystemAPI.Query<RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, RefRO<LocalToWorld>, RefRO<GhostOwner>, RefRW<Player>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
 
             if (hands.ValueRO.actionStatus != 0)
             {
-                ActionUpdate(hands, ref state);
+                ActionUpdate(hands, player, ref state);
                 continue;
             }
 
-            
+
             if (playerInput.ValueRO.leftButton.IsSet)
             {
 
@@ -50,16 +50,20 @@ partial struct CharacterAimSystem : ISystem
                 hands.ValueRW.targetPosition = transform.Position + new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 1;
             }
-            if (playerInput.ValueRO.rightButton.IsSet)
+            if (playerInput.ValueRO.rightButton.IsSet && !player.ValueRO.isCooldown)
             {
-                if(state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
-                { 
+                LocalToWorld aimpoint = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.aimPoint);
+
+                if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
+                {
+                    LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.itemInHand);
                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = ghostOwner.ValueRO.NetworkId });
-                    entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(worldPos.ValueRO.Position));
+                    entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(aimpoint.Position).Rotate(rotation.Rotation));
 
                     if (state.World.Flags == WorldFlags.GameServer)
                     {
+                        player.ValueRW.isCooldown = true;
                         entityCommandBuffer.AddComponent(bullet, new EntityToHide());
                         Bullet bulletComp = SystemAPI.GetComponent<Bullet>(bullet);
                         bulletComp.time = 20;
@@ -76,26 +80,30 @@ partial struct CharacterAimSystem : ISystem
                 hands.ValueRW.lastPosition = transform.Position;
                 hands.ValueRW.targetPosition = transform.Position - new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 2;
-                EntitySpawner.instance.SpawnParticle(0, new float3(0, 0.1f, 0) + worldPosMainHand.Position);
+                if (state.World.Flags != WorldFlags.GameServer)
+                {
+                    Sounds.instance.Shot();
+                    EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)),quaternion.identity);
+                    EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation);
+                }
             }
-            
 
-       
             LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.main);
             LocalTransform localSide = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
             LocalToWorld localToWorld = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
             LocalTransform local = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInHand);
 
-            float3 currentPosition = localToWorld.Position; 
-            float2 direction = playerInput.ValueRO.sightDirection - new float2(currentPosition.x,currentPosition.y);
+
+            float3 currentPosition = localToWorld.Position;
+            float2 direction = playerInput.ValueRO.sightDirection - new float2(currentPosition.x, currentPosition.y);
 
 
             if (!math.any(direction))
-                    continue;
- 
+                continue;
+
             direction = math.normalize(direction);
 
-            float angle = math.atan2(direction.y, direction.x); 
+            float angle = math.atan2(direction.y, direction.x);
             quaternion mainTargetRotation;
             quaternion sideTargetRotation;
 
@@ -109,7 +117,7 @@ partial struct CharacterAimSystem : ISystem
                     p.z = -0.0001f;
                     local.Position = p;
                 }
-               
+
                 sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
                 angle = -angle;
                 mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
@@ -131,17 +139,21 @@ partial struct CharacterAimSystem : ISystem
             localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 10f);
             localSide.Rotation = math.slerp(localSide.Rotation, sideTargetRotation, deltaTime * 2f);
 
+            //if (direction.y > 0) localMain.Position.z = localMain.Position.y;
+            //else localMain.Position.z = 0;
+
+
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.main, localMain);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSide);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, local);
-            UpdateDirectionIndex(new float2(direction.x,direction.y), character,ref state);
+            UpdateDirectionIndex(new float2(direction.x, direction.y), character, ref state);
         }
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
 
-    public void ActionUpdate(RefRW<Hands> hands, ref SystemState state)
+    public void ActionUpdate(RefRW<Hands> hands, RefRW<Player> player, ref SystemState state)
     {
         LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
@@ -149,15 +161,16 @@ partial struct CharacterAimSystem : ISystem
         localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, deltaTime * 20);
 
 
-        if (MyTools.EqualFloat3(localTransform.Position,hands.ValueRO.targetPosition,0.01f) && MyTools.EqualQuaternions(localTransform.Rotation,hands.ValueRO.targetRotation,0.98f))
+        if (MyTools.EqualFloat3(localTransform.Position, hands.ValueRO.targetPosition, 0.005f) && MyTools.EqualQuaternions(localTransform.Rotation, hands.ValueRO.targetRotation, 0.99f))
         {
-            if (MyTools.EqualQuaternions(quaternion.identity, localTransform.Rotation))
+            if (MyTools.EqualQuaternions(quaternion.identity, localTransform.Rotation, 0.99f))
             {
                 localTransform.Position = hands.ValueRW.lastPosition;
                 localTransform.Rotation = quaternion.identity;
                 hands.ValueRW.actionStatus = 0;
+                if (state.World.Flags == WorldFlags.GameServer)
+                    player.ValueRW.isCooldown = false;
             }
-
 
             hands.ValueRW.targetRotation = quaternion.identity;
             hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
@@ -172,7 +185,7 @@ partial struct CharacterAimSystem : ISystem
         {
             character.ValueRW.directionHead = newDirIndex;
             SetDirection(character.ValueRO.head, newDirIndex, ref state);
-            if(!character.ValueRO.isMove)
+            if (!character.ValueRO.isMove)
             {
                 SetDirection(character.ValueRO.body, newDirIndex, ref state);
                 character.ValueRW.directionBody = newDirIndex;
@@ -180,7 +193,7 @@ partial struct CharacterAimSystem : ISystem
         }
     }
 
-    public static void SetDirection(Entity entity,int newIndex, ref SystemState state)
+    public static void SetDirection(Entity entity, int newIndex, ref SystemState state)
     {
         if (state.EntityManager.HasComponent<SpriteRenderer>(entity))
         {
@@ -191,15 +204,6 @@ partial struct CharacterAimSystem : ISystem
             spriteRenderer.SetPropertyBlock(materialProperty);
         }
     }
-
-
-    [BurstCompile]
-    public void OnDestroy(ref SystemState state)
-    {
-
-    }
-
-
 }
 
 

@@ -98,7 +98,7 @@ public class GameTree : MonoBehaviour, ILifePoints,ITransparent
             {
                 if(!isFell)
                 {
-                    transform.Find("HitBox").AddComponent<DamgeBox>();
+                   // transform.Find("HitBox").AddComponent<DamgeBox>();
                     Instantiate(ParticleAssets.instance.smoke,new Vector3(0,-0.08f,0) + transform.localPosition + transform.up * 0.25f, Quaternion.identity);
                     Sounds.instance.Shield();
                     isFell = true;

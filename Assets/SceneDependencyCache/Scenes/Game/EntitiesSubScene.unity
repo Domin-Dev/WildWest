@@ -147,12 +147,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a6022ea436c5b044b712ca25ed9902d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shadowPrefab: {fileID: 6407006527467773146, guid: 030a226b9b73ab043831ac3776291da6, type: 3}
+  shadowPrefab: {fileID: 0}
   worldItemPrefab: {fileID: 3906003094013903276, guid: 8239189eae1b88d4aa09a07260d280d2, type: 3}
   characterPrefab: {fileID: 3773562619657541914, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
   buildObjectEntityPrefab: {fileID: 9169308965752663696, guid: 3b883392e783c5d4eb4d3bd503bc98ba, type: 3}
   bulletPrefab: {fileID: 790217896693364317, guid: 164a9318ec4a9df499a0db19f27a1d7a, type: 3}
   shotSmoke: {fileID: 6328287962746153788, guid: 00deb22ece09d4f4e99ed891dbc09bec, type: 3}
+  shotFire: {fileID: 2929994055924591819, guid: 6bc56e8498891144eb3354dd80e7ca31, type: 3}
 --- !u!4 &1684692731
 Transform:
   m_ObjectHideFlags: 0

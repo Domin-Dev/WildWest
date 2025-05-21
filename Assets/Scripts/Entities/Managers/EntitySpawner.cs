@@ -56,88 +56,7 @@ public class EntitySpawner : MonoBehaviour
         InvokeRepeating("WaitForEntity", 0.1f, 0.1f);
     }
 
-    private void Update()
-    {
-        if (createdCharacters.Length > 0)
-        {
-            for (int j = createdCharacters.Length - 1; j >= 0; j--)
-            {
-                Entity entity = createdCharacters[j];
-                if (!entityManager.HasComponent<Child>(entity)) continue;
-
-                var childs = entityManager.GetBuffer<Child>(entity);
-                Hands hands = new Hands();
-                Character character = new Character();
-                hands.rotated = true;
-
-                foreach (var child in childs)
-                {
-                    if (entityManager.HasComponent<Head>(child.Value))
-                    {
-                        var spr = entityManager.GetBuffer<Child>(child.Value)[0];
-                        var spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(spr.Value);
-                        var mpb = new MaterialPropertyBlock();
-
-                        spriteRenderer.GetPropertyBlock(mpb);
-                        mpb.SetInt("_HairIndex", UnityEngine.Random.Range(14, 31));
-                        mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_HairColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        // mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        spriteRenderer.SetPropertyBlock(mpb);
-
-                        character.headParent = child.Value;
-                        character.head = spr.Value;
-                    }
-                    else if (entityManager.HasComponent<Body>(child.Value))
-                    {
-                        var spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(child.Value);
-                        var mpb = new MaterialPropertyBlock();
-                        spriteRenderer.GetPropertyBlock(mpb);
-                        mpb.SetColor("_SkinColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_OuterwearColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_UnderwearColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_PantsColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_ShirtColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_BeltColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_AccessoryColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetColor("_BagColor", new Color(UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f), UnityEngine.Random.Range(0.01f, 1f)));
-                        mpb.SetInt("_Direction", 0);
-                        //character.directionHead
-                        spriteRenderer.SetPropertyBlock(mpb);
-
-                        character.body = child.Value;
-                    }
-                    else if (entityManager.HasComponent<MainHand>(child.Value))
-                    {
-                        hands.main = child.Value;
-                        hands.itemInHand = GetChild(child.Value, 4);
-                        hands.mainhand = GetChild(child.Value, 1);
-                    }
-                    else if (entityManager.HasComponent<SideHand>(child.Value))
-                    {
-                        hands.side = child.Value;
-                        hands.sidehand = GetChild(child.Value, 1);
-                    }
-                }
-                entityManager.SetComponentData(entity, character);
-                entityManager.SetComponentData(entity, hands);
-                createdCharacters.RemoveAt(j);
-            }
-        }
-   
-        if(Input.GetKeyDown(KeyCode.K) && isReady) {
-
-            for (int j = 0; j < 6; j++) 
-            {
-              //  SpawnPlayer(false, new float3( counter * 0.13f + 0.2f,( counter %1)* 0.13f + 0.2f,0));
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.L) && isReady)
-        {
-          //  SpawnBuildObject(new float3(0f,0f,0f), 7,0);
-        }
-    }
+  
 
     private void OnDestroy()
     {
@@ -210,12 +129,13 @@ public class EntitySpawner : MonoBehaviour
         ChatManager.instance.Print("wszystko gotowe");
         isReady = true;
     }
-    public void SpawnParticle(int indexParticle, float3 position)
+    public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion)
     {
         Entity prefab = GetParticleIndex(indexParticle);
         Entity entity = entityManager.Instantiate(prefab);
         position.z = position.y;
-        entityManager.SetComponentData(entity, LocalTransform.FromPosition(position));
+        LocalTransform localTransform = LocalTransform.FromPosition(position);
+        entityManager.SetComponentData(entity, localTransform.Rotate(quaternion));
         Particles particles = entityManager.GetComponentData<Particles>(entity);
         particles.finishParticles += Time.time;
         entityManager.SetComponentData(entity, particles);
@@ -225,6 +145,7 @@ public class EntitySpawner : MonoBehaviour
         switch (index)
         { 
             case 0: return entitiesReferences.shotSmoke;
+            case 1: return entitiesReferences.shotFire;
         }
         return Entity.Null;
     }

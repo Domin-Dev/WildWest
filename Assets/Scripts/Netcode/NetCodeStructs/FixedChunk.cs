@@ -16,8 +16,8 @@ public struct FixedChunk : IRpcCommand
     [FieldOffset(0)] public float2 worldPosition;             
     [FieldOffset(8)] public int2 chunkCoordinates;           
 
-    [FieldOffset(16)] public FixedTileRow list0;              
-    [FieldOffset(96)] public FixedTileRow list1;              
+    [FieldOffset( 16)] public FixedTileRow list0;              
+    [FieldOffset( 96)] public FixedTileRow list1;              
     [FieldOffset(176)] public FixedTileRow list2;             
     [FieldOffset(256)] public FixedTileRow list3;
     [FieldOffset(336)] public FixedTileRow list4;
@@ -140,4 +140,135 @@ public struct FixedTile
         this.variant = (byte)tile.variant;
     }
 }
+
+[Serializable]
+[StructLayout(LayoutKind.Explicit, Size = 80)]
+[GenerateTestsForBurstCompatibility]
+public struct FixedBytes : IRpcCommand
+{
+    [FieldOffset(0)]  public long bytes0;
+    [FieldOffset(8)]  public long bytes1;
+    [FieldOffset(16)] public long bytes2;
+    [FieldOffset(24)] public long bytes3;
+    [FieldOffset(32)] public long bytes4;
+    [FieldOffset(40)] public long bytes5;
+    [FieldOffset(48)] public long bytes6;
+    [FieldOffset(56)] public long bytes7;
+    [FieldOffset(64)] public long bytes8;
+    [FieldOffset(72)] public long bytes9;
+
+    public byte this[int i]
+    {
+        get
+        {
+            int index = i % 8;
+            switch (i / 8)
+            {
+                case 0: return GetByte(bytes0, index);
+                case 1: return GetByte(bytes1, index);
+                case 2: return GetByte(bytes2, index);
+                case 3: return GetByte(bytes3, index);
+                case 4: return GetByte(bytes4, index);
+                case 5: return GetByte(bytes5, index);
+                case 6: return GetByte(bytes6, index);
+                case 7: return GetByte(bytes7, index);
+                case 8: return GetByte(bytes8, index);
+                case 9: return GetByte(bytes9, index);
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+        set
+        {
+            int index = i % 8;
+            switch (i / 8)
+            {
+                case 0: SetByte(ref bytes0, index, value); break;
+                case 1: SetByte(ref bytes1, index, value); break;
+                case 2: SetByte(ref bytes2, index, value); break;
+                case 3: SetByte(ref bytes3, index, value); break;
+                case 4: SetByte(ref bytes4, index, value); break;
+                case 5: SetByte(ref bytes5, index, value); break;
+                case 6: SetByte(ref bytes6, index, value); break;
+                case 7: SetByte(ref bytes7, index, value); break;
+                case 8: SetByte(ref bytes8, index, value); break;
+                case 9: SetByte(ref bytes9, index, value); break;
+
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+    }
+
+        private byte GetByte(long bytes,int index)
+        {
+           return BitConverter.GetBytes(bytes)[index];
+        }
+    
+        private void SetByte(ref long bytes, int index, byte value)
+        {
+            byte[] array = BitConverter.GetBytes(bytes);
+            array[index] = value;
+            bytes = BitConverter.ToInt64(array, 0);
+        }
+    
+}
+
+[Serializable]
+[StructLayout(LayoutKind.Explicit, Size = 100)]
+[GenerateTestsForBurstCompatibility]
+public struct Fixed100Bytes : IRpcCommand
+{
+    [FieldOffset(0)]  public FixedBytes bytes0;
+    [FieldOffset(10)] public FixedBytes bytes1;
+    [FieldOffset(20)] public FixedBytes bytes2;
+    [FieldOffset(30)] public FixedBytes bytes3;
+    [FieldOffset(40)] public FixedBytes bytes4;
+    [FieldOffset(50)] public FixedBytes bytes5;
+    [FieldOffset(60)] public FixedBytes bytes6;
+    [FieldOffset(70)] public FixedBytes bytes7;
+    [FieldOffset(80)] public FixedBytes bytes8;
+    [FieldOffset(90)] public FixedBytes bytes9;
+
+    public byte this[int index]
+    {
+        get
+        {
+            int i = index % 10;
+            switch (index/10)
+            {
+                case 0: return bytes0[i];
+                case 1: return bytes1[i];
+                case 2: return bytes2[i];
+                case 3: return bytes3[i];
+                case 4: return bytes4[i];
+                case 5: return bytes5[i];
+                case 6: return bytes6[i];
+                case 7: return bytes7[i];
+                case 8: return bytes8[i];
+                case 9: return bytes9[i];
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+        set
+        {
+            int i = index % 10;
+            switch (index/10)
+            {
+                case 0: bytes0[i] = value; break;
+                case 1: bytes1[i] = value; break;
+                case 2: bytes2[i] = value; break;
+                case 3: bytes3[i] = value; break;
+                case 4: bytes4[i] = value; break;
+                case 5: bytes5[i] = value; break;
+                case 6: bytes6[i] = value; break;
+                case 7: bytes7[i] = value; break;
+                case 8: bytes8[i] = value; break;
+                case 9: bytes9[i] = value; break;
+                default: throw new IndexOutOfRangeException();
+            }
+        }
+    }
+}
+
+
+
 

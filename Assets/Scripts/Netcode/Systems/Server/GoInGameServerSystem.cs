@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -26,7 +27,6 @@ partial struct GoInGameServerSystem : ISystem
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, GoInGameRequestRPC>().WithEntityAccess())
         {
             entityCommandBuffer.AddComponent<NetworkStreamInGame>(rpcCommandRequest.ValueRO.SourceConnection);
-            Debug.Log("new Player");
 
             //ChatManager.instance.Print("New Player!!!")
 
@@ -37,7 +37,11 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(networkId * 0.5f, 0, 0)));
             entityCommandBuffer.SetComponent(character, new PlayerLook() { look = requestRPC.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
-            entityCommandBuffer.SetComponent(character, new Player() { speed = 1f, playerName = requestRPC.playerName });
+            entityCommandBuffer.SetComponent(character, new Player()
+            {
+                speed = 1f,
+                playerName = requestRPC.playerName,
+            });
             entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
             Entity confirmation = entityCommandBuffer.CreateEntity();

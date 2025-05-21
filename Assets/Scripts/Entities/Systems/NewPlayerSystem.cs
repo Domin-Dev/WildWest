@@ -35,20 +35,22 @@ partial struct NewPlayerSystem : ISystem
 
             if (state.World.Flags == WorldFlags.GameServer && ClientServerBootstrap.HasClientWorlds)
             {
-                SetName(ref children, ref state, string.Empty);
-                state.EntityManager.GetComponentObject<SpriteRenderer>(character.head).enabled = false;
-                state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInHand).enabled = false;
-                state.EntityManager.GetComponentObject<SpriteRenderer>(hands.mainhand).enabled = false;
-                state.EntityManager.GetComponentObject<SpriteRenderer>(hands.sidehand).enabled = false;
-
-                foreach (var item in children)
+                if (ClientServerBootstrap.HasClientWorlds)
                 {
-                    if (state.EntityManager.HasComponent(item.Value, typeof(SpriteRenderer)))
+                    SetName(ref children, ref state, string.Empty);
+                    state.EntityManager.GetComponentObject<SpriteRenderer>(character.head).enabled = false;
+                    state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInHand).enabled = false;
+                    state.EntityManager.GetComponentObject<SpriteRenderer>(hands.mainhand).enabled = false;
+                    state.EntityManager.GetComponentObject<SpriteRenderer>(hands.sidehand).enabled = false;
+
+                    foreach (var item in children)
                     {
-                        state.EntityManager.GetComponentObject<SpriteRenderer>(item.Value).enabled = false;
+                        if (state.EntityManager.HasComponent(item.Value, typeof(SpriteRenderer)))
+                        {
+                            state.EntityManager.GetComponentObject<SpriteRenderer>(item.Value).enabled = false;
+                        }
                     }
                 }
-
             }
             else
             {
@@ -56,8 +58,22 @@ partial struct NewPlayerSystem : ISystem
                 SetPlayerLook(ref playerLook.ValueRW, ref hands, ref character, ref state);
             }
 
-            entityCommandBuffer.SetComponent(entity, hands);
+            if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
+            {
+                ItemInHandInput itemInHandInput = state.EntityManager.GetComponentData<ItemInHandInput>(entity);
+                ItemInHandInputSync itemInHandInputSync = state.EntityManager.GetComponentData<ItemInHandInputSync>(entity);
+
+                int id = EquipmentManager.instance.GetItemInHand();
+                itemInHandInput.itemInHand = id;
+                itemInHandInputSync.itemInHand = id;
+
+                entityCommandBuffer.SetComponent(entity, itemInHandInput);
+                entityCommandBuffer.SetComponent(entity, itemInHandInputSync);
+            }
+
+
             entityCommandBuffer.SetComponent(entity, character);
+            entityCommandBuffer.SetComponent(entity, hands);
             entityCommandBuffer.RemoveComponent<NewPlayerTag>(entity);
         }
 
@@ -130,8 +146,12 @@ partial struct NewPlayerSystem : ISystem
             else if (SystemAPI.HasComponent<MainHand>(child.Value))
             {
                 hands.main = child.Value;
-                hands.itemInHand = GetChild(child.Value, 4, ref state);
+                hands.itemInHand = GetChild<ItemPointTag>(child.Value, 4, ref state);
                 hands.mainhand = GetChild(child.Value, 1,ref state);
+
+                hands.aimPoint = GetChild<AimPointTag>(child.Value, 4, ref state);
+                hands.hitboxPoint = GetChild<ItemHitboxTag>(child.Value, 4, ref state);
+                hands.reloadPoint = GetChild<ReloadPointTag>(child.Value, 4, ref state);
             }
             else if (SystemAPI.HasComponent<SideHand>(child.Value))
             {
@@ -145,6 +165,24 @@ partial struct NewPlayerSystem : ISystem
         for (int i = 0; i < depth; i++)
         {
             parent = SystemAPI.GetBuffer<Child>(parent)[0].Value;
+        }
+        return parent;
+    }
+
+    private Entity GetChild<T>(Entity parent, int depth, ref SystemState state) where T : struct, IComponentData
+    {
+        for (int i = 0; i < depth - 1; i++)
+        {
+            parent = SystemAPI.GetBuffer<Child>(parent)[0].Value;
+        }
+
+        var childs = SystemAPI.GetBuffer<Child>(parent);
+        for (int i = 0; i < childs.Length; i++)
+        {
+            if (state.EntityManager.HasComponent<T>(childs[i].Value))
+            {
+                return childs[i].Value;
+            }
         }
         return parent;
     }

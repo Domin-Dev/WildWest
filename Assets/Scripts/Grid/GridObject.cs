@@ -1,4 +1,6 @@
 
+using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -53,8 +55,8 @@ public class GridHole : GridObject
 public class GridObject: IHitPoints
 {
     public int ID;
-    public int variantIndex;
-    public int stateIndex;
+    public short variantIndex;
+    public short stateIndex;
     public Transform objectTransform;
 
     public float hitPoints;
@@ -64,10 +66,21 @@ public class GridObject: IHitPoints
 
     public GridObject(int ID,int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0)
     {
-        SetObject(ID, indexVariant, obj, mainPosition, stateIndex);
+        SetObject(ID,(short)indexVariant, obj, mainPosition,(short)stateIndex);
     }
 
-    protected void SetObject(int ID, int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex)
+    public GridObject(byte[] bytes)
+    {
+        this.ID =  BitConverter.ToInt32(bytes, 0);
+        this.variantIndex =  BitConverter.ToInt16(bytes, 4);
+        this.stateIndex =  BitConverter.ToInt16(bytes, 6);
+
+        this.hitPoints =  BitConverter.ToSingle(bytes, 8);
+        this.maxHitPoints =  BitConverter.ToSingle(bytes, 12);
+        this.mainPosition.x = BitConverter.ToSingle(bytes, 16);
+        this.mainPosition.y = BitConverter.ToSingle(bytes, 20);
+    }
+    protected void SetObject(int ID, short indexVariant, Transform obj, Vector2 mainPosition, short stateIndex)
     {
         this.ID = ID;
         this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
@@ -124,10 +137,24 @@ public class GridObject: IHitPoints
         GridVisualization.instance.DestroyObject(gridTile,true);
     }
 
+    public virtual byte[] GetBytes()
+    {
+        List<byte> bytes = new List<byte>();
+        bytes.AddRange(BitConverter.GetBytes(ID));
+        bytes.AddRange(BitConverter.GetBytes(variantIndex));
+        bytes.AddRange(BitConverter.GetBytes(stateIndex));
+        bytes.AddRange(BitConverter.GetBytes(hitPoints));
+        bytes.AddRange(BitConverter.GetBytes(maxHitPoints));
+        bytes.AddRange(BitConverter.GetBytes(mainPosition.x));
+        bytes.AddRange(BitConverter.GetBytes(mainPosition.y));
+        return bytes.ToArray();
+    }
+
     public override string ToString()
     {
-        return ItemsAsset.instance.GetItem(ID).name;
+        return ItemsAsset.instance.GetItem(ID).name + " " + this.variantIndex + " " + this.mainPosition;
     }
+
 }
 public class GridFarmland : GridSurface, IWater
 {
@@ -175,7 +202,7 @@ public class GridPlant : GridObject,IWater
             {
                 TimeTickSystem.OnTick -= Tick;        
             }
-            variantIndex = newStage;
+            variantIndex = (short)newStage;
             BuildingManager.instance.ChangeSprite(this);
         }
     }
