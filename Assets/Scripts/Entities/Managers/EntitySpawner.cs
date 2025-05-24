@@ -70,39 +70,8 @@ public class EntitySpawner : MonoBehaviour
         }
         return parent;
     }
-    //public void SpawnPlayer(bool tr, float3 pos)
-    //{
-    //    Debug.Log("Spawn Player");
-    //    Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-    //    entityManager.SetComponentData(character, LocalTransform.FromPosition(pos));
-    //    if (tr)
-    //    {
-    //        entityManager.AddComponentData(character, new Player() { speed = playerSpeed });
-    //        var physics = entityManager.GetComponentData<Physics2D>(character);
-    //        entityManager.AddComponentData(character, physics);
-    //        player = character;
-    //        this.AddComponent<CharacterManager>().SetUp(player);
-    //    }
-    //   // createdCharacters.Add(character);
-    //    counter++;
-    //}
-    //private void SpawnBuildObject(float3 position,int objectID,int variantIndex)
-    //{
-    //    VariantItem buildingItem = ItemsAsset.instance.GetItem<VariantItem>(objectID);
-    //    Variant variant = buildingItem.objectVariants[variantIndex].variants[0];
-        
 
-    //    position.z = position.y;
-    //    Entity character = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
-    //    entityManager.SetComponentData(character, LocalTransform.FromPosition(position));
-    //}
-    //private void SpawnCharacter()
-    //{
-    //    Entity character = entityManager.Instantiate(entitiesReferences.characterEntity);
-    //    entityManager.SetComponentData(character, LocalTransform.FromPosition(new float3((counter % 50) * 0.2f, (counter / 50) * 0.2f, 0)));
-    //    counter++;
-    //    createdCharacters.Add(character);
-    //}
+
     private void WaitForEntity()
     {
         EntityManager entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
@@ -136,16 +105,46 @@ public class EntitySpawner : MonoBehaviour
         position.z = position.y;
         LocalTransform localTransform = LocalTransform.FromPosition(position);
         entityManager.SetComponentData(entity, localTransform.Rotate(quaternion));
-        Particles particles = entityManager.GetComponentData<Particles>(entity);
+        SelfDestruction particles = entityManager.GetComponentData<SelfDestruction>(entity);
         particles.finishParticles += Time.time;
         entityManager.SetComponentData(entity, particles);
     }
+    public void SpawnEntityPrefab(int index,float3 position, quaternion quaternion)
+    {
+        Entity prefab = GetParticleIndex(index);
+        Entity entity = entityManager.Instantiate(prefab);
+        position.z = position.y;
+        LocalTransform localTransform = LocalTransform.FromPosition(position);
+     //   SelfDestruction selfD = entityManager.GetComponentData<SelfDestruction>(entity);
+      //  selfD.finishParticles += Time.time;
+      //  entityManager.SetComponentData(entity, selfD);
+    }
+    public void SpawnBuildingObject(GridObject gridObject, float2 gridPosition)
+    {
+        Entity entity = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
+        Entity sprite = entityManager.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
+        SpriteRenderer spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(sprite);
+        spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(gridObject.ID, gridObject.variantIndex);
+
+        LocalTransform localTransform = LocalTransform.FromPosition(new float3(gridPosition.x,gridPosition.y,gridPosition.y));
+        BoxCollider2D boxCollider2D = new BoxCollider2D()
+        { 
+            offset = 0f,
+            size = new float2(0.2f,0.2f)
+        };
+
+
+        entityManager.SetComponentData(entity, boxCollider2D);
+        entityManager.SetComponentData(entity, localTransform);
+    }
+
     private Entity GetParticleIndex(int index)
     {
         switch (index)
         { 
             case 0: return entitiesReferences.shotSmoke;
             case 1: return entitiesReferences.shotFire;
+            case 2: return entitiesReferences.shotLight;
         }
         return Entity.Null;
     }

@@ -12,6 +12,7 @@ public class WorldItemAnimAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new WorldItemAnim
             { 
+
             });
         }
     }

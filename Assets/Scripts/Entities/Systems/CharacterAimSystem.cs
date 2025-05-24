@@ -83,8 +83,10 @@ partial struct CharacterAimSystem : ISystem
                 if (state.World.Flags != WorldFlags.GameServer)
                 {
                     Sounds.instance.Shot();
+                    EntitySpawner.instance.SpawnEntityPrefab(2, aimpoint.Position, aimpoint.Rotation);
                     EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)),quaternion.identity);
                     EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation);
+
                 }
             }
 

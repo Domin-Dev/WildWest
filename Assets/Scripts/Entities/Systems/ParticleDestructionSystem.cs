@@ -36,7 +36,7 @@ public partial struct ParticleDestructionJob : IJobEntity
     public double elapsedTime;
     public NativeList<Entity>.ParallelWriter entitiesToDestroy;
 
-    public void Execute(ref Particles particles, Entity entity)
+    public void Execute(ref SelfDestruction particles, Entity entity)
     {
         if (particles.finishParticles <= elapsedTime)
         {

@@ -154,6 +154,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 790217896693364317, guid: 164a9318ec4a9df499a0db19f27a1d7a, type: 3}
   shotSmoke: {fileID: 6328287962746153788, guid: 00deb22ece09d4f4e99ed891dbc09bec, type: 3}
   shotFire: {fileID: 2929994055924591819, guid: 6bc56e8498891144eb3354dd80e7ca31, type: 3}
+  shotLight: {fileID: 8215907354024352320, guid: 7b6d87b4016d6ef4ea1b188d090df24f, type: 3}
 --- !u!4 &1684692731
 Transform:
   m_ObjectHideFlags: 0

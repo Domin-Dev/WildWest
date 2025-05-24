@@ -96,6 +96,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2475631014030168912}
+  - component: {fileID: 1541667608665812459}
+  - component: {fileID: 8028461739281590064}
   m_Layer: 0
   m_Name: BuildingObject
   m_TagString: Untagged
@@ -119,3 +121,34 @@ Transform:
   - {fileID: 4403541794487979881}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1541667608665812459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9169308965752663696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2084fa4c2c1d22841b42c4864c6d8d0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  size:
+    x: 0.2
+    y: 0.2
+  offset:
+    x: 0
+    y: 0
+--- !u!114 &8028461739281590064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9169308965752663696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d9f44a8849fa704485a569b7a7d9d49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  physicsLayer: 0

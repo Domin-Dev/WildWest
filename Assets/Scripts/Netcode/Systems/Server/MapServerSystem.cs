@@ -6,8 +6,9 @@ using Unity.Collections;
 using System;
 using Unity.Mathematics;
 using System.Collections.Generic;
-using static UnityEngine.EventSystems.EventTrigger;
 using Unity.Entities.UniversalDelegates;
+using Unity.Transforms;
+using TMPro;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapServerSystem : SystemBase
@@ -56,9 +57,11 @@ public partial class MapServerSystem : SystemBase
                     TargetConnection = entity
                 });
             }
+            CreateObject(ref entityCommandBuffer, null, new float2(1,1));
+            CreateObject(ref entityCommandBuffer, null, new float2(1.2f,1.2f));
 
-            GetChunkObjects(0,ref entityCommandBuffer, entity);
-
+            //GetChunkObjects(0,ref entityCommandBuffer, entity);
+            //GetChunkObjects(1,ref entityCommandBuffer, entity);
 
             Entity loaded = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(loaded, new MapIsLoaded());
@@ -105,15 +108,25 @@ public partial class MapServerSystem : SystemBase
         {
             for (int j = 0; j < 10; j++)
             {
-                if (chunk.grid[i, j].gridObject != null)
-                {
-                    byte[] bytes = chunk.grid[i, j].gridObject.GetBytes();
-                    Debug.Log(chunk.grid[i, j].gridObject.ToString());
+                GridObject gridObject = chunk.grid[i, j].gridObject;
 
-                    if(bytes.Length < FixedBuildingObjects.size - counter)
+                if (gridObject != null)
+                {
+                    byte[] bytes = gridObject.GetBytes();
+                    List<byte> posXY = new List<byte>();
+                    posXY.AddRange(BitConverter.GetBytes(i));
+                    posXY.AddRange(BitConverter.GetBytes(j));
+
+                    if(bytes.Length + 8 < FixedBuildingObjects.size - counter)
                     {
                         fixedBuildingObjects[counter] = (byte)bytes.Length;
+
                         counter++;
+                        for (int l = 0; l < posXY.Count; l++)
+                        {
+                            fixedBuildingObjects[counter] = posXY[l];
+                            counter++;
+                        }
                         for (int k = 0; k < bytes.Length; k++)
                         {
                             fixedBuildingObjects[counter] = bytes[k];
@@ -126,10 +139,14 @@ public partial class MapServerSystem : SystemBase
                         fixedBuildingObjects = new FixedBuildingObjects();
                         counter = 0;
                     }
+                    CreateObject(ref entityCommandBuffer, gridObject, new float2(i + chunk.chunkCoordinates.x, j + chunk.chunkCoordinates.y));
+
                 }
             }
         }
-        if(counter != 0) SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
+
+            if (counter != 0) SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
+      
     }
 
     private void SendBuidlingObjectRPC(ref EntityCommandBuffer entityCommandBuffer, FixedBuildingObjects fixedBuildingObjects, ref Entity target)
@@ -140,6 +157,27 @@ public partial class MapServerSystem : SystemBase
         {
             TargetConnection = target
         });
+    }
+
+    private void CreateObject(ref EntityCommandBuffer entityCommand,GridObject gridObject, float2 pos)
+    {
+        Entity entity = entityCommand.CreateEntity();
+        LocalTransform localTransform = LocalTransform.FromPosition(new float3(pos.x, pos.y, pos.y));
+
+
+        entityCommand.AddComponent(entity, localTransform);
+        entityCommand.AddComponent(entity, new IsChanged());
+        entityCommand.SetComponentEnabled(entity,typeof(IsChanged), true);
+        entityCommand.AddComponent(entity, new Physics2D() {
+            layer = 0,
+            cellIndex = new int2(int.MinValue, int.MinValue)
+        });
+        entityCommand.AddComponent(entity, new BoxCollider2D()
+        {
+            offset = 0f,
+            size = new float2(0.2f, 0.2f)
+        });
+        entityCommand.AddComponent(entity, new Velocity2D() { Value = float2.zero});
     }
 }
 

@@ -213,20 +213,20 @@ public struct FixedBytes : IRpcCommand
 }
 
 [Serializable]
-[StructLayout(LayoutKind.Explicit, Size = 100)]
+[StructLayout(LayoutKind.Explicit, Size = 800)]
 [GenerateTestsForBurstCompatibility]
 public struct Fixed100Bytes : IRpcCommand
 {
     [FieldOffset(0)]  public FixedBytes bytes0;
-    [FieldOffset(10)] public FixedBytes bytes1;
-    [FieldOffset(20)] public FixedBytes bytes2;
-    [FieldOffset(30)] public FixedBytes bytes3;
-    [FieldOffset(40)] public FixedBytes bytes4;
-    [FieldOffset(50)] public FixedBytes bytes5;
-    [FieldOffset(60)] public FixedBytes bytes6;
-    [FieldOffset(70)] public FixedBytes bytes7;
-    [FieldOffset(80)] public FixedBytes bytes8;
-    [FieldOffset(90)] public FixedBytes bytes9;
+    [FieldOffset(80)] public FixedBytes bytes1;
+    [FieldOffset(160)] public FixedBytes bytes2;
+    [FieldOffset(240)] public FixedBytes bytes3;
+    [FieldOffset(320)] public FixedBytes bytes4;
+    [FieldOffset(400)] public FixedBytes bytes5;
+    [FieldOffset(480)] public FixedBytes bytes6;
+    [FieldOffset(560)] public FixedBytes bytes7;
+    [FieldOffset(640)] public FixedBytes bytes8;
+    [FieldOffset(720)] public FixedBytes bytes9;
 
     public byte this[int index]
     {

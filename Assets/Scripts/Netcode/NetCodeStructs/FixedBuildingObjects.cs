@@ -7,7 +7,7 @@ using Unity.NetCode;
 
 
 [Serializable]
-[StructLayout(LayoutKind.Explicit, Size = 816)]
+[StructLayout(LayoutKind.Explicit, Size = 824)]
 [GenerateTestsForBurstCompatibility]
 public struct FixedBuildingObjects : IRpcCommand
 {

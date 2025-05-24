@@ -14,19 +14,23 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     [Header("Particle Prefab")]
     public GameObject shotSmoke;
     public GameObject shotFire;
+    public GameObject shotLight;
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new EntitiesReferences{
+            AddComponent(entity, new EntitiesReferences
+            {
                 shadowEntity = GetEntity(authoring.shadowPrefab, TransformUsageFlags.Dynamic),
                 worldItemEntity = GetEntity(authoring.worldItemPrefab, TransformUsageFlags.Dynamic),
                 characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
+
                 shotSmoke = GetEntity(authoring.shotSmoke, TransformUsageFlags.Dynamic),
                 bulletEntity = GetEntity(authoring.bulletPrefab, TransformUsageFlags.Dynamic),
                 shotFire = GetEntity(authoring.shotFire, TransformUsageFlags.Dynamic),
+                shotLight = GetEntity(authoring.shotLight, TransformUsageFlags.Dynamic)
             });
         }
     }
@@ -41,5 +45,6 @@ public struct EntitiesReferences : IComponentData
     [Space]
     public Entity shotSmoke;
     public Entity shotFire;
+    public Entity shotLight;
 
 }

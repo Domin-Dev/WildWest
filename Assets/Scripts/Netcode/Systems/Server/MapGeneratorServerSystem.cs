@@ -25,7 +25,6 @@ public partial class MapGeneratorServerSystem : SystemBase
                 .GenerateMap(); Debug.Log("wygenerowano mape!!");
             entityCommandBuffer.DestroyEntity(e);
         }
-
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }

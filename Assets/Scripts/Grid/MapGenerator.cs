@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.Physics;
+using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -54,7 +56,6 @@ public class MapGenerator
 
         return map;
     }
-
     private void SetValue(Chunk chunk ,int x,int y,int index, int variant)
     {
         chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21); 
@@ -251,4 +252,7 @@ public class MapGenerator
         float value = Mathf.PerlinNoise(xf, yf);
         return value;
     }
+
+
+
 }

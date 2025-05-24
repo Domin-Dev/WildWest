@@ -36,9 +36,6 @@ public class CharacterManager : MonoBehaviour
     {
         EquipmentManager.instance.UpdateItemInHand -= UpdateItemInHand;
     }
-
-
-
     private void UpdateItemInHand(object sender, ItemStatsArgs e)
     {
         int id = -1;
@@ -70,7 +67,6 @@ public class CharacterManager : MonoBehaviour
         entityQuery.Dispose();
         entities.Dispose();
     }
-
     public void ChangeItemInHand(int itemID, Entity entity, ref SystemState state)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);

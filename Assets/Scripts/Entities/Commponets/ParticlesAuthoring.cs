@@ -19,7 +19,7 @@ public class ParticlesAuthoring : MonoBehaviour
             {
                 finish = authoring.main.duration;
             }
-            AddComponent(entity, new Particles()
+            AddComponent(entity, new SelfDestruction()
             {
                 finishParticles = finish,
             });
@@ -27,7 +27,3 @@ public class ParticlesAuthoring : MonoBehaviour
     }
 }
 
-public struct Particles : IComponentData
-{
-    public double finishParticles;
-}
