@@ -26,7 +26,7 @@ partial struct NewPlayerSystem : ISystem
         {
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
-            Hands hands = new Hands() { rotated = true };
+            Hands hands = new Hands() { rotated = true, elapsedTime = 0 };
             Character character = new Character() { isMove = false };
             var children = SystemAPI.GetBuffer<Child>(entity);
 

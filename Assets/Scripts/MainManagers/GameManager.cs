@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public event EventHandler<ValueArgs> onValueChange;
+
+    const int DebugUIIndex = 5;
     public class ValueArgs : EventArgs
     {
         public int x;
@@ -35,14 +37,14 @@ public class GameManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F1))
         {
-            var scene = SceneManager.GetSceneByBuildIndex(1);
+            var scene = SceneManager.GetSceneByBuildIndex(DebugUIIndex);
             if(!scene.isLoaded)
             {
-                SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+                SceneManager.LoadSceneAsync(DebugUIIndex, LoadSceneMode.Additive);
             }
             else
             {
-                SceneManager.UnloadSceneAsync(1);
+                SceneManager.UnloadSceneAsync(DebugUIIndex);
             }
         }
     }

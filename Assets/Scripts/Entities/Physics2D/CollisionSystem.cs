@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -129,8 +130,10 @@ public partial struct CollisionSystem : ISystem
 
             NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
 
+            if (potentialCollisions.Length > 0) Debug.Log("<Color=#ffee00>Nowy update!!!" + state.World.Flags);
             for (int j = 0; j < potentialCollisions.Length; j++)
             {
+                
                 Entity entityToCheck = potentialCollisions[j];
                 if (!SystemAPI.Exists(entityToCheck)) continue;
                 if (entityToCheck == entity || !getPhysics.HasComponent(entityToCheck) || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
@@ -147,11 +150,10 @@ public partial struct CollisionSystem : ISystem
                 Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
                 Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
                 float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly,true);
-                Debug.Log(collisiontime + " " + normalx + " " + normaly);
-                Debug.Log(box1.ToString() + box2.ToString());
 
-                if (collisiontime < 1f )
+                if (collisiontime < 1f)
                 {
+                    Debug.Log("@@@@@@@@@@ " + collisiontime + " " + normalx + " " + normaly);
                     collisions.Add(j, collisiontime);
                     if (collisiontime < minTime)
                     {      
@@ -174,7 +176,6 @@ public partial struct CollisionSystem : ISystem
                         Box tempBox = box1;
                         tempBox.pos += box1.velocity * collisiontime;
 
-                        var mtv = GetMTV(tempBox, box2);
 
                         if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
                         else tempVel.x = 0;
@@ -192,14 +193,18 @@ public partial struct CollisionSystem : ISystem
                         {
                             vel.y = tempVel.y;
                         }
-                        Debug.Log(tempVel);
+                        Debug.Log(vel);
                         // Debug.Log(k + " " + entityArray[j].Index + " " + normalx + " " + normaly + " " + collisiontime + " " + vel);
                     }
                 }
             }
 
+
+
             if (minTime < 1f)
             {
+                Debug.Log("s posiotion " + (pos - tempTransform1.Position).ToString());
+
                 topLeft1 =
                 new float2(
                 pos.x - tempHitbox1.size.x * 0.5f,
@@ -219,7 +224,6 @@ public partial struct CollisionSystem : ISystem
                         Entity entityToCheck = potentialCollisions[j];
                         if (!state.EntityManager.Exists(entityToCheck) || entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
 
-                        Debug.Log(entity + "  " + entityToCheck + "  " + state.World.Flags);
 
                         LocalTransform tempTransform2 = getPosition[entityToCheck];
                         BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
@@ -236,6 +240,8 @@ public partial struct CollisionSystem : ISystem
 
                         if (collisiontime < 1f)
                         {
+                            Debug.Log("----------------------" + collisiontime + " " + normalx + " " + normaly);
+
                             collisions.TryAdd(j, collisiontime);
                             if (collisiontime <= minTime && j != index && ((normalx != 0 && collision.x == 0) ||
                                 (normaly != 0 && collision.y == 0)))
@@ -263,8 +269,6 @@ public partial struct CollisionSystem : ISystem
                                 Box tempBox = box1;
                                 tempBox.pos += box1.velocity * collisiontime;
 
-                                var mtv = GetMTV(tempBox, box2);
-
                                 if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
                                 else tempVel.x = 0;
 
@@ -281,11 +285,11 @@ public partial struct CollisionSystem : ISystem
                                 {
                                     vel.y = tempVel.y;
                                 }
-                             //   Debug.Log(k + " " + entityArray[j].Index + " " + normalx + " " + normaly + " " + collisiontime + " " + vel);
                             }
                         }
                     }
                 }
+
 
                 box1 = new Box(new float2(topLeft1.x + vel.x, topLeft1.y + vel.y), tempHitbox1.size, velocity1);
 
@@ -303,8 +307,9 @@ public partial struct CollisionSystem : ISystem
                     Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
                     if (StaticAABB(box1, box2))
                     {
+                    
                         float3 localOffset = GetMTV(box1, box2);
-                        Debug.Log("!!!!!" + localOffset); 
+                        //Debug.Log("pppppp" + localOffset);
                         if (math.abs(localOffset.x) > math.abs(offset.x))
                         {
                             offset.x = localOffset.x;
@@ -316,6 +321,7 @@ public partial struct CollisionSystem : ISystem
                     }
                 }
 
+               // Debug.Log("new posiotion " + offset + vel);
                 tempTransform1.Position = pos;
                 tempTransform1.Position += offset;
                 tempTransform1.Position += vel;
@@ -439,7 +445,7 @@ public partial struct CollisionSystem : ISystem
         else
         {
             xInvEntry = (b2.pos.x + b2.size.x) - b1.pos.x;
-            xInvExit = b2.pos.x - (b1.pos.x);
+            xInvExit = (b1.pos.x) - b2.pos.x;
         }
 
         if (b1.velocity.y > 0.0f)
@@ -464,13 +470,14 @@ public partial struct CollisionSystem : ISystem
         float entryTime = Mathf.Max(xEntry, yEntry);
         float exitTime = Mathf.Min(xExit, yExit);
 
-        Debug.Log(entryTime + " " + exitTime);
-
+        Debug.Log(b1 + "\n " + b2);
+        Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry} ");
         if (entryTime <= exitTime && entryTime <= 1f && entryTime >= 0f && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, xEntry, yEntry))
         {
+            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             if (entryTime == xEntry)
             {
-                if (Mathf.Approximately(Mathf.Abs(yInvEntry), b2.size.y * 2) || Mathf.Approximately(Mathf.Abs(yInvExit), b2.size.y * 2))
+                if (Mathf.Approximately(Mathf.Abs(yInvEntry), b2.size.y*2) || Mathf.Approximately(Mathf.Abs(yInvExit), b2.size.y *2))
                 {
                     return 1;
                 }
@@ -478,7 +485,7 @@ public partial struct CollisionSystem : ISystem
             }
             else
             {
-                if (Mathf.Approximately(Mathf.Abs(xInvEntry), b2.size.x * 2) || Mathf.Approximately(Mathf.Abs(xInvExit), b2.size.x * 2))
+                if (Mathf.Approximately(Mathf.Abs(xInvEntry), b2.size.x *2) || Mathf.Approximately(Mathf.Abs(xInvExit), b2.size.x * 2))
                 {
                     return 1;
                 }
@@ -502,6 +509,7 @@ public partial struct CollisionSystem : ISystem
     }
     private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit, float xEntry, float yEntry)
     {
+
         bool xCollision = math.abs(xEntry) != Mathf.Infinity;
         bool yCollision = math.abs(yEntry) != Mathf.Infinity;
 
@@ -528,6 +536,8 @@ public partial struct CollisionSystem : ISystem
     }
     private float3 GetMTV(Box b1, Box b2)
     {
+        Debug.Log(b1);
+        Debug.Log(b2);
         float2 min1 = new float2(b1.pos.x, b1.pos.y - b1.size.y);
         float2 max1 = new float2(b1.pos.x + b1.size.x, b1.pos.y);
 
@@ -537,7 +547,7 @@ public partial struct CollisionSystem : ISystem
         float overlapX = System.Math.Min(max1.x - min2.x, max2.x - min1.x);
         float overlapY = System.Math.Min(max1.y - min2.y, max2.y - min1.y);
 
-        
+        //Debug.Log(overlapY);
         if (overlapX < overlapY)
             return new float3(overlapX * (min1.x < min2.x ? -1 : 1), 0, 0);
         else
@@ -558,7 +568,7 @@ public partial struct CollisionSystem : ISystem
     }
     private float2 GetCollisionNormal(Box b1, Box b2)
     {
-        float2 normal = new float2(1,1);
+        float2 normal;
 
         float left1 = b1.pos.x;
         float right1 = b1.pos.x + b1.size.x;
@@ -570,25 +580,55 @@ public partial struct CollisionSystem : ISystem
         float bottom2 = b2.pos.y - b2.size.y;
         float top2 = b2.pos.y;
 
-        if (Mathf.Approximately(right1, left2))
+        Debug.Log(left1 + " " + right1 + " " + top1 + " " + bottom1);
+        Debug.Log(left2 + " " + right2 + " " + top2+ " " + bottom2);
+
+        float[] tab = new float[4];
+
+        tab[0] = Math.Abs(right1 - left2);
+        tab[1] = Math.Abs(left1 - right2);
+        tab[2] = Math.Abs(top1 - bottom2);
+        tab[3] = Math.Abs(bottom1 - top2);
+
+        float min = float.MaxValue;
+        int index = 0;
+        for (int i = 0; i < tab.Length; i++)
         {
-            normal = new float2(-1, 0);  
-        }
-        else if (Mathf.Approximately(left1, right2))
-        {
-            normal = new float2(1, 0);
+            if(min > tab[i])
+            {
+                min = tab[i];
+                index = i;
+            }
         }
 
-        if (Mathf.Approximately(top1, bottom2))
+
+        switch (index)
         {
-            normal = new float2(0, -1); 
-        }
-        else if (Mathf.Approximately(bottom1, top2))
-        {
-            normal = new float2(0, 1);
+            case 0: return new float2(-1, 0);
+            case 1: return new float2(1, 0);
+            case 2: return new float2(0,-1);
+            case 3: return new float2(0,1);
+            default: return float2.zero;
         }
 
-        return normal;  
+
+        //if (Mathf.Approximately(right1, left2))
+        //{
+        //    normal = new float2(-1, 0);  
+        //}
+        //else if (Mathf.Approximately(left1, right2))
+        //{
+        //    normal = new float2(1, 0);
+        //}
+
+        //if (Mathf.Approximately(top1, bottom2))
+        //{
+        //    normal = new float2(0, -1); 
+        //}
+        //else if (Mathf.Approximately(bottom1, top2))
+        //{
+        //    normal = new float2(0, 1);
+        //}  
     }
 
 }

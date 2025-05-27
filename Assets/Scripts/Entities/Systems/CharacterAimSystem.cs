@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -47,6 +48,8 @@ partial struct CharacterAimSystem : ISystem
                 quaternion addedRotation = quaternion.Euler(0, 0, math.radians(-110));
                 hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
                 hands.ValueRW.lastPosition = transform.Position;
+                hands.ValueRW.lastRotation = transform.Rotation;
+                hands.ValueRW.elapsedTime = 0;
                 hands.ValueRW.targetPosition = transform.Position + new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 1;
             }
@@ -78,6 +81,8 @@ partial struct CharacterAimSystem : ISystem
                 quaternion addedRotation = quaternion.Euler(0, 0, math.radians(70));
                 hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
                 hands.ValueRW.lastPosition = transform.Position;
+                hands.ValueRW.lastRotation = transform.Rotation;
+                hands.ValueRW.elapsedTime = 0;
                 hands.ValueRW.targetPosition = transform.Position - new float3(0.06f, 0, 0);
                 hands.ValueRW.actionStatus = 2;
                 if (state.World.Flags != WorldFlags.GameServer)
@@ -159,23 +164,34 @@ partial struct CharacterAimSystem : ISystem
     {
         LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
-        localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, deltaTime * 15f);
-        localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, deltaTime * 20);
+        hands.ValueRW.elapsedTime += deltaTime;
 
+        float t = math.clamp(hands.ValueRO.elapsedTime / 0.1f, 0f, 1f);
+        localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, t);
+        localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, t);
+        Debug.Log(t + " " +  hands.ValueRO.actionStatus + " " + hands.ValueRW.targetPosition);
 
-        if (MyTools.EqualFloat3(localTransform.Position, hands.ValueRO.targetPosition, 0.005f) && MyTools.EqualQuaternions(localTransform.Rotation, hands.ValueRO.targetRotation, 0.99f))
+        if(t == 1)
         {
-            if (MyTools.EqualQuaternions(quaternion.identity, localTransform.Rotation, 0.99f))
+            if (hands.ValueRO.actionStatus == 1002)
             {
-                localTransform.Position = hands.ValueRW.lastPosition;
-                localTransform.Rotation = quaternion.identity;
+                localTransform.Position = hands.ValueRO.targetPosition;
+                localTransform.Rotation = hands.ValueRO.targetRotation;
                 hands.ValueRW.actionStatus = 0;
                 if (state.World.Flags == WorldFlags.GameServer)
                     player.ValueRW.isCooldown = false;
             }
+            else
+            {
 
-            hands.ValueRW.targetRotation = quaternion.identity;
-            hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
+                hands.ValueRW.targetRotation = hands.ValueRO.lastRotation;
+                hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
+
+                hands.ValueRW.lastRotation  = localTransform.Rotation;
+                hands.ValueRW.lastPosition = localTransform.Position;
+                hands.ValueRW.elapsedTime = 0;
+                hands.ValueRW.actionStatus = 1002;
+            }
         }
         state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.mainhand, localTransform);
     }

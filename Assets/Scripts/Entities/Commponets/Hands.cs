@@ -24,7 +24,9 @@ public struct Hands : IComponentData
     public float3 targetPosition;
 
     public float3 lastPosition;
+    public quaternion lastRotation;
 
     public bool rotated;
+    public float elapsedTime;
 }
 
