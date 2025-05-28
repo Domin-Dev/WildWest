@@ -130,7 +130,7 @@ public partial struct CollisionSystem : ISystem
 
             NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
 
-            if (potentialCollisions.Length > 0) Debug.Log("<Color=#ffee00>Nowy update!!!" + state.World.Flags);
+       //     if (potentialCollisions.Length > 0) Debug.Log("<Color=#ffee00>Nowy update!!!" + state.World.Flags);
             for (int j = 0; j < potentialCollisions.Length; j++)
             {
                 
@@ -149,7 +149,7 @@ public partial struct CollisionSystem : ISystem
 
                 Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
                 Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
-                float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly,true);
+                float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
 
                 if (collisiontime < 1f)
                 {
@@ -166,24 +166,16 @@ public partial struct CollisionSystem : ISystem
                         pos.x = tempTransform1.Position.x + box1.velocity.x * collisiontime;
                         pos.y = tempTransform1.Position.y + box1.velocity.y * collisiontime;
 
-
-
                         float remainingtime = 1.0f - collisiontime;
-
                         float2 tempVel = float2.zero;
-
-
                         Box tempBox = box1;
                         tempBox.pos += box1.velocity * collisiontime;
-
 
                         if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
                         else tempVel.x = 0;
 
                         if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
                         else tempVel.y = 0;
-
-
                       
                         if (math.abs(tempVel.x) > math.abs(vel.x))
                         {
@@ -236,12 +228,10 @@ public partial struct CollisionSystem : ISystem
 
                         box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
                         Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
-                        float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly,true);
+                        float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
 
                         if (collisiontime < 1f)
                         {
-                            Debug.Log("----------------------" + collisiontime + " " + normalx + " " + normaly);
-
                             collisions.TryAdd(j, collisiontime);
                             if (collisiontime <= minTime && j != index && ((normalx != 0 && collision.x == 0) ||
                                 (normaly != 0 && collision.y == 0)))
@@ -290,9 +280,7 @@ public partial struct CollisionSystem : ISystem
                     }
                 }
 
-
                 box1 = new Box(new float2(topLeft1.x + vel.x, topLeft1.y + vel.y), tempHitbox1.size, velocity1);
-
                 foreach (var item in collisions)
                 {
                     Entity entityToCheck = potentialCollisions[item.Key];
@@ -307,9 +295,7 @@ public partial struct CollisionSystem : ISystem
                     Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
                     if (StaticAABB(box1, box2))
                     {
-                    
                         float3 localOffset = GetMTV(box1, box2);
-                        //Debug.Log("pppppp" + localOffset);
                         if (math.abs(localOffset.x) > math.abs(offset.x))
                         {
                             offset.x = localOffset.x;
@@ -411,8 +397,6 @@ public partial struct CollisionSystem : ISystem
         }
         return -1;
     }
-
-
     private NativeList<Entity> GetPotentialCollisions(int2 gridIndex)
     {
         NativeList<Entity> entities = new NativeList<Entity>(Allocator.TempJob);
@@ -430,7 +414,7 @@ public partial struct CollisionSystem : ISystem
 
         return entities;
     }
-    private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly,bool secondCheck = false)
+    private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly)
     {
         float xInvEntry, yInvEntry;
         float xInvExit, yInvExit;
@@ -470,8 +454,8 @@ public partial struct CollisionSystem : ISystem
         float entryTime = Mathf.Max(xEntry, yEntry);
         float exitTime = Mathf.Min(xExit, yExit);
 
-        Debug.Log(b1 + "\n " + b2);
-        Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry} ");
+       // Debug.Log(b1 + "\n " + b2);
+      //  Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry} ");
         if (entryTime <= exitTime && entryTime <= 1f && entryTime >= 0f && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, xEntry, yEntry))
         {
             Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -509,7 +493,6 @@ public partial struct CollisionSystem : ISystem
     }
     private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit, float xEntry, float yEntry)
     {
-
         bool xCollision = math.abs(xEntry) != Mathf.Infinity;
         bool yCollision = math.abs(yEntry) != Mathf.Infinity;
 
@@ -536,8 +519,8 @@ public partial struct CollisionSystem : ISystem
     }
     private float3 GetMTV(Box b1, Box b2)
     {
-        Debug.Log(b1);
-        Debug.Log(b2);
+        //Debug.Log(b1);
+      //  Debug.Log(b2);
         float2 min1 = new float2(b1.pos.x, b1.pos.y - b1.size.y);
         float2 max1 = new float2(b1.pos.x + b1.size.x, b1.pos.y);
 

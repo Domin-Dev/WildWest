@@ -5,6 +5,7 @@ using Unity.NetCode;
 
 
 [UpdateAfter(typeof(NewPlayerSystem))]
+[UpdateBefore(typeof(CharacterAim))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct VariableSynchronizationServerSystem : ISystem
 {
@@ -25,6 +26,8 @@ partial struct VariableSynchronizationServerSystem : ISystem
             playerInputSync.ValueRW.sightDirection = playerInput.ValueRO.sightDirection;
             playerInputSync.ValueRW.leftButton = playerInput.ValueRO.leftButton;
             playerInputSync.ValueRW.rightButton = playerInput.ValueRO.rightButton;
+            playerInputSync.ValueRW.handRotation = playerInput.ValueRO.handRotation;
+            
 
             if (itemInHandInputSync.ValueRW.itemInHand != itemInHandInput.ValueRO.itemInHand)
             {

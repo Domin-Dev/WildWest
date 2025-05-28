@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class GameConfiguration: MonoBehaviour 
 {
     [SerializeField] private GameObject loadingScreen;
+    [SerializeField] private Animator blackScreen;
 
     private GameObject gameObj;
     private void Start()
@@ -19,9 +20,9 @@ public class GameConfiguration: MonoBehaviour
         loading.gameIsReady += () =>
         {
             Destroy(gameObj);
+            blackScreen.SetTrigger("BlackScreen");
         };
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(LoadMap));
     }
-
 }
 

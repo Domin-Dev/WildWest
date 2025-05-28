@@ -34,6 +34,7 @@ public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
     [GhostField(Quantization = 0)] public float2 sightDirection;
+    [GhostField(Quantization = 0)] public quaternion handRotation;
     public InputEvent rightButton;
     public InputEvent leftButton;
 }
@@ -50,6 +51,9 @@ public struct PlayerInputSync : IComponentData
 {
     [GhostField] public float2 movementDir;
     [GhostField] public float2 sightDirection;
+    [GhostField] public quaternion handRotation;
+
+
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;
 }

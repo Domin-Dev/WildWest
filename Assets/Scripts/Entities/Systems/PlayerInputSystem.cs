@@ -34,8 +34,8 @@ partial struct PlayerInputSystem : ISystem
         float2 sightDirection = new float2(target.x,target.y);
 
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync) in 
-            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>>().WithAll<GhostOwnerIsLocal,Simulate>())
+        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands) in 
+            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>())
         {
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
@@ -59,6 +59,10 @@ partial struct PlayerInputSystem : ISystem
             {
                 playerInput.ValueRW.rightButton.Set();
                 playerInputSync.ValueRW.rightButton.Set();
+
+                quaternion quaternion = SystemAPI.GetComponent<LocalTransform>(hands.ValueRO.main).Rotation;
+                playerInput.ValueRW.handRotation = quaternion;
+                playerInputSync.ValueRW.handRotation = quaternion;
             }
             else
             {

@@ -28,12 +28,14 @@ public class HybridManager : MonoBehaviour
     }
 
     private void IsPlayer()
-    { 
+    {
+        Debug.Log("------------------------------------------------jes tpal");
         EntityFollower entityFollower = new GameObject("PlayerFollower", typeof(EntityFollower)).GetComponent<EntityFollower>();
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp).WithAll<Player,GhostOwnerIsLocal>();
         var entites = entityQueryBuilder.Build(ClientServerBootstrap.ClientWorld.EntityManager);
         var array = entites.ToEntityArray(Allocator.Temp);
+        Debug.Log("Array ma " + array.Length);  
         entityFollower.SetEntity(array[0]);
 
 

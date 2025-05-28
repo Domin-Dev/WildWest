@@ -11,11 +11,8 @@ public partial class IsConnetedCilientSystem : SystemBase
 
     public static event Action youAreInGame;
 
-    protected override void OnCreate()
-    {
-        RequireForUpdate<YouAreInGameRPC>();
-    }
 
+    bool isConnected = false;
     protected override void OnUpdate()
     {
         float deltaTime = SystemAPI.Time.DeltaTime;
@@ -25,10 +22,19 @@ public partial class IsConnetedCilientSystem : SystemBase
         foreach (var (YouAreInGameRPC, e) in SystemAPI.Query<RefRO<YouAreInGameRPC>>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(e);
-            youAreInGame?.Invoke();
-            inGame = true;
+            isConnected = true;
         }
-        
+
+        foreach (var (player, e) in SystemAPI.Query<RefRO<Player>>().WithAll<GhostOwnerIsLocal>().WithEntityAccess())
+        {
+            if (isConnected)
+            {
+                inGame = true;
+                youAreInGame?.Invoke();
+            }
+        }
+
+
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
         if (inGame) Enabled = false;
