@@ -10,10 +10,10 @@ using UnityEngine.UI;
 
 public class Settings: MonoBehaviour 
 {
-
-
     [SerializeField] private Toggle fullscreen;
     [SerializeField] private TMP_Dropdown resolution;
+
+    [SerializeField] private Button closeSettings;
 
     List<Resolution> selectedResolutions;
     private void Awake()
@@ -47,7 +47,15 @@ public class Settings: MonoBehaviour
 
         fullscreen.isOn = Screen.fullScreen;
         fullscreen.onValueChanged.AddListener((fullscreen) => { SetFullscreen(fullscreen); });
+
+        closeSettings.onClick.AddListener(CloseSettings);
     }
+
+    private void CloseSettings()
+    {
+        SceneManager.UnloadSceneAsync(8);
+    }
+
     private void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;

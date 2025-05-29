@@ -18,6 +18,7 @@ partial struct CharacterAimSystem : ISystem
     private static float leftSide = math.PI / 2f;
 
     private float deltaTime;
+    //private float last;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -30,11 +31,12 @@ partial struct CharacterAimSystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         int i = 0;
-        foreach ((RefRW<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, RefRO<LocalToWorld> worldPos, RefRO<GhostOwner> ghostOwner, RefRW<Player> player, Entity entity)
-        in SystemAPI.Query<RefRW<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, RefRO<LocalToWorld>, RefRO<GhostOwner>, RefRW<Player>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
+        foreach ((RefRW<PlayerInput> input,RefRO<PlayerInputSync> playerInput, RefRW<Hands> hands, RefRW<Character> character, RefRO<LocalToWorld> worldPos, RefRO<GhostOwner> ghostOwner, RefRW<Player> player, Entity entity)
+        in SystemAPI.Query<RefRW<PlayerInput>,RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, RefRO<LocalToWorld>, RefRO<GhostOwner>, RefRW<Player>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             i++;
-            if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
+
+           // Debug.Log(networkTime.ServerTick.TickIndexForValidTick + " " +  state.World.Flags);
 
             if (hands.ValueRO.actionStatus != 0)
             {
@@ -47,6 +49,7 @@ partial struct CharacterAimSystem : ISystem
 
             if (playerInput.ValueRO.leftButton.IsSet)
             {
+                if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
 
                 LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
                 quaternion addedRotation = quaternion.Euler(0, 0, math.radians(-110));
@@ -60,7 +63,8 @@ partial struct CharacterAimSystem : ISystem
             }
             if (playerInput.ValueRO.rightButton.IsSet && !player.ValueRW.isCooldown)
             {
-              //   Debug.Log(aimpoint.Position + " " + state.World.Flags);
+                if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
+                //   Debug.Log(aimpoint.Position + " " + state.World.Flags);
                 if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
                 {
                     Debug.Log(entity + "  ---  " + i);
@@ -70,6 +74,11 @@ partial struct CharacterAimSystem : ISystem
                         localMain.Rotation = playerInput.ValueRO.handRotation;
                         state.EntityManager.SetComponentData(hands.ValueRO.main, localMain);
                         World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
+                    }
+                    else
+                    {
+                      //  input.ValueRW.rightButton.Set();
+                        Debug.Log("SHOOT!");
                     }
 
                     Debug.Log(localMain.Rotation + "  " + state.World.Flags);
@@ -83,9 +92,11 @@ partial struct CharacterAimSystem : ISystem
                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = ghostOwner.ValueRO.NetworkId });
                     entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation));
+                    player.ValueRW.isCooldown = true;
+                    Debug.Log("...............................................start");
+
                     if (state.World.Flags == WorldFlags.GameServer)
                     {
-                        player.ValueRW.isCooldown = true;
                         Debug.Log(" is Cooldown ture " + state.World.Flags);
                         entityCommandBuffer.AddComponent(bullet, new EntityToHide());
                         Bullet bulletComp = SystemAPI.GetComponent<Bullet>(bullet);
@@ -237,13 +248,25 @@ partial struct CharacterAimSystem : ISystem
     //        mainTargetRotation = quaternion.Euler(0, 0, angle);
     //    }
     //}
+
+
+    private float GetActionTime(int index)
+    {
+        switch (index)
+        {
+
+            case 2: return 0.25f;
+            case 1002: return 0.35f;
+            default: return 1;
+        }
+    }
     public void ActionUpdate(RefRW<Hands> hands, RefRW<Player> player, ref SystemState state)
     {
         LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
         hands.ValueRW.elapsedTime += deltaTime;
 
-        float t = math.clamp(hands.ValueRO.elapsedTime / 0.1f, 0f, 1f);
+        float t = math.clamp(hands.ValueRO.elapsedTime / GetActionTime(hands.ValueRO.actionStatus), 0f, 1f);
         localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, t);
         localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, t);
       //  Debug.Log(t + " " +  hands.ValueRO.actionStatus + " " + hands.ValueRW.targetPosition);
@@ -255,10 +278,12 @@ partial struct CharacterAimSystem : ISystem
                 localTransform.Position = hands.ValueRO.targetPosition;
                 localTransform.Rotation = hands.ValueRO.targetRotation;
                 hands.ValueRW.actionStatus = 0;
+                player.ValueRW.isCooldown = false;
+
                 if (state.World.Flags == WorldFlags.GameServer)
                 {
-                    player.ValueRW.isCooldown = false;
-                    Debug.Log(" is Cooldown false " + state.World.Flags);
+                   player.ValueRW.isCooldown = false;
+                    Debug.Log("...............................................KOniec");
                 }
             }
             else

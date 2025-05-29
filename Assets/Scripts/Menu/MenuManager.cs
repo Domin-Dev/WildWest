@@ -51,8 +51,7 @@ public class MenuManager : MonoBehaviour
         buttonMultiplayer.onClick.AddListener(OpenMultiplayerWindow);
         buttonSingleplayer.onClick.AddListener(OnButtonCreateGame);
         //Settings
-        buttonSettings.onClick.AddListener(() => { SwitchSettings(true); });
-        buttonBackSettings.onClick.AddListener(() => { SwitchSettings(false); });
+        buttonSettings.onClick.AddListener(() => { SceneManager.LoadSceneAsync(8,LoadSceneMode.Additive); });
 
         
         buttonConnet.onClick.AddListener(OnButtonConnect);
@@ -159,11 +158,6 @@ public class MenuManager : MonoBehaviour
         GameInfo.LoadScene(2, 1);
     }
 
-    private void SwitchSettings(bool open)
-    {
-        settingWindow.SetActive(open);
-        blackBackground.SetActive(open);
-    }
 
 
     private void Join()

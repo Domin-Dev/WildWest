@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
@@ -33,10 +33,27 @@ partial struct PlayerInputSystem : ISystem
         float3 target = (float3)MyTools.GetMouseWorldPosition();
         float2 sightDirection = new float2(target.x,target.y);
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            bool load = true;
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                Scene scene = SceneManager.GetSceneAt(i);
+                if (scene.buildIndex == 8 && scene.isLoaded)
+                {
+                    SceneManager.UnloadSceneAsync(8);
+                    load = false;
+                }
+            }
+            if (load)
+                SceneManager.LoadScene(8,LoadSceneMode.Additive);
+        }
 
         foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands) in 
             SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>())
         {
+
+
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
 
@@ -56,7 +73,7 @@ partial struct PlayerInputSystem : ISystem
             }
 
             if (right)
-            {
+            { 
                 playerInput.ValueRW.rightButton.Set();
                 playerInputSync.ValueRW.rightButton.Set();
 

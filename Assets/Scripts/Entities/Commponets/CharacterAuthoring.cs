@@ -78,6 +78,7 @@ public struct Player : IComponentData
     public float speed;
     [GhostField] public FixedString64Bytes playerName;
     [GhostField] public bool isCooldown;
+    [GhostField] public NetworkTick cooldownTick;
 }
 
 

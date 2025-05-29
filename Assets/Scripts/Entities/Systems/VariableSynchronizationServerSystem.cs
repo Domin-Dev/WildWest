@@ -5,7 +5,7 @@ using Unity.NetCode;
 
 
 [UpdateAfter(typeof(NewPlayerSystem))]
-[UpdateBefore(typeof(CharacterAim))]
+[UpdateAfter(typeof(CharacterAim))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct VariableSynchronizationServerSystem : ISystem
 {

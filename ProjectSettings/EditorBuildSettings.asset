@@ -29,5 +29,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/SceneDependencyCache/Scenes/Game/EntitiesSubScene.unity
     guid: fadc1d218d8ba3a48b165c70be944db5
+  - enabled: 1
+    path: Assets/SceneDependencyCache/Scenes/Settings.unity
+    guid: 62d7ba0ce38a6874e83769dc595aeeda
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0
