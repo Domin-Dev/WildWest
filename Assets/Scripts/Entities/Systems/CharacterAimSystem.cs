@@ -35,8 +35,9 @@ partial struct CharacterAimSystem : ISystem
         in SystemAPI.Query<RefRW<PlayerInput>,RefRO<PlayerInputSync>, RefRW<Hands>, RefRW<Character>, RefRO<LocalToWorld>, RefRO<GhostOwner>, RefRW<Player>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             i++;
+            if (!networkTime.IsFirstTimeFullyPredictingTick) continue;
 
-           // Debug.Log(networkTime.ServerTick.TickIndexForValidTick + " " +  state.World.Flags);
+            // Debug.Log(networkTime.ServerTick.TickIndexForValidTick + " " +  state.World.Flags);
 
             if (hands.ValueRO.actionStatus != 0)
             {
@@ -81,7 +82,7 @@ partial struct CharacterAimSystem : ISystem
                         Debug.Log("SHOOT!");
                     }
 
-                    Debug.Log(localMain.Rotation + "  " + state.World.Flags);
+                    //Debug.Log(localMain.Rotation + "  " + state.World.Flags);
 
                     LocalToWorld point = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.aimPoint);
                     LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.itemInHand);
@@ -93,7 +94,7 @@ partial struct CharacterAimSystem : ISystem
                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = ghostOwner.ValueRO.NetworkId });
                     entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation));
                     player.ValueRW.isCooldown = true;
-                    Debug.Log("...............................................start");
+                   // Debug.Log("...............................................start");
 
                     if (state.World.Flags == WorldFlags.GameServer)
                     {
@@ -149,14 +150,14 @@ partial struct CharacterAimSystem : ISystem
 
             if (math.abs(angle) > leftSide)
             {
-                if (hands.ValueRO.rotated)
-                {
-                    localMain = localMain.RotateX(math.radians(180));
-                    hands.ValueRW.rotated = false;
-                    var p = local.Position;
-                    p.z = -0.0001f;
-                    local.Position = p;
-                }
+                //if (hands.ValueRO.rotated)
+                //{
+                //    localMain = localMain.RotateX(math.radians(180));
+                //    hands.ValueRW.rotated = false;
+                //    var p = local.Position;
+                //    p.z = -0.0001f;
+                //    local.Position = p;
+                //}
 
                 sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
                 angle = -angle;
@@ -164,14 +165,14 @@ partial struct CharacterAimSystem : ISystem
             }
             else
             {
-                if (!hands.ValueRO.rotated)
-                {
-                    localMain = localMain.RotateX(math.radians(-180));
-                    hands.ValueRW.rotated = true;
-                    var p = local.Position;
-                    p.z = 0.0001f;
-                    local.Position = p;
-                }
+                //if (!hands.ValueRO.rotated)
+                //{
+                //    localMain = localMain.RotateX(math.radians(-180));
+                //    hands.ValueRW.rotated = true;
+                //    var p = local.Position;
+                //    p.z = 0.0001f;
+                //    local.Position = p;
+                //}
                 sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
                 mainTargetRotation = quaternion.Euler(0, 0, angle);
             }
@@ -181,7 +182,7 @@ partial struct CharacterAimSystem : ISystem
             // localSide.Rotation = sideTargetRotation;
             if (state.World.Flags != WorldFlags.GameServer)
             {
-                localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 20f);
+                localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 15);
                 localSide.Rotation = math.slerp(localSide.Rotation, sideTargetRotation, deltaTime * 5f);
             }
             else
@@ -205,58 +206,13 @@ partial struct CharacterAimSystem : ISystem
     }
 
 
-    //private void GetAnimDir(float3 currentPosition,float2 sightDirection,out quaternion main, out quaternion side)
-    //{
-    //    float2 direction = sightDirection - new float2(currentPosition.x, currentPosition.y);
-
-
-    //    if (!math.any(direction)) throw new System.Exception("Direction vector cannot be zero");
-
-
-    //    direction = math.normalize(direction);
-
-    //    float angle = math.atan2(direction.y, direction.x);
-    //    quaternion mainTargetRotation;
-    //    quaternion sideTargetRotation;
-
-    //    if (math.abs(angle) > leftSide)
-    //    {
-    //        if (hands.ValueRO.rotated)
-    //        {
-    //            localMain = localMain.RotateX(math.radians(180));
-    //            hands.ValueRW.rotated = false;
-    //            var p = local.Position;
-    //            p.z = -0.0001f;
-    //            local.Position = p;
-    //        }
-
-    //        sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
-    //        angle = -angle;
-    //        mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
-    //    }
-    //    else
-    //    {
-    //        if (!hands.ValueRO.rotated)
-    //        {
-    //            localMain = localMain.RotateX(math.radians(-180));
-    //            hands.ValueRW.rotated = true;
-    //            var p = local.Position;
-    //            p.z = 0.0001f;
-    //            local.Position = p;
-    //        }
-    //        sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
-    //        mainTargetRotation = quaternion.Euler(0, 0, angle);
-    //    }
-    //}
-
-
     private float GetActionTime(int index)
     {
         switch (index)
         {
 
-            case 2: return 0.25f;
-            case 1002: return 0.35f;
+            case 2: return 0.2f;
+            case 1002: return 0.2f;
             default: return 1;
         }
     }
@@ -283,7 +239,6 @@ partial struct CharacterAimSystem : ISystem
                 if (state.World.Flags == WorldFlags.GameServer)
                 {
                    player.ValueRW.isCooldown = false;
-                    Debug.Log("...............................................KOniec");
                 }
             }
             else
