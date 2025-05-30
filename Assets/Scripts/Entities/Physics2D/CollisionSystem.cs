@@ -421,7 +421,7 @@ public partial struct CollisionSystem : ISystem
         normalx = 0;  
         normaly = 0;  
 
-        if (b1.velocity.x >= 0.0f)
+        if (b1.velocity.x > 0.0f)
         {
             xInvEntry = b2.pos.x - (b1.pos.x + b1.size.x);
             xInvExit = (b2.pos.x + b2.size.x) - (b1.pos.x + b1.size.x);
@@ -459,7 +459,7 @@ public partial struct CollisionSystem : ISystem
             Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry}  | {entryTime} {exitTime}");
 
         if (math.abs(entryTime) <= math.abs(exitTime) && math.abs(entryTime) <= 1f && math.abs(entryTime) >= 0f 
-            && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, isX))
+            && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, isX,ref b1))
         {
             Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry} ");
             Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -495,16 +495,34 @@ public partial struct CollisionSystem : ISystem
 
         return 1;
     }
-    private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit,bool isX)
+    private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit,bool isX,ref Box box)
     {
-        if (!isX)
+        if (isX && MyTools.HaveSameSigns(xInvEntry, xInvExit))
         {
-            return MyTools.HaveOppositeSigns(xInvEntry, xInvExit) && !MyTools.HaveOppositeSigns(yInvEntry, yInvExit);
+            if (MyTools.HaveOppositeSigns(yInvEntry, yInvExit))
+            {
+                return true;
+            }
+            else if ((yInvExit >= 0 && box.size.y > yInvEntry) ||
+                (yInvExit < 0 && box.size.y > math.abs(yInvExit)))
+            {
+                return true;
+            }
         }
-        else
+        else if(!isX && MyTools.HaveSameSigns(yInvEntry, yInvExit))
         {
-            return !MyTools.HaveOppositeSigns(xInvEntry, xInvExit) && MyTools.HaveOppositeSigns(yInvEntry, yInvExit);
+            if (MyTools.HaveOppositeSigns(xInvEntry, xInvExit))
+            {
+                return true;
+            }
+            else if((xInvExit >= 0 && box.size.x >  xInvEntry) || 
+                (xInvExit < 0 && box.size.x > math.abs(xInvExit)))
+            {
+                return true;
+            }
         }
+
+        return false;
     }
     private bool StaticAABB(Box b1, Box b2)
     {

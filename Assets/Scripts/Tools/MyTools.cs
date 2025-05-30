@@ -99,6 +99,11 @@ public static class MyTools
         double y = Convert.ToDouble(b);
         return (x >= 0 && y < 0) || (x < 0 && y >= 0);
     }
+    public static bool HaveSameSigns<T>(T a, T b) where T : struct, IComparable<T>
+    {
+        return !HaveOppositeSigns(a, b);
+    }
+
     public static FixedString64Bytes ToFixedString64_Safe(this string s)
     {
         var utf8 = Encoding.UTF8;
