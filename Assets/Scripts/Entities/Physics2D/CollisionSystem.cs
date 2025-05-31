@@ -445,20 +445,20 @@ public partial struct CollisionSystem : ISystem
 
 
 
-        float xEntry = (b1.velocity.x == 0.0f) ? -Mathf.Infinity : xInvEntry / b1.velocity.x;
-        float xExit = (b1.velocity.x == 0.0f) ? Mathf.Infinity : xInvExit / b1.velocity.x;
+        float xEntry = (b1.velocity.x == 0.0f) ? -Mathf.Infinity : xInvEntry / math.abs(b1.velocity.x);
+        float xExit = (b1.velocity.x == 0.0f) ? Mathf.Infinity : xInvExit / math.abs(b1.velocity.x);
 
-        float yEntry = (b1.velocity.y == 0.0f) ? -Mathf.Infinity : yInvEntry / b1.velocity.y;
-        float yExit = (b1.velocity.y == 0.0f) ? Mathf.Infinity : yInvExit / b1.velocity.y;
+        float yEntry = (b1.velocity.y == 0.0f) ? -Mathf.Infinity : yInvEntry / math.abs(b1.velocity.y);
+        float yExit = (b1.velocity.y == 0.0f) ? Mathf.Infinity : yInvExit / math.abs(b1.velocity.y);
 
         float entryTime = Mathf.Max(xEntry, yEntry);
         float exitTime = Mathf.Min(xExit, yExit);
 
         bool isX = entryTime == xEntry;
 
-            Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry}  | {entryTime} {exitTime}");
+            Debug.Log($"{b1.velocity}  --- {xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry}  | {entryTime} {exitTime}");
 
-        if (math.abs(entryTime) <= math.abs(exitTime) && math.abs(entryTime) <= 1f && math.abs(entryTime) >= 0f 
+        if (/*math.abs(entryTime) <= math.abs(exitTime)*/ math.abs(entryTime) <= 1f && math.abs(entryTime) >= 0f 
             && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, isX,ref b1))
         {
             Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry} ");
@@ -497,26 +497,34 @@ public partial struct CollisionSystem : ISystem
     }
     private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit,bool isX,ref Box box)
     {
-        if (isX && MyTools.HaveSameSigns(xInvEntry, xInvExit))
+        Debug.Log("check");
+        if (isX &&  (MyTools.HaveSameSigns(xInvEntry, xInvExit) || Equals(xInvEntry, 0)))
         {
+            Debug.Log("X");
+
             if (MyTools.HaveOppositeSigns(yInvEntry, yInvExit))
             {
-                return true;
+                Debug.Log(yInvExit);
+                return !Equals(yInvEntry, 0);
             }
-            else if ((yInvExit >= 0 && box.size.y > yInvEntry) ||
-                (yInvExit < 0 && box.size.y > math.abs(yInvExit)))
+            else if ((yInvExit < 0 && IsGreaterThan(box.size.y, math.abs(yInvExit)) ||
+                (yInvExit >= 0 && MyTools.HaveOppositeSigns(yInvEntry, yInvExit))))
             {
                 return true;
             }
         }
-        else if(!isX && MyTools.HaveSameSigns(yInvEntry, yInvExit))
+        else if(!isX && (MyTools.HaveSameSigns(yInvEntry, yInvExit) || Equals(yInvEntry, 0)))
         {
+            Debug.Log("Y " + box.size);
+
             if (MyTools.HaveOppositeSigns(xInvEntry, xInvExit))
             {
-                return true;
+                Debug.Log(xInvEntry);
+                return !Equals(xInvEntry, 0);
             }
-            else if((xInvExit >= 0 && box.size.x >  xInvEntry) || 
-                (xInvExit < 0 && box.size.x > math.abs(xInvExit)))
+            else if( 
+                (xInvExit < 0 && IsGreaterThan(box.size.x,math.abs(xInvExit)))
+                || (xInvExit >= 0 && MyTools.HaveOppositeSigns(xInvEntry,xInvExit)))
             {
                 return true;
             }
@@ -526,11 +534,31 @@ public partial struct CollisionSystem : ISystem
     }
     private bool StaticAABB(Box b1, Box b2)
     {
-        return (b1.pos.x < b2.pos.x + b2.size.x &&
-                b1.pos.x + b1.size.x > b2.pos.x &&
-                b1.pos.y - b1.size.y < b2.pos.y  &&
-                b1.pos.y > b2.pos.y - b2.size.y);
+
+   
+
+        return IsGreaterThan(b2.pos.x + b2.size.x, b1.pos.x)
+            && IsGreaterThan(b1.pos.x + b1.size.x, b2.pos.x)
+            && IsGreaterThan(b2.pos.y, b1.pos.y - b1.size.y)
+            && IsGreaterThan(b1.pos.y, b2.pos.y - b2.size.y);
+
+        //return (b1.pos.x < b2.pos.x + b2.size.x &&
+        //        b1.pos.x + b1.size.x > b2.pos.x &&
+        //        b1.pos.y - b1.size.y < b2.pos.y  &&
+        //        b1.pos.y > b2.pos.y - b2.size.y);
     }
+
+    public bool IsGreaterThan(float a, float b, float epsilon = 1e-6f)
+    {
+        float c = a - b;
+        return c >= epsilon;
+    }
+
+    public bool Equals(float a, float b, float epsilon = 1e-6f)
+    {
+        return Math.Abs(a - b) < epsilon;
+    }
+
     private float3 GetMTV(Box b1, Box b2)
     {
         //Debug.Log(b1);
