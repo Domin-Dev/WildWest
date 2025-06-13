@@ -130,7 +130,6 @@ public partial struct CollisionSystem : ISystem
 
             NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
 
-       //     if (potentialCollisions.Length > 0) Debug.Log("<Color=#ffee00>Nowy update!!!" + state.World.Flags);
             for (int j = 0; j < potentialCollisions.Length; j++)
             {
                 
@@ -153,7 +152,6 @@ public partial struct CollisionSystem : ISystem
 
                 if (collisiontime < 1f)
                 {
-                    Debug.Log("@@@@@@@@@@ " + collisiontime + " " + normalx + " " + normaly);
                     collisions.Add(j, collisiontime);
                     if (collisiontime < minTime)
                     {      
@@ -185,18 +183,12 @@ public partial struct CollisionSystem : ISystem
                         {
                             vel.y = tempVel.y;
                         }
-                        Debug.Log(vel);
-                        // Debug.Log(k + " " + entityArray[j].Index + " " + normalx + " " + normaly + " " + collisiontime + " " + vel);
                     }
                 }
             }
 
-
-
             if (minTime < 1f)
             {
-                Debug.Log("s posiotion " + (pos - tempTransform1.Position).ToString());
-
                 topLeft1 =
                 new float2(
                 pos.x - tempHitbox1.size.x * 0.5f,
@@ -215,7 +207,6 @@ public partial struct CollisionSystem : ISystem
                     {
                         Entity entityToCheck = potentialCollisions[j];
                         if (!state.EntityManager.Exists(entityToCheck) || entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
-
 
                         LocalTransform tempTransform2 = getPosition[entityToCheck];
                         BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
@@ -444,7 +435,6 @@ public partial struct CollisionSystem : ISystem
         }
 
 
-
         float xEntry = (b1.velocity.x == 0.0f) ? -Mathf.Infinity : xInvEntry / math.abs(b1.velocity.x);
         float xExit = (b1.velocity.x == 0.0f) ? Mathf.Infinity : xInvExit / math.abs(b1.velocity.x);
 
@@ -456,13 +446,10 @@ public partial struct CollisionSystem : ISystem
 
         bool isX = entryTime == xEntry;
 
-            Debug.Log($"{b1.velocity}  --- {xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry}  | {entryTime} {exitTime}");
 
-        if (/*math.abs(entryTime) <= math.abs(exitTime)*/ math.abs(entryTime) <= 1f && math.abs(entryTime) >= 0f 
+        if (math.abs(entryTime) <= 1f && math.abs(entryTime) >= 0f 
             && CheckCollision(xInvEntry, xInvExit, yInvEntry, yInvExit, isX,ref b1))
         {
-            Debug.Log($"{xInvEntry} {xInvExit} | {yInvEntry} {yInvExit} | {xEntry} {yEntry} ");
-            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             if (isX)
             {
                 if (Mathf.Approximately(Mathf.Abs(yInvEntry), b2.size.y*2) || Mathf.Approximately(Mathf.Abs(yInvExit), b2.size.y *2))
@@ -479,8 +466,6 @@ public partial struct CollisionSystem : ISystem
                 }
                 normaly = (b1.velocity.y >= 0) ? -1 : 1; 
             }
-
-
             return math.abs(entryTime);
         }
 
@@ -489,7 +474,6 @@ public partial struct CollisionSystem : ISystem
             float2 normal = GetCollisionNormal(b1, b2);
             normalx = normal.x;
             normaly = normal.y;
-            Debug.Log("zero");
             return 0;
         }
 
@@ -497,14 +481,10 @@ public partial struct CollisionSystem : ISystem
     }
     private bool CheckCollision(float xInvEntry, float xInvExit, float yInvEntry, float yInvExit,bool isX,ref Box box)
     {
-        Debug.Log("check");
         if (isX &&  (MyTools.HaveSameSigns(xInvEntry, xInvExit) || Equals(xInvEntry, 0)))
         {
-            Debug.Log("X");
-
             if (MyTools.HaveOppositeSigns(yInvEntry, yInvExit))
             {
-                Debug.Log(yInvExit);
                 return !Equals(yInvEntry, 0);
             }
             else if ((yInvExit < 0 && IsGreaterThan(box.size.y, math.abs(yInvExit)) ||
@@ -515,11 +495,8 @@ public partial struct CollisionSystem : ISystem
         }
         else if(!isX && (MyTools.HaveSameSigns(yInvEntry, yInvExit) || Equals(yInvEntry, 0)))
         {
-            Debug.Log("Y " + box.size);
-
             if (MyTools.HaveOppositeSigns(xInvEntry, xInvExit))
             {
-                Debug.Log(xInvEntry);
                 return !Equals(xInvEntry, 0);
             }
             else if( 

@@ -10,7 +10,7 @@ public class ParticlesAuthoring : MonoBehaviour
         public override void Bake(ParticleSystem authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            double finish;
+            float finish;
             if(authoring.loop)
             {
                 finish = -1;
@@ -19,9 +19,9 @@ public class ParticlesAuthoring : MonoBehaviour
             {
                 finish = authoring.main.duration;
             }
-            AddComponent(entity, new SelfDestruction()
+            AddComponent(entity, new DestroyOnTimer()
             {
-                finishParticles = finish,
+                value = finish,
             });
         }
     }

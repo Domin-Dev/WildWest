@@ -14,7 +14,6 @@ partial struct PlayerInputSystem : ISystem
         state.RequireForUpdate<NetworkStreamInGame>();
         state.RequireForUpdate<PlayerInput>();
     }
-
     public void OnUpdate(ref SystemState state)
     {
         float2 input = float2.zero;
@@ -52,11 +51,8 @@ partial struct PlayerInputSystem : ISystem
         foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands) in 
             SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>())
         {
-
-
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
-
 
             playerInput.ValueRW.sightDirection = sightDirection;
             playerInputSync.ValueRW.sightDirection = sightDirection;

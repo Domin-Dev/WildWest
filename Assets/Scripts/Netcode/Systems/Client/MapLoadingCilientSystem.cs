@@ -32,13 +32,8 @@ partial struct MapLoadingCilientSystem : ISystem
             MapVisualization.instance.CreateMesh(chunkStruct);
             entityCommandBuffer.DestroyEntity(entity);
         }
-        if(!kk)
-        {
-            CreateObject(ref entityCommandBuffer, null, new float2(1,1)); 
-            CreateObject(ref entityCommandBuffer, null, new float2(1.2f, 1.2f));
 
-            kk = true;
-        }
+
 
         foreach ((FixedBuildingObjects buildingObjects, ReceiveRpcCommandRequest receiveRpc, Entity entity) in
         SystemAPI.Query<FixedBuildingObjects, ReceiveRpcCommandRequest>().WithEntityAccess())
@@ -60,7 +55,7 @@ partial struct MapLoadingCilientSystem : ISystem
                         bytes[j - i - 9] = buildingObjects[j];
                     }
                     GridObject gridObject = new GridObject(bytes);
-                    EntitySpawner.instance.SpawnBuildingObject(gridObject,
+                    CreateObject(ref entityCommandBuffer,gridObject,
                     new float2(BitConverter.ToInt32(bytes2,0) + buildingObjects.chunkCoordinates.x
                               ,BitConverter.ToInt32(bytes2,4) + buildingObjects.chunkCoordinates.y 
                     ));

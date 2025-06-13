@@ -5,21 +5,17 @@ using UnityEngine;
 
 public class SelfDestructionAuthoring : MonoBehaviour
 {
-    [SerializeField] private double timeToSelfDestruction;
+    [SerializeField] private float timeToSelfDestruction;
     public class Baker : Baker<SelfDestructionAuthoring>
     {
         public override void Bake(SelfDestructionAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new SelfDestruction()
+            AddComponent(entity, new DestroyOnTimer()
             {
-                finishParticles = authoring.timeToSelfDestruction
+                value = authoring.timeToSelfDestruction
             });
         }
     }
 }
 
-public struct SelfDestruction : IComponentData
-{
-    public double finishParticles;
-}

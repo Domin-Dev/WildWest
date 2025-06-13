@@ -24,6 +24,8 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new ItemInHandInput() { itemInHand = int.MinValue });
             AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
+
+            AddBuffer<CooldownTargetTick>(entity);
         }
     }
 }

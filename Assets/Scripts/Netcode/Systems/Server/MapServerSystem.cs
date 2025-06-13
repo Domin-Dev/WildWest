@@ -57,11 +57,9 @@ public partial class MapServerSystem : SystemBase
                     TargetConnection = entity
                 });
             }
-            CreateObject(ref entityCommandBuffer, null, new float2(1,1));
-            CreateObject(ref entityCommandBuffer, null, new float2(1.2f,1.2f));
 
-            //GetChunkObjects(0,ref entityCommandBuffer, entity);
-            //GetChunkObjects(1,ref entityCommandBuffer, entity);
+            GetChunkObjects(0,ref entityCommandBuffer, entity);
+            GetChunkObjects(1,ref entityCommandBuffer, entity);
 
             Entity loaded = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(loaded, new MapIsLoaded());

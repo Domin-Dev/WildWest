@@ -148,7 +148,6 @@ public class MapVisualization : MonoBehaviour
 
     private void SetUpMapMaterial(int sizeTile = 25)
     {
-        Debug.Log("seu!!!!!");
         TilesUV = new Dictionary<int, TileUV>();
         Floor[] array = ItemsAsset.instance.GetItemsByType<Floor>();
         Dictionary<int, Texture2D> textures = TextureLoader.LoadFloors(array);

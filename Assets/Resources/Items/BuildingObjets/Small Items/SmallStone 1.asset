@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 
   ID: 71
   stackMax: 50
-  icon: {fileID: -256996573, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: 156773631, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients:
   - itemID: 0
     number: 0
@@ -31,55 +31,7 @@ MonoBehaviour:
       number: 1
   toolRequired: 0
   HitParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
-  objectVariants:
-  - variants:
-    - hitbox:
-      - {x: -0.03, y: 0.065}
-      CoveringPoints: []
-      objectPoints: []
-      particlePoint: {x: -0.04, y: 0.065}
-      minY: 0.065
-      sprite: {fileID: 21300000, guid: 825308b8f9c7cde46b15382f2b608f8e, type: 2}
-  - variants:
-    - hitbox:
-      - {x: 0.04, y: 0.125}
-      CoveringPoints: []
-      objectPoints: []
-      particlePoint: {x: 0.03, y: 0.125}
-      minY: 0.125
-      sprite: {fileID: 21300000, guid: 5ff07029fc092e7489e6891c8cfb1d72, type: 2}
-  - variants:
-    - hitbox:
-      - {x: 0, y: 0.195}
-      CoveringPoints: []
-      objectPoints: []
-      particlePoint: {x: -0.01, y: 0.195}
-      minY: 0.195
-      sprite: {fileID: 21300000, guid: 2455d51444e61664cbb145784f60e18a, type: 2}
-  - variants:
-    - hitbox:
-      - {x: 0.07, y: 0.175}
-      CoveringPoints: []
-      objectPoints: []
-      particlePoint: {x: 0.06, y: 0.175}
-      minY: 0.175
-      sprite: {fileID: 21300000, guid: fa3d17f6e993a704e85e1d75909fe33b, type: 2}
-  - variants:
-    - hitbox:
-      - {x: 0.04, y: 0.074999996}
-      CoveringPoints: []
-      objectPoints: []
-      particlePoint: {x: 0.03, y: 0.074999996}
-      minY: 0.074999996
-      sprite: {fileID: 21300000, guid: 358cbf785aab3774e9eee9636f731952, type: 2}
-  - variants:
-    - hitbox:
-      - {x: -0.02, y: 0.145}
-      CoveringPoints: []
-      objectPoints: []
-      particlePoint: {x: -0.03, y: 0.145}
-      minY: 0.145
-      sprite: {fileID: 21300000, guid: 9bf2832acf9b5654e9011c7aa00b68dd, type: 2}
+  objectVariants: []
   shadowPixels: 0
   size:
     x: 27
