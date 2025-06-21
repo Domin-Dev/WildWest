@@ -21,7 +21,7 @@ partial struct BulletSystem : ISystem
     {
         foreach ((RefRW<LocalTransform> worldPos, RefRO <Bullet> bullet) in SystemAPI.Query<RefRW<LocalTransform>, RefRO<Bullet>>().WithAll<Simulate>())
         {
-            worldPos.ValueRW.Position += worldPos.ValueRW.Right() * bullet.ValueRO.speed * SystemAPI.Time.DeltaTime;
+          //  worldPos.ValueRW.Position += worldPos.ValueRW.Right() * bullet.ValueRO.speed * SystemAPI.Time.DeltaTime;
         }
     }
 }

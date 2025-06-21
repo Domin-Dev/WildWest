@@ -8,7 +8,7 @@ using UnityEngine;
 
 
 [UpdateAfter(typeof(CharacterAim))]
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 
 partial struct NewBulletSystem : ISystem
 {
@@ -21,13 +21,16 @@ partial struct NewBulletSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach ((RefRO<LocalTransform> pos, RefRO <Bullet> bullet, Entity entity) in SystemAPI.Query<RefRO<LocalTransform>, RefRO<Bullet>>().WithAll<NewBullet,Simulate>().WithEntityAccess())
+        foreach ((RefRO<LocalTransform> pos, RefRW<Velocity2D> velocity, RefRO <NewBullet> newbullet, RefRO<Bullet> bullet, Entity entity) in SystemAPI.Query<RefRO<LocalTransform>,RefRW<Velocity2D>, RefRO<NewBullet>, RefRO<Bullet>>().WithAll<Simulate>().WithEntityAccess())
         {
-          //  if(bullet.ValueRO.time >= 0)
-         //   {
+            if(!newbullet.ValueRO.isOnServer)
+            {
                 entityCommandBuffer.RemoveComponent<NewBullet>(entity);
                 HybridManager.instance.SetEntity(entity, new Vector3(pos.ValueRO.Position.x, pos.ValueRO.Position.y, 100f));
-         //   }
+            }
+
+            float3 v3 = pos.ValueRO.Right();
+            velocity.ValueRW.Value = new float2(v3.x,v3.y) * bullet.ValueRO.speed;
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

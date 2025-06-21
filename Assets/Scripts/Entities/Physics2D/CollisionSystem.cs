@@ -72,7 +72,7 @@ public partial struct CollisionSystem : ISystem
                 in SystemAPI.Query<RefRW<PlayerInputSync>,RefRW<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate>().WithEntityAccess())
             {
                 playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
-                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
+                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
                 state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
             }
@@ -82,23 +82,29 @@ public partial struct CollisionSystem : ISystem
             foreach (var (playerInput, player, velocity, entity)
             in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
             {
-                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * SystemAPI.Time.DeltaTime * player.ValueRO.speed;
+                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
                 state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
             }
         }
 
-        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<IsChanged,Velocity2D, BoxCollider2D,LocalTransform,Physics2D,Simulate>().Build();
+        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D,LocalTransform,Physics2D,Simulate>().Build();
+
+
+        var isChanged = SystemAPI.GetComponentLookup<IsChanged>();
+        var alwaysUpdate = SystemAPI.GetComponentLookup<AlwaysUpdate>();
+
+        
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
         NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
         NativeArray<Velocity2D> velocities = entities.ToComponentDataArray<Velocity2D>(Allocator.TempJob);
         NativeArray<BoxCollider2D> hitboxes = entities.ToComponentDataArray<BoxCollider2D>(Allocator.TempJob);
         NativeArray<Physics2D> physics = entities.ToComponentDataArray<Physics2D>(Allocator.TempJob);
-        UpdateEntityMap(ref state, entityArray, physics, transforms);
+        UpdateEntityMap(ref state,ref isChanged,ref alwaysUpdate, entityArray, physics, transforms);
 
 
-        var getVelocity = state.GetComponentLookup<Velocity2D>();
+        var getVelocity = state.GetComponentLookup<Velocity2D>(); 
         var getPosition = state.GetComponentLookup<LocalTransform>();
         var getHitbox = state.GetComponentLookup<BoxCollider2D>();
         var getPhysics = state.GetComponentLookup<Physics2D>();
@@ -107,11 +113,10 @@ public partial struct CollisionSystem : ISystem
 
         for (int i = 0; i < entityArray.Length; i++)
         {
-
             BoxCollider2D tempHitbox1 = hitboxes[i];
             Entity entity = entityArray[i];
             LocalTransform tempTransform1 = transforms[i];
-            float2 velocity1 = velocities[i].Value; 
+            float2 velocity1 = velocities[i].Value * SystemAPI.Time.DeltaTime; 
             float2 topLeft1 = 
                 new float2(
                 tempTransform1.Position.x - tempHitbox1.size.x * 0.5f,
@@ -147,7 +152,7 @@ public partial struct CollisionSystem : ISystem
                 );
 
                 Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
-                Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
+                Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value * SystemAPI.Time.DeltaTime);
                 float collisiontime =  SweptAABB(box1, box2, out float normalx, out float normaly);
 
                 if (collisiontime < 1f)
@@ -218,7 +223,7 @@ public partial struct CollisionSystem : ISystem
                         );
 
                         box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
-                        Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
+                        Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value * SystemAPI.Time.DeltaTime);
                         float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
 
                         if (collisiontime < 1f)
@@ -283,7 +288,7 @@ public partial struct CollisionSystem : ISystem
                     tempTransform2.Position.x - tempHitbox2.size.x * 0.5f,
                     tempTransform2.Position.y + tempHitbox2.size.y * 0.5f
                     );
-                    Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value);
+                    Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value * SystemAPI.Time.DeltaTime);
                     if (StaticAABB(box1, box2))
                     {
                         float3 localOffset = GetMTV(box1, box2);
@@ -310,8 +315,9 @@ public partial struct CollisionSystem : ISystem
             postion.z = postion.y;
             tempTransform1.Position = postion;
 
-            state.EntityManager.SetComponentData(entityArray[i], tempTransform1);
-            state.EntityManager.SetComponentEnabled(entityArray[i],typeof(IsChanged), false);
+
+            state.EntityManager.SetComponentData(entity, tempTransform1);
+            if (isChanged.HasComponent(entity))  state.EntityManager.SetComponentEnabled(entity, typeof(IsChanged), false);
             collisions.Clear();
             potentialCollisions.Dispose();
         }
@@ -329,22 +335,28 @@ public partial struct CollisionSystem : ISystem
 
 
 
-    private void UpdateEntityMap(ref SystemState state, NativeArray<Entity> entityArray, NativeArray<Physics2D> physics, NativeArray<LocalTransform> transforms)
+    private void UpdateEntityMap(ref SystemState state,ref ComponentLookup<IsChanged> isChange, ref ComponentLookup<AlwaysUpdate> alwaysUpdate, NativeArray<Entity> entityArray, NativeArray<Physics2D> physics, NativeArray<LocalTransform> transforms)
     {
         for (int i = 0; i < entityArray.Length; i++)
         {
-            float2 position = transforms[i].Position.xy;
-            int2 cellIndex = new int2((int)(position.x / CellSize), (int)(position.y / CellSize));
-            Physics2D physics2D = physics[i];
-            if (!physics2D.cellIndex.Equals(cellIndex))
+            Entity entity = entityArray[i];
+            if((isChange.HasComponent(entity) && isChange.IsComponentEnabled(entity)) ||
+            (alwaysUpdate.HasComponent(entity) && alwaysUpdate.IsComponentEnabled(entity)))
             {
-                SetValueInEntityMap(entityArray[i], physics2D.cellIndex, cellIndex);
-                physics2D.cellIndex = cellIndex;
-                physics[i] = physics2D;
-                state.EntityManager.SetComponentData(entityArray[i], physics2D);
+                float2 position = transforms[i].Position.xy;
+                int2 cellIndex = new int2((int)(position.x / CellSize), (int)(position.y / CellSize));
+                Physics2D physics2D = physics[i];
+                if (!physics2D.cellIndex.Equals(cellIndex))
+                {
+                    SetValueInEntityMap(entity, physics2D.cellIndex, cellIndex);
+                    physics2D.cellIndex = cellIndex;
+                    physics[i] = physics2D;
+                    state.EntityManager.SetComponentData(entity, physics2D);
+                }
             }
         }
     }
+   
     private void SetValueInEntityMap(Entity entity,int2 oldValue ,int2 newValue)
     {
         if (oldValue.x != int.MinValue && oldValue.y != int.MinValue)
@@ -524,17 +536,16 @@ public partial struct CollisionSystem : ISystem
         //        b1.pos.y - b1.size.y < b2.pos.y  &&
         //        b1.pos.y > b2.pos.y - b2.size.y);
     }
-
     public bool IsGreaterThan(float a, float b, float epsilon = 1e-6f)
     {
         float c = a - b;
         return c >= epsilon;
     }
-
     public bool Equals(float a, float b, float epsilon = 1e-6f)
     {
         return Math.Abs(a - b) < epsilon;
     }
+
 
     private float3 GetMTV(Box b1, Box b2)
     {

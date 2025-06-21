@@ -119,7 +119,7 @@ MonoBehaviour:
   DefaultGhostMode: 1
   SupportedGhostModes: 3
   OptimizationMode: 0
-  Importance: 1
+  Importance: 500
   prefabId: 164a9318ec4a9df499a0db19f27a1d7a
   HasOwner: 1
   SupportAutoCommandTarget: 1
@@ -138,6 +138,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26677b857f3265f46917c9f6634e3762, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 5
+  destroyAfterTime: 3
 --- !u!114 &-787032297155421572
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   physicsLayer: 2
+  updateAfterChange: 0
 --- !u!114 &3199900561835017240
 MonoBehaviour:
   m_ObjectHideFlags: 0

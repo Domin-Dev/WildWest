@@ -46,8 +46,8 @@ public struct DestroyEntityTag : IComponentData{ }
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct CooldownTargetTick : ICommandData
 {
-    public NetworkTick Tick { get; set; }
-    public NetworkTick ability { get; set; }
+   [SerializeField] public NetworkTick Tick { get; set; }
+    [SerializeField] public NetworkTick ability { get; set; }
 }
 
 

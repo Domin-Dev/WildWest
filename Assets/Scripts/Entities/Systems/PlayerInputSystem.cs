@@ -69,7 +69,7 @@ partial struct PlayerInputSystem : ISystem
             }
 
             if (right)
-            { 
+            {
                 playerInput.ValueRW.rightButton.Set();
                 playerInputSync.ValueRW.rightButton.Set();
 

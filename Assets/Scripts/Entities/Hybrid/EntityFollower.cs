@@ -21,14 +21,14 @@ public class EntityFollower : MonoBehaviour
 
     void Update()
     {
-        if (entityManager.Exists(entity))
+        if (entityManager.Exists(entity) && entityManager.HasComponent<LocalTransform>(entity))
         {
             var position = entityManager.GetComponentData<LocalTransform>(entity).Position;
             transform.position = position;
         }
         else
         {
-            Destroy(gameObject);
+            HybridManager.instance.EntityDeleted(entity);
         }
     }
 }

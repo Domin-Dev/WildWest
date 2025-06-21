@@ -25,20 +25,31 @@ public struct Trigger2D : IComponentData
 {
     public float2 Value;
 }
-public struct IsChanged : IComponentData, IEnableableComponent {  } 
+public struct IsChanged : IComponentData, IEnableableComponent {  }
+
+public struct AlwaysUpdate: IComponentData, IEnableableComponent { }
 
 
 
 public class Physics2DAuthoring : MonoBehaviour
 {
     [SerializeField] ushort physicsLayer;
+    [SerializeField] bool updateAfterChange;
     public class Baker : Baker<Physics2DAuthoring>
     {
         public override void Bake(Physics2DAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new Velocity2D() { Value = float2.zero});
-            AddComponent(entity, new IsChanged());
+            if (authoring.updateAfterChange)
+            {
+                AddComponent(entity, new IsChanged());
+            }
+            else
+            {
+                AddComponent(entity, new AlwaysUpdate());
+            }
+
             AddComponent(entity, new Physics2D() { 
                 layer = authoring.physicsLayer, 
                 cellIndex = new int2(int.MinValue, int.MinValue)    

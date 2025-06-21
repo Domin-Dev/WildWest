@@ -16,7 +16,6 @@ public partial struct DestroyOnTimerSystem : ISystem
     }
 
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();

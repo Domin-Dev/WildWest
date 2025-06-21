@@ -1,11 +1,11 @@
-using Unity.Burst;
-using Unity.Entities;
-using UnityEngine;
-using Unity.NetCode;
-using Unity.Collections;
 using System;
-using Unity.Transforms;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
+using Unity.Transforms;
+using UnityEngine;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
@@ -17,8 +17,6 @@ public partial struct DestroyEntitySystem : ISystem
         state.RequireForUpdate<NetworkTime>();
     }
 
-
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
@@ -33,10 +31,12 @@ public partial struct DestroyEntitySystem : ISystem
         {
             if(state.World.IsServer())
             {
+                if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
                 entityCommandBuffer.DestroyEntity(entity);
             }
             else
             {
+                if(SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);  
                 localTransform.ValueRW.Position = new float3(100000, 100000,100000);
             }
         }
