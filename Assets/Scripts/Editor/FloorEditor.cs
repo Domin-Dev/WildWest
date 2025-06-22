@@ -1,8 +1,10 @@
 using GluonGui.WorkspaceWindow.Views.WorkspaceExplorer;
 using System.Collections.Generic;
+using System.Security.Permissions;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
+using static UnityEditor.U2D.ScriptablePacker;
 
 
 
@@ -18,12 +20,22 @@ public class FloorEditor : ItemEditor
     Texture2D texture;
     public override void OnInspectorGUI()
     {
-        EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Floor Texture");
 
-        if (GUILayout.Button("Select texture"))
+        Button(ref floor.texturePath,"Select Main Texture");
+        Button(ref floor.borderTexturePath,"Select Border Texture");
+
+
+        serializedObject.ApplyModifiedProperties();
+        base.OnInspectorGUI();
+    }
+
+    private void Button(ref string texturePath, string ButtonText)
+    {
+        EditorGUILayout.BeginVertical();
+        if (GUILayout.Button(ButtonText))
         {
-            string path = EditorUtility.OpenFilePanel("Select texture", "Assets/Resources/Textures", "png,jpg");
+            string path = EditorUtility.OpenFilePanel(ButtonText, "Assets/Resources/Textures", "png,jpg");
 
             if (!string.IsNullOrEmpty(path))
             {
@@ -31,15 +43,13 @@ public class FloorEditor : ItemEditor
                 texture = AssetDatabase.LoadAssetAtPath<Texture2D>(relativePath);
                 if (texture != null)
                 {
-                    floor.texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png","");
+                    texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png", "");
                     Debug.Log("The texture is set");
                     NewSaveChanges();
                 }
             }
         }
-        EditorGUILayout.EndHorizontal();
-        serializedObject.ApplyModifiedProperties();
-        base.OnInspectorGUI();
+        EditorGUILayout.EndVertical();
     }
 
     private  void NewSaveChanges()

@@ -155,7 +155,7 @@ public class GridVisualization : MonoBehaviour
         texture.Apply(true, true);
         mapTexture = texture;
 
-        TextureLoader.UnloadFloors(textures);
+        TextureLoader.UnloadTextures(textures);
     }
     private int MaxWidth(Dictionary<int, Texture2D> array)
     {
@@ -605,7 +605,7 @@ public class GridVisualization : MonoBehaviour
     //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value = 45;
     //                break;
     //            case 12:
-    //                if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value = 46;
+    //         if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value = 46;
     //                break;
     //        }
     //    }

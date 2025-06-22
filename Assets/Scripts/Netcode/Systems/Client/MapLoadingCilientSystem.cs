@@ -12,28 +12,24 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct MapLoadingCilientSystem : ISystem
 {
-    public bool kk;
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<ReceiveRpcCommandRequest>().WithAny<FixedChunk,FixedBuildingObjects>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
-        kk = false;
     }
 
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
    
-        foreach ((FixedChunk chunkStruct, ReceiveRpcCommandRequest receiveRpc, Entity entity) in
-        SystemAPI.Query<FixedChunk, ReceiveRpcCommandRequest>().WithEntityAccess())
+        foreach ((RefRO<FixedChunk> chunkStruct, ReceiveRpcCommandRequest receiveRpc, Entity entity) in
+        SystemAPI.Query<RefRO<FixedChunk>, ReceiveRpcCommandRequest>().WithEntityAccess())
         {
             MapVisualization.instance.CreateMesh(chunkStruct);
             entityCommandBuffer.DestroyEntity(entity);
         }
-
-
 
         foreach ((FixedBuildingObjects buildingObjects, ReceiveRpcCommandRequest receiveRpc, Entity entity) in
         SystemAPI.Query<FixedBuildingObjects, ReceiveRpcCommandRequest>().WithEntityAccess())

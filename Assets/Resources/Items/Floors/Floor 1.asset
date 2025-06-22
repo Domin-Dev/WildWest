@@ -24,8 +24,10 @@ MonoBehaviour:
   numberItem: 1
   durability: 0
   drop: []
-  texturePath: Textures/Floor/sand
   toolRequired: 0
   chanceOfDefaultTile: 0.6
   diggingParticles: {fileID: 0}
   canBeCultivated: 0
+  displayPriority: 7000
+  texturePath: Textures/Floor/sand
+  borderTexturePath: 

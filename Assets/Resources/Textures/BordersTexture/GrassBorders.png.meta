@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e02ad3032d4135041976e40b8b4d6b85
+guid: 05468f89bbb183a4689832f99965d758
 TextureImporter:
   internalIDToNameTable:
   - first:
@@ -460,7 +460,18 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      GrassBorders_0: 7296631077787497896
+      GrassBorders_1: 6637370707162701611
+      GrassBorders_10: 1496494255028901622
+      GrassBorders_2: 6267140170000760667
+      GrassBorders_3: 8222987208410582052
+      GrassBorders_4: -3005014193937749075
+      GrassBorders_5: -19857955659408778
+      GrassBorders_6: 7178216742600789878
+      GrassBorders_7: 887892471255737983
+      GrassBorders_8: 9065357512217342804
+      GrassBorders_9: 2159328675913227773
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

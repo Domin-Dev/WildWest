@@ -1,5 +1,6 @@
 using Mono.Cecil;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -19,7 +20,8 @@ public class IDManagerEditor : Editor
             {
                 item.ID = iDManager.GetNextID();
                 item.crafingIngredients = null;
-                item.SetDirty();
+                EditorUtility.SetDirty(item);
+             //   item.SetDirty();
             }
             iDManager.SetDirty();
         }

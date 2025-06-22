@@ -21,17 +21,12 @@ public partial class MapServerSystem : SystemBase
     {
         RequireForUpdate<SendMap>();
     }
-
     public void GenerateMap()
     {
         generator = new MapGenerator(GameInfo.instance.seed);
         map = generator.StartGenerator();
         Debug.Log("Generowanie");
-        Debug.Log(map);
-        Debug.Log(map.chunks);
-        Debug.Log(map.chunks.Count);
     }
-
     protected override void OnUpdate()
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -43,7 +38,6 @@ public partial class MapServerSystem : SystemBase
             {
                 GenerateMap();
             }
-
 
             for (int i = 0; i < map.chunks.Count; i++)
             {
@@ -75,7 +69,6 @@ public partial class MapServerSystem : SystemBase
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }
-
     private void GetChunk(int index, ref FixedChunk chunkStruct)
     {
         Chunk chunk = map.chunks[index];
@@ -91,7 +84,6 @@ public partial class MapServerSystem : SystemBase
             }
         }
     }
-
     private void GetChunkObjects(int index, ref EntityCommandBuffer entityCommandBuffer,Entity target)
     {
         Chunk chunk = map.chunks[index];
@@ -146,7 +138,6 @@ public partial class MapServerSystem : SystemBase
             if (counter != 0) SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
       
     }
-
     private void SendBuidlingObjectRPC(ref EntityCommandBuffer entityCommandBuffer, FixedBuildingObjects fixedBuildingObjects, ref Entity target)
     {
         var rpc = entityCommandBuffer.CreateEntity();
@@ -156,7 +147,6 @@ public partial class MapServerSystem : SystemBase
             TargetConnection = target
         });
     }
-
     private void CreateObject(ref EntityCommandBuffer entityCommand,GridObject gridObject, float2 pos)
     {
         Entity entity = entityCommand.CreateEntity();

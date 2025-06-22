@@ -22,11 +22,11 @@ partial struct VariableSynchronizationServerSystem : ISystem
         foreach (var (playerInput,playerInputSync, itemInHandInput, itemInHandInputSync, entity) in
         SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<ItemInHandInput>, RefRW<ItemInHandInputSync>>().WithEntityAccess())
         {
-            playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
-            playerInputSync.ValueRW.sightDirection = playerInput.ValueRO.sightDirection;
-            playerInputSync.ValueRW.leftButton = playerInput.ValueRO.leftButton;
-            playerInputSync.ValueRW.rightButton = playerInput.ValueRO.rightButton;
-            playerInputSync.ValueRW.handRotation = playerInput.ValueRO.handRotation;
+            //playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
+            //playerInputSync.ValueRW.sightDirection = playerInput.ValueRO.sightDirection;
+            //playerInputSync.ValueRW.leftButton = playerInput.ValueRO.leftButton;
+            //playerInputSync.ValueRW.rightButton = playerInput.ValueRO.rightButton;
+            //playerInputSync.ValueRW.handRotation = playerInput.ValueRO.handRotation;
             
 
             if (itemInHandInputSync.ValueRW.itemInHand != itemInHandInput.ValueRO.itemInHand)

@@ -13,8 +13,8 @@ using Unity.Transforms;
 public readonly partial struct PlayerAspect : IAspect
 {
     private readonly DynamicBuffer<CooldownTargetTick> _cooldownTargetTick;
-    public readonly RefRW<PlayerInputSync> playerInputSync;
-    public readonly RefRW<PlayerInput> playerInput;
+    public readonly RefRW<PlayerInput> playerInputSync;
+  //  public readonly RefRW<PlayerInput> playerInput;
     public readonly RefRW<Hands> hands;
     public readonly RefRW<Character> character;
     public readonly RefRW<Player> player;

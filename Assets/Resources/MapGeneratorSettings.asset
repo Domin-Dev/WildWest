@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grassID: 19
   tiles:
-  - tileID: 20
+  - tileID: 19
   - tileID: 20
   - tileID: 20
   - tileID: 20

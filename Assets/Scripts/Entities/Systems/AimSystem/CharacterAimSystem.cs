@@ -45,13 +45,13 @@ partial struct CharacterAimSystem : ISystem
 
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
-            if(state.World.IsServer() || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
-            {
-                playerAspect.playerInputSync.ValueRW.sightDirection = playerAspect.playerInput.ValueRO.sightDirection;
-                playerAspect.playerInputSync.ValueRW.leftButton = playerAspect.playerInput.ValueRO.leftButton;
-                playerAspect.playerInputSync.ValueRW.rightButton = playerAspect.playerInput.ValueRO.rightButton;
-                playerAspect.playerInputSync.ValueRW.handRotation = playerAspect.playerInput.ValueRO.handRotation;
-            }
+            //if(state.World.IsServer() || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
+            //{
+            //    playerAspect.playerInputSync.ValueRW.sightDirection = playerAspect.playerInput.ValueRO.sightDirection;
+            //    playerAspect.playerInputSync.ValueRW.leftButton = playerAspect.playerInput.ValueRO.leftButton;
+            //    playerAspect.playerInputSync.ValueRW.rightButton = playerAspect.playerInput.ValueRO.rightButton;
+            //    playerAspect.playerInputSync.ValueRW.handRotation = playerAspect.playerInput.ValueRO.handRotation;
+            //}
 
             k++;
             RefRW<Hands> hands = playerAspect.hands;
@@ -87,7 +87,6 @@ partial struct CharacterAimSystem : ISystem
                     {
                         if (state.World.Flags == WorldFlags.GameServer)
                         {
-                            Debug.Log(localMain.Rotation + "  " + state.World.Flags);
                             localMain.Rotation = playerAspect.playerInputSync.ValueRO.handRotation;
                             state.EntityManager.SetComponentData(playerAspect.hands.ValueRO.main, localMain);
                             World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
@@ -98,13 +97,8 @@ partial struct CharacterAimSystem : ISystem
 
 
                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
-                         Debug.Log(SystemAPI.GetComponentRO<LocalTransform>(bullet).ValueRO.Position);
-
                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
-                        Debug.Log(LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation));
                         entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation));
-
-                    //    Debug.Log(SystemAPI.getcomponentro<LocalTransform>(bullet).ValueRO.Position);
 
                         if (state.World.Flags == WorldFlags.GameServer)
                         {

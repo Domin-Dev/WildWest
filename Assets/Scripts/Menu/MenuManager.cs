@@ -217,14 +217,16 @@ public class MenuManager : MonoBehaviour
         {
             World.DefaultGameObjectInjectionWorld = serverWorld;
         }
-
-
+        
+        
         ushort port = ushort.Parse(portInput.text);
-
 
         RefRW<NetworkStreamDriver> networkStreamDriver =
             serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
         networkStreamDriver.ValueRW.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
+
+
+
 
         NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
         networkStreamDriver =

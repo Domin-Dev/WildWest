@@ -24,9 +24,11 @@ MonoBehaviour:
   numberItem: 1
   durability: 0
   drop: []
-  texturePath: Textures/Floor/grass
   toolRequired: 0
   chanceOfDefaultTile: 0.6
   diggingParticles: {fileID: 2590526293616396483, guid: 904f8924385a81440846293440c71717, type: 3}
   canBeCultivated: 1
+  displayPriority: 10000
+  texturePath: Textures/Floor/grass
+  borderTexturePath: Textures/BordersTexture/GrassBorders
   swapForSecondLayerFloorID: 21

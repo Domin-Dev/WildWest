@@ -7,6 +7,10 @@ public class Floor : BuildingItem
     public float chanceOfDefaultTile;
     public GameObject diggingParticles;
     public bool canBeCultivated;
+
+
+    public int displayPriority;
     public string texturePath;
+    public string borderTexturePath;
 } 
 

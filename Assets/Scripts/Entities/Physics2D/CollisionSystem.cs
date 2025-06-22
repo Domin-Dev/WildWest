@@ -45,6 +45,14 @@ public partial struct CollisionSystem : ISystem
 
     NativeHashMap<int2, NativeList<Entity>> entityMap;
 
+    ComponentLookup<IsChanged> isChanged;
+    ComponentLookup<AlwaysUpdate> alwaysUpdate;
+
+    ComponentLookup<Velocity2D> getVelocity;
+    ComponentLookup<LocalTransform> getPosition;
+    ComponentLookup<BoxCollider2D> getHitbox;
+    ComponentLookup<Physics2D> getPhysics;
+
     public void OnCreate(ref SystemState state)
     {
         entityMap = new NativeHashMap<int2, NativeList<Entity>>(100, Allocator.Persistent);
@@ -52,6 +60,15 @@ public partial struct CollisionSystem : ISystem
             .WithAll<NetworkId,NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
+
+
+        isChanged = SystemAPI.GetComponentLookup<IsChanged>();
+        alwaysUpdate = SystemAPI.GetComponentLookup<AlwaysUpdate>();
+
+        getVelocity = state.GetComponentLookup<Velocity2D>();
+        getPosition = state.GetComponentLookup<LocalTransform>();
+        getHitbox = state.GetComponentLookup<BoxCollider2D>();
+        getPhysics = state.GetComponentLookup<Physics2D>();
     }
     public void OnDestroy(ref SystemState state)
     {
@@ -66,6 +83,9 @@ public partial struct CollisionSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        UpdateLookups(ref state);
+
+
         if (state.World.Flags == WorldFlags.GameServer)
         {
             foreach (var(playerInputSync, playerInput,player , velocity, entity)
@@ -89,12 +109,7 @@ public partial struct CollisionSystem : ISystem
         }
 
         EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D,LocalTransform,Physics2D,Simulate>().Build();
-
-
-        var isChanged = SystemAPI.GetComponentLookup<IsChanged>();
-        var alwaysUpdate = SystemAPI.GetComponentLookup<AlwaysUpdate>();
-
-        
+   
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
         NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
@@ -103,11 +118,6 @@ public partial struct CollisionSystem : ISystem
         NativeArray<Physics2D> physics = entities.ToComponentDataArray<Physics2D>(Allocator.TempJob);
         UpdateEntityMap(ref state,ref isChanged,ref alwaysUpdate, entityArray, physics, transforms);
 
-
-        var getVelocity = state.GetComponentLookup<Velocity2D>(); 
-        var getPosition = state.GetComponentLookup<LocalTransform>();
-        var getHitbox = state.GetComponentLookup<BoxCollider2D>();
-        var getPhysics = state.GetComponentLookup<Physics2D>();
 
         NativeHashMap<int,float> collisions = new NativeHashMap<int,float>(50, Allocator.TempJob);
 
@@ -334,7 +344,15 @@ public partial struct CollisionSystem : ISystem
 
 
 
-
+    private void UpdateLookups(ref SystemState state)
+    {
+        isChanged.Update(ref state);
+        alwaysUpdate.Update(ref state);
+        getVelocity.Update(ref state);
+        getPosition.Update(ref state);
+        getHitbox.Update(ref state);
+        getPhysics.Update(ref state);
+    }
     private void UpdateEntityMap(ref SystemState state,ref ComponentLookup<IsChanged> isChange, ref ComponentLookup<AlwaysUpdate> alwaysUpdate, NativeArray<Entity> entityArray, NativeArray<Physics2D> physics, NativeArray<LocalTransform> transforms)
     {
         for (int i = 0; i < entityArray.Length; i++)

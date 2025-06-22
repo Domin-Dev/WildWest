@@ -14,7 +14,7 @@ public class MapGenerator
     private int widthInChunks = 10;
     private int heightInChunks = 10;
     [Header("Map Generator Settings")]
-    [SerializeField] private float scale = 20;
+    [SerializeField] private float scale = 2;
     [SerializeField] private Vector2 offset;
     [Header("Temperature Map Settings")]
     [SerializeField] private float scaleTemp = 20;
@@ -95,17 +95,19 @@ public class MapGenerator
 
         foreach (var item in map.chunks)
         {
-            float value = Generate((int)item.Value.chunkCoordinates.x,(int)item.Value.chunkCoordinates.y, offset, scale);
 
 
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int x = 0; x < chunkSize; x++)
                 {
+                    float value = Generate((int)item.Value.chunkCoordinates.x + x, (int)item.Value.chunkCoordinates.y + y, offset, scale);
                     GenerateCell(item.Value, x, y,rand);
                     if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
 
+
                     int index = -1;
+
                     if (value >= 0.75f)
                     {
                         index = 0;
@@ -122,6 +124,7 @@ public class MapGenerator
                     {
                         index = 3;
                     }
+
                     SetValue(item.Value, x, y, index, rand.Next(6));
                     //    if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
                     //      SetValue(item.Value, x, y, index, 0);
@@ -154,7 +157,7 @@ public class MapGenerator
         List<int> list = new List<int>();
         for (int i = 0; i < mapGeneratorSettings.tiles.Count; i++)
         {
-            list.Add(MapVisualization.instance.TilesUV[mapGeneratorSettings.tiles[i].tileID].variants);
+            list.Add(MapVisualization.instance.tilesUV[mapGeneratorSettings.tiles[i].tileID].variants);
         }
         return list;
     }
