@@ -545,74 +545,7 @@ public class GridVisualization : MonoBehaviour
         return value;
     }
 
-    //private int CalculateBorders(int x,int y)
-    //{
-    //    int value = 0;
-    //    int number = 0;
-
-
-    //    if (GetValueByGridPosition(x, y + 1)?.tileID  == settings.grassID) { value += 1; number++; }
-    //    if (GetValueByGridPosition(x + 1, y )?.tileID == settings.grassID) { value += 2; number++; }
-    //    if (GetValueByGridPosition(x , y - 1)?.tileID == settings.grassID) { value += 4; number++; }
-    //    if (GetValueByGridPosition(x - 1, y )?.tileID == settings.grassID) { value += 8; number++; }
-
-    //    if (value == 0)
-    //    {
-    //        if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value -= 1;
-    //        if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value -= 2;
-    //        if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) value -= 4;
-    //        if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) value -= 8;
-    //    }
-    //    else if(number == 1)
-    //    {
-    //        int k = 0;
-    //        switch (value)
-    //        {
-    //            case 1:
-    //                if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) k += 1;
-    //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) k += 2;
-    //                break;
-    //            case 2:
-    //                if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) k += 1;
-    //                if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) k += 2;
-    //                break;
-    //            case 4:
-    //                if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) k += 1;
-    //                if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) k += 2;
-    //                break;
-    //            case 8:
-    //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) k += 1;
-    //                if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) k += 2;
-    //                break;
-    //        }
-    //        if (k > 0)
-    //        {
-    //            if(value != 8) value = 30 + ((value / 2) * 3) + k;
-    //            else value = 39 + k;
-    //        }
-    //    }
-    //    else if (number == 2)
-    //    {      
-    //        switch (value)
-    //        {
-    //            case 3:
-    //                if (GetValueByGridPosition(x - 1, y - 1)?.tileID == settings.grassID) value = 43;
-    //                break;
-    //            case 6:
-    //                if (GetValueByGridPosition(x - 1, y + 1)?.tileID == settings.grassID) value = 44;
-    //                break;
-    //            case 9:
-    //                if (GetValueByGridPosition(x + 1, y - 1)?.tileID == settings.grassID) value = 45;
-    //                break;
-    //            case 12:
-    //         if (GetValueByGridPosition(x + 1, y + 1)?.tileID == settings.grassID) value = 46;
-    //                break;
-    //        }
-    //    }
-
-    //    return value;
-    //}
-
+  
 
 
     public Transform CreateMesh(Chunk chunk)

@@ -7,7 +7,6 @@ using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -16,6 +15,15 @@ public struct UV
 {
     public Vector2 UV00;
     public Vector2 UV11;
+
+    public override bool Equals(object obj)
+    {
+        if (!(obj is UV))
+            return false;
+
+        UV other = (UV)obj;
+        return this.UV00.Equals(other.UV00) && this.UV11.Equals(other.UV11);
+    }
 }
 
 
@@ -142,18 +150,21 @@ public class MapVisualization : MonoBehaviour
         meshFilter.mesh = mesh;
         return meshFilter.transform;
     }
-
-
     private UV[] GetBorderUVs(int[] neighbors, int tileID)
     {
         UV[] uvs = new UV[12];
         UV nullUV = new UV() { UV00 = new Vector2(1 - sizeBoxInBordertexture.x * 0.1f , 0), UV11 = new Vector2(1, 0) }; 
 
+        
 
         for (int i = 0; i < neighbors.Length; i++)
         {
+            if (tileID == 19) Debug.Log("grass");
+
             int neighbor = neighbors[i];
-            UV newUV = new UV();
+            UV newUV = nullUV;
+            UV newUV2 = nullUV;
+
             if (i % 2 == 0)
             {
                 if (neighbor == tileID || neighbor == -1)
@@ -174,6 +185,7 @@ public class MapVisualization : MonoBehaviour
                             newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 5f, sizeBoxInBordertexture.y * 3f);
                             break;
                         case 2:
+                            Debug.Log("Tree");
                             newUV.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x * 4.5f, sizeBoxInBordertexture.y * 3);
                             newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 5f, sizeBoxInBordertexture.y * 4);
                             break;
@@ -182,7 +194,6 @@ public class MapVisualization : MonoBehaviour
                             newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 5f, sizeBoxInBordertexture.y * 2.5f);
                             break;
                     }
-
                 }
                 uvs[i] = newUV;
             }
@@ -190,34 +201,62 @@ public class MapVisualization : MonoBehaviour
             {
                 int k = Mathf.CeilToInt(i / 2f);
                 int[] nextAndPrevious = GetNextAndPrevious(neighbors, i);
+                
 
-                if (!(nextAndPrevious[0] == nextAndPrevious[1] && nextAndPrevious[1] == nextAndPrevious[2]))
+
+                if (!(nextAndPrevious[0] == nextAndPrevious[1] && nextAndPrevious[1] == nextAndPrevious[2] && nextAndPrevious[1] == tileID))
                 {
                     float y = sizeBoxInBordertexture.y * (k - 1);
                     float maxY = sizeBoxInBordertexture.y * (k);
+                    bool isSprite = false;
 
-
-                    if (nextAndPrevious[0] == nextAndPrevious[2] && nextAndPrevious[0] != -1)
-                    {
+                    if (nextAndPrevious[0] == nextAndPrevious[2] && nextAndPrevious[0] != tileID && nextAndPrevious[0] != -1)
+                    { 
                         Vector2 borderUv = borderUV[nextAndPrevious[0]];
-                        newUV.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x * 2 ,y);
+                        newUV.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x * 2, y);
                         newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 3, maxY);
+                        isSprite = true;
                     }
-                    else if(nextAndPrevious[0] != -1)
-                    {
-                        Vector2 borderUv = borderUV[nextAndPrevious[0]];
-                        newUV.UV00 = borderUv + new Vector2(0, y);
-                        newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x, maxY);
+                    else
+                    { 
+                        if (nextAndPrevious[0] != -1 && nextAndPrevious[0] != tileID)
+                        {
+                            Vector2 borderUv = borderUV[nextAndPrevious[0]];
+                            Debug.Log(nextAndPrevious[0] + " " + borderUv);
+                            newUV.UV00 = borderUv + new Vector2(0, y);
+                            newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x, maxY);
+                            isSprite = true;
+                        }
+
+                        if (nextAndPrevious[2] != -1 && nextAndPrevious[2] != tileID)
+                        {
+                            Vector2 borderUv = borderUV[nextAndPrevious[2]];
+                            newUV2.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x, y);
+                            newUV2.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 2, maxY);
+                            isSprite = true;
+                        }
+
+                        if(!newUV.Equals(nullUV) && !newUV2.Equals(nullUV))
+                        {
+                            if(prioritiesUV[nextAndPrevious[0]] < prioritiesUV[nextAndPrevious[2]])
+                            {
+                                UV uV = newUV;
+                                newUV = newUV2;
+                                newUV2 = uV;
+                            }
+                        }
                     }
-                    else if (nextAndPrevious[2] != -1)
+                   
+                    if (!isSprite && nextAndPrevious[1] != -1 &&  (!prioritiesUV.ContainsKey(tileID) || prioritiesUV[nextAndPrevious[1]] > prioritiesUV[tileID] ))
                     {
-                        Vector2 borderUv = borderUV[nextAndPrevious[2]];
-                        newUV.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x , y);
-                        newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 2, maxY);
+                        Vector2 borderUv = borderUV[nextAndPrevious[1]];
+                        newUV.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x * 3, y);
+                        newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 4, maxY);
                     }
                 }
-                else
-                    uvs[k] = nullUV;
+
+                uvs[i] = newUV;
+                uvs[7 + k] = newUV2;
             }
         }
         return uvs;
@@ -263,27 +302,31 @@ public class MapVisualization : MonoBehaviour
     private void SetTileBorders(UV[] UVset,Vector2[] uv,int[] borderTriangles, Vector3[] vertices,int index, Vector2 startPos)
     {
         int startIndex = index * 12;
-        SetVertices(UVset[1], uv, borderTriangles,vertices, startPos,getCornerVector, ref startIndex);
-        SetVertices(UVset[1],uv, borderTriangles,vertices, startPos,getCornerVector, ref startIndex,1);
+        SetVertices(UVset[10],uv, borderTriangles,vertices, startPos,getCornerVector, ref startIndex);
+        SetVertices(UVset[5],uv, borderTriangles,vertices, startPos,getCornerVector, ref startIndex,1);
 
+
+        Debug.Log(UVset[4].UV00 + " " + UVset[4].UV11);
         SetVertices(UVset[4],uv, borderTriangles,vertices, startPos + new Vector2(cornerSize,0), new Vector2(getCornerDistance, cornerSize),ref startIndex);
         
-        SetVertices(UVset[3],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex);
-        SetVertices(UVset[1],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex,1);
+        SetVertices(UVset[9],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex);
+        SetVertices(UVset[3],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex,1);
 
         startPos += new Vector2(0, cornerSize);
+
+
 
         SetVertices(UVset[6],uv, borderTriangles, vertices, startPos, new Vector2(cornerSize, getCornerDistance), ref startIndex);
         SetVertices(UVset[2],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), new Vector2(cornerSize, getCornerDistance), ref startIndex);
 
         startPos += new Vector2(0, getCornerDistance);
 
-        SetVertices(UVset[5], uv, borderTriangles, vertices, startPos, getCornerVector, ref startIndex);
-        SetVertices(UVset[1], uv, borderTriangles, vertices, startPos, getCornerVector, ref startIndex,1);
+        SetVertices(UVset[11], uv, borderTriangles, vertices, startPos, getCornerVector, ref startIndex);
+        SetVertices(UVset[7], uv, borderTriangles, vertices, startPos, getCornerVector, ref startIndex,1);
 
         SetVertices(UVset[0],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize, 0), new Vector2(getCornerDistance, cornerSize), ref startIndex);
 
-        SetVertices(UVset[7], uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex);
+        SetVertices(UVset[8], uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex);
         SetVertices(UVset[1], uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex,1);
     }
     private void SetVertices(UV set ,Vector2[] uv ,int[] triangles,Vector3[] vertices, Vector2 startPos,Vector2 size, ref int startIndex,int z = 0)
@@ -379,9 +422,11 @@ public class MapVisualization : MonoBehaviour
         {
             int w = (i % bordertextureSize) * t.width;
             int h = (i / bordertextureSize) * t.height;
-            uv00 = new Vector2(w / maxWidth, h / maxHeight);
+           // uv00 = new Vector2(w / maxWidth, h / maxHeight);
             CopyTexture(w,h, tex.Value, texture);
-            borderUV.Add(tex.Key, uv00);
+
+            borderUV.Add(tex.Key, new Vector2((float)w / maxWidth, (float)h / maxHeight));
+            i++;
         }
         texture.Apply(true, true);
         borderTexture = texture;

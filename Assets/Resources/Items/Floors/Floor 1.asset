@@ -30,4 +30,4 @@ MonoBehaviour:
   canBeCultivated: 0
   displayPriority: 7000
   texturePath: Textures/Floor/sand
-  borderTexturePath: 
+  borderTexturePath: Textures/BordersTexture/SandBorders

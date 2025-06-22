@@ -27,7 +27,8 @@ partial struct MapLoadingCilientSystem : ISystem
         foreach ((RefRO<FixedChunk> chunkStruct, ReceiveRpcCommandRequest receiveRpc, Entity entity) in
         SystemAPI.Query<RefRO<FixedChunk>, ReceiveRpcCommandRequest>().WithEntityAccess())
         {
-            MapVisualization.instance.CreateMesh(chunkStruct);
+           
+                MapVisualization.instance.CreateMesh(chunkStruct);
             entityCommandBuffer.DestroyEntity(entity);
         }
 
