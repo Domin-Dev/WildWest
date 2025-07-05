@@ -130,7 +130,6 @@ public partial class MapServerSystem : SystemBase
                         counter = 0;
                     }
                     CreateObject(ref entityCommandBuffer, gridObject, new float2(i + chunk.chunkCoordinates.x, j + chunk.chunkCoordinates.y));
-
                 }
             }
         }
@@ -154,8 +153,8 @@ public partial class MapServerSystem : SystemBase
 
 
         entityCommand.AddComponent(entity, localTransform);
-        entityCommand.AddComponent(entity, new IsChanged());
-        entityCommand.SetComponentEnabled(entity,typeof(IsChanged), true);
+    //    entityCommand.AddComponent(entity, new IsChanged());
+    //    entityCommand.SetComponentEnabled(entity,typeof(IsChanged), true);
         entityCommand.AddComponent(entity, new Physics2D() {
             layer = 0,
             cellIndex = new int2(int.MinValue, int.MinValue)

@@ -19,7 +19,6 @@ partial struct UpdateItemInHandSystem : ISystem
         foreach (var (itemInHandInputSync, entity) in SystemAPI.Query<RefRO<ItemInHandInputSync>>().WithAll<Simulate>()
             .WithChangeFilter<ItemInHandInputSync>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
-            Debug.Log("Zmiana " + itemInHandInputSync.ValueRO.itemInHand);
             CharacterManager.instance.ChangeItemInHand(itemInHandInputSync.ValueRO.itemInHand, entity, ref state);
         }
     }

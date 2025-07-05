@@ -416,10 +416,10 @@ public class LiquidsManager : MonoBehaviour
             tile.GridObjectIsType(out GridHole gridHole);
             gridHole.waterLevel = newWaterLevel;
             gridHole.waterHoleID = (int)waterHole.waterBodyID;
-            GridVisualization.instance.UpdateMesh(tile.x, tile.y, true);
+       //     GridVisualization.instance.UpdateMesh(tile.x, tile.y, true);
         }
         hole.waterLevel = newWaterLevel;
-        GridVisualization.instance.UpdateMesh(gridTile.x, gridTile.y, true);
+       // GridVisualization.instance.UpdateMesh(gridTile.x, gridTile.y, true);
 
         CompileWaterBody(newWaterbodies, gridTile, waterHole);
     }

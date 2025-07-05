@@ -123,15 +123,21 @@ public partial struct CollisionSystem : ISystem
 
         for (int i = 0; i < entityArray.Length; i++)
         {
-            BoxCollider2D tempHitbox1 = hitboxes[i];
             Entity entity = entityArray[i];
+          if (!((isChanged.HasComponent(entity) && isChanged.IsComponentEnabled(entity)) || (alwaysUpdate.HasComponent(entity) && alwaysUpdate.IsComponentEnabled(entity))))
+                continue;
+
+
+
+            BoxCollider2D tempHitbox1 = hitboxes[i];
+          //  Debug.Log(entity);
             LocalTransform tempTransform1 = transforms[i];
             float2 velocity1 = velocities[i].Value * SystemAPI.Time.DeltaTime; 
             float2 topLeft1 = 
                 new float2(
                 tempTransform1.Position.x - tempHitbox1.size.x * 0.5f,
                 tempTransform1.Position.y + tempHitbox1.size.y * 0.5f
-               );
+            );
 
             float3 vel = new float3(0,0,0);
             float3 pos = float3.zero;
@@ -332,7 +338,7 @@ public partial struct CollisionSystem : ISystem
             potentialCollisions.Dispose();
         }
 
-
+    //    Debug.Log("---------------------------------");
         physics.Dispose();
         collisions.Dispose();
         entityArray.Dispose();
@@ -357,22 +363,37 @@ public partial struct CollisionSystem : ISystem
     {
         for (int i = 0; i < entityArray.Length; i++)
         {
-            Entity entity = entityArray[i];
-            if((isChange.HasComponent(entity) && isChange.IsComponentEnabled(entity)) ||
-            (alwaysUpdate.HasComponent(entity) && alwaysUpdate.IsComponentEnabled(entity)))
+            float2 position = transforms[i].Position.xy;
+            int2 cellIndex = new int2((int)(position.x / CellSize), (int)(position.y / CellSize));
+            Physics2D physics2D = physics[i];
+            if (!physics2D.cellIndex.Equals(cellIndex))
             {
-                float2 position = transforms[i].Position.xy;
-                int2 cellIndex = new int2((int)(position.x / CellSize), (int)(position.y / CellSize));
-                Physics2D physics2D = physics[i];
-                if (!physics2D.cellIndex.Equals(cellIndex))
-                {
-                    SetValueInEntityMap(entity, physics2D.cellIndex, cellIndex);
-                    physics2D.cellIndex = cellIndex;
-                    physics[i] = physics2D;
-                    state.EntityManager.SetComponentData(entity, physics2D);
-                }
+                SetValueInEntityMap(entityArray[i], physics2D.cellIndex, cellIndex);
+                physics2D.cellIndex = cellIndex;
+                physics[i] = physics2D;
+                state.EntityManager.SetComponentData(entityArray[i], physics2D);
             }
         }
+
+
+        //for (int i = 0; i < entityArray.Length; i++)
+        //{
+        //    Entity entity = entityArray[i];
+        //    if((isChange.HasComponent(entity) && isChange.IsComponentEnabled(entity)) ||
+        //    (alwaysUpdate.HasComponent(entity) && alwaysUpdate.IsComponentEnabled(entity)))
+        //    {
+        //        float2 position = transforms[i].Position.xy;
+        //        int2 cellIndex = new int2((int)(position.x / CellSize), (int)(position.y / CellSize));
+        //        Physics2D physics2D = physics[i];
+        //        if (!physics2D.cellIndex.Equals(cellIndex))
+        //        {
+        //            SetValueInEntityMap(entity, physics2D.cellIndex, cellIndex);
+        //            physics2D.cellIndex = cellIndex;
+        //            physics[i] = physics2D;
+        //            state.EntityManager.SetComponentData(entity, physics2D);
+        //        }
+        //    }
+        //}
     }
    
     private void SetValueInEntityMap(Entity entity,int2 oldValue ,int2 newValue)

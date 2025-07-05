@@ -197,8 +197,6 @@ public class MenuManager : MonoBehaviour
     private void RunServer()
     {
         GameInfo.LoadScene(4, 0);
-
-
         foreach (World world in World.All)
         {
             if (world.Flags == WorldFlags.GameClient)
@@ -207,17 +205,15 @@ public class MenuManager : MonoBehaviour
                 break;
             }
         }
+        World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");
+        World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
 
-        World serverWorld = ClientServerBootstrap.CreateServerWorld("Server wild world");
-        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
-        
-
+        ClientWorldSetUp(clientWorld);
 
         if (World.DefaultGameObjectInjectionWorld == null)
         {
             World.DefaultGameObjectInjectionWorld = serverWorld;
         }
-        
         
         ushort port = ushort.Parse(portInput.text);
 
@@ -225,19 +221,23 @@ public class MenuManager : MonoBehaviour
             serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
         networkStreamDriver.ValueRW.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
 
-
-
-
         NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
         networkStreamDriver =
             clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
         networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-        
-
-
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
+
+    private void ClientWorldSetUp(World clientWorld)
+    {
+        var simGroup = clientWorld.GetExistingSystemManaged<SimulationSystemGroup>(); 
+        var mapLoadingSystem = clientWorld.GetOrCreateSystemManaged<MapLoadingClientSystem>();
+
+        simGroup.AddSystemToUpdateList(mapLoadingSystem);
+        simGroup.SortSystems();
+    }
+
 }

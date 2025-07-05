@@ -42,18 +42,6 @@ public class TileUV
 }
 
 
-[System.Serializable]
-public class LoadedChunk
-{
-    public int loadedTime;
-    public Transform transform;
-
-    public LoadedChunk(int loadedTime,Transform transform)
-    {
-        this.loadedTime = loadedTime;
-        this.transform = transform;
-    }
-}
 
 public class GridVisualization : MonoBehaviour
 {
@@ -110,7 +98,10 @@ public class GridVisualization : MonoBehaviour
     }
 
 
+    public void UpdateMesh(int x, int y,bool k) {
 
+
+    }
     private void SetUpMapMaterial(int sizeTile = 25)
     {
         TilesUV = new Dictionary<int, TileUV>();
@@ -290,42 +281,42 @@ public class GridVisualization : MonoBehaviour
 
         for (int i = 0; i < array.Length; i++)
         {
-            StartCoroutine(UnloadChunk(array[i].Key));
+        //    StartCoroutine(UnloadChunk(array[i].Key));
             loadedChunks.Remove(array[i].Key);
             yield return null;
         }
         yield return null;
     }
-    IEnumerator UnloadChunk(int index)
-    {
-        if(!loadedChunks.ContainsKey(index)) yield break;
-        if(loadedChunks[index] != null) Destroy(loadedChunks[index].transform.gameObject);
-        Chunk chunk = map.chunks[index];
-        var grid = chunk.grid;
+    //IEnumerator UnloadChunk(int index)
+    //{
+    //    if(!loadedChunks.ContainsKey(index)) yield break;
+    //    if(loadedChunks[index] != null) Destroy(loadedChunks[index].transform.gameObject);
+    //    Chunk chunk = map.chunks[index];
+    //    var grid = chunk.grid;
 
-        for (int x = 0; x < map.chunkSize; x++)
-        {
-            for (int y = 0; y < map.chunkSize; y++)
-            {
-                var value = grid[x, y].gridObject;
-                if (value != null && value.objectTransform != null)
-                {
-                    Destroy(value.objectTransform.gameObject);
-                }
-            }
-        }
+    //    for (int x = 0; x < map.chunkSize; x++)
+    //    {
+    //        for (int y = 0; y < map.chunkSize; y++)
+    //        {
+    //            var value = grid[x, y].gridObject;
+    //            if (value != null && value.objectTransform != null)
+    //            {
+    //                Destroy(value.objectTransform.gameObject);
+    //            }
+    //        }
+    //    }
 
-        for (int i = 0; i < chunk.items.Count; i++)
-        {
-            var item = chunk.items[i];
-            if (item != null && item.worldItem != null)
-            {
-                UnloadWorldItem(item);
-            }
-        }
-        yield return null;
+    //    for (int i = 0; i < chunk.items.Count; i++)
+    //    {
+    //        var item = chunk.items[i];
+    //        if (item != null && item.worldItem != null)
+    //        {
+    //            UnloadWorldItem(item);
+    //        }
+    //    }
+    //    yield return null;
 
-    }
+    //}
     private bool CheckChunk(int chunkIndex)
     {
         if(!loadedChunks.ContainsKey(chunkIndex) && chunkIndex >= 0 && chunkIndex < map.chunkCount)
@@ -435,61 +426,61 @@ public class GridVisualization : MonoBehaviour
         uv[index * 4 + 3] = new Vector2(uv11.x         ,uv00.y + height1);
     }
 
-    public void UpdateMesh(int x,int y,bool repeat,bool updateGridObject = false)
-    {
-        int chunkIndex = GetChunkIndexByPositionXY(new Vector2(x, y));
-        if (x >= 0 && y >= 0 && x < map.width && y < map.height && loadedChunks.ContainsKey(chunkIndex))
-        {
-            int localX = x % map.chunkSize;
-            int localY = y % map.chunkSize;
+    //public void UpdateMesh(int x,int y,bool repeat,bool updateGridObject = false)
+    //{
+    //    int chunkIndex = GetChunkIndexByPositionXY(new Vector2(x, y));
+    //    if (x >= 0 && y >= 0 && x < map.width && y < map.height && loadedChunks.ContainsKey(chunkIndex))
+    //    {
+    //        int localX = x % map.chunkSize;
+    //        int localY = y % map.chunkSize;
 
-            Mesh mesh = loadedChunks[chunkIndex].transform.GetComponent<MeshFilter>().mesh;
-            Mesh lineMesh = loadedChunks[chunkIndex].transform.GetChild(0).GetComponent<MeshFilter>().mesh;
-            Vector2[] uv = mesh.uv;
-            Vector2[] linesUv = lineMesh.uv;
+    //    //    Mesh mesh = loadedChunks[chunkIndex].transform.GetComponent<MeshFilter>().mesh;
+    //     //   Mesh lineMesh = loadedChunks[chunkIndex].transform.GetChild(0).GetComponent<MeshFilter>().mesh;
+    //        Vector2[] uv = mesh.uv;
+    //        Vector2[] linesUv = lineMesh.uv;
 
-            int index = localX + localY * map.chunkSize;
-            GridTile gridTile = map.chunks[chunkIndex].grid[localX,localY];
+    //        int index = localX + localY * map.chunkSize;
+    //        GridTile gridTile = map.chunks[chunkIndex].grid[localX,localY];
 
-            Vector2 uv11, uv00;
-            int borders = CalculateBorders(x, y, gridTile.tileID);
+    //        Vector2 uv11, uv00;
+    //        int borders = CalculateBorders(x, y, gridTile.tileID);
 
-            if (updateGridObject || borders != gridTile.borders || gridTile.GridObjectIsType<GridHole>() || repeat)
-            {
-                gridTile.borders = borders;
-                if (gridTile.GridObjectIsType(out GridHole hole))
-                {
-                    GridTile tile = GetTileByGridPosition(x, y + 1);
-                    if (tile != null && tile.GridObjectIsType<GridHole>())
-                        GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
-                    else
-                        GetUVTile(gridTile, 0 + hole.waterLevel * 2, out uv00, out uv11);
-                }
-                else
-                    GetUVTile(gridTile, out uv00, out uv11);
+    //        if (updateGridObject || borders != gridTile.borders || gridTile.GridObjectIsType<GridHole>() || repeat)
+    //        {
+    //            gridTile.borders = borders;
+    //            if (gridTile.GridObjectIsType(out GridHole hole))
+    //            {
+    //                GridTile tile = GetTileByGridPosition(x, y + 1);
+    //                if (tile != null && tile.GridObjectIsType<GridHole>())
+    //                    GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
+    //                else
+    //                    GetUVTile(gridTile, 0 + hole.waterLevel * 2, out uv00, out uv11);
+    //            }
+    //            else
+    //                GetUVTile(gridTile, out uv00, out uv11);
 
-                UVSet(uv, index, uv00, uv11); 
-                mesh.uv = uv;
+    //            UVSet(uv, index, uv00, uv11); 
+    //            mesh.uv = uv;
 
-                GetUVLine(borders, out uv00, out uv11);
-                UVSet(linesUv, index, uv00, uv11);
-                lineMesh.uv = linesUv;
-            }
+    //            GetUVLine(borders, out uv00, out uv11);
+    //            UVSet(linesUv, index, uv00, uv11);
+    //            lineMesh.uv = linesUv;
+    //        }
 
-            if (repeat)
-            {
-                UpdateMesh(x + 1, y,false);
-                UpdateMesh(x - 1, y,false);
-                UpdateMesh(x, y + 1,false);
-                UpdateMesh(x, y - 1,false);
+    //        if (repeat)
+    //        {
+    //            UpdateMesh(x + 1, y,false);
+    //            UpdateMesh(x - 1, y,false);
+    //            UpdateMesh(x, y + 1,false);
+    //            UpdateMesh(x, y - 1,false);
 
-                UpdateMesh(x + 1, y + 1,false);
-                UpdateMesh(x - 1, y + 1,false);
-                UpdateMesh(x - 1, y - 1,false);
-                UpdateMesh(x + 1, y - 1,false);
-            }
-        }
-    }
+    //            UpdateMesh(x + 1, y + 1,false);
+    //            UpdateMesh(x - 1, y + 1,false);
+    //            UpdateMesh(x - 1, y - 1,false);
+    //            UpdateMesh(x + 1, y - 1,false);
+    //        }
+    //    }
+    //}
 
     public Vector2 GetCoordinatesByLocalChunkCoordinates(int chunkIndex,Vector2 localCoordinates)
     {
@@ -665,7 +656,7 @@ public class GridVisualization : MonoBehaviour
     }
     public void TileChanged(int x,int y)
     {
-        UpdateMesh(x,y,true);
+        //UpdateMesh(x,y,true);
     }
     public GridTile GetTileByGridPosition(Vector2 gridPosition)
     {
@@ -746,7 +737,7 @@ public class GridVisualization : MonoBehaviour
             gridTile.SetTileID(gridTile.tileID);
             gridTile.SetGridObject(new GridFarmland(gridTile.tileID, isWatered), true);
             gridTile.variant =  BuildingManager.RandomVariant(gridTile.tileID);
-            UpdateMesh(gridTile.x,gridTile.y, true);
+            //UpdateMesh(gridTile.x,gridTile.y, true);
             Sounds.instance.Hammer();
         }
     }
@@ -1023,7 +1014,7 @@ public class GridVisualization : MonoBehaviour
         GridHole hole;
         if(gridTile.GridObjectIsType<GridHole>(out hole))
         {
-            LiquidsManager.instance.WaterTransfer(gridTile, water);
+            //LiquidsManager.instance.WaterTransfer(gridTile, water);
         }
     }
 
@@ -1069,4 +1060,9 @@ public class GridVisualization : MonoBehaviour
     //    }
     //    holesToDivideWater.Clear();
 
+}
+
+public class LoadedChunk
+{
+    internal int loadedTime;
 }

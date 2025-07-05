@@ -238,7 +238,7 @@ public class Actions : MonoBehaviour
         farmland.Water();
         Vector2 pos = GridVisualization.instance.GetWorldPosition(gridTile.x, gridTile.y);
         Instantiate(ParticleAssets.instance.water, pos + new Vector2(0,0.14f), Quaternion.identity);
-        GridVisualization.instance.UpdateMesh(gridTile.x, gridTile.y, false,true);
+       // GridVisualization.instance.UpdateMesh(gridTile.x, gridTile.y, false,true);
         item.Decrease(50);
     }
 

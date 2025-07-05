@@ -186,19 +186,19 @@ public class GridTile : IHitPoints
     {
         string output = "";
 
-        if (IsGridObjectClass())
-        {
-            if (GridObjectIsType<GridHole>(out GridHole hole))
-            {
-                double fill = LiquidsManager.instance.GetFill(hole.waterHoleID);
-                if( fill  > 0)
-                    output += "<color=#A3A3A3>Water: " + "[" + fill.ToString("F2") + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> " + LiquidsManager.instance.GetNumberTiles(hole.waterHoleID)+ "  " + hole.waterHoleID  +" \n";
-                else
-                    output += "Hole";
-                return output;
-            }
-            output += gridObject.ToString() + '\n';
-        }
+        //if (IsGridObjectClass())
+        //{
+        //    if (GridObjectIsType<GridHole>(out GridHole hole))
+        //    {
+        //        double fill = LiquidsManager.instance.GetFill(hole.waterHoleID);
+        //        if( fill  > 0)
+        //          //  output += "<color=#A3A3A3>Water: " + "[" + fill.ToString("F2") + "/"+ ItemsAsset.instance.GetItem<Hole>(tileID).capacity +"]" + "</color> " + LiquidsManager.instance.GetNumberTiles(hole.waterHoleID)+ "  " + hole.waterHoleID  +" \n";
+        //        else
+        //            output += "Hole";
+        //        return output;
+        //    }
+        //    output += gridObject.ToString() + '\n';
+        //}
         if(tileID >= 0) output += "Tile: " + ItemsAsset.instance.GetItem(tileID).name + '\n';
         if(secondLayerID >= 0) output += "<color=#A3A3A3>Second Layer: " + ItemsAsset.instance.GetItem(secondLayerID).name + "</color> \n";
 

@@ -13,6 +13,7 @@ using Unity.Entities;
 [GenerateTestsForBurstCompatibility]
 public struct FixedChunk : IRpcCommand
 {
+
     [FieldOffset(0)] public float2 worldPosition;             
     [FieldOffset(8)] public int2 chunkCoordinates;           
 

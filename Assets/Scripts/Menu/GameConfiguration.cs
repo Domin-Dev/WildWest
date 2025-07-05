@@ -11,18 +11,24 @@ public class GameConfiguration: MonoBehaviour
     [SerializeField] private Animator blackScreen;
 
     private GameObject gameObj;
+    private LoadingManager loading;
     private void Start()
     {
         GameInfo.SetUp();
         gameObj = Instantiate(loadingScreen);
-        LoadingManager loading = gameObj.GetComponent<LoadingManager>();
+        loading = gameObj.GetComponent<LoadingManager>();
         loading.SetStartValue(0.5f);
-        loading.gameIsReady += () =>
-        {
-            Destroy(gameObj);
-            blackScreen.SetTrigger("BlackScreen");
-        };
+        loading.gameIsReady += Action;
+
+        ClientServerBootstrap.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetUp();
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(LoadMap));
+    }
+
+    public void Action()
+    {
+        Destroy(gameObj);
+        if(blackScreen != null) blackScreen.SetTrigger("BlackScreen");
+        loading.gameIsReady -= Action;
     }
 }
 

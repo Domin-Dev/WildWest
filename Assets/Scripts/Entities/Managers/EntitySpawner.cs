@@ -87,7 +87,7 @@ public class EntitySpawner : MonoBehaviour
     }
     private void StartGame()
     {
-        Debug.Log("Spraw");
+   //     Debug.Log("Spraw");
    //     SpawnPlayer(true,float3.zero);
     }
     private void SetUp(EntityQuery entityQuery)

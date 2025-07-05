@@ -1,5 +1,6 @@
 
 
+using Game.Client.Map;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -43,9 +44,15 @@ public class MapVisualization : MonoBehaviour
     int textureHeight;
     float tileWidth,tileHeight,linetileWidth;
     Texture2D mapTexture;
-    public Texture2D borderTexture;
     float width1;
     float height1;
+
+    public Texture2D borderTexture;
+    float width1border;
+    float height1border;
+
+
+
 
     public static int chunkSize = 10;
     public static int numberOfTiles { 
@@ -55,10 +62,15 @@ public class MapVisualization : MonoBehaviour
     public const float cellSize = 0.25f;
     public const float cornerSize = 0.1f;
     public float getCornerDistance { get { return cellSize - 2 * cornerSize; } }
-    public Vector2 getCornerVector { get { return new Vector2(cornerSize, cornerSize); } }  
+    public Vector2 getCornerVector { get { return new Vector2(cornerSize, cornerSize); } }
 
 
+    public ClientMap clientMap;
+    public ClientMap map { set {
+             clientMap = value;
+        } }
     public static MapVisualization instance { private set; get; }
+
     public void Awake()
     {
         Application.targetFrameRate = 60;
@@ -72,7 +84,18 @@ public class MapVisualization : MonoBehaviour
         }
         SetUpMapMaterial();
     }
-    public Transform CreateMesh( RefRO<FixedChunk> chunk)
+
+
+    public void RenderNewChunks()
+    {
+        if (clientMap == null) return;
+
+        while (clientMap.GetNextChunk(out ClientChunk chunk))
+        {
+            clientMap.AddNewRenderedChunk(CreateMesh(chunk),chunk.chunkCoordinates);
+        }
+    }
+    public Transform CreateMesh(ClientChunk chunk)
     {
         Transform partOfMap = new GameObject("part of map").transform;
         Transform borders = new GameObject("Lines").transform;
@@ -87,7 +110,7 @@ public class MapVisualization : MonoBehaviour
         Mesh mesh = new Mesh();
         Mesh bordersMesh = new Mesh();
 
-        meshFilter.transform.position = new Vector3(chunk.ValueRO.worldPosition.x, chunk.ValueRO.worldPosition.y, 10);
+        meshFilter.transform.position = new Vector3(chunk.worldPosition.x, chunk.worldPosition.y, 10);
 
         Vector3[] vertices = new Vector3[4 * (numberOfTiles)];
         int[] triangles = new int[6 * (numberOfTiles)];
@@ -102,7 +125,7 @@ public class MapVisualization : MonoBehaviour
             for (int x = 0; x < chunkSize; x++)
             {
                 int index = x + y * chunkSize;
-                int tileID = chunk.ValueRO[x, y].tileID;
+                int tileID = chunk[x, y].tileID;
 
                 vertices[index * 4 + 0] = new Vector3(x * cellSize, y * cellSize);
                 vertices[index * 4 + 1] = new Vector3(x * cellSize, (y + 1) * cellSize);
@@ -117,17 +140,14 @@ public class MapVisualization : MonoBehaviour
                 triangles[index * 6 + 4] = index * 4 + 2;
                 triangles[index * 6 + 5] = index * 4 + 3;
 
-                UV[] uvs = GetBorderUVs(GetNeighbors(x, y, chunk), tileID);
+                UV[] uvs = GetBorderUVs(GetNeighbors(x, y,chunk,true), tileID);
                 SetTileBorders(uvs,borderUV, borderTriangles, borderVertices,index, new Vector2(x * cellSize, y * cellSize));
                
-                //   int borders = CalculateBorders(x, y, gridTile.tileID);
                 Vector2 uv11, uv00;
-                GetUVTile(tileID, chunk.ValueRO[x,y].variant, out uv00, out uv11);
+                GetUVTile(tileID, chunk[x,y].variant, out uv00, out uv11);
                 UVSet(uv, index, uv00, uv11);
             }
         }
-
-
         mesh.vertices = vertices;
         mesh.uv = uv;
         mesh.triangles = triangles;
@@ -150,17 +170,67 @@ public class MapVisualization : MonoBehaviour
         meshFilter.mesh = mesh;
         return meshFilter.transform;
     }
+
+    public void UpdateMesh(int2 pos, bool repeat)
+    {
+        UpdateMesh(pos.x,pos.y,repeat);
+    }
+    public void UpdateMesh(int x, int y, bool repeat)
+    {
+        int2 coordinates = ClientMap.MapPosToChunkCoordinates(x, y);
+        if(x >= 0 && y >= 0 && clientMap.renderedChunks.ContainsKey(coordinates))
+        {
+            int2 localpoas = ClientMap.MapPosToLocalChunkPos(x, y);
+            
+            Transform chunkTransform = clientMap.renderedChunks[coordinates];
+            ClientChunk clientChunk = clientMap.chunks[coordinates];
+
+            Mesh mesh = chunkTransform.GetComponent<MeshFilter>().mesh;
+            Mesh lineMesh = chunkTransform.GetChild(0).GetComponent<MeshFilter>().mesh;
+            Vector2[] uv = mesh.uv;
+            Vector2[] linesUv = lineMesh.uv;
+
+
+
+            int2 localPos = ClientMap.MapPosToLocalChunkPos(x, y);
+
+            int index = localPos.x + localPos.y * chunkSize;
+            ClientTile tile = clientMap[x, y];
+            Vector2 uv11, uv00;
+
+
+            var neighbors = GetNeighbors(localPos.x, localPos.y, clientChunk);
+            UV[] uvs = GetBorderUVs(neighbors, tile.tileID);
+            UpdateTileBorders(uvs,linesUv, index);
+            GetUVTile(tile.tileID, tile.variant, out uv00, out uv11);
+            UVSet(uv, index, uv00, uv11);
+
+            lineMesh.uv = linesUv;
+            mesh.uv = uv;
+
+            if (repeat)
+            {
+                UpdateMesh(x + 1, y, false);
+                UpdateMesh(x - 1, y, false);
+                UpdateMesh(x, y + 1, false);
+                UpdateMesh(x, y - 1, false);
+
+                UpdateMesh(x + 1, y + 1, false);
+                UpdateMesh(x - 1, y + 1, false);
+                UpdateMesh(x - 1, y - 1, false);
+                UpdateMesh(x + 1, y - 1, false);
+            }
+        }
+    }
+
+
     private UV[] GetBorderUVs(int[] neighbors, int tileID)
     {
         UV[] uvs = new UV[12];
         UV nullUV = new UV() { UV00 = new Vector2(1 - sizeBoxInBordertexture.x * 0.1f , 0), UV11 = new Vector2(1, 0) }; 
 
-        
-
         for (int i = 0; i < neighbors.Length; i++)
         {
-            if (tileID == 19) Debug.Log("grass");
-
             int neighbor = neighbors[i];
             UV newUV = nullUV;
             UV newUV2 = nullUV;
@@ -185,7 +255,6 @@ public class MapVisualization : MonoBehaviour
                             newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 5f, sizeBoxInBordertexture.y * 3f);
                             break;
                         case 2:
-                            Debug.Log("Tree");
                             newUV.UV00 = borderUv + new Vector2(sizeBoxInBordertexture.x * 4.5f, sizeBoxInBordertexture.y * 3);
                             newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x * 5f, sizeBoxInBordertexture.y * 4);
                             break;
@@ -201,9 +270,7 @@ public class MapVisualization : MonoBehaviour
             {
                 int k = Mathf.CeilToInt(i / 2f);
                 int[] nextAndPrevious = GetNextAndPrevious(neighbors, i);
-                
-
-
+               
                 if (!(nextAndPrevious[0] == nextAndPrevious[1] && nextAndPrevious[1] == nextAndPrevious[2] && nextAndPrevious[1] == tileID))
                 {
                     float y = sizeBoxInBordertexture.y * (k - 1);
@@ -222,12 +289,10 @@ public class MapVisualization : MonoBehaviour
                         if (nextAndPrevious[0] != -1 && nextAndPrevious[0] != tileID)
                         {
                             Vector2 borderUv = borderUV[nextAndPrevious[0]];
-                            Debug.Log(nextAndPrevious[0] + " " + borderUv);
                             newUV.UV00 = borderUv + new Vector2(0, y);
                             newUV.UV11 = borderUv + new Vector2(sizeBoxInBordertexture.x, maxY);
                             isSprite = true;
                         }
-
                         if (nextAndPrevious[2] != -1 && nextAndPrevious[2] != tileID)
                         {
                             Vector2 borderUv = borderUV[nextAndPrevious[2]];
@@ -261,7 +326,6 @@ public class MapVisualization : MonoBehaviour
         }
         return uvs;
     }
-
     private int[] GetNextAndPrevious(int[] neighbors, int index)
     {
         int[] values = new int[3];
@@ -278,22 +342,33 @@ public class MapVisualization : MonoBehaviour
             values[2] = neighbors[0];
         return values;
     }
-    private int[] GetNeighbors(int x,int y, RefRO<FixedChunk> chunk)
+    private int[] GetNeighbors(int x, int y, ClientChunk chunk,bool updateNeighbors = false)
     {
         int[] neighbors = new int[8];
-        Vector2 position = new Vector2(x,y); 
+        Vector2 position = new Vector2(x, y);
         for (int i = 0; i < 8; i++)
         {
             Vector2 v = MyTools.directions8[i] + position;
-            if(v.x < 10 && v.x >= 0 && v.y < 10 && v.y >= 0)
+            int id = -1;
+            if (v.x < 10 && v.x >= 0 && v.y < 10 && v.y >= 0)
             {
-                int id = chunk.ValueRO[(int)v.x,(int)v.y].tileID;
-                if (borderUV.ContainsKey(id))
+                id = chunk[(int)v.x, (int)v.y].tileID;
+            }
+            else
+            {
+                var tile = clientMap[chunk,(int)v.x, (int)v.y];
+                if (tile != null) 
                 {
-                    neighbors[i] = id;
-                    continue;
+                    id = tile.tileID;
+                    if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(chunk, (int)v.x, (int)v.y), false);
                 }
             }
+
+            if (borderUV.ContainsKey(id))
+            {
+                neighbors[i] = id;
+            }
+            else
                 neighbors[i] = -1;
         }
         return neighbors;
@@ -305,16 +380,12 @@ public class MapVisualization : MonoBehaviour
         SetVertices(UVset[10],uv, borderTriangles,vertices, startPos,getCornerVector, ref startIndex);
         SetVertices(UVset[5],uv, borderTriangles,vertices, startPos,getCornerVector, ref startIndex,1);
 
-
-        Debug.Log(UVset[4].UV00 + " " + UVset[4].UV11);
         SetVertices(UVset[4],uv, borderTriangles,vertices, startPos + new Vector2(cornerSize,0), new Vector2(getCornerDistance, cornerSize),ref startIndex);
         
         SetVertices(UVset[9],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex);
         SetVertices(UVset[3],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex,1);
 
         startPos += new Vector2(0, cornerSize);
-
-
 
         SetVertices(UVset[6],uv, borderTriangles, vertices, startPos, new Vector2(cornerSize, getCornerDistance), ref startIndex);
         SetVertices(UVset[2],uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), new Vector2(cornerSize, getCornerDistance), ref startIndex);
@@ -328,6 +399,22 @@ public class MapVisualization : MonoBehaviour
 
         SetVertices(UVset[8], uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex);
         SetVertices(UVset[1], uv, borderTriangles, vertices, startPos + new Vector2(cornerSize + getCornerDistance, 0), getCornerVector, ref startIndex,1);
+    }
+    private void UpdateTileBorders(UV[] UVset, Vector2[] uv, int index)
+    {
+        int startIndex = index * 12;
+        SetBorderUV(UVset[10], uv, ref startIndex);
+        SetBorderUV(UVset[5], uv, ref startIndex);
+        SetBorderUV(UVset[4], uv, ref startIndex);
+        SetBorderUV(UVset[9], uv, ref startIndex);
+        SetBorderUV(UVset[3], uv, ref startIndex);
+        SetBorderUV(UVset[6], uv, ref startIndex);
+        SetBorderUV(UVset[2], uv, ref startIndex);
+        SetBorderUV(UVset[11],uv, ref startIndex);
+        SetBorderUV(UVset[7], uv, ref startIndex);
+        SetBorderUV(UVset[0], uv, ref startIndex);
+        SetBorderUV(UVset[8], uv, ref startIndex);
+        SetBorderUV(UVset[1], uv, ref startIndex);
     }
     private void SetVertices(UV set ,Vector2[] uv ,int[] triangles,Vector3[] vertices, Vector2 startPos,Vector2 size, ref int startIndex,int z = 0)
     {
@@ -344,13 +431,17 @@ public class MapVisualization : MonoBehaviour
         triangles[startIndex * 6 + 4] = startIndex * 4 + 2;
         triangles[startIndex * 6 + 5] = startIndex * 4 + 3;
 
-        uv[startIndex * 4] = set.UV00;
-        uv[startIndex * 4 + 1] = new Vector2(set.UV00.x, set.UV11.y);
-        uv[startIndex * 4 + 2] = set.UV11;
-        uv[startIndex * 4 + 3] = new Vector2(set.UV11.x, set.UV00.y);
-
-        startIndex += 1;    
+        SetBorderUV(set, uv,ref startIndex);   
     }
+    private void SetBorderUV(UV set, Vector2[] uv,ref int index)
+    {
+        uv[index * 4] = set.UV00 + new Vector2(width1border,height1border);
+        uv[index * 4 + 1] = new Vector2(set.UV00.x + width1border, set.UV11.y);
+        uv[index * 4 + 2] = set.UV11;
+        uv[index * 4 + 3] = new Vector2(set.UV11.x, set.UV00.y + height1border);
+        index += 1;
+    }
+
     private void SetUpMapMaterial(int sizeTile = 25)
     {
         tilesUV = new Dictionary<int, TileUV>();
@@ -414,6 +505,10 @@ public class MapVisualization : MonoBehaviour
 
 
         Texture2D texture = new Texture2D(maxWidth, maxHeight);
+        width1border = 0.01f / texture.width;
+        height1border = 0.01f / texture.height;
+
+
         texture.filterMode = FilterMode.Point;
         Vector2 uv00 = new Vector2(0, 0);
 
@@ -431,7 +526,10 @@ public class MapVisualization : MonoBehaviour
         texture.Apply(true, true);
         borderTexture = texture;
 
-        Debug.LogError(texture + " " + texture.width + " " + texture.height + " " + textures.Count);
+
+
+
+
         TextureLoader.UnloadTextures(textures);
     }
     private int MaxWidth(Dictionary<int, Texture2D> array)

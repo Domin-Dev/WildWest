@@ -9,7 +9,6 @@ public class Map
     public int widthInChunks { private set; get; }// in Chunks
     public int heightInChunks { private set; get; }// in Chunks
 
-
     public int chunkCount { private set; get; }
     /// <summary>
     /// in XY Cells

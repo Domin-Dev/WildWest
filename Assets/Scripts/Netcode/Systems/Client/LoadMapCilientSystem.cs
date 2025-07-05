@@ -7,6 +7,7 @@ using Unity.Collections;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct LoadMapCilientSystem : ISystem
 {
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<LoadMap>();
