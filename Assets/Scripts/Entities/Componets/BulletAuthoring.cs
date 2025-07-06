@@ -9,13 +9,14 @@ using UnityEngine.Experimental.GlobalIllumination;
 public class BulletAuthoring : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private int damage;
     [SerializeField] private float destroyAfterTime;
     public class Baker : Baker<BulletAuthoring>
     {
         public override void Bake(BulletAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new Bullet() { speed = authoring.speed });
+            AddComponent(entity, new Bullet() { speed = authoring.speed, damage = authoring.damage });
             AddComponent(entity, new NewBullet());
             AddComponent(entity, new DestroyOnTimer() {value = authoring.destroyAfterTime});
        }
@@ -27,6 +28,7 @@ public class BulletAuthoring : MonoBehaviour
 public struct Bullet : IComponentData
 {
     public float speed;
+    public int damage;
 }
 
 public struct NewBullet : IComponentData

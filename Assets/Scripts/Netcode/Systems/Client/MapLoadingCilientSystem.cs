@@ -44,7 +44,6 @@ public partial class MapLoadingClientSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        Debug.Log(MapVisualization.instance.clientMap);
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 

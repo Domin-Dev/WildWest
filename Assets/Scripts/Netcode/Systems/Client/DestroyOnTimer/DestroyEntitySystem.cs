@@ -15,6 +15,10 @@ public partial struct DestroyEntitySystem : ISystem
     {
         state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
         state.RequireForUpdate<NetworkTime>();
+
+        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
+       .WithAll<DestroyEntityTag,Simulate>();
+        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
     }
 
     public void OnUpdate(ref SystemState state)
@@ -38,6 +42,11 @@ public partial struct DestroyEntitySystem : ISystem
             {
                 if(SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);  
                 localTransform.ValueRW.Position = new float3(100000, 100000,100000);
+                entityCommandBuffer.RemoveComponent<Simulate>(entity);
+                if (!state.EntityManager.HasComponent<GhostInstance>(entity))
+                {
+                    entityCommandBuffer.DestroyEntity(entity);
+                }
             }
         }
     }

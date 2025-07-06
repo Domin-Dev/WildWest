@@ -85,7 +85,6 @@ public class GridVisualization : MonoBehaviour
     [SerializeField] private Texture2D linesTexture;
     private void Awake()
     {
-        Application.targetFrameRate = -1;
         if (instance == null)
         {
             instance = this;

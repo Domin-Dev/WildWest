@@ -5,7 +5,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct GoInGameServerSystem : ISystem
@@ -27,9 +26,6 @@ partial struct GoInGameServerSystem : ISystem
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, GoInGameRequestRPC>().WithEntityAccess())
         {
             entityCommandBuffer.AddComponent<NetworkStreamInGame>(rpcCommandRequest.ValueRO.SourceConnection);
-
-            //ChatManager.instance.Print("New Player!!!")
-
             var networkId = state.EntityManager.GetComponentData<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
@@ -40,15 +36,22 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.SetComponent(character, new Player()
             {
                 speed = 1f,
-                playerName = requestRPC.playerName,
+                playerName = requestRPC.playerName
             });
+
+
+            entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = 100 });
+            entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = 100 });
+            entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = 100 });
+
+
+
             entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
             Entity confirmation = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent<YouAreInGameRPC>(confirmation);
             entityCommandBuffer.AddComponent(confirmation, new SendRpcCommandRequest() { TargetConnection = rpcCommandRequest.ValueRO.SourceConnection });
             entityCommandBuffer.DestroyEntity(entity);
-
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

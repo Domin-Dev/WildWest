@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 
@@ -11,6 +12,7 @@ public class CharacterAuthoring : MonoBehaviour
 {
     public class Baker : Baker<CharacterAuthoring>
     {
+
         public override void Bake(CharacterAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
@@ -25,7 +27,13 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
 
+
+            AddComponent(entity, new Health());
+            AddComponent(entity, new Hunger());
+            AddComponent(entity, new Thirst());
+  
             AddBuffer<CooldownTargetTick>(entity);
+          
         }
     }
 }
@@ -74,6 +82,7 @@ public struct PlayerLook : IComponentData
 }
 
 
+
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
 public struct Player : IComponentData
 {
@@ -81,8 +90,6 @@ public struct Player : IComponentData
     [GhostField] public FixedString64Bytes playerName;
     [GhostField] public NetworkTick cooldownTick;
 }
-
-
 public struct Character : IComponentData
 {
     public bool isMove;
@@ -97,3 +104,31 @@ public struct Character : IComponentData
     public Entity head;
 }
 
+
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToOwner)]
+public struct Health : IComponentData
+{
+    [GhostField] public int Value;
+    [GhostField] public int Max;
+}
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToOwner)]
+public struct Hunger : IComponentData
+{
+    [GhostField] public int Value;
+    [GhostField] public int Max;
+}
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToOwner)]
+public struct Thirst : IComponentData
+{
+    [GhostField] public int Value;
+    [GhostField] public int Max;
+}
+
+
+
+public struct PlayerSourceConnection : IComponentData {
+    public Entity value;
+}

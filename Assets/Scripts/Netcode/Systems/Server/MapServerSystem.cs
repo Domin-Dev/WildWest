@@ -52,8 +52,8 @@ public partial class MapServerSystem : SystemBase
                 });
             }
 
-            GetChunkObjects(0,ref entityCommandBuffer, entity);
-            GetChunkObjects(1,ref entityCommandBuffer, entity);
+        //    GetChunkObjects(0,ref entityCommandBuffer, entity);
+        //    GetChunkObjects(1,ref entityCommandBuffer, entity);
 
             Entity loaded = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(loaded, new MapIsLoaded());

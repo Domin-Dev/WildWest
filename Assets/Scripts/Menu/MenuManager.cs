@@ -163,7 +163,7 @@ public class MenuManager : MonoBehaviour
     private void Join()
     {
         GameInfo.LoadScene(2, 0);
-
+        
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
             World world = World.All[i];
@@ -174,6 +174,8 @@ public class MenuManager : MonoBehaviour
         }
 
         World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
+        ClientWorldSetUp(clientWorld);
+
 
         if (World.DefaultGameObjectInjectionWorld == null)
         {

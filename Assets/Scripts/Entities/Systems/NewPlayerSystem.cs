@@ -33,7 +33,21 @@ partial struct NewPlayerSystem : ISystem
 
             SetUpPlayer(ref children, ref state, ref hands, ref character);
 
-            if (state.World.Flags == WorldFlags.GameServer && ClientServerBootstrap.HasClientWorlds)
+            if(state.World.IsServer())
+            {
+                PlayerSourceConnection connection = new PlayerSourceConnection();
+                foreach ( (NetworkId netId,Entity e) in SystemAPI.Query<NetworkId>().WithEntityAccess())
+                {
+                    if (netId.Value == state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId)
+                    {
+                        connection.value = e;
+                        entityCommandBuffer.AddComponent(entity, connection);
+                        break;
+                    }
+                }
+            }
+
+            if (state.World.IsServer() && ClientServerBootstrap.HasClientWorlds)
             {
                 if (ClientServerBootstrap.HasClientWorlds)
                 {
@@ -58,7 +72,7 @@ partial struct NewPlayerSystem : ISystem
                 SetPlayerLook(ref playerLook.ValueRW, ref hands, ref character, ref state);
             }
 
-            if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
+            if (state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity) && state.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(entity))
             {
                 ItemInHandInput itemInHandInput = state.EntityManager.GetComponentData<ItemInHandInput>(entity);
                 ItemInHandInputSync itemInHandInputSync = state.EntityManager.GetComponentData<ItemInHandInputSync>(entity);
@@ -71,6 +85,11 @@ partial struct NewPlayerSystem : ISystem
                 entityCommandBuffer.SetComponent(entity, itemInHandInputSync);
             }
 
+            var physicsChildren = SystemAPI.GetBuffer<PhysicsChildrenBuffer>(entity);
+            foreach (var item in physicsChildren)
+            {
+              //  entityCommandBuffer.addComp item.LinkedEntity
+            }
 
             entityCommandBuffer.SetComponent(entity, character);
             entityCommandBuffer.SetComponent(entity, hands);
