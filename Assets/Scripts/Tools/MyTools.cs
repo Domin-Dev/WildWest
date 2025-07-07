@@ -103,7 +103,6 @@ public static class MyTools
     {
         return !HaveOppositeSigns(a, b);
     }
-
     public static FixedString64Bytes ToFixedString64_Safe(this string s)
     {
         var utf8 = Encoding.UTF8;
@@ -135,7 +134,6 @@ public static class MyTools
             return hash;
         }
     }
-
     public static int HexToInt(string hex)
     {
         int signedValue;
@@ -155,5 +153,10 @@ public static class MyTools
 
         Debug.Log(signedValue);
         return signedValue;
+    }
+
+    public static float2 ConvertFloat(float3 v)
+    {
+        return new float2(v.x, v.y);
     }
 }

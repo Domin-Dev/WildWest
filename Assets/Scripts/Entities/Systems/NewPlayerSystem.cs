@@ -24,6 +24,7 @@ partial struct NewPlayerSystem : ISystem
 
         foreach ((RefRO<Player> player, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>, RefRW<PlayerLook>>().WithAll<NewPlayerTag>().WithEntityAccess())
         {
+
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
             Hands hands = new Hands() { rotated = true, elapsedTime = 0 };
@@ -46,6 +47,12 @@ partial struct NewPlayerSystem : ISystem
                     }
                 }
             }
+            else
+            {
+                Entity update = entityCommandBuffer.CreateEntity();
+                entityCommandBuffer.AddComponent(update, new LifeStatsChangedRPC());
+            }
+
 
             if (state.World.IsServer() && ClientServerBootstrap.HasClientWorlds)
             {

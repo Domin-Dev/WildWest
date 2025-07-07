@@ -46,7 +46,6 @@ public class LifeStatsUI : MonoBehaviour {
     }
     public void UpdateHealth(int current, int max)
     {
-        Debug.Log("llllllllllllll update  " + current + ", " + max);
         SetBar(healthBar,healthText,(float)current / (float)max);
     }
     public void UpdateFood(int current, int max)

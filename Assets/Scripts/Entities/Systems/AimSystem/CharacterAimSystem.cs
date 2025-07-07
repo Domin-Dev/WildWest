@@ -3,7 +3,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -30,14 +29,13 @@ partial struct CharacterAimSystem : ISystem
 
         //  var ecbSingleton = // SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         // EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
+
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         var currentTick = networkTime.ServerTick;
-
-
         int k = 0;
 
         deltaTime = (float)SystemAPI.Time.ElapsedTime - (float)last;
@@ -98,7 +96,14 @@ partial struct CharacterAimSystem : ISystem
 
                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
-                        entityCommandBuffer.SetComponent(bullet, LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation));
+                        LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation);
+                        entityCommandBuffer.SetComponent(bullet,lt);
+
+
+                        float3 v3 = lt.Right();
+                        entityCommandBuffer.AddComponent(entity, new ForceImpulse2D() { Value = new float2(-v3.x, -v3.y)});
+
+
 
                         if (state.World.Flags == WorldFlags.GameServer)
                         {

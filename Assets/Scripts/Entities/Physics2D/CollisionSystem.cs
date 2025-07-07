@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 
@@ -16,7 +18,7 @@ using UnityEngine;
 public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
-
+    private const float DampingValue = 8f;
 
 
     readonly static int hitBoxLayer = 3;
@@ -42,7 +44,6 @@ public partial struct CollisionSystem : ISystem
         public float2 pos;
         public float2 size;
         public float2 velocity;
-
         public override string ToString()
         {
             return pos.ToString() + size.ToString() + velocity.ToString();
@@ -61,10 +62,12 @@ public partial struct CollisionSystem : ISystem
     ComponentLookup<LocalTransform> getPosition;
     ComponentLookup<BoxCollider2D> getHitbox;
     ComponentLookup<Physics2D> getPhysics;
+    ComponentLookup<ForceImpulse2D> getForceImpulse;
     ComponentLookup<Parent> getParent;
 
 
     BufferLookup<PhysicsChildrenBuffer> childrenBuffer;
+    private float deltaTime;
 
     public void OnCreate(ref SystemState state)
     {
@@ -84,6 +87,7 @@ public partial struct CollisionSystem : ISystem
         getPhysics = state.GetComponentLookup<Physics2D>();
         getParent = state.GetComponentLookup<Parent>(false);
         childrenBuffer = state.GetBufferLookup<PhysicsChildrenBuffer>(true);
+        getForceImpulse = state.GetComponentLookup<ForceImpulse2D>(false);
 
     }
     public void OnDestroy(ref SystemState state)
@@ -101,7 +105,6 @@ public partial struct CollisionSystem : ISystem
     {
         UpdateLookups(ref state);
 
-
         if (state.World.Flags == WorldFlags.GameServer)
         {
             foreach (var (playerInputSync, playerInput, player, velocity, entity)
@@ -110,7 +113,7 @@ public partial struct CollisionSystem : ISystem
                 playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
                 velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
-                state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+                if(shouldBeChanged) state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
             }
         }
         else
@@ -120,12 +123,14 @@ public partial struct CollisionSystem : ISystem
             {
                 velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
-                state.EntityManager.SetComponentEnabled<IsChanged>(entity, shouldBeChanged);
+                if (shouldBeChanged) state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
             }
         }
 
-        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
 
+        deltaTime = SystemAPI.Time.DeltaTime;
+
+        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
         NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
@@ -134,7 +139,6 @@ public partial struct CollisionSystem : ISystem
         NativeArray<Physics2D> physics = entities.ToComponentDataArray<Physics2D>(Allocator.TempJob);
         UpdateEntityMap(ref state, entityArray, physics, transforms);
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
-
         NativeHashMap<int, float> collisions = new NativeHashMap<int, float>(50, Allocator.TempJob);
 
         for (int i = 0; i < entityArray.Length; i++)
@@ -145,11 +149,9 @@ public partial struct CollisionSystem : ISystem
             int layer = physics[i].layer;
             if (layer == 3) continue;
 
-
             BoxCollider2D tempHitbox1 = hitboxes[i];
-            //  Debug.Log(entity);
             float3 tempTransform1 = GetWorldPosition(entity);
-            float2 velocity1 = velocities[i].Value * SystemAPI.Time.DeltaTime;
+            float2 velocity1 = GetVelocity(ref state, ref entityCommandBuffer, entity);
             float2 topLeft1 =
                 new float2(
                 tempHitbox1.offset.x + tempTransform1.x - tempHitbox1.size.x * 0.5f,
@@ -165,7 +167,6 @@ public partial struct CollisionSystem : ISystem
             int index = -1;
             float2 collision = float2.zero;
             k++;
-
             NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
             bool destroy = false;
 
@@ -186,13 +187,16 @@ public partial struct CollisionSystem : ISystem
                 );
 
                 Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
-                Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value * SystemAPI.Time.DeltaTime);
+                Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
                 float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
+
+
+
 
                 if (collisiontime < 1f)
                 {
                     if (layer == 2 && BulletHit(ref state, ref entityCommandBuffer, entityToCheck, entity))
-                    {     
+                    {
                         destroy = true;
                         break;
                     }
@@ -235,7 +239,6 @@ public partial struct CollisionSystem : ISystem
             {
                 entityCommandBuffer.AddComponent(entity, new DestroyEntityTag());
                 entityCommandBuffer.RemoveComponent<Physics2D>(entity);
-                continue;
             }
             else
             {
@@ -270,7 +273,7 @@ public partial struct CollisionSystem : ISystem
                             );
 
                             box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
-                            Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value * SystemAPI.Time.DeltaTime);
+                            Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
                             float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
 
                             if (collisiontime < 1f)
@@ -335,7 +338,7 @@ public partial struct CollisionSystem : ISystem
                         tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
                         tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
                         );
-                        Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, getVelocity[entityToCheck].Value * SystemAPI.Time.DeltaTime);
+                        Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
                         if (StaticAABB(box1, box2))
                         {
                             float3 localOffset = GetMTV(box1, box2);
@@ -356,25 +359,36 @@ public partial struct CollisionSystem : ISystem
                 }
                 else
                     tempTransform1 += new float3(velocity1.x, velocity1.y, 0);
+
+                tempTransform1.z = tempTransform1.y;
+
+
+                LocalTransform localTransform = getPosition[entity];
+                localTransform.Position = tempTransform1;
+                getPosition[entity] = localTransform;
+
             }
-            tempTransform1.z = tempTransform1.y;
-
-
-            LocalTransform localTransform = getPosition[entity];
-            localTransform.Position = tempTransform1;
-            getPosition[entity] = localTransform;
-
             if (isChanged.HasComponent(entity))
             {
                 isChanged.SetComponentEnabled(entity, false);
             }
+            
             collisions.Clear();
             potentialCollisions.Dispose();
         }
 
+        foreach ((RefRW<ForceImpulse2D> velocity, Entity e) in SystemAPI.Query<RefRW<ForceImpulse2D>>().WithAll<Simulate>().WithEntityAccess())
+        {
+
+            velocity.ValueRW.Value -= velocity.ValueRO.Value * DampingValue * deltaTime;
+            isChanged.SetComponentEnabled(e, true);
+            if (math.lengthsq(velocity.ValueRO.Value) < 0.01f)
+                entityCommandBuffer.RemoveComponent<ForceImpulse2D>(e);
+        }
+
+
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
-        //    Debug.Log("---------------------------------");
         physics.Dispose();
         collisions.Dispose();
         entityArray.Dispose();
@@ -392,24 +406,47 @@ public partial struct CollisionSystem : ISystem
         else
             return getPosition[entity].Position;
     }
+    
+    public float2 GetVelocity(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer,Entity entity)
+    {
+        float2 velocity = getVelocity[entity].Value;
+
+        Debug.Log(entity);
+        if (getForceImpulse.HasComponent(entity))
+        {
+            velocity += getForceImpulse[entity].Value;
+            Debug.Log(velocity + " " + getForceImpulse[entity].Value);
+        }
+        velocity *= deltaTime;
+        return velocity;
+    }
+
 
     private bool BulletHit(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity target, Entity bullet)
     {
         if (getPhysics[target].layer == hitBoxLayer)
         {
-
             Bullet bulletComponent = SystemAPI.GetComponent<Bullet>(bullet);
             Entity player = getParent[target].Value;
             if (SystemAPI.GetComponent<GhostOwner>(bullet).NetworkId != SystemAPI.GetComponent<GhostOwner>(player).NetworkId)
-            {
-
+            {         
                 Debug.Log("Trafienie!!!!!!!!!" + " " + bullet + " " + state.World.Flags);
+                float2 pos = SystemAPI.GetComponent<Velocity2D>(bullet).Value;
+                pos = math.normalize(pos);
+                entityCommandBuffer.AddComponent(getParent[target].Value, new ForceImpulse2D() { Value = pos * 2f });
+
+                Debug.Log(" force :" +  pos * 2f);
+
 
                 if (state.World.IsServer())
                 {
                     Health health = SystemAPI.GetComponent<Health>(player);
                     health.Value = math.clamp(health.Value - bulletComponent.damage, 0, health.Max);
                     entityCommandBuffer.SetComponent(player, health);
+                    if(health.Value <= 0)
+                    {
+
+                    }
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player);
                     RPCHelper.SendRpc(ref entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
                 }
@@ -419,6 +456,8 @@ public partial struct CollisionSystem : ISystem
         }
         return true;
     }
+
+
 
     private void UpdateLookups(ref SystemState state)
     {
@@ -430,6 +469,7 @@ public partial struct CollisionSystem : ISystem
         getPhysics.Update(ref state);
         getParent.Update(ref state);
         childrenBuffer.Update(ref state);
+        getForceImpulse.Update(ref state);
     }
     private void UpdateEntityMap(ref SystemState state,NativeArray<Entity> entityArray, NativeArray<Physics2D> physics, NativeArray<LocalTransform> transforms)
     {

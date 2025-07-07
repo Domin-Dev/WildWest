@@ -19,7 +19,10 @@ public struct Velocity2D : IComponentData
 {
     public float2 Value;
 }
-
+public struct ForceImpulse2D: IComponentData
+{
+    public float2 Value;
+}
 
 public struct Trigger2D : IComponentData
 {

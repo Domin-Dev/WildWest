@@ -16,7 +16,7 @@ public partial struct UpdateUILifeStatsSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<LifeStatsChangedRPC, ReceiveRpcCommandRequest>();
+            .WithAll<LifeStatsChangedRPC>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
     }
@@ -25,7 +25,7 @@ public partial struct UpdateUILifeStatsSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((LifeStatsChangedRPC message, Entity entity) in
-        SystemAPI.Query<LifeStatsChangedRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
+        SystemAPI.Query<LifeStatsChangedRPC>().WithEntityAccess())
         {
             Debug.Log("UPDatE!!!!");
             foreach ((Health health,Hunger hunger, Thirst thirst) in SystemAPI.Query<Health,Hunger,Thirst>()
