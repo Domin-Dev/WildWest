@@ -5,6 +5,10 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+
+
+
+
 public struct BoxCollider2D : IComponentData
 {
     public float2 size;
@@ -23,7 +27,6 @@ public struct ForceImpulse2D: IComponentData
 {
     public float2 Value;
 }
-
 public struct Trigger2D : IComponentData
 {
     public float2 Value;
@@ -31,8 +34,6 @@ public struct Trigger2D : IComponentData
 public struct IsChanged : IComponentData, IEnableableComponent {  }
 
 public struct AlwaysUpdate: IComponentData, IEnableableComponent { }
-
-
 
 public class Physics2DAuthoring : MonoBehaviour
 {

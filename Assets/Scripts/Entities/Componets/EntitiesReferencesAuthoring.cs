@@ -9,6 +9,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject shadowPrefab;
     public GameObject worldItemPrefab;
     public GameObject characterPrefab;
+    public GameObject worldTextPrefab;
     public GameObject buildObjectEntityPrefab;
     public GameObject bulletPrefab;
     [Header("Particle Prefab")]
@@ -26,6 +27,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 worldItemEntity = GetEntity(authoring.worldItemPrefab, TransformUsageFlags.Dynamic),
                 characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
+                worldTextEntity = GetEntity(authoring.worldTextPrefab, TransformUsageFlags.Dynamic),
 
                 shotSmoke = GetEntity(authoring.shotSmoke, TransformUsageFlags.Dynamic),
                 bulletEntity = GetEntity(authoring.bulletPrefab, TransformUsageFlags.Dynamic),
@@ -40,6 +42,8 @@ public struct EntitiesReferences : IComponentData
     public Entity shadowEntity;
     public Entity worldItemEntity;
     public Entity characterEntity;
+    public Entity worldTextEntity;
+    
     public Entity buildObjectEntity;
     public Entity bulletEntity;
     [Space]

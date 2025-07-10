@@ -293,6 +293,7 @@ GameObject:
   - component: {fileID: 6566186299068100765}
   - component: {fileID: 1980452415640540502}
   - component: {fileID: 7693356661490328861}
+  - component: {fileID: 7343618093840472124}
   m_Layer: 0
   m_Name: Body
   m_TagString: Body
@@ -414,6 +415,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsLayer: 3
   updateAfterChange: 0
+--- !u!114 &7343618093840472124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2090358308837171946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55e93df8191f8de4680f55a0661dde59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageMultiplier: 1
 --- !u!1 &2151095738983347348
 GameObject:
   m_ObjectHideFlags: 0
@@ -809,6 +823,7 @@ GameObject:
   - component: {fileID: 7052186180017741201}
   - component: {fileID: 2353835807100384408}
   - component: {fileID: 5816018276360490804}
+  - component: {fileID: 124682987439215831}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -876,6 +891,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   physicsLayer: 3
   updateAfterChange: 1
+--- !u!114 &124682987439215831
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4777841050756482901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55e93df8191f8de4680f55a0661dde59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageMultiplier: 1.5
 --- !u!1 &5369958466224987709
 GameObject:
   m_ObjectHideFlags: 0

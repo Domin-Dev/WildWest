@@ -31,6 +31,9 @@ public partial struct CollisionSystem : ISystem
      /*Bullets   2  */  { true , false ,false , true  },
      /*HitBox    3  */  { false, false ,true , false },
     };
+    readonly static Color damageColor = new Color(0.69f,0.16f,0.16f,1f);
+    readonly static Color criticalHitColor = new Color(1f,0.0f,0.0f,1f);
+
 
     static int k = 0;
     struct Box
@@ -410,12 +413,9 @@ public partial struct CollisionSystem : ISystem
     public float2 GetVelocity(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer,Entity entity)
     {
         float2 velocity = getVelocity[entity].Value;
-
-        Debug.Log(entity);
         if (getForceImpulse.HasComponent(entity))
         {
             velocity += getForceImpulse[entity].Value;
-            Debug.Log(velocity + " " + getForceImpulse[entity].Value);
         }
         velocity *= deltaTime;
         return velocity;
@@ -428,27 +428,48 @@ public partial struct CollisionSystem : ISystem
         {
             Bullet bulletComponent = SystemAPI.GetComponent<Bullet>(bullet);
             Entity player = getParent[target].Value;
-            if (SystemAPI.GetComponent<GhostOwner>(bullet).NetworkId != SystemAPI.GetComponent<GhostOwner>(player).NetworkId)
+            int bulletOwner = SystemAPI.GetComponent<GhostOwner>(bullet).NetworkId;
+
+            if (bulletOwner != SystemAPI.GetComponent<GhostOwner>(player).NetworkId)
             {         
-                Debug.Log("Trafienie!!!!!!!!!" + " " + bullet + " " + state.World.Flags);
+                HitBoxSettings hitBoxSettings = SystemAPI.GetComponent<HitBoxSettings>(target);
                 float2 pos = SystemAPI.GetComponent<Velocity2D>(bullet).Value;
                 pos = math.normalize(pos);
                 entityCommandBuffer.AddComponent(getParent[target].Value, new ForceImpulse2D() { Value = pos * 2f });
-
+                int damage = (int)(bulletComponent.damage * hitBoxSettings.damageMultiplier);
                 Debug.Log(" force :" +  pos * 2f);
-
 
                 if (state.World.IsServer())
                 {
                     Health health = SystemAPI.GetComponent<Health>(player);
-                    health.Value = math.clamp(health.Value - bulletComponent.damage, 0, health.Max);
+                    health.Value = math.clamp(health.Value - damage, 0, health.Max);
                     entityCommandBuffer.SetComponent(player, health);
-                    if(health.Value <= 0)
-                    {
-
-                    }
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player);
+
+                    if (health.Value <= 0)
+                    {
+                        PlayerIsDead(ref state,ref entityCommandBuffer,player);
+                        ChatManager.instance.Print(SystemAPI.GetComponent<PlayerName>(connection.value).name + "was killed");
+                    }
                     RPCHelper.SendRpc(ref entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
+                }
+                else if(SystemAPI.GetSingleton<NetworkId>().Value == bulletOwner)
+                {
+                    LocalTransform lt = getPosition[bullet];
+                    EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+                    Entity popup = state.EntityManager.Instantiate(entitiesReferences.worldTextEntity);
+                    entityCommandBuffer.SetComponent(popup, LocalTransform.FromPosition(new float3(lt.Position.x,lt.Position.y,-1)));
+                    entityCommandBuffer.SetComponent(popup, new DamagePopup()
+                    {
+                        lifetime = 1.5f,
+                        startPosition = lt.Position,
+                        elapsedTime = 0,
+                        moveDirection = new float3(0, 0.4f, 0)
+                    });
+
+                    TextMesh textMesh = state.EntityManager.GetComponentObject<TextMesh>(popup);
+                    textMesh.text =  "-" + damage.ToString();
+                    textMesh.color = GetPopupColor(hitBoxSettings.damageMultiplier);
                 }
             }
             else
@@ -457,6 +478,30 @@ public partial struct CollisionSystem : ISystem
         return true;
     }
 
+    private Color GetPopupColor(float multipler)
+    {
+        if(multipler > 1f)
+        {
+            return criticalHitColor;
+        }
+        else
+        {
+            return damageColor;
+        }
+    }
+
+    private void PlayerIsDead(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer,Entity player)
+    {
+        LocalTransform lt = getPosition[player];
+        lt.Position = float3.zero;
+        getPosition[player] = lt;
+        Health health = SystemAPI.GetComponent<Health>(player);
+        health.Value = health.Max;
+        entityCommandBuffer.SetComponent(player, health);
+
+        var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player);
+        RPCHelper.SendRpc(ref entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
+    }
 
 
     private void UpdateLookups(ref SystemState state)
