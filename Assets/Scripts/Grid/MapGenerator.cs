@@ -181,38 +181,38 @@ public class MapGenerator
         float heightValue = Generate(posX,posY, offsetHeight, scaleHeight);
 
         if(heightValue < 0.15f) SetGridHole(chunk, x, y);
-        else if (rand.Next(0, 100) <= 2)
-        {
-            SetBuildingObject(chunk, x, y, 5);
-        }
-        else if (rand.Next(0, 100) <= 5)
-        {
-            SetBuildingObject(chunk, x, y, 70, UnityEngine.Random.Range(0,6));
-        }
-        else if (rand.Next(0, 100) <= 5)
-        {
-            SetBuildingObject(chunk, x, y, 71, UnityEngine.Random.Range(0, 6));
-        }
-        else if (rand.Next(0, 100) <= 2)
-        {
-            SetBuildingObject(chunk, x, y, 44);
-        }
-        else if (rand.Next(0, 100) <= 1)
+        //else if (rand.Next(0, 100) <= 2)
+        //{
+        //    SetBuildingObject(chunk, x, y, 5);
+        //}
+        //else if (rand.Next(0, 100) <= 5)
+        //{
+        //    SetBuildingObject(chunk, x, y, 70, UnityEngine.Random.Range(0,6));
+        //}
+        //else if (rand.Next(0, 100) <= 5)
+        //{
+        //    SetBuildingObject(chunk, x, y, 71, UnityEngine.Random.Range(0, 6));
+        //}
+        //else if (rand.Next(0, 100) <= 2)
+        //{
+        //    SetBuildingObject(chunk, x, y, 44);
+        //}
+        if (rand.Next(0, 100) <= 20)
         {
             SetBuildingObject(chunk, x, y, 45);
         }
-        else if (rand.Next(0, 100) <= 5)
-        {
-            SetBuildingObject(chunk, x, y, 46, UnityEngine.Random.Range(0, 6));
-        }
-        else if (rand.Next(0, 100) <= 1)
-        {
-            SetBuildingObject(chunk, x, y, 50);
-        }
-        else if (rand.Next(0, 100) <= 2)
-        {
-            SetBuildingObject(chunk, x, y, 57);
-        }
+        //else if (rand.Next(0, 100) <= 5)
+        //{
+        //    SetBuildingObject(chunk, x, y, 46, UnityEngine.Random.Range(0, 6));
+        //}
+        //else if (rand.Next(0, 100) <= 1)
+        //{
+        //    SetBuildingObject(chunk, x, y, 50);
+        //}
+        //else if (rand.Next(0, 100) <= 2)
+        //{
+        //    SetBuildingObject(chunk, x, y, 57);
+        //}
 
     }
 

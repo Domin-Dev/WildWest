@@ -7,7 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-[UpdateAfter(typeof(CharacterAim))]
+
 //[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 
 partial struct NewBulletSystem : ISystem

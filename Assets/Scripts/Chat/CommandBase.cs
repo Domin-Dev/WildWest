@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CommandBase : MonoBehaviour
+public class CommandBase 
 {
     public string commandId {  get; private set; }
     public string commandDescription {  get; private set; }

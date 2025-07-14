@@ -11,7 +11,9 @@ namespace Game.Client.Map
 {
     public class ClientMap
     {
-        public static int chunkSize = 10;
+        public const int chunkSize = 10;
+        public const float cellSize = 0.25f;
+
 
         public Dictionary<int2,ClientChunk> chunks { private set; get; }
         public Dictionary<int2, Transform> renderedChunks { private set; get; }

@@ -29,12 +29,18 @@ MonoBehaviour:
     ingredient:
       itemID: 43
       number: 1
+  - maxNumber: 1
+    probability: 1
+    ingredient:
+      itemID: 43
+      number: 1
   toolRequired: 0
   HitParticles: {fileID: 8503829923926787638, guid: 42ce0afd134097f4aa18bf9920ec5927, type: 3}
   objectVariants:
   - variants:
     - hitbox:
-      - {x: 0.01, y: 0.16499999}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0, y: 0.185}
@@ -42,7 +48,8 @@ MonoBehaviour:
       sprite: {fileID: 21300000, guid: aa10518c974c2fa45bbb13d21b2e38d5, type: 2}
   - variants:
     - hitbox:
-      - {x: 0.04, y: 0.21499999}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.225}
@@ -50,7 +57,8 @@ MonoBehaviour:
       sprite: {fileID: 21300000, guid: c4b5113b49c00d045804353494573187, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.049999997, y: 0.24499999}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.04, y: 0.265}
@@ -58,7 +66,8 @@ MonoBehaviour:
       sprite: {fileID: 21300000, guid: c0bb21750d3cb9a4d9343a4bb11ab681, type: 2}
   - variants:
     - hitbox:
-      - {x: 0.03, y: 0.175}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.195}
@@ -66,7 +75,8 @@ MonoBehaviour:
       sprite: {fileID: 21300000, guid: 9236a7ac6842a334892cd33ea39bf185, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.06, y: 0.265}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.06, y: 0.285}
@@ -74,7 +84,8 @@ MonoBehaviour:
       sprite: {fileID: 21300000, guid: bc77b5f8a8fe55942b0cfd8b826be5d8, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.049999997, y: 0.16499999}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.049999997, y: 0.185}

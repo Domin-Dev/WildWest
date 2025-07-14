@@ -139,7 +139,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
-  damage: 5
+  damage: 10
   destroyAfterTime: 3
 --- !u!114 &-787032297155421572
 MonoBehaviour:
@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size:
-    x: 0.03
-    y: 0.03
+    x: 0.02
+    y: 0.02
   offset:
     x: -0.005
     y: -0.005

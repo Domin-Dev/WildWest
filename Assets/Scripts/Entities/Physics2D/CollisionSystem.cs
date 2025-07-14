@@ -19,7 +19,7 @@ public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
     private const float DampingValue = 8f;
-
+    private const float CleanupInterval = 120f;
 
     readonly static int hitBoxLayer = 3;
 
@@ -33,6 +33,7 @@ public partial struct CollisionSystem : ISystem
     };
     readonly static Color damageColor = new Color(0.69f,0.16f,0.16f,1f);
     readonly static Color criticalHitColor = new Color(1f,0.0f,0.0f,1f);
+
 
 
     static int k = 0;
@@ -71,6 +72,8 @@ public partial struct CollisionSystem : ISystem
 
     BufferLookup<PhysicsChildrenBuffer> childrenBuffer;
     private float deltaTime;
+    private float timer;
+
 
     public void OnCreate(ref SystemState state)
     {
@@ -132,6 +135,11 @@ public partial struct CollisionSystem : ISystem
 
 
         deltaTime = SystemAPI.Time.DeltaTime;
+
+
+
+
+
 
         EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
 
@@ -264,7 +272,9 @@ public partial struct CollisionSystem : ISystem
                         for (int j = i + 1; j < potentialCollisions.Length; j++)
                         {
                             Entity entityToCheck = potentialCollisions[j];
-                            if (!state.EntityManager.Exists(entityToCheck) || entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
+
+                            if (!state.EntityManager.Exists(entityToCheck) || !getPhysics.HasComponent(entityToCheck) || entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
+
 
                             float3 tempTransform2 = GetWorldPosition(entityToCheck);
                             BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
@@ -379,7 +389,6 @@ public partial struct CollisionSystem : ISystem
             collisions.Clear();
             potentialCollisions.Dispose();
         }
-
         foreach ((RefRW<ForceImpulse2D> velocity, Entity e) in SystemAPI.Query<RefRW<ForceImpulse2D>>().WithAll<Simulate>().WithEntityAccess())
         {
 
@@ -437,7 +446,6 @@ public partial struct CollisionSystem : ISystem
                 pos = math.normalize(pos);
                 entityCommandBuffer.AddComponent(getParent[target].Value, new ForceImpulse2D() { Value = pos * 2f });
                 int damage = (int)(bulletComponent.damage * hitBoxSettings.damageMultiplier);
-                Debug.Log(" force :" +  pos * 2f);
 
                 if (state.World.IsServer())
                 {
@@ -531,6 +539,49 @@ public partial struct CollisionSystem : ISystem
                 }
             }
         }
+        timer += deltaTime;
+
+        if(timer >= CleanupInterval)
+        {
+            CleanUpEntiityMap(ref state);
+            timer = 0;
+        }
+    }
+
+    private void CleanUpEntiityMap(ref SystemState state)
+    {
+        NativeList<int2> toRemove = new NativeList<int2>(Allocator.Temp);
+
+        Debug.Log("Cleaning...");
+        foreach (var item in entityMap)
+        {
+            for (int i = item.Value.Length - 1; i >= 0; i--)
+            {
+                if (!SystemAPI.Exists(item.Value[i]))
+                {
+                    item.Value.RemoveAtSwapBack(i);
+                    Debug.Log("one");
+                }
+                else if(!getPhysics.HasComponent(item.Value[i]))
+                { 
+                    item.Value.RemoveAtSwapBack(i);
+                    Debug.Log("one");
+                }
+            }
+
+            if (item.Value.IsEmpty)
+            {
+                item.Value.Dispose();
+                toRemove.Add(item.Key);
+            }
+        }
+
+        foreach (var item in toRemove)
+        {
+            entityMap.Remove(item);
+        }
+        
+        toRemove.Dispose();
     }
     private void UpdateEntity(Entity entity)
     {
@@ -577,6 +628,10 @@ public partial struct CollisionSystem : ISystem
             }
         }
     }
+
+
+
+
     private int GetIndex(NativeList<Entity> list, Entity entity)
     {
         for (int i = 0; i < list.Length; i++)
@@ -605,6 +660,9 @@ public partial struct CollisionSystem : ISystem
 
         return entities;
     }
+
+
+
     private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly)
     {
         float xInvEntry, yInvEntry;

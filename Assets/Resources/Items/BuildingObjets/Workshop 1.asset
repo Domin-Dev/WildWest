@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a927e0bf2ca2c49ac3e3e2db9416bc, type: 3}
   m_Name: Workshop 1
   m_EditorClassIdentifier: 
-  name: Furnace
+  name: Chest
   description: 
   ID: 51
   stackMax: 50
@@ -29,51 +29,54 @@ MonoBehaviour:
     ingredient:
       itemID: 43
       number: 2
-  texture: {fileID: 2800000, guid: c52fcab1f96ccf343a11920a3933359e, type: 3}
-  isObjectCovering: 0
-  shadowPixels: 19
-  size:
-    x: 27
-    y: 70
+  toolRequired: 0
   HitParticles: {fileID: 8377258103205601058, guid: fb21eabfabc89c544a71fc84c24bc9f2, type: 3}
   objectVariants:
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.07127451}
-      - {x: -0.12, y: 0.2512745}
-      - {x: 0.12, y: 0.2512745}
-      - {x: 0.12, y: 0.07127451}
+      - {x: -0.12, y: 0.074999996}
+      - {x: -0.12, y: 0.255}
+      - {x: 0.12, y: 0.255}
+      - {x: 0.12, y: 0.074999996}
       CoveringPoints: []
-      particlePoint: {x: 0, y: 0.1512745}
-      minY: 0.07127451
-      sprite: {fileID: 21300000, guid: c102fb73e2a617d4bb191d1bd379609c, type: 2}
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.155}
+      minY: 0.074999996
+      sprite: {fileID: 21300000, guid: 5cec1c05e9062a54c96d7540c281ac09, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.021274509}
-      - {x: -0.12, y: 0.2012745}
-      - {x: 0.07, y: 0.2012745}
-      - {x: 0.07, y: 0.021274509}
+      - {x: -0.12, y: 0.024999999}
+      - {x: -0.12, y: 0.205}
+      - {x: 0.07, y: 0.205}
+      - {x: 0.07, y: 0.024999999}
       CoveringPoints: []
-      particlePoint: {x: -0.03, y: 0.11127451}
-      minY: 0.021274509
-      sprite: {fileID: 21300000, guid: 775447e3a1517044798e445436465a42, type: 2}
+      objectPoints: []
+      particlePoint: {x: -0.03, y: 0.114999995}
+      minY: 0.024999999
+      sprite: {fileID: 21300000, guid: 2057904cd3059ea43883eac198bb6415, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.12, y: 0.0012745094}
-      - {x: -0.12, y: 0.1812745}
-      - {x: 0.12, y: 0.1812745}
-      - {x: 0.12, y: 0.0012745094}
+      - {x: -0.12, y: 0.005}
+      - {x: -0.12, y: 0.185}
+      - {x: 0.12, y: 0.185}
+      - {x: 0.12, y: 0.005}
       CoveringPoints: []
-      particlePoint: {x: 0, y: 0.08127451}
-      minY: 0.0012745094
-      sprite: {fileID: 21300000, guid: 8d7f4d50842841a418d2aa8ff9026ca8, type: 2}
+      objectPoints: []
+      particlePoint: {x: 0, y: 0.085}
+      minY: 0.005
+      sprite: {fileID: 21300000, guid: 4ca112c1126590e46b7700507e301e67, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.07, y: 0.021274509}
-      - {x: -0.07, y: 0.2012745}
-      - {x: 0.12, y: 0.2012745}
-      - {x: 0.12, y: 0.021274509}
+      - {x: -0.07, y: 0.024999999}
+      - {x: -0.07, y: 0.205}
+      - {x: 0.12, y: 0.205}
+      - {x: 0.12, y: 0.024999999}
       CoveringPoints: []
-      particlePoint: {x: 0.02, y: 0.11127451}
-      minY: 0.021274509
-      sprite: {fileID: 21300000, guid: 0d848726f860e1b4f955bd4979e47a36, type: 2}
+      objectPoints: []
+      particlePoint: {x: 0.02, y: 0.114999995}
+      minY: 0.024999999
+      sprite: {fileID: 21300000, guid: 665eb4bafa0870443a586807063cb2fb, type: 2}
+  shadowPixels: 19
+  size:
+    x: 27
+    y: 51

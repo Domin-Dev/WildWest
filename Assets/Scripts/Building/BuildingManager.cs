@@ -249,8 +249,7 @@ public class BuildingManager : MonoBehaviour
                     }
                 }
                 spriteRenderer.sprite = variant.sprite;
-                if(variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
-                else Destroy(obj.GetComponent<PolygonCollider2D>());
+         
                 CreateGridObject(gridObject.ID, gridPosition, gridObject.variantIndex, obj.parent);
                 MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
                 break;
@@ -403,9 +402,9 @@ public class BuildingManager : MonoBehaviour
             }
         }
 
-        spriteRenderer.sprite = variant.sprite;
-        if (variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
-        else Destroy(obj.GetComponent<PolygonCollider2D>());
+    //    spriteRenderer.sprite = variant.sprite;
+    //    if (variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
+    //    else Destroy(obj.GetComponent<PolygonCollider2D>());
         CreateGridObject(itemID, posXY, variantIndex, obj.parent);
         MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
         GridVisualization.instance.MoveWorldItems(posXY);
@@ -462,7 +461,7 @@ public class BuildingManager : MonoBehaviour
         PolygonCollider2D polygonCollider2D = obj.GetComponent<PolygonCollider2D>();
         if (polygonCollider2D != null)
         {
-            polygonCollider2D.points = variant.hitbox;
+        //    polygonCollider2D.points = variant.hitbox;
             polygonCollider2D.usedByComposite = false;
             Timer.Create(2f, () => { if (polygonCollider2D != null) polygonCollider2D.usedByComposite = true; return false; });
         }

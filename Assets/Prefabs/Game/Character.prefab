@@ -723,7 +723,7 @@ MonoBehaviour:
     y: 0.05
   offset:
     x: 0
-    y: 0
+    y: 0.025
 --- !u!114 &4970134060249165646
 MonoBehaviour:
   m_ObjectHideFlags: 0

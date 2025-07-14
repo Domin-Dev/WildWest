@@ -119,24 +119,7 @@ public class EntitySpawner : MonoBehaviour
       //  selfD.finishParticles += Time.time;
       //  entityManager.SetComponentData(entity, selfD);
     }
-    public void SpawnBuildingObject(GridObject gridObject, float2 gridPosition)
-    {
-        Entity entity = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
-        Entity sprite = entityManager.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
-        SpriteRenderer spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(sprite);
-        spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(gridObject.ID, gridObject.variantIndex);
 
-        LocalTransform localTransform = LocalTransform.FromPosition(new float3(gridPosition.x,gridPosition.y,gridPosition.y));
-        BoxCollider2D boxCollider2D = new BoxCollider2D()
-        { 
-            offset = 0f,
-            size = new float2(0.2f,0.2f)
-        };
-
-
-        entityManager.SetComponentData(entity, boxCollider2D);
-        entityManager.SetComponentData(entity, localTransform);
-    }
 
     private Entity GetParticleIndex(int index)
     {

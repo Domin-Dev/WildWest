@@ -22,6 +22,7 @@ using UnityEngine;
 public partial class MapLoadingClientSystem : SystemBase
 {
     private ClientMap clientMap;
+    private EntitiesReferences entitiesReferences;
 
     public void SetUp()
     {
@@ -39,14 +40,16 @@ public partial class MapLoadingClientSystem : SystemBase
             Any = new ComponentType[] { typeof(FixedChunk), typeof(FixedBuildingObjects) }
         };
         RequireForUpdate(GetEntityQuery(entityQueryDesc));
+    }
 
+    protected override void OnStartRunning()
+    {
+        entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
     }
 
     protected override void OnUpdate()
     {
-
         var ecb = new EntityCommandBuffer(Allocator.Temp);
-
         var mapVis = MapVisualization.instance;
 
         Entities
@@ -62,6 +65,8 @@ public partial class MapLoadingClientSystem : SystemBase
             .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()
             .ForEach((Entity entity, in FixedBuildingObjects buildingObjects) =>
             {
+
+                Debug.Log("Pos " + buildingObjects.chunkCoordinates);
                 for (int i = 0; i < FixedBuildingObjects.size; i++)
                 {
                     int value = buildingObjects[i];
@@ -82,7 +87,10 @@ public partial class MapLoadingClientSystem : SystemBase
                             BitConverter.ToInt32(bytes2, 4) + buildingObjects.chunkCoordinates.y
                         );
 
-                        CreateObject(ref ecb, gridObject, pos);
+
+
+                        
+                        BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb, gridObject, pos);
 
                         i += value + 8;
                     }
@@ -93,30 +101,5 @@ public partial class MapLoadingClientSystem : SystemBase
 
         ecb.Playback(EntityManager);
         ecb.Dispose();
-    }
-
-
-    private void CreateObject(ref EntityCommandBuffer entityCommand, GridObject gridObject, float2 pos)
-    {
-        Debug.Log(pos + " New Object!!!!");
-        EntitySpawner.instance.SpawnBuildingObject(gridObject,pos);
-        //Entity entity = entityCommand.CreateEntity();
-
-        //var localTransform = LocalTransform.FromPosition(new float3(pos.x, pos.y, pos.y));
-
-        //entityCommand.AddComponent(entity, localTransform);
-        //entityCommand.AddComponent(entity, new IsChanged());
-        //entityCommand.SetComponentEnabled<IsChanged>(entity, true);
-        //entityCommand.AddComponent(entity, new Physics2D()
-        //{
-        //    layer = 0,
-        //    cellIndex = new int2(int.MinValue, int.MinValue)
-        //});
-        //entityCommand.AddComponent(entity, new BoxCollider2D()
-        //{
-        //    offset = 0f,
-        //    size = new float2(0.2f, 0.2f)
-        //});
-        //entityCommand.AddComponent(entity, new Velocity2D() { Value = float2.zero });
     }
 }

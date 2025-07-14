@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 
   ID: 46
   stackMax: 50
-  icon: {fileID: -1031854342, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: 139923309, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   crafingIngredients: []
   craftTables: 
   numberItem: 1
@@ -37,52 +37,58 @@ MonoBehaviour:
   objectVariants:
   - variants:
     - hitbox:
-      - {x: -0.03, y: 0.065}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.04, y: 0.065}
-      minY: 0.065
-      sprite: {fileID: 21300000, guid: bc514684cef478c4287ecf51cccc4f5e, type: 2}
+      minY: 0
+      sprite: {fileID: 21300000, guid: 67a660301ec01754b854aba1f5221629, type: 2}
   - variants:
     - hitbox:
-      - {x: 0.04, y: 0.125}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.125}
-      minY: 0.125
-      sprite: {fileID: 21300000, guid: 093346afcf1887a4bb72596d62f65042, type: 2}
+      minY: 0
+      sprite: {fileID: 21300000, guid: 406f0596c6c14ed4e973862c0e1db6ec, type: 2}
   - variants:
     - hitbox:
-      - {x: 0, y: 0.195}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.01, y: 0.195}
-      minY: 0.195
-      sprite: {fileID: 21300000, guid: 3e0c17596fdb60d4583d3921e0d7c446, type: 2}
+      minY: 0
+      sprite: {fileID: 21300000, guid: 084d95754c6904644824e11d5eee1b55, type: 2}
   - variants:
     - hitbox:
-      - {x: 0.04, y: 0.145}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.145}
-      minY: 0.145
-      sprite: {fileID: 21300000, guid: 2db69b036d3d6af4396e5434bc95a35e, type: 2}
+      minY: 0
+      sprite: {fileID: 21300000, guid: 70bb67c55d70371488d733521e3d0110, type: 2}
   - variants:
     - hitbox:
-      - {x: 0.04, y: 0.074999996}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0.03, y: 0.074999996}
-      minY: 0.074999996
-      sprite: {fileID: 21300000, guid: c5ab88bfd62fb9549a85c71bc481e241, type: 2}
+      minY: 0
+      sprite: {fileID: 21300000, guid: 997e8f06331038f4f87623ecdf7779fd, type: 2}
   - variants:
     - hitbox:
-      - {x: -0.02, y: 0.145}
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: -0.03, y: 0.145}
-      minY: 0.145
-      sprite: {fileID: 21300000, guid: 7f37ca6cbf774c44a9e051dbd159965d, type: 2}
+      minY: 0
+      sprite: {fileID: 21300000, guid: f3020485448944c498d6e5ed49241a77, type: 2}
   shadowPixels: 0
   size:
     x: 27

@@ -59,7 +59,7 @@ public class MapVisualization : MonoBehaviour
         get { return chunkSize * chunkSize; }
     }
 
-    public const float cellSize = 0.25f;
+    public const float cellSize = ClientMap.cellSize;
     public const float cornerSize = 0.1f;
     public float getCornerDistance { get { return cellSize - 2 * cornerSize; } }
     public Vector2 getCornerVector { get { return new Vector2(cornerSize, cornerSize); } }

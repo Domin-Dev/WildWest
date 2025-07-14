@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 [System.Serializable]
 public class Drop
@@ -44,14 +45,14 @@ public class ObjectVariant
 [System.Serializable]
 public class Variant
 {
-    public Vector2[] hitbox;
+    public RectangleHitbox hitbox;
     public Vector2[] CoveringPoints;
     public Vector2[] objectPoints;
     public Vector2 particlePoint;
     public float minY;
     public Sprite sprite;
 
-    public Variant(Vector2[] hitbox, Sprite sprite, float minY, Vector2 particlePoint)
+    public Variant(RectangleHitbox hitbox, Sprite sprite, float minY, Vector2 particlePoint)
     {
         this.particlePoint = particlePoint;
         this.hitbox = hitbox;
@@ -64,3 +65,24 @@ public class Variant
         return new Variant(hitbox, sprite, minY,particlePoint);
     }
 }
+
+[System.Serializable]
+public class RectangleHitbox
+{
+    public Vector2 size;
+    public Vector2 offset;
+    public RectangleHitbox(Vector2 size, Vector2 offset)
+    {
+        this.size = size;
+        this.offset = offset;
+    }
+
+    public float GetMinY()
+    {
+        return offset.y - size.y * 0.5f;
+    }
+
+    public static RectangleHitbox DefaultRectangleHitbox = new RectangleHitbox(new Vector2(0.1f,0.1f), Vector2.zero);
+}
+
+

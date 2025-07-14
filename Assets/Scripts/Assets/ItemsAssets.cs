@@ -74,6 +74,23 @@ public class ItemsAsset : MonoBehaviour
         return item is T;
     }
 
+
+
+
+
+    public Variant GetVariant(int itemID,int variantID,int state)
+    {
+        var item = GetItem<VariantItem>(itemID);
+        if(item.objectVariants.Length > variantID)
+        {
+            if (item.objectVariants[variantID].variants.Length > state)
+            {
+                return item.objectVariants[variantID].variants[state];
+            }
+        }
+        return null;
+    }
+
     public Sprite GetBuildingObjectSprite(int id, int index)
     {
         if (items.ContainsKey(id))

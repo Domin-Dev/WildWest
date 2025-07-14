@@ -27,17 +27,13 @@ public partial struct UpdateUILifeStatsSystem : ISystem
         foreach ((LifeStatsChangedRPC message, Entity entity) in
         SystemAPI.Query<LifeStatsChangedRPC>().WithEntityAccess())
         {
-            Debug.Log("UPDatE!!!!");
             foreach ((Health health,Hunger hunger, Thirst thirst) in SystemAPI.Query<Health,Hunger,Thirst>()
             .WithAll<GhostOwnerIsLocal, Simulate>())
             {
-                Debug.Log("player !!!!!");
-
                 LifeStatsUI.Instance.UpdateHealth(health.Value, health.Max);
                 LifeStatsUI.Instance.UpdateFood(hunger.Value, hunger.Max);
                 LifeStatsUI.Instance.UpdateThirst(thirst.Value, thirst.Max);
             }
-
             entityCommandBuffer.DestroyEntity(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);

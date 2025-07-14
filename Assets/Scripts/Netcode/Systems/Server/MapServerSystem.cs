@@ -1,14 +1,14 @@
-using Unity.Burst;
-using Unity.Entities;
-using UnityEngine;
-using Unity.NetCode;
-using Unity.Collections;
 using System;
-using Unity.Mathematics;
 using System.Collections.Generic;
-using Unity.Entities.UniversalDelegates;
-using Unity.Transforms;
 using TMPro;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
+using Unity.Mathematics;
+using Unity.NetCode;
+using Unity.Transforms;
+using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapServerSystem : SystemBase
@@ -17,23 +17,36 @@ public partial class MapServerSystem : SystemBase
     public Map map;
     private MapGenerator generator;
     public float2 spawnPoint;
+    int simulationTickRate = 60;
+    private const int ChunksPerTick = 2;
+    private NetworkTick currentTick;
+    private EntitiesReferences entitiesReferences;
+
     protected override void OnCreate()
     {
         RequireForUpdate<SendMap>();
+        if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+    }
+
     public void GenerateMap()
     {
         generator = new MapGenerator(GameInfo.instance.seed);
         map = generator.StartGenerator();
-        Debug.Log("Generowanie");
     }
     protected override void OnUpdate()
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+
 
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
+
             if (map == null) 
             {
                 GenerateMap();
@@ -45,15 +58,19 @@ public partial class MapServerSystem : SystemBase
                 FixedChunk fixedChunk = new FixedChunk();
                 GetChunk(i, ref fixedChunk);
 
-                entityCommandBuffer.AddComponent(chunk, fixedChunk);
-                entityCommandBuffer.AddComponent(chunk, new SendRpcCommandRequest()
-                {
-                    TargetConnection = entity
-                });
+
+                uint lifetimeInTicks = (uint)(i / ChunksPerTick);
+                var targetTick = currentTick;
+                targetTick.Add(lifetimeInTicks);
+                entityCommandBuffer.AddComponent(chunk,fixedChunk);
+                entityCommandBuffer.AddComponent(chunk, new RPCSendQueue() { target = entity, tick = targetTick });
             }
 
-            GetChunkObjects(0,ref entityCommandBuffer, entity);
-            GetChunkObjects(1,ref entityCommandBuffer, entity);
+
+            GetChunkObjects(0, ref entityCommandBuffer, entity);
+            GetChunkObjects(1, ref entityCommandBuffer, entity);
+            GetChunkObjects(2, ref entityCommandBuffer, entity);
+
 
             Entity loaded = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(loaded, new MapIsLoaded());
@@ -63,9 +80,7 @@ public partial class MapServerSystem : SystemBase
             });
 
             entityCommandBuffer.RemoveComponent<SendMap>(entity);
-            Debug.Log("Map is loaded");
         }
-
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }
@@ -110,7 +125,6 @@ public partial class MapServerSystem : SystemBase
                     if(bytes.Length + 8 < FixedBuildingObjects.size - counter)
                     {
                         fixedBuildingObjects[counter] = (byte)bytes.Length;
-
                         counter++;
                         for (int l = 0; l < posXY.Count; l++)
                         {
@@ -125,47 +139,31 @@ public partial class MapServerSystem : SystemBase
                     }
                     else
                     {
-                        SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
+                        SendBuidlingObjectRPC(1,ref entityCommandBuffer, fixedBuildingObjects, ref target);
                         fixedBuildingObjects = new FixedBuildingObjects();
                         counter = 0;
                     }
-                    CreateObject(ref entityCommandBuffer, gridObject, new float2(i + chunk.chunkCoordinates.x, j + chunk.chunkCoordinates.y));
+
+                    
+                    BuildingObjectCreator.CreateObject(ref entitiesReferences,EntityManager,ref entityCommandBuffer, gridObject, new float2(i + chunk.chunkCoordinates.x, j + chunk.chunkCoordinates.y));
                 }
             }
         }
 
-            if (counter != 0) SendBuidlingObjectRPC(ref entityCommandBuffer, fixedBuildingObjects, ref target);
-      
+        if (counter != 0) SendBuidlingObjectRPC(index,ref entityCommandBuffer, fixedBuildingObjects, ref target);
+
     }
-    private void SendBuidlingObjectRPC(ref EntityCommandBuffer entityCommandBuffer, FixedBuildingObjects fixedBuildingObjects, ref Entity target)
+    private void SendBuidlingObjectRPC(int i,ref EntityCommandBuffer entityCommandBuffer, FixedBuildingObjects fixedBuildingObjects, ref Entity target)
     {
         var rpc = entityCommandBuffer.CreateEntity();
         entityCommandBuffer.AddComponent(rpc, fixedBuildingObjects);
-        entityCommandBuffer.AddComponent(rpc, new SendRpcCommandRequest()
-        {
-            TargetConnection = target
-        });
-    }
-    private void CreateObject(ref EntityCommandBuffer entityCommand,GridObject gridObject, float2 pos)
-    {
-        Entity entity = entityCommand.CreateEntity();
-        LocalTransform localTransform = LocalTransform.FromPosition(new float3(pos.x, pos.y, pos.y));
 
-
-        entityCommand.AddComponent(entity, localTransform);
-    //    entityCommand.AddComponent(entity, new IsChanged());
-    //    entityCommand.SetComponentEnabled(entity,typeof(IsChanged), true);
-        entityCommand.AddComponent(entity, new Physics2D() {
-            layer = 0,
-            cellIndex = new int2(int.MinValue, int.MinValue)
-        });
-        entityCommand.AddComponent(entity, new BoxCollider2D()
-        {
-            offset = 0f,
-            size = new float2(0.2f, 0.2f)
-        });
-        entityCommand.AddComponent(entity, new Velocity2D() { Value = float2.zero});
+        uint lifetimeInTicks = (uint)(i / ChunksPerTick);
+        var targetTick = currentTick;
+        targetTick.Add(lifetimeInTicks);
+        entityCommandBuffer.AddComponent(rpc, new RPCSendQueue() { target = target, tick = targetTick });
     }
+    
 }
 
 

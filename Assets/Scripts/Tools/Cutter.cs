@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.U2D;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class Cutter
 {
@@ -41,6 +43,23 @@ public class Cutter
             }
         }
         return null;
+    }
+
+    public RectangleHitbox CutRectangularHitBox(Color hitboxColor)
+    {
+        Vector2[] points = CutHitBox(hitboxColor);
+        if (points.Length != 4) return null;
+        Vector2 center = (points[0] + points[1] + points[2] + points[3]) / 4f;
+        Vector2[] localCorners = points.Select(corner => corner - center).ToArray();
+
+        float minX = localCorners.Min(p => p.x);
+        float maxX = localCorners.Max(p => p.x);
+        float minY = localCorners.Min(p => p.y);
+        float maxY = localCorners.Max(p => p.y);
+
+        float width = maxX - minX;
+        float height = maxY - minY;
+        return new RectangleHitbox(new Vector2(width, height), center);
     }
     public Vector2?[] GetPoints(Color[] pointColors,Color hitboxColor)
     {

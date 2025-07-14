@@ -71,7 +71,7 @@ public struct FixedChunk : IRpcCommand
 [Serializable]
 [StructLayout(LayoutKind.Explicit, Size = 80)]
 [GenerateTestsForBurstCompatibility]
-public struct FixedTileRow : IRpcCommand
+public struct FixedTileRow 
 {
     [FieldOffset(0)]  public FixedTile tile0;
     [FieldOffset(8)]  public FixedTile tile1;

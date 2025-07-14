@@ -37,15 +37,13 @@ MonoBehaviour:
   objectVariants:
   - variants:
     - hitbox:
-      - {x: -0.099999994, y: 0.125}
-      - {x: -0.099999994, y: 0.315}
-      - {x: 0.099999994, y: 0.315}
-      - {x: 0.099999994, y: 0.125}
+        size: {x: 0.19999999, y: 0.13999999}
+        offset: {x: 0, y: 0.195}
       CoveringPoints: []
       objectPoints: []
       particlePoint: {x: 0, y: 0.255}
       minY: 0.125
-      sprite: {fileID: 21300000, guid: e07cbec0770d0a843a38c925730eb720, type: 2}
+      sprite: {fileID: 21300000, guid: faf828dd62cb68b44a01148603a8ae26, type: 2}
   shadowPixels: 9
   size:
     x: 27

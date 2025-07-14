@@ -43,14 +43,6 @@ partial struct CharacterAimSystem : ISystem
 
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
-            //if(state.World.IsServer() || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
-            //{
-            //    playerAspect.playerInputSync.ValueRW.sightDirection = playerAspect.playerInput.ValueRO.sightDirection;
-            //    playerAspect.playerInputSync.ValueRW.leftButton = playerAspect.playerInput.ValueRO.leftButton;
-            //    playerAspect.playerInputSync.ValueRW.rightButton = playerAspect.playerInput.ValueRO.rightButton;
-            //    playerAspect.playerInputSync.ValueRW.handRotation = playerAspect.playerInput.ValueRO.handRotation;
-            //}
-
             k++;
             RefRW<Hands> hands = playerAspect.hands;
             LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(playerAspect.hands.ValueRO.main);

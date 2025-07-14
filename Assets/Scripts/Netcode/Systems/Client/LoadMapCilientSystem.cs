@@ -7,10 +7,10 @@ using Unity.Collections;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct LoadMapCilientSystem : ISystem
 {
-
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<LoadMap>();
+        state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));

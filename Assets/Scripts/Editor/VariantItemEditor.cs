@@ -33,7 +33,6 @@ public class VariantItemEditor : ItemEditor
                 texture = AssetDatabase.LoadAssetAtPath<Texture2D>(relativePath);
                 if (texture != null)
                 {
-                   // variantItem.texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png", "");
                     Debug.Log("The texture is set");
                     CutSpritesWall(texture);
                     NewSaveChanges();
@@ -58,10 +57,15 @@ public class VariantItemEditor : ItemEditor
 
 
         List<ObjectVariant> objectVariants = new List<ObjectVariant>();
+        AssetDatabase.CreateFolder("Assets/Graphics/Sprites/BuildingObjects/", "NOWYFOL");
 
-        if(!AssetDatabase.IsValidFolder($"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}"))
+        Debug.Log($"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}");
+        if (!AssetDatabase.IsValidFolder($"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}"))
         {
+            Debug.Log("Tworzehhhhnie");
             AssetDatabase.CreateFolder($"{MyTools.buildingObjectsSpritesPath}", $"{variantItem.name}_{variantItem.ID}");
+            AssetDatabase.Refresh();
+           // AssetDatabase.fol
         }
 
         Cut(texture,objectVariants,k,h/2);
@@ -88,8 +92,10 @@ public class VariantItemEditor : ItemEditor
                 Sprite hitbox = Sprite.Create(texture, new Rect(i * width, j * height * 2 + height, width, height), Vector2.zero);
                 Cutter cutter = new Cutter(hitbox, sprite.pivot);
                 Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
-                Vector2[] hitboxArray = cutter.CutHitBox(MyTools.hitboxColor);
-                variants.Add(new Variant(hitboxArray, sprite, hitboxArray[0].y, points[0].Value));
+                RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
+
+
+                variants.Add(new Variant(rectangle, sprite, rectangle != null ? rectangle.GetMinY() : 0, points[0].Value));
             }
 
             objectVariants.Add(new ObjectVariant(variants.ToArray()));
