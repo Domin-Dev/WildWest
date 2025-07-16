@@ -34,19 +34,16 @@ partial struct PlayerInputSystem : ISystem
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            bool load = true;
-            for (int i = 0; i < SceneManager.sceneCount; i++)
-            {
-                Scene scene = SceneManager.GetSceneAt(i);
-                if (scene.buildIndex == 8 && scene.isLoaded)
-                {
-                    SceneManager.UnloadSceneAsync(8);
-                    load = false;
-                }
-            }
-            if (load)
-                SceneManager.LoadScene(8,LoadSceneMode.Additive);
+            LoadScene(8);
         }
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            LoadScene(9);
+        }
+
+
+
 
         foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands) in 
             SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>())
@@ -84,5 +81,22 @@ partial struct PlayerInputSystem : ISystem
             }
 
         }
+    }
+
+
+    private void LoadScene(int index)
+    {
+        bool load = true;
+        for (int i = 0; i < SceneManager.sceneCount; i++)
+        {
+            Scene scene = SceneManager.GetSceneAt(i);
+            if (scene.buildIndex == index && scene.isLoaded)
+            {
+                SceneManager.UnloadSceneAsync(index);
+                load = false;
+            }
+        }
+        if (load)
+            SceneManager.LoadScene(index, LoadSceneMode.Additive);
     }
 }

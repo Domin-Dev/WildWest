@@ -75,6 +75,7 @@ partial struct CharacterAimSystem : ISystem
 
                     if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
                     {
+                        Debug.Log("Shot!!!   " + state.World.Flags + currentTick.TickValue);
                         if (state.World.Flags == WorldFlags.GameServer)
                         {
                             localMain.Rotation = playerAspect.playerInputSync.ValueRO.handRotation;

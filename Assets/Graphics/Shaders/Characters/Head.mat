@@ -11,124 +11,54 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 3bd2cf92488dc314a88fbdaa14dea5cb, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _BUILTIN_SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Transparent
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _GetOffset_412758372afb411397bfe225800c59f4_Texture2D_1121349197_Texture2D:
-        m_Texture: {fileID: 2800000, guid: b9d10b42d5501f24ea792c98bf190ced, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetOffset_62306643024e430cbc0ab6116aff15d0_Texture2D_1121349197_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetOffset_86a7c8ad12b0431f85865a0952db1c51_Texture2D_1121349197_Texture2D:
+    - _Beard:
         m_Texture: {fileID: 2800000, guid: 24a474b0410ab7f4c997ab5f1e2cc91d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _GetOffset_9cffb8b26eac44c7ae9bd8a50b63ebcd_Texture2D_1121349197_Texture2D:
-        m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
+    - _CutMask:
+        m_Texture: {fileID: 2800000, guid: c7d364db91d0ef44d8b4eb5f5cd23ffb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _GetOffset_a7ac76de2a7f4211b95577829a013a9f_Texture2D_1121349197_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetTexture2D_0f88998cc3b14c29aee6171c4dff36f6_Texture2D_1871122832_Texture2D:
-        m_Texture: {fileID: 2800000, guid: b9d10b42d5501f24ea792c98bf190ced, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetTexture2D_34ba96f1cc4345838b51cd37e6c51bfc_Texture2D_1871122832_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 24a474b0410ab7f4c997ab5f1e2cc91d, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetTexture2D_542310d721c844a1b5a30a99e3acf826_Texture2D_1871122832_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetTexture2D_8ddd215fa65346779ebf0072e57238de_Texture2D_1871122832_Texture2D:
-        m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _GetTexture2D_f518cf5937a5450e83ccd899942e92da_Texture2D_1871122832_Texture2D:
+    - _Eyes:
         m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Hairs:
+        m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Hat:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _MainTax:
-        m_Texture: {fileID: 2800000, guid: 08a628bdc6ef514429d9670ebdee1e39, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 06b7de5baa8708b4c82842dced14366a, type: 3}
+        m_Texture: {fileID: 2800000, guid: 2802e128b3a0cea4cb0dca733b6b8717, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Mask:
         m_Texture: {fileID: 0}
-        m_Scale: {x: -0.83, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_1a4e15345cdf4e72b24c77e50be3476e_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 24a474b0410ab7f4c997ab5f1e2cc91d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_2d3b75146b134d128baacd0c46a6ebff_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: c7d364db91d0ef44d8b4eb5f5cd23ffb, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_7e6535f71d884cf98604d824fa3db1cc_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_9bd2a345539c4ef2b7a0fe59c0ae96ab_Texture_1_Texture2D:
+    - _Mouth:
         m_Texture: {fileID: 2800000, guid: b9d10b42d5501f24ea792c98bf190ced, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _SampleTexture2D_d96e894632154e5f826595d283dce0d4_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_16b7ec7a9ed9436a8752939cde2bc562_Out_0_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 2802e128b3a0cea4cb0dca733b6b8717, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2DAsset_c4bd2a317c50426db6e8cdcb84cb12b4_Out_0_Texture2D:
-        m_Texture: {fileID: 2800000, guid: f6eedd467a0112b488230616c7a143fb, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Texture2D_1:
-        m_Texture: {fileID: 2800000, guid: af8938e036f46bb49b958a88dccd0f31, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _TextureSize_1ea5cb0fecba45d98fa621abd87ba34f_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _TextureSize_5977670a53204a0f9b9af39e09f33ec2_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _TextureSize_756f463b890f49338a994eeb8941fd68_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _TextureSize_c1f7fede1a454c63ae94054604fc217f_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 24a474b0410ab7f4c997ab5f1e2cc91d, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _TextureSize_dd9b8c1870d041b4abcd33933878e5b4_Texture_1_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 252d4632a9d83ea4995de033188507da, type: 3}
+    - _Paintings:
+        m_Texture: {fileID: 2800000, guid: 31891d148621a724ea5f1848adc4b27c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -145,28 +75,45 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BUILTIN_AlphaClip: 0
+    - _BUILTIN_Blend: 0
+    - _BUILTIN_CullMode: 0
+    - _BUILTIN_DstBlend: 10
+    - _BUILTIN_QueueControl: 0
+    - _BUILTIN_QueueOffset: 0
+    - _BUILTIN_SrcBlend: 5
+    - _BUILTIN_Surface: 1
+    - _BUILTIN_ZTest: 4
+    - _BUILTIN_ZWrite: 0
+    - _BUILTIN_ZWriteControl: 0
     - _BeardIndex: 0
-    - _Boolean: 0
     - _Direction: 0
-    - _Eyes: 0
     - _EyesIndex: 2
-    - _Front: 0
     - _HairIndex: 0
     - _HairUnderHat: 0
-    - _Index: 0
-    - _MouthIndex: 2
+    - _MouthIndex: 0
     - _PaintingsIndex: 0
-    - _Side: 1
     m_Colors:
-    - _HairColor: {r: 0.4188679, g: 0.25924072, b: 0.16991809, a: 1}
-    - _HatColor: {r: 0, g: 0.381132, b: 0.038759153, a: 1}
-    - _MaskColor: {r: 0.43303162, g: 0.7056604, b: 0.37147027, a: 1}
-    - _SkinColor: {r: 0.9450981, g: 0.7058824, b: 0.454902, a: 1}
-    - _Vector2: {r: 0, g: 0, b: 0, a: 0}
-    - _Vector2_1: {r: -0.27, g: 0.33333, b: 0, a: 0}
+    - _HairColor: {r: 0.45660365, g: 0.26073897, b: 0.054275475, a: 1}
+    - _HatColor: {r: 0.43396226, g: 0.048308954, b: 0.21363688, a: 1}
+    - _MaskColor: {r: 0.8784314, g: 0.19940385, b: 0.19940385, a: 1}
+    - _SkinColor: {r: 0.80377346, g: 0.59834296, b: 0.34425768, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &7830297564221900991
+--- !u!114 &545638399688690190
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 0
+--- !u!114 &7852489652469228562
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

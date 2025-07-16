@@ -19,7 +19,7 @@ public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
     private const float DampingValue = 8f;
-    private const float CleanupInterval = 120f;
+    private const float CleanupInterval = 180f;
 
     readonly static int hitBoxLayer = 3;
 
@@ -552,7 +552,6 @@ public partial struct CollisionSystem : ISystem
     {
         NativeList<int2> toRemove = new NativeList<int2>(Allocator.Temp);
 
-        Debug.Log("Cleaning...");
         foreach (var item in entityMap)
         {
             for (int i = item.Value.Length - 1; i >= 0; i--)
@@ -560,12 +559,10 @@ public partial struct CollisionSystem : ISystem
                 if (!SystemAPI.Exists(item.Value[i]))
                 {
                     item.Value.RemoveAtSwapBack(i);
-                    Debug.Log("one");
                 }
                 else if(!getPhysics.HasComponent(item.Value[i]))
                 { 
                     item.Value.RemoveAtSwapBack(i);
-                    Debug.Log("one");
                 }
             }
 
