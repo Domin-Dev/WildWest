@@ -19,6 +19,7 @@ public class GameInfo : MonoBehaviour
     public string worldName;
     public Difficulty difficultyLevel;
     public int seed;
+    public bool isMultiplayer;
     //////////////////
     public int loadingMode;
     public int nextScene;

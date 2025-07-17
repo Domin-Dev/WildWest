@@ -65,8 +65,6 @@ public partial class MapLoadingClientSystem : SystemBase
             .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()
             .ForEach((Entity entity, in FixedBuildingObjects buildingObjects) =>
             {
-
-                Debug.Log("Pos " + buildingObjects.chunkCoordinates);
                 for (int i = 0; i < FixedBuildingObjects.size; i++)
                 {
                     int value = buildingObjects[i];

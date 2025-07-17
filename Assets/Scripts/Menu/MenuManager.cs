@@ -155,6 +155,7 @@ public class MenuManager : MonoBehaviour
     }
     private void OnButtonCreateGame()
     {
+        GameInfo.instance.isMultiplayer = false;
         GameInfo.LoadScene(2, 1);
     }
 
@@ -162,6 +163,7 @@ public class MenuManager : MonoBehaviour
 
     private void Join()
     {
+        GameInfo.instance.isMultiplayer = true;
         GameInfo.LoadScene(2, 0);
         
         for (int i = World.All.Count - 1; i >= 0; i--)
@@ -198,6 +200,7 @@ public class MenuManager : MonoBehaviour
     }
     private void RunServer()
     {
+        GameInfo.instance.isMultiplayer = true;
         GameInfo.LoadScene(4, 0);
         foreach (World world in World.All)
         {

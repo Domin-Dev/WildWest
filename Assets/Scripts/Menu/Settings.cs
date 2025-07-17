@@ -58,15 +58,25 @@ public class Settings: MonoBehaviour
         fpsLimit.onValueChanged.AddListener(SetFPSLimit);
 
 
-        if (QualitySettings.vSyncCount == 1 || Application.targetFrameRate == -1)
+        Debug.Log("App :" + QualitySettings.vSyncCount + ", fps " + Application.targetFrameRate);
+
+        if (QualitySettings.vSyncCount == 0 && Application.targetFrameRate == -1)
         {
             SetFPSText((int)fpsLimit.maxValue);
             fpsLimit.value = fpsLimit.maxValue;
         }
         else
         {
-            SetFPSText(Application.targetFrameRate);
-            fpsLimit.value = Application.targetFrameRate;
+            int fps = Application.targetFrameRate;
+            var refreshRate = Screen.currentResolution.refreshRateRatio;
+            if (QualitySettings.vSyncCount == 1)
+                fps = (int)((float)refreshRate.numerator / refreshRate.denominator);
+            else if(QualitySettings.vSyncCount == 2)
+                fps = (int)((float)refreshRate.numerator / refreshRate.denominator / 2f);
+
+
+            SetFPSText(fps);
+            fpsLimit.value = fps;
         }
 
 
@@ -83,8 +93,6 @@ public class Settings: MonoBehaviour
     }
     private void SetFPSLimit(float value)
     {
-        Debug.Log(Screen.currentResolution.refreshRateRatio);
-        Debug.Log(Application.targetFrameRate);
         int fps = Mathf.RoundToInt(value);
         SetFPSText(fps);
         QualitySettings.vSyncCount = 0;
