@@ -4,12 +4,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
-using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -17,7 +12,6 @@ using UnityEngine.UI;
 
 public class LoadingManager : MonoBehaviour
 {
-
     [SerializeField] private GameObject loadingWindow;
     [SerializeField] private GameObject errorWindow;
     [Space]
@@ -30,6 +24,7 @@ public class LoadingManager : MonoBehaviour
     private float target;
 
     public Action gameIsReady;
+
 
     private void Awake()
     {
@@ -110,7 +105,7 @@ public class LoadingManager : MonoBehaviour
     }
     private void SetValue(float value)
     {
-        if(loadingBar != null) loadingBar.rectTransform.anchorMax = new Vector2(value, 1);
+        if(loadingBar != null) loadingBar.rectTransform.anchorMax = new Vector2(math.clamp(value,0f,1f), 1);
     } 
     private async void LoadAsyncScene(int index, float maxProgress = 1f, float startProgress = 0f)
     {
@@ -137,7 +132,7 @@ public class LoadingManager : MonoBehaviour
         float lerp = math.lerp(loadingBar.rectTransform.anchorMax.x, target, Time.deltaTime * 7f);
         SetValue(lerp);
     }
-    private void PrintError(string message)
+    public void PrintError(string message)
     {
         errorWindow.SetActive(true);
         loadingWindow.SetActive(false);

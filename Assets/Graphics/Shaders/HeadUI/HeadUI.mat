@@ -85,16 +85,22 @@ Material:
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
     - _BeardIndex: 0
+    - _ColorMask: 15
     - _Direction: 0
     - _EyesIndex: 2
     - _HairIndex: 8
     - _HairUnderHat: 0
     - _MouthIndex: 2
     - _PaintingsIndex: 0
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     m_Colors:
-    - _HairColor: {r: 0.4641509, g: 0.2723602, b: 0.41402665, a: 1}
+    - _HairColor: {r: 0.3886792, g: 0.23394087, b: 0.23394087, a: 1}
     - _HatColor: {r: 0.43396226, g: 0.048308954, b: 0.21363688, a: 1}
     - _MaskColor: {r: 0.8784314, g: 0.19940385, b: 0.19940385, a: 1}
-    - _SkinColor: {r: 0.80377346, g: 0.59834296, b: 0.34425768, a: 1}
+    - _SkinColor: {r: 1, g: 0.89934075, b: 0.76792455, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

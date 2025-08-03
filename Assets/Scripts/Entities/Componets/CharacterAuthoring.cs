@@ -45,8 +45,10 @@ public struct PlayerInput : IInputComponentData
     [GhostField(Quantization = 0)] public float2 movementDirection;
     [GhostField(Quantization = 0)] public float2 sightDirection;
     [GhostField(Quantization = 0)] public quaternion handRotation;
-    public InputEvent rightButton;
-    public InputEvent leftButton;
+    [GhostField(Quantization = 0)] public InputEvent rightButton;
+    [GhostField(Quantization = 0)] public InputEvent leftButton;
+    [GhostField(Quantization = 0)] public NetworkTick dataTick;
+
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
@@ -87,7 +89,7 @@ public struct PlayerLook : IComponentData
 public struct Player : IComponentData
 {
     public float speed;
-    [GhostField] public FixedString64Bytes playerName;
+    [GhostField] public FixedString128Bytes playerName;
     [GhostField] public NetworkTick cooldownTick;
 }
 public struct Character : IComponentData
@@ -131,4 +133,11 @@ public struct Thirst : IComponentData
 
 public struct PlayerSourceConnection : IComponentData {
     public Entity value;
+}
+
+
+public struct LocalInput : IComponentData
+{
+    public bool rightButton;
+    public bool leftButton;
 }

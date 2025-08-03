@@ -31,12 +31,14 @@ partial struct CharacterAimSystem : ISystem
         // EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
-        if (!networkTime.IsFirstTimeFullyPredictingTick) return;
+        if(!networkTime.IsFirstTimeFullyPredictingTick) return;
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         var currentTick = networkTime.ServerTick;
         int k = 0;
+
+
 
         deltaTime = (float)SystemAPI.Time.ElapsedTime - (float)last;
         last = SystemAPI.Time.ElapsedTime;
@@ -47,35 +49,96 @@ partial struct CharacterAimSystem : ISystem
             RefRW<Hands> hands = playerAspect.hands;
             LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(playerAspect.hands.ValueRO.main);
 
-            var isOnCooldown = true;
+
             var curTargetTicks = new CooldownTargetTick();
+
+            bool isOnCooldown = false;
+            NetworkTick latestCooldownTick = NetworkTick.Invalid;
+            NetworkTick cooldownEndTick = NetworkTick.Invalid;
+            bool buttonIsSet = false;// playerAspect.playerInputSync.ValueRO.rightButton.IsSet;
+
+
+
+
+
+            //   Debug.Log(currentTick.TickValue + "  check  " + buttonIsSet);
+
+
 
             for (var i = 0u; i < networkTime.SimulationStepBatchSize; i++)
             {
                 var testTick = currentTick;
                 testTick.Subtract(i);
 
-                if (!playerAspect.cooldownTargetTick.GetDataAtTick(testTick, out curTargetTicks))
-                {
-                    curTargetTicks.ability = NetworkTick.Invalid;
-                }
 
-                if (curTargetTicks.ability == NetworkTick.Invalid ||
-                    !curTargetTicks.ability.IsNewerThan(currentTick))
+
+                if (playerAspect.cooldownTargetTick.GetDataAtTick(testTick, out curTargetTicks))
                 {
-                    isOnCooldown = false;
-                    break;
+
+                    if (playerAspect.input.GetDataAtTick(testTick, out var input))
+                    {
+                        Debug.Log(testTick.TickValue + " " +input.InternalInput.rightButton.Count + "  ---- " + input.InternalInput.dataTick.TickValue);
+                    }
+
+
+                    Debug.Log(currentTick.TickValue + " --- " + testTick.TickValue + " " + curTargetTicks.ability.TickValue + " " + curTargetTicks.Tick.TickValue + " " + state.World.Flags + " " + networkTime.SimulationStepBatchSize + " " + buttonIsSet);
+                    if (!latestCooldownTick.IsValid || curTargetTicks.Tick.IsNewerThan(latestCooldownTick))
+                    {
+                        latestCooldownTick = curTargetTicks.Tick;
+                        cooldownEndTick = curTargetTicks.ability;
+                    }
                 }
             }
 
+            if (cooldownEndTick != NetworkTick.Invalid && cooldownEndTick.IsNewerThan(currentTick))
+            {
+                isOnCooldown = true;
+            }
+            else 
+            {
+                isOnCooldown = false;
+            }
+
+
+
             if (!isOnCooldown)
             {
-                if (playerAspect.playerInputSync.ValueRO.rightButton.IsSet)
-                {
+                NetworkTick tick;
+                if (latestCooldownTick == NetworkTick.Invalid)
+                    tick = currentTick;
+                else
+                    tick = currentTick;
 
+
+                if (playerAspect.input.GetDataAtTick(tick, out var input1))
+                {
+                    tick.Subtract(1);
+                    if (playerAspect.input.GetDataAtTick(tick, out var input2))
+                    {
+                        uint counter2 = 0;
+                        if (input2.InternalInput.dataTick != tick)
+                        {
+                            tick = input2.InternalInput.dataTick;
+                            tick.Subtract(1);
+                            if (playerAspect.input.GetDataAtTick(tick, out var input3))
+                            {
+                                counter2 = input3.InternalInput.rightButton.Count;
+                            }
+                        }
+                        else
+                            counter2 = input2.InternalInput.rightButton.Count;
+
+                        Debug.Log(counter2 + " " + input1.InternalInput.rightButton.Count);
+                        buttonIsSet = counter2 - input1.InternalInput.rightButton.Count != 0;
+                    }
+                }
+
+
+                if (buttonIsSet)
+                {
+                   
                     if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
                     {
-                        Debug.Log("Shot!!!   " + state.World.Flags + currentTick.TickValue);
                         if (state.World.Flags == WorldFlags.GameServer)
                         {
                             localMain.Rotation = playerAspect.playerInputSync.ValueRO.handRotation;
@@ -87,14 +150,15 @@ partial struct CharacterAimSystem : ISystem
                         LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.itemInHand);
 
 
+                        Debug.Log("<Color=#ff0000>shoot " + state.World.Flags + " " + currentTick.TickValue);
                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
                         LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation);
-                        entityCommandBuffer.SetComponent(bullet,lt);
+                        entityCommandBuffer.SetComponent(bullet, lt);
 
 
-                        float3 v3 = lt.Right();
-                        entityCommandBuffer.AddComponent(entity, new ForceImpulse2D() { Value = new float2(-v3.x, -v3.y)});
+                        //  float3 v3 = lt.Right();
+                        //entityCommandBuffer.AddComponent(entity, new ForceImpulse2D() { Value = new float2(-v3.x, -v3.y) });
 
 
 
@@ -108,8 +172,13 @@ partial struct CharacterAimSystem : ISystem
                         else
                         {
                             var newCooldownTargetTick = currentTick;
+
+                            //23u
                             newCooldownTargetTick.Add(28u);
                             curTargetTicks.ability = newCooldownTargetTick;
+
+
+                            Debug.Log(currentTick.TickValue + " strzal");
 
                             var nextTick = currentTick;
                             nextTick.Add(1u);
@@ -144,7 +213,6 @@ partial struct CharacterAimSystem : ISystem
                 }
             }
 
-
             if (hands.ValueRO.actionStatus != 0)
             {
                 ActionUpdate(hands, playerAspect.player, ref state);
@@ -164,8 +232,13 @@ partial struct CharacterAimSystem : ISystem
 
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.main, localMain);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSideHand);
+
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, localItem);
+
             UpdateDirectionIndex(new float2(direction.x, direction.y),playerAspect.character, ref state);
+
+
+
         }
 
         entityCommandBuffer.Playback(state.EntityManager);
@@ -246,7 +319,6 @@ partial struct CharacterAimSystem : ISystem
             }
             else
             {
-
                 hands.ValueRW.targetRotation = hands.ValueRO.lastRotation;
                 hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
 

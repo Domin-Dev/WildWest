@@ -6,7 +6,7 @@ using UnityEngine;
 
 public struct PlayerName : IComponentData
 {
-    public FixedString64Bytes name;
+    public FixedString128Bytes name;
 }
 public struct CharacterLook
 {

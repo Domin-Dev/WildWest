@@ -7,6 +7,7 @@ using Unity.Transforms;
 using System;
 using System.Text;
 using System.Linq;
+using Unity.Entities;
 
 public static class MyTools 
 {
@@ -154,9 +155,31 @@ public static class MyTools
         Debug.Log(signedValue);
         return signedValue;
     }
-
     public static float2 ConvertFloat(float3 v)
     {
         return new float2(v.x, v.y);
     }
+
+    public static World GetClientWorld()
+    {
+        World world = null;
+        var worlds = World.All;
+
+        for (int i = 0; i < worlds.Count; i++)
+        {
+            var w = worlds[i];
+            if (w.Flags.HasFlag(WorldFlags.GameClient))
+            {
+                world = w;
+                break;
+            }
+        }
+        return world;
+    }
+
+    public static Color GetColorFromFloat3(float3 v)
+    {
+        return new Color(v.x,v.y,v.z);  
+    }
+
 }

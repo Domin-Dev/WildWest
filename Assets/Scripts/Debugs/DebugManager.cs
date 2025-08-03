@@ -38,17 +38,7 @@ public class DebugManager : MonoBehaviour
     {
         frameDeltaTimeArray = new float[50];
         debuggingChunks = new Dictionary<int, Transform>();
-        var worlds = World.All;
-
-        for (int i = 0; i < worlds.Count; i++)
-        {
-            var w = worlds[i];
-            if (w.Flags.HasFlag(WorldFlags.GameClient))
-            {
-                world = w;
-                break;
-            }
-        }
+        world = MyTools.GetClientWorld();
         LoadDebugStats();
     }
     private void Update()
@@ -73,6 +63,7 @@ public class DebugManager : MonoBehaviour
         GridVisualization.instance.onPlayerMove -= UpdatePosition;
         GridVisualization.instance.onChangeChunk -= UpdateChunkDebugger;
         if (debuggingChunks.Count > 0) TurnOffChunkDebugger();
+        StopCoroutine(UpdateStats());
     }
 
     private const float offset = 0.003f;

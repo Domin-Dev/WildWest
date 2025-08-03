@@ -6,9 +6,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-[UpdateInGroup(typeof(GhostInputSystemGroup))]
+[UpdateInGroup(typeof(GhostInputSystemGroup),OrderFirst = true)]
 partial struct PlayerInputSystem : ISystem
 {
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkStreamInGame>();
@@ -16,6 +17,8 @@ partial struct PlayerInputSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+
+
         float2 input = float2.zero;
 
         if (Input.GetKey(KeyCode.S)) input.y -= 1;
@@ -26,6 +29,7 @@ partial struct PlayerInputSystem : ISystem
 
         bool left = Input.GetMouseButton(0);
         bool right = Input.GetMouseButton(1);
+
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
@@ -45,8 +49,8 @@ partial struct PlayerInputSystem : ISystem
 
 
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands) in 
-            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>())
+        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, Entity entity) in 
+            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
@@ -80,6 +84,26 @@ partial struct PlayerInputSystem : ISystem
                 playerInputSync.ValueRW.rightButton = default;
             }
 
+
+
+            playerInput.ValueRW.dataTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+            //var inputBuffer = state.EntityManager.GetBuffer<InputBufferData<PlayerInput>>(entity);
+
+
+            //Debug.Log("nowe " + tick.TickValue + " " + playerInput.ValueRO);
+
+            //inputBuffer.AddCommandData(new InputBufferData<PlayerInput>
+            //{
+            //    Tick = tick,
+            //    InternalInput = new PlayerInput
+            //    {
+            //        movementDirection = playerInput.ValueRO.movementDirection,
+            //        leftButton = playerInput.ValueRW.leftButton,
+            //        rightButton = playerInput.ValueRW.rightButton,
+            //        handRotation = playerInput.ValueRO.handRotation,
+            //        sightDirection = playerInput.ValueRO.sightDirection
+            //    }
+            //});
         }
     }
 

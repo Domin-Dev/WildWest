@@ -1,4 +1,5 @@
 
+using System;
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.Collections;
@@ -194,6 +195,7 @@ public class MenuManager : MonoBehaviour
 
 
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new LocalInput());
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
         Debug.Log("Próba po³¹czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
@@ -202,38 +204,57 @@ public class MenuManager : MonoBehaviour
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.LoadScene(4, 0);
-        foreach (World world in World.All)
-        {
-            if (world.Flags == WorldFlags.GameClient)
+
+            foreach (World world in World.All)
             {
-                world.Dispose();
-                break;
+                if (world.Flags == WorldFlags.GameClient)
+                {
+                    world.Dispose();
+                    break;
+                }
             }
-        }
-        World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");
-        World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
+            World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");
+            World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
 
-        ClientWorldSetUp(clientWorld);
+            ClientWorldSetUp(clientWorld);
 
-        if (World.DefaultGameObjectInjectionWorld == null)
+            if (World.DefaultGameObjectInjectionWorld == null)
+            {
+                World.DefaultGameObjectInjectionWorld = serverWorld;
+            }
+
+            ushort port = ushort.Parse(portInput.text);
+
+            RefRW<NetworkStreamDriver> networkStreamDriver =
+                serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+
+        try
         {
-            World.DefaultGameObjectInjectionWorld = serverWorld;
+            var endPoint = NetworkEndpoint.AnyIpv4.WithPort(port);
+            if (!endPoint.IsValid) throw new Exception($"Invalid endpoint: port {port} is out of range or address is invalid.");
+            bool result = networkStreamDriver.ValueRW.Listen(endPoint);
+            if (!result) throw new Exception($"Failed to listen on port {endPoint.Port}. Port may be in use.");
+
+
+            NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
+            networkStreamDriver =
+                clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+            networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
+
+
+            Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new LocalInput());
+            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
+            ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
+
         }
-        
-        ushort port = ushort.Parse(portInput.text);
-
-        RefRW<NetworkStreamDriver> networkStreamDriver =
-            serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-        networkStreamDriver.ValueRW.Listen(NetworkEndpoint.AnyIpv4.WithPort(port));
-
-        NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
-        networkStreamDriver =
-            clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-        networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
-
-        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
-        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
+        catch
+        (Exception ex)
+        {
+            GameInfo.instance.errorMessage = ex.Message;    
+            SceneManager.LoadScene(10);
+            Debug.Log(ex.Message);
+        }
     }
 
     private void ClientWorldSetUp(World clientWorld)

@@ -156,6 +156,7 @@ MonoBehaviour:
   shotSmoke: {fileID: 6328287962746153788, guid: 00deb22ece09d4f4e99ed891dbc09bec, type: 3}
   shotFire: {fileID: 2929994055924591819, guid: 6bc56e8498891144eb3354dd80e7ca31, type: 3}
   shotLight: {fileID: 8215907354024352320, guid: 7b6d87b4016d6ef4ea1b188d090df24f, type: 3}
+  spark: {fileID: 2841808116765039731, guid: a204a2fa4715d6b4ba984958f90b2657, type: 3}
 --- !u!4 &1684692731
 Transform:
   m_ObjectHideFlags: 0

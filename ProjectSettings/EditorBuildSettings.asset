@@ -35,6 +35,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/SceneDependencyCache/Scenes/Dashboard.unity
     guid: d9dc79b55fdd83048a5760a08c63b1b2
+  - enabled: 1
+    path: Assets/SceneDependencyCache/Scenes/ErrorMessage.unity
+    guid: 8ab6bef7e046e4448b55a51caa4eed08
+  - enabled: 1
+    path: Assets/SceneDependencyCache/Scenes/GameMenu.unity
+    guid: 15735a56bb3414a4fbe21e81714051b5
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: ad05fad9ae50a1647b1050db9e9fd8d8, type: 2}
   m_UseUCBPForAssetBundles: 0

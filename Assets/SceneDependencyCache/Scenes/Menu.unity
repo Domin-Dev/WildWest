@@ -5093,6 +5093,7 @@ MonoBehaviour:
   worldName: 
   difficultyLevel: 0
   seed: 0
+  isMultiplayer: 0
   loadingMode: 0
   nextScene: 0
   maxProgress: 0

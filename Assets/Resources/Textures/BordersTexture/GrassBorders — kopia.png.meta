@@ -235,7 +235,9 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "GrassBorders \u2014 kopia_0": -6687420443758395310
+      "GrassBorders \u2014 kopia_1": 929012867784699462
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

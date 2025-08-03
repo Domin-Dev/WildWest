@@ -335,7 +335,13 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Sticks_0: 7321586379003993781
+      Sticks_1: 5816632368361912052
+      Sticks_2: 8786766630228364830
+      Sticks_3: -2078178154487522780
+      Sticks_4: 1203758889246037268
+      Sticks_5: 2339948252438346552
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

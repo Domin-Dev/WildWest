@@ -4,7 +4,7 @@ using UnityEngine;
 
 public struct NewPlayerJoinRPC : IRpcCommand
 {
-    public FixedString64Bytes playerName;
+    public FixedString128Bytes playerName;
 }
 
 public struct MapIsLoaded : IRpcCommand

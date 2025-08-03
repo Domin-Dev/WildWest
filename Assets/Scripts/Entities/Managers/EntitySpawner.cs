@@ -101,6 +101,8 @@ public class EntitySpawner : MonoBehaviour
     public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion)
     {
         Entity prefab = GetParticleIndex(indexParticle);
+        if (indexParticle == 3) Debug.Log("spawn!!!");
+
         Entity entity = entityManager.Instantiate(prefab);
         position.z = position.y;
         LocalTransform localTransform = LocalTransform.FromPosition(position);
@@ -128,6 +130,7 @@ public class EntitySpawner : MonoBehaviour
             case 0: return entitiesReferences.shotSmoke;
             case 1: return entitiesReferences.shotFire;
             case 2: return entitiesReferences.shotLight;
+            case 3: return entitiesReferences.spark;
         }
         return Entity.Null;
     }

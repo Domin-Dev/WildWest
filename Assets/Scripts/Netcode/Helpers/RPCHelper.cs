@@ -10,4 +10,20 @@ public static class RPCHelper
         ecb.AddComponent(rpcEntity, rpcCommand);
         ecb.AddComponent(rpcEntity, new SendRpcCommandRequest { TargetConnection = connectionEntity });
     }
+
+    public static void SendRpc<T>(ref EntityCommandBuffer ecb, in T rpcCommand)
+    where T : unmanaged, IRpcCommand
+    {
+        Entity rpcEntity = ecb.CreateEntity();
+        ecb.AddComponent(rpcEntity, rpcCommand);
+        ecb.AddComponent(rpcEntity, new SendRpcCommandRequest());
+    }
+
+    public static void SendRpc<T>(ref EntityCommandBuffer ecb)
+      where T : unmanaged, IRpcCommand
+    {
+        Entity rpcEntity = ecb.CreateEntity();
+        ecb.AddComponent(rpcEntity, new  T());
+        ecb.AddComponent(rpcEntity, new SendRpcCommandRequest());
+    }
 }

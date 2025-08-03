@@ -433,6 +433,8 @@ public partial struct CollisionSystem : ISystem
 
     private bool BulletHit(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity target, Entity bullet)
     {
+        LocalTransform lt = getPosition[bullet];
+
         if (getPhysics[target].layer == hitBoxLayer)
         {
             Bullet bulletComponent = SystemAPI.GetComponent<Bullet>(bullet);
@@ -446,6 +448,7 @@ public partial struct CollisionSystem : ISystem
                 pos = math.normalize(pos);
                 entityCommandBuffer.AddComponent(getParent[target].Value, new ForceImpulse2D() { Value = pos * 2f });
                 int damage = (int)(bulletComponent.damage * hitBoxSettings.damageMultiplier);
+
 
                 if (state.World.IsServer())
                 {
@@ -463,7 +466,6 @@ public partial struct CollisionSystem : ISystem
                 }
                 else if(SystemAPI.GetSingleton<NetworkId>().Value == bulletOwner)
                 {
-                    LocalTransform lt = getPosition[bullet];
                     EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
                     Entity popup = state.EntityManager.Instantiate(entitiesReferences.worldTextEntity);
                     entityCommandBuffer.SetComponent(popup, LocalTransform.FromPosition(new float3(lt.Position.x,lt.Position.y,-1)));
@@ -479,10 +481,16 @@ public partial struct CollisionSystem : ISystem
                     textMesh.text =  "-" + damage.ToString();
                     textMesh.color = GetPopupColor(hitBoxSettings.damageMultiplier);
                 }
+
+               // EntitySpawner.instance.SpawnParticle(3, new float3(lt.Position.x, lt.Position.y, -1),quaternion.identity);
             }
             else
                 return false;
         }
+
+        if(!state.World.IsServer()) 
+            EntitySpawner.instance.SpawnParticle(3, new float3(lt.Position.x, lt.Position.y, -1), quaternion.identity);
+
         return true;
     }
 
@@ -658,8 +666,6 @@ public partial struct CollisionSystem : ISystem
         return entities;
     }
 
-
-
     private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly)
     {
         float xInvEntry, yInvEntry;
@@ -788,8 +794,6 @@ public partial struct CollisionSystem : ISystem
     {
         return Math.Abs(a - b) < epsilon;
     }
-
-
     private float3 GetMTV(Box b1, Box b2)
     {
         //Debug.Log(b1);

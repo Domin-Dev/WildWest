@@ -5,6 +5,6 @@ using UnityEngine;
 public struct NewMessageServerRPC : IRpcCommand
 {
     public FixedString512Bytes message;
-    public FixedString64Bytes sender;
+    public FixedString128Bytes sender;
     public long messageTime;
 }
