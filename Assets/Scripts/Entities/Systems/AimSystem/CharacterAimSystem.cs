@@ -51,52 +51,48 @@ partial struct CharacterAimSystem : ISystem
 
 
             var curTargetTicks = new CooldownTargetTick();
-
             bool isOnCooldown = false;
             NetworkTick latestCooldownTick = NetworkTick.Invalid;
             NetworkTick cooldownEndTick = NetworkTick.Invalid;
-            bool buttonIsSet = false;// playerAspect.playerInputSync.ValueRO.rightButton.IsSet;
-
-
-
-
-
-            //   Debug.Log(currentTick.TickValue + "  check  " + buttonIsSet);
-
-
+            bool buttonIsSet = false;
+            bool wasActions = false;
+            LastAction? lastAction = state.World.IsServer() ? state.EntityManager.GetComponentData<LastAction>(entity) : null;
 
             for (var i = 0u; i < networkTime.SimulationStepBatchSize; i++)
             {
                 var testTick = currentTick;
                 testTick.Subtract(i);
 
-
-
                 if (playerAspect.cooldownTargetTick.GetDataAtTick(testTick, out curTargetTicks))
                 {
-
+                    wasActions = true;
                     if (playerAspect.input.GetDataAtTick(testTick, out var input))
                     {
-                        Debug.Log(testTick.TickValue + " " +input.InternalInput.rightButton.Count + "  ---- " + input.InternalInput.dataTick.TickValue);
+                     //   Debug.Log(testTick.TickValue + " " +input.InternalInput.rightButton.Count + "  ---- " + input.InternalInput.dataTick.TickValue);
                     }
-
-
-                    Debug.Log(currentTick.TickValue + " --- " + testTick.TickValue + " " + curTargetTicks.ability.TickValue + " " + curTargetTicks.Tick.TickValue + " " + state.World.Flags + " " + networkTime.SimulationStepBatchSize + " " + buttonIsSet);
-                    if (!latestCooldownTick.IsValid || curTargetTicks.Tick.IsNewerThan(latestCooldownTick))
+                  //  Debug.Log(currentTick.TickValue + " --- " + testTick.TickValue + " " + curTargetTicks.ability.TickValue + " " + curTargetTicks.Tick.TickValue + " " + state.World.Flags + " " + networkTime.SimulationStepBatchSize + " " + buttonIsSet);
+                    if (currentTick.IsNewerThan(curTargetTicks.ability))
                     {
-                        latestCooldownTick = curTargetTicks.Tick;
+                        latestCooldownTick = testTick;
                         cooldownEndTick = curTargetTicks.ability;
+                        break;
                     }
                 }
             }
+          
 
-            if (cooldownEndTick != NetworkTick.Invalid && cooldownEndTick.IsNewerThan(currentTick))
+            if(wasActions && cooldownEndTick == NetworkTick.Invalid)
             {
                 isOnCooldown = true;
             }
-            else 
+            else
             {
-                isOnCooldown = false;
+                if (lastAction.HasValue && lastAction.Value.tick != NetworkTick.Invalid)
+                {
+                    isOnCooldown = lastAction.Value.tick.IsNewerThan(cooldownEndTick);
+                }
+                else
+                    isOnCooldown = false;
             }
 
 
@@ -107,7 +103,7 @@ partial struct CharacterAimSystem : ISystem
                 if (latestCooldownTick == NetworkTick.Invalid)
                     tick = currentTick;
                 else
-                    tick = currentTick;
+                    tick = latestCooldownTick;
 
 
                 if (playerAspect.input.GetDataAtTick(tick, out var input1))
@@ -116,7 +112,7 @@ partial struct CharacterAimSystem : ISystem
                     if (playerAspect.input.GetDataAtTick(tick, out var input2))
                     {
                         uint counter2 = 0;
-                        if (input2.InternalInput.dataTick != tick)
+                        if (input2.InternalInput.dataTick != tick && input2.InternalInput.dataTick != NetworkTick.Invalid)
                         {
                             tick = input2.InternalInput.dataTick;
                             tick.Subtract(1);
@@ -127,8 +123,6 @@ partial struct CharacterAimSystem : ISystem
                         }
                         else
                             counter2 = input2.InternalInput.rightButton.Count;
-
-                        Debug.Log(counter2 + " " + input1.InternalInput.rightButton.Count);
                         buttonIsSet = counter2 - input1.InternalInput.rightButton.Count != 0;
                     }
                 }
@@ -136,11 +130,11 @@ partial struct CharacterAimSystem : ISystem
 
                 if (buttonIsSet)
                 {
-                   
                     if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
                     {
                         if (state.World.Flags == WorldFlags.GameServer)
                         {
+                            lastAction = new LastAction() { tick = currentTick};
                             localMain.Rotation = playerAspect.playerInputSync.ValueRO.handRotation;
                             state.EntityManager.SetComponentData(playerAspect.hands.ValueRO.main, localMain);
                             World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
@@ -153,6 +147,7 @@ partial struct CharacterAimSystem : ISystem
                         Debug.Log("<Color=#ff0000>shoot " + state.World.Flags + " " + currentTick.TickValue);
                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
+                        Debug.Log("<Color=#00ff00>  Position! " + point.Position + " " + rotation.Rotation);
                         LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation);
                         entityCommandBuffer.SetComponent(bullet, lt);
 
@@ -209,34 +204,40 @@ partial struct CharacterAimSystem : ISystem
                         EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity);
                         EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation);
                     }
+
+                    if (lastAction.HasValue) entityCommandBuffer.SetComponent(entity, lastAction.Value);
                     continue;
                 }
             }
 
-            if (hands.ValueRO.actionStatus != 0)
-            {
-                ActionUpdate(hands, playerAspect.player, ref state);
-            }
+            //if (hands.ValueRO.actionStatus != 0)
+            //{
+            //    ActionUpdate(hands, playerAspect.player, ref state);
+            //}
 
             LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
             LocalTransform localItem = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInHand);
 
             float3 currentPosition = worldMainHand.Position;
-            float2 direction = playerAspect.playerInputSync.ValueRO.sightDirection - new float2(currentPosition.x, currentPosition.y);
+
+
+
+            playerAspect.input.GetDataAtTick(currentTick, out var dir);
+
+            float2 direction = dir.InternalInput.sightDirection - new float2(currentPosition.x, currentPosition.y);
 
             if (!math.any(direction))
                 continue;
+
+
 
             UpdateAimSystem(direction, ref localSideHand, ref localItem, ref localMain, hands);
 
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.main, localMain);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSideHand);
-
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, localItem);
-
             UpdateDirectionIndex(new float2(direction.x, direction.y),playerAspect.character, ref state);
-
 
 
         }
@@ -249,6 +250,7 @@ partial struct CharacterAimSystem : ISystem
     {
         direction = math.normalize(direction);
         float angle = math.atan2(direction.y, direction.x);
+
         quaternion mainTargetRotation;
         quaternion sideTargetRotation;
 
@@ -280,6 +282,9 @@ partial struct CharacterAimSystem : ISystem
             sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
             mainTargetRotation = quaternion.Euler(0, 0, angle);
         }
+
+
+
 
         localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 15);
         localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, deltaTime * 5f);

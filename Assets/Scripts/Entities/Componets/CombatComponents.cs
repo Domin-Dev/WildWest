@@ -23,6 +23,13 @@ public struct DamageBufferElement : IBufferElementData
     public int value;
 }
 
+
+
+public struct LastAction : IComponentData
+{
+    public NetworkTick tick;
+}
+
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted,OwnerSendType = SendToOwnerType.SendToNonOwner)]
 public struct DamageThisTick : ICommandData
 {

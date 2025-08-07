@@ -529,6 +529,12 @@ public class UIManager : MonoBehaviour
         }
 
     }
+
+    public void SwitchBackground(bool value)
+    {
+        background.gameObject.SetActive(value);
+    }
+
     private void OpenEquipment(object sender, BoolArgs e)
     {
         CloseWindows();

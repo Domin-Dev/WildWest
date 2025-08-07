@@ -36,6 +36,7 @@ partial struct NewPlayerSystem : ISystem
 
             if(state.World.IsServer())
             {
+                entityCommandBuffer.AddComponent(entity, new LastAction() { tick = NetworkTick.Invalid });
                 PlayerSourceConnection connection = new PlayerSourceConnection();
                 foreach ( (NetworkId netId,Entity e) in SystemAPI.Query<NetworkId>().WithEntityAccess())
                 {

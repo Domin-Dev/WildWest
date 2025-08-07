@@ -17,8 +17,6 @@ partial struct PlayerInputSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-
-
         float2 input = float2.zero;
 
         if (Input.GetKey(KeyCode.S)) input.y -= 1;
@@ -36,9 +34,10 @@ partial struct PlayerInputSystem : ISystem
         float3 target = (float3)MyTools.GetMouseWorldPosition();
         float2 sightDirection = new float2(target.x,target.y);
 
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            LoadScene(8);
+            LoadScene(11);
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
@@ -122,5 +121,6 @@ partial struct PlayerInputSystem : ISystem
         }
         if (load)
             SceneManager.LoadScene(index, LoadSceneMode.Additive);
+        UIManager.instance.SwitchBackground(load);
     }
 }

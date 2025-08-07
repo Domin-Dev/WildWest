@@ -250,6 +250,9 @@ public partial struct CollisionSystem : ISystem
             {
                 entityCommandBuffer.AddComponent(entity, new DestroyEntityTag());
                 entityCommandBuffer.RemoveComponent<Physics2D>(entity);
+                entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(new float3(100000, 100000, 100000)));
+
+                Debug.Log("destory ! " + entity);
             }
             else
             {

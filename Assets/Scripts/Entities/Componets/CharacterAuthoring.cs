@@ -39,6 +39,8 @@ public class CharacterAuthoring : MonoBehaviour
 }
 
 
+
+
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct PlayerInput : IInputComponentData
 {
