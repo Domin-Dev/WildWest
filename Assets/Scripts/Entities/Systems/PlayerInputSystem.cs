@@ -1,20 +1,23 @@
+using System.Collections.Generic;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
 [UpdateInGroup(typeof(GhostInputSystemGroup),OrderFirst = true)]
 partial struct PlayerInputSystem : ISystem
-{
-
-    public void OnCreate(ref SystemState state)
+{    public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkStreamInGame>();
         state.RequireForUpdate<PlayerInput>();
     }
+
+   
     public void OnUpdate(ref SystemState state)
     {
         float2 input = float2.zero;
@@ -37,12 +40,13 @@ partial struct PlayerInputSystem : ISystem
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            LoadScene(11);
+            if (!UIManager.instance.CloseOpenWindows())
+                UIManager.instance.LoadScene(11);
         }
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            LoadScene(9);
+            UIManager.instance.LoadScene(9);
         }
 
 
@@ -104,23 +108,5 @@ partial struct PlayerInputSystem : ISystem
             //    }
             //});
         }
-    }
-
-
-    private void LoadScene(int index)
-    {
-        bool load = true;
-        for (int i = 0; i < SceneManager.sceneCount; i++)
-        {
-            Scene scene = SceneManager.GetSceneAt(i);
-            if (scene.buildIndex == index && scene.isLoaded)
-            {
-                SceneManager.UnloadSceneAsync(index);
-                load = false;
-            }
-        }
-        if (load)
-            SceneManager.LoadScene(index, LoadSceneMode.Additive);
-        UIManager.instance.SwitchBackground(load);
     }
 }

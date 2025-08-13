@@ -2423,6 +2423,7 @@ MonoBehaviour:
   fullscreen: {fileID: 878192158}
   resolution: {fileID: 731942509}
   closeSettings: {fileID: 1140239340}
+  setDefaultSettings: {fileID: 1715908051}
   fpsLimit: {fileID: 1872952108}
   fpsLimitText: {fileID: 502848768}
 --- !u!1 &1139132691

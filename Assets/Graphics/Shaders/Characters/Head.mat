@@ -91,7 +91,7 @@ Material:
     - _EyesIndex: 2
     - _HairIndex: 0
     - _HairUnderHat: 0
-    - _MouthIndex: 0
+    - _MouthIndex: 2
     - _PaintingsIndex: 0
     m_Colors:
     - _HairColor: {r: 0.45660365, g: 0.26073897, b: 0.054275475, a: 1}

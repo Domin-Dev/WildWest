@@ -14,6 +14,7 @@ public class Settings: MonoBehaviour
     [SerializeField] private TMP_Dropdown resolution;
 
     [SerializeField] private Button closeSettings;
+    [SerializeField] private Button setDefaultSettings;
     [Space]
     [SerializeField] private Slider fpsLimit;
     [SerializeField] private TextMeshProUGUI fpsLimitText;
@@ -54,6 +55,7 @@ public class Settings: MonoBehaviour
         fullscreen.onValueChanged.AddListener((fullscreen) => { SetFullscreen(fullscreen); });
 
         closeSettings.onClick.AddListener(CloseSettings);
+        setDefaultSettings.onClick.AddListener(SetDefaultSettings);
 
         fpsLimit.onValueChanged.AddListener(SetFPSLimit);
 
@@ -84,7 +86,8 @@ public class Settings: MonoBehaviour
 
     private void CloseSettings()
     {
-        SceneManager.UnloadSceneAsync(8);
+        UIManager.instance.UnloadScene(8);
+        UIManager.instance.LoadScene(GameInfo.instance.lastLoadedScene);
     }
 
     private void SetFullscreen(bool isFullscreen)
@@ -112,9 +115,23 @@ public class Settings: MonoBehaviour
         }
     }
 
-    private void Reset()
+    private void SetDefaultSettings()
     {
-        
+        for (int i = 0; i < selectedResolutions.Count; i++)
+        {
+            if (selectedResolutions[i].height == Screen.height && selectedResolutions[i].width == Screen.width)
+            {
+                resolution.value = i;
+                resolution.RefreshShownValue();
+            }
+        }
+
+        SetFullscreen(true);
+        fullscreen.isOn = true;
+
+        var refreshRate = Screen.currentResolution.refreshRateRatio;
+        float fps = ((float)refreshRate.numerator / refreshRate.denominator);
+        SetFPSLimit(fps);
     }
 }
 

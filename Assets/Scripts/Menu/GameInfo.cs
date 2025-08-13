@@ -24,9 +24,13 @@ public class GameInfo : MonoBehaviour
     public int loadingMode;
     public int nextScene;
     public float maxProgress;
-
-
+    //////////////////
     public string errorMessage;
+    //////////////////
+    public int lastLoadedScene;
+    //////////////////
+
+
     public static GameInfo instance { get; private set; }
 
 

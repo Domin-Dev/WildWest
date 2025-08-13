@@ -5,6 +5,7 @@ using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class EquipmentGrid
@@ -86,6 +87,9 @@ public class UIManager : MonoBehaviour
     private EquipmentGrid containerGrid;
 
     private List<Transform> openWindows = new List<Transform>();
+
+    private List<int> loadedScene = new List<int>();
+
 
     public event EventHandler windowOpen;
 
@@ -210,9 +214,7 @@ public class UIManager : MonoBehaviour
     }
 
 
-
     private GridTile tile;
-
     public void SetCurretTile(GridTile gridTile)
     {
         tile = gridTile;
@@ -909,6 +911,8 @@ public class UIManager : MonoBehaviour
 
 
 
+
+
     public void NewCollectedItem(int id,int count)
     {
         for (int i = 0; i < 5; i++)
@@ -972,4 +976,48 @@ public class UIManager : MonoBehaviour
         obj.GetChild(2).GetComponent<TextMeshProUGUI>().text = item.name;
     }
 
+
+    // Windows ///
+    public void LoadScene(int index)
+    {
+        bool load = !loadedScene.Contains(index);
+        LoadScene(index, load);
+    }
+    public void LoadScene(int index, bool background)
+    {
+        bool load = !loadedScene.Contains(index);
+        if (load)
+        {
+            SceneManager.LoadScene(index, LoadSceneMode.Additive);
+            CloseOpenWindows();
+            loadedScene.Add(index);
+        }
+        else
+        {
+            UnloadScene(index);
+        }
+        UIManager.instance.SwitchBackground(background);
+    }
+
+    public bool CloseOpenWindows()
+    {
+        if (loadedScene.Count == 0) return false;
+        for (int i = 0; i < loadedScene.Count; i++)
+        {
+            UnloadScene(loadedScene[i]);
+        }
+        loadedScene.Clear();
+        UIManager.instance.SwitchBackground(false);
+        return true;
+    }
+
+    public void UnloadScene(int index)
+    {
+        if (SceneManager.GetSceneByBuildIndex(index).isLoaded)
+            SceneManager.UnloadSceneAsync(index);
+        loadedScene.Remove(index);
+    }
+
 }
+
+
