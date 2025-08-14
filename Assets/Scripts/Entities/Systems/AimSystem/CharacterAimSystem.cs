@@ -3,6 +3,8 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.XR;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -190,13 +192,14 @@ partial struct CharacterAimSystem : ISystem
                     quaternion addedRotation = quaternion.Euler(0, 0, math.radians(70));
 
 
-                    playerAspect.hands.ValueRW.targetRotation = math.normalize(math.mul(addedRotation, transform.Rotation));
-                    playerAspect.hands.ValueRW.lastPosition = transform.Position;
+                    if (hands.ValueRW.actionStatus != 0)
+                    {
+                        transform.Position = hands.ValueRO.targetPosition;
+                        transform.Rotation = hands.ValueRO.targetRotation;
+                    }
 
-                    hands.ValueRW.lastRotation = transform.Rotation;
-                    hands.ValueRW.elapsedTime = 0;
-                    hands.ValueRW.targetPosition = transform.Position - new float3(0.06f, 0, 0);
-                    hands.ValueRW.actionStatus = 2;
+                    SetActionStatus(ref state, 2, hands, transform.Rotation, math.normalize(math.mul(addedRotation, transform.Rotation)), transform.Position, transform.Position - new float3(0.06f, 0, 0));
+
                     if (state.World.Flags != WorldFlags.GameServer)
                     {
                         Sounds.instance.Shot();
@@ -210,10 +213,10 @@ partial struct CharacterAimSystem : ISystem
                 }
             }
 
-            //if (hands.ValueRO.actionStatus != 0)
-            //{
-            //    ActionUpdate(hands, playerAspect.player, ref state);
-            //}
+            if (hands.ValueRO.actionStatus != 0)
+            {
+                ActionUpdate(hands, playerAspect.player, ref state);
+            }
 
             LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
@@ -246,6 +249,19 @@ partial struct CharacterAimSystem : ISystem
         entityCommandBuffer.Dispose();
     }
 
+
+    private void SetActionStatus(ref SystemState state,int index, RefRW<Hands> hands, quaternion lastRot, quaternion targetRot,float3 lastPos, float3 targetPos)
+    {
+        hands.ValueRW.lastRotation = lastRot;
+        hands.ValueRW.lastPosition = lastPos;
+
+        hands.ValueRW.elapsedTime = 0;
+
+        hands.ValueRW.targetPosition = targetPos;
+        hands.ValueRW.targetRotation = targetRot;
+
+        hands.ValueRW.actionStatus = index;
+    }
     private void UpdateAimSystem(float2 direction,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands)
     {
         direction = math.normalize(direction);
@@ -311,6 +327,7 @@ partial struct CharacterAimSystem : ISystem
         float t = math.clamp(hands.ValueRO.elapsedTime / GetActionTime(hands.ValueRO.actionStatus), 0f, 1f);
         localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, t);
         localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, t);
+        Debug.Log("UPdate!!! " + state.World.Flags);
       //  Debug.Log(t + " " +  hands.ValueRO.actionStatus + " " + hands.ValueRW.targetPosition);
 
         if(t == 1)

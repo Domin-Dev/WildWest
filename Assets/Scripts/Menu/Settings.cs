@@ -100,7 +100,6 @@ public class Settings: MonoBehaviour
         SetFPSText(fps);
         QualitySettings.vSyncCount = 0;
     }
-
     private void SetFPSText(int fps)
     {
         if (fps == fpsLimit.maxValue)
@@ -114,17 +113,10 @@ public class Settings: MonoBehaviour
             fpsLimitText.text = fps + " FPS";
         }
     }
-
     private void SetDefaultSettings()
-    {
-        for (int i = 0; i < selectedResolutions.Count; i++)
-        {
-            if (selectedResolutions[i].height == Screen.height && selectedResolutions[i].width == Screen.width)
-            {
-                resolution.value = i;
-                resolution.RefreshShownValue();
-            }
-        }
+    {    
+        resolution.value = selectedResolutions.Count - 1;
+        resolution.RefreshShownValue();
 
         SetFullscreen(true);
         fullscreen.isOn = true;
