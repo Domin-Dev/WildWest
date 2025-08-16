@@ -136,11 +136,6 @@ public partial struct CollisionSystem : ISystem
 
         deltaTime = SystemAPI.Time.DeltaTime;
 
-
-
-
-
-
         EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
 
         NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
@@ -250,6 +245,7 @@ public partial struct CollisionSystem : ISystem
             {
                 entityCommandBuffer.AddComponent(entity, new DestroyEntityTag());
                 entityCommandBuffer.RemoveComponent<Physics2D>(entity);
+                if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
                 entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(new float3(100000, 100000, 100000)));
 
                 Debug.Log("destory ! " + entity);

@@ -146,10 +146,10 @@ partial struct CharacterAimSystem : ISystem
                         LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.itemInHand);
 
 
-                        Debug.Log("<Color=#ff0000>shoot " + state.World.Flags + " " + currentTick.TickValue);
+                      //  Debug.Log("<Color=#ff0000>shoot " + state.World.Flags + " " + currentTick.TickValue);
                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
-                        Debug.Log("<Color=#00ff00>  Position! " + point.Position + " " + rotation.Rotation);
+                      //  Debug.Log("<Color=#00ff00>  Position! " + point.Position + " " + rotation.Rotation);
                         LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(rotation.Rotation);
                         entityCommandBuffer.SetComponent(bullet, lt);
 
@@ -175,7 +175,6 @@ partial struct CharacterAimSystem : ISystem
                             curTargetTicks.ability = newCooldownTargetTick;
 
 
-                            Debug.Log(currentTick.TickValue + " strzal");
 
                             var nextTick = currentTick;
                             nextTick.Add(1u);
@@ -327,7 +326,6 @@ partial struct CharacterAimSystem : ISystem
         float t = math.clamp(hands.ValueRO.elapsedTime / GetActionTime(hands.ValueRO.actionStatus), 0f, 1f);
         localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, t);
         localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, t);
-        Debug.Log("UPdate!!! " + state.World.Flags);
       //  Debug.Log(t + " " +  hands.ValueRO.actionStatus + " " + hands.ValueRW.targetPosition);
 
         if(t == 1)

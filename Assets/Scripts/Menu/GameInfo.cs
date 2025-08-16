@@ -20,6 +20,7 @@ public class GameInfo : MonoBehaviour
     public Difficulty difficultyLevel;
     public int seed;
     public bool isMultiplayer;
+    public bool isHost;
     //////////////////
     public int loadingMode;
     public int nextScene;

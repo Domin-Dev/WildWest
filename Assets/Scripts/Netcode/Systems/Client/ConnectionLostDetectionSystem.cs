@@ -15,7 +15,7 @@ partial struct ConnectionLostDetectionSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        if (!SystemAPI.HasSingleton<NetworkStreamConnection>())
+        if (!SystemAPI.HasSingleton<NetworkStreamConnection>() && !GameInfo.instance.isHost)
         {
             GameInfo.instance.errorMessage = "Lost connection to server.";
             SceneManager.LoadScene(10);

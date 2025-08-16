@@ -1,3 +1,4 @@
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,6 +18,12 @@ public class GameMenuManager : MonoBehaviour
             GameInfo.instance.lastLoadedScene = 11;
             UIManager.instance.LoadScene(8, true);
         });
-        exit.onClick.AddListener(() => { SceneManager.LoadScene(0); });
+        exit.onClick.AddListener(() => {
+            SceneManager.LoadScene(0);
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                RPCHelper.StopServer(ClientServerBootstrap.ServerWorld);
+            }
+        });
     }
 }

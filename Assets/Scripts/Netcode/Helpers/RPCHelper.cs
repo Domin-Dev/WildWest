@@ -26,4 +26,26 @@ public static class RPCHelper
         ecb.AddComponent(rpcEntity, new  T());
         ecb.AddComponent(rpcEntity, new SendRpcCommandRequest());
     }
+
+
+    private static void DisconnectAllClients(World serverWorld)
+    {
+        var em = serverWorld.EntityManager;
+        var connections = em.CreateEntityQuery(typeof(NetworkStreamConnection))
+                            .ToEntityArray(Unity.Collections.Allocator.Temp);
+
+        foreach (var conn in connections)
+        {
+            em.AddComponent<NetworkStreamRequestDisconnect>(conn);
+        }
+
+        connections.Dispose();
+    }
+
+    public static void StopServer(World serverWorld)
+    {
+        DisconnectAllClients(serverWorld);  
+        serverWorld.QuitUpdate = true; 
+        serverWorld.Dispose();         
+    }
 }
