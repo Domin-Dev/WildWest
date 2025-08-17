@@ -21,7 +21,6 @@ public class Sounds : MonoBehaviour
     {
         if(instance == null )
         {
-
             instance = this;
         }else
         {

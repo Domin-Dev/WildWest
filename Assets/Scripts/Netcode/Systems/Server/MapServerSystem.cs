@@ -46,9 +46,9 @@ public partial class MapServerSystem : SystemBase
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
-
             if (map == null) 
             {
+                Debug.Log("new map!!!");
                 GenerateMap();
             }
 

@@ -8,11 +8,6 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-public struct PhysicsChildrenBuffer : IBufferElementData
-{
-    public Entity LinkedEntity;
-}
-
 public class PhysicsParent2DAuthoring : MonoBehaviour
 {
     [SerializeField] List<Physics2DAuthoring> children = new List<Physics2DAuthoring>();
@@ -37,6 +32,11 @@ public class PhysicsParent2DAuthoring : MonoBehaviour
         }
     }
 
+}
+
+public struct PhysicsChildrenBuffer : IBufferElementData
+{
+    public Entity LinkedEntity;
 }
 
 

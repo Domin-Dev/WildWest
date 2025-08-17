@@ -305,7 +305,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -1509,10 +1508,16 @@ MonoBehaviour:
   hairColors: {fileID: 974828531}
   underwearColors: {fileID: 250062983}
   hairSwitch: {fileID: 367276784}
+  beardSwitch: {fileID: 0}
+  faceDetailsSwitch: {fileID: 0}
+  DirectionSwitch: {fileID: 0}
   saveButton: {fileID: 736912158}
   selected: {fileID: 1744648376, guid: 9e8aa410dc64ed049a90c7d56905f925, type: 3}
   unselected: {fileID: 85432009, guid: 9e8aa410dc64ed049a90c7d56905f925, type: 3}
-  player: {fileID: 7676321958946996152}
+  head: {fileID: 0}
+  body: {fileID: 0}
+  hand1: {fileID: 0}
+  hand2: {fileID: 0}
 --- !u!1 &63311703
 GameObject:
   m_ObjectHideFlags: 0
@@ -10057,10 +10062,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   left: {fileID: 130692260}
   rigth: {fileID: 506077746}
-  text: {fileID: 367276782}
   value: 0
   minValue: 0
   maxValue: 10
+  text: {fileID: 367276782}
   nameSwitch: Hair
 --- !u!1 &373122440
 GameObject:
@@ -10872,7 +10877,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -16332,7 +16336,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -17066,7 +17069,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -18692,9 +18694,6 @@ MonoBehaviour:
   equipmentDragItems: {fileID: 100357396}
   equipmentClothes: {fileID: 23292525}
   equipmentContainer: {fileID: 1386816454}
-  ServerButton: {fileID: 373122442}
-  HostButton: {fileID: 816551430}
-  ClientButton: {fileID: 901550074}
   selected: {fileID: -155690521, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   unSelected: {fileID: 130874801, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   recipeDescription: {fileID: 1150999479}
@@ -24824,7 +24823,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -33219,7 +33217,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -44997,7 +44994,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -47250,7 +47246,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {x: 0, y: 0}
   newX: {x: 0, y: 0}
-  characterSpriteController: {fileID: 0}
   path: []
   gridTile:
     borders: 0
@@ -56172,7 +56167,7 @@ SpriteRenderer:
   m_Size: {x: 0.27, y: 0.51}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!212 &1579920169942880547
@@ -57252,25 +57247,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ca32bb60b25574e96376e7fb1b0661, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  head: {fileID: 6516438455761214747}
-  eyes: {fileID: 1322879736}
-  mouth: {fileID: 578080957}
-  hair: {fileID: 1719666415}
-  handL: {fileID: 28056964895134390}
-  handR: {fileID: 846635088}
-  body: {fileID: 4106200072976265397}
-  underwear: {fileID: 1306584353}
-  clothes:
-  - {fileID: 295955989}
-  - {fileID: 702180629}
-  - {fileID: 850322303}
-  - {fileID: 1287416247}
-  - {fileID: 907361534}
-  - {fileID: 2108749163}
-  - {fileID: 1593386936}
-  - {fileID: 1590932115}
-  clothesID: 0000000000000000000000000000000000000000000000000000000000000000
-  hairstyleIndex: 1
 --- !u!114 &7676321958946996154
 MonoBehaviour:
   m_ObjectHideFlags: 0

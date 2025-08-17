@@ -19,11 +19,12 @@ public class GameMenuManager : MonoBehaviour
             UIManager.instance.LoadScene(8, true);
         });
         exit.onClick.AddListener(() => {
-            SceneManager.LoadScene(0);
+            SaveSystem.Save();
             if (ClientServerBootstrap.HasServerWorld)
             {
                 RPCHelper.StopServer(ClientServerBootstrap.ServerWorld);
             }
+            SceneManager.LoadScene(0);
         });
     }
 }

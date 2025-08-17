@@ -92,7 +92,6 @@ public struct Player : IComponentData
 {
     public float speed;
     [GhostField] public FixedString128Bytes playerName;
-    [GhostField] public NetworkTick cooldownTick;
 }
 public struct Character : IComponentData
 {
@@ -137,9 +136,3 @@ public struct PlayerSourceConnection : IComponentData {
     public Entity value;
 }
 
-
-public struct LocalInput : IComponentData
-{
-    public bool rightButton;
-    public bool leftButton;
-}

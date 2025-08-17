@@ -59,9 +59,6 @@ public class Settings: MonoBehaviour
 
         fpsLimit.onValueChanged.AddListener(SetFPSLimit);
 
-
-        Debug.Log("App :" + QualitySettings.vSyncCount + ", fps " + Application.targetFrameRate);
-
         if (QualitySettings.vSyncCount == 0 && Application.targetFrameRate == -1)
         {
             SetFPSText((int)fpsLimit.maxValue);
@@ -81,15 +78,16 @@ public class Settings: MonoBehaviour
             fpsLimit.value = fps;
         }
 
-
     }
 
     private void CloseSettings()
     {
-        UIManager.instance.UnloadScene(8);
-        UIManager.instance.LoadScene(GameInfo.instance.lastLoadedScene);
+        WindowsManager.instance.UnloadScene(8);
+        if (GameInfo.instance.lastLoadedScene == -1)
+            WindowsManager.instance.SwitchBackground(false);
+        else 
+            WindowsManager.instance.LoadScene(GameInfo.instance.lastLoadedScene);
     }
-
     private void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;

@@ -8,6 +8,8 @@ public struct PlayerName : IComponentData
 {
     public FixedString128Bytes name;
 }
+
+[System.Serializable]
 public struct CharacterLook
 {
     public int hairIndex;

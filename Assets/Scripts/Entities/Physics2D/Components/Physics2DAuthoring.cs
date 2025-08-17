@@ -9,11 +9,6 @@ using UnityEngine;
 
 
 
-public struct BoxCollider2D : IComponentData
-{
-    public float2 size;
-    public float2 offset;
-}
 public struct Physics2D : IComponentData
 {
     public int2 cellIndex;
@@ -27,12 +22,7 @@ public struct ForceImpulse2D: IComponentData
 {
     public float2 Value;
 }
-public struct Trigger2D : IComponentData
-{
-    public float2 Value;
-}
 public struct IsChanged : IComponentData, IEnableableComponent {  }
-
 public struct AlwaysUpdate: IComponentData, IEnableableComponent { }
 
 public class Physics2DAuthoring : MonoBehaviour

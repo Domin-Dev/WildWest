@@ -20,7 +20,11 @@ public class BoxCollider2DAuthoring : MonoBehaviour
             });
         }
     }
-
 }
 
+public struct BoxCollider2D : IComponentData
+{
+    public float2 size;
+    public float2 offset;
+}
 

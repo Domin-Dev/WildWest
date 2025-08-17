@@ -44,6 +44,7 @@ public class WorldSetup : MonoBehaviour
 
         next.onClick.AddListener(() => 
         {
+            GameInfo.instance.creationTime = DateTimeOffset.Now.ToUnixTimeSeconds();
             GenerateWorld();
         });
     }

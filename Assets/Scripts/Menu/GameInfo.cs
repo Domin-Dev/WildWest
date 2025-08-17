@@ -17,6 +17,7 @@ public class GameInfo : MonoBehaviour
 
 
     public string worldName;
+    public long creationTime;
     public Difficulty difficultyLevel;
     public int seed;
     public bool isMultiplayer;

@@ -16,9 +16,8 @@ public class MenuManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI versionText;
 
-    [SerializeField] private GameObject blackBackground;
+
     [SerializeField] private GameObject connectionWindow;
-    [SerializeField] private GameObject settingWindow;
     [SerializeField] private GameObject worldListWindow;
 
     [Header("Settings")]
@@ -44,15 +43,19 @@ public class MenuManager : MonoBehaviour
     [Space]
     [SerializeField] private TextMeshProUGUI errorMessage;
 
-    private async void Start()
+    private void Start()
     {
+        GameInfo.instance.lastLoadedScene = -1;
         SetUpUI();
         errorMessage.gameObject.SetActive(false);
 
         buttonMultiplayer.onClick.AddListener(OpenMultiplayerWindow);
         buttonSingleplayer.onClick.AddListener(OnButtonCreateGame);
         //Settings
-        buttonSettings.onClick.AddListener(() => { SceneManager.LoadSceneAsync(8,LoadSceneMode.Additive); });
+        buttonSettings.onClick.AddListener(() => {
+            GameInfo.instance.lastLoadedScene = -1;
+            WindowsManager.instance.LoadScene(8);
+        });
 
         
         buttonConnet.onClick.AddListener(OnButtonConnect);
@@ -60,6 +63,18 @@ public class MenuManager : MonoBehaviour
 
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
+
+        WindowsManager.instance.OnCloseWindows += CloseWindows;
+    }
+
+    private void CloseWindows()
+    {
+        CloseMultiplayerWindow();
+    }
+
+    private void OnDestroy()
+    {
+        WindowsManager.instance.OnCloseWindows -= CloseWindows;
     }
     private void SetUpUI()
     {
@@ -68,7 +83,7 @@ public class MenuManager : MonoBehaviour
 
     private void OpenMultiplayerWindow()
     {
-        blackBackground.SetActive(true);
+        WindowsManager.instance.SwitchBackground(true);
         connectionWindow.SetActive(true);
     }
 
@@ -127,8 +142,9 @@ public class MenuManager : MonoBehaviour
     }
     private void CloseMultiplayerWindow()
     {
-        blackBackground.SetActive(false);
-        connectionWindow.SetActive(false);
+        WindowsManager.instance.SwitchBackground(false);
+        connectionWindow?.SetActive(false);
+        worldListWindow?.SetActive(false);
     }
     private void Quit()
     {
@@ -166,7 +182,7 @@ public class MenuManager : MonoBehaviour
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = false;
-
+        WindowsManager.instance.SwitchBackground(false);
         GameInfo.LoadScene(2, 0);
         
         for (int i = World.All.Count - 1; i >= 0; i--)
@@ -197,7 +213,6 @@ public class MenuManager : MonoBehaviour
 
 
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new LocalInput());
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
         Debug.Log("Próba po³¹czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
@@ -206,7 +221,9 @@ public class MenuManager : MonoBehaviour
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = true;
+        WindowsManager.instance.SwitchBackground(false);
         GameInfo.LoadScene(4, 0);
+
 
             foreach (World world in World.All)
             {
@@ -246,7 +263,7 @@ public class MenuManager : MonoBehaviour
 
 
             Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new LocalInput());
+
             ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
             ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 

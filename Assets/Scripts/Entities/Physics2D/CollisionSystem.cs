@@ -517,8 +517,6 @@ public partial struct CollisionSystem : ISystem
         var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player);
         RPCHelper.SendRpc(ref entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
     }
-
-
     private void UpdateLookups(ref SystemState state)
     {
         isChanged.Update(ref state);
@@ -554,7 +552,6 @@ public partial struct CollisionSystem : ISystem
             timer = 0;
         }
     }
-
     private void CleanUpEntiityMap(ref SystemState state)
     {
         NativeList<int2> toRemove = new NativeList<int2>(Allocator.Temp);
@@ -599,7 +596,6 @@ public partial struct CollisionSystem : ISystem
             getPhysics[entity] = physics2D;
         }
     }
-
     private void SetValueInEntityMap(Entity entity, int2 oldValue, int2 newValue)
     {
         if (oldValue.x != int.MinValue && oldValue.y != int.MinValue)
@@ -632,10 +628,6 @@ public partial struct CollisionSystem : ISystem
             }
         }
     }
-
-
-
-
     private int GetIndex(NativeList<Entity> list, Entity entity)
     {
         for (int i = 0; i < list.Length; i++)
@@ -664,7 +656,6 @@ public partial struct CollisionSystem : ISystem
 
         return entities;
     }
-
     private float SweptAABB(Box b1, Box b2, out float normalx, out float normaly)
     {
         float xInvEntry, yInvEntry;
@@ -886,5 +877,4 @@ public partial struct CollisionSystem : ISystem
         //    normal = new float2(0, 1);
         //}  
     }
-
 }
