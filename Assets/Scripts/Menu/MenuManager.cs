@@ -1,11 +1,12 @@
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using UnityEngine;
@@ -14,25 +15,33 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
+
+    [SerializeField] private Material iconMaterial;
     [SerializeField] private TextMeshProUGUI versionText;
 
 
     [SerializeField] private GameObject connectionWindow;
     [SerializeField] private GameObject worldListWindow;
+    [SerializeField] private GameObject multiplayerOptionsWindow;
 
-    [Header("Settings")]
-    [SerializeField] private Button buttonBackSettings;
-    [SerializeField] private Button buttonResetSettings;
+
+    [Header("Multiplayer Options")]
+    [SerializeField] private Button buttonBack;
+    [SerializeField] private Button buttonConnectToIP;
+    [SerializeField] private Button buttonHostGame;
+
     [Header("Worlds")]
     [SerializeField] private Button buttonBackWorlds;
-    [SerializeField] private Button buttonPlayWorld;
+    [SerializeField] private Button buttonNewWorld;
     [SerializeField] private GameObject worldList;
-    [SerializeField] private GameObject worldSlot;
+    [SerializeField] private GameObject worldRow;
+     
     [Header("Connection")]
     [SerializeField] private Button buttonSingleplayer;
     [SerializeField] private Button buttonMultiplayer;
     [SerializeField] private Button buttonSettings;
     [SerializeField] private Button buttonQuit;
+
     [Space]
     [SerializeField] private Button buttonConnet;
     [Space]
@@ -49,17 +58,24 @@ public class MenuManager : MonoBehaviour
         SetUpUI();
         errorMessage.gameObject.SetActive(false);
 
-        buttonMultiplayer.onClick.AddListener(OpenMultiplayerWindow);
-        buttonSingleplayer.onClick.AddListener(OnButtonCreateGame);
-        //Settings
+        buttonMultiplayer.onClick.AddListener(() => { OpenWindow(multiplayerOptionsWindow); });
+        buttonSingleplayer.onClick.AddListener(OpenWorldList);
         buttonSettings.onClick.AddListener(() => {
             GameInfo.instance.lastLoadedScene = -1;
             WindowsManager.instance.LoadScene(8);
         });
+        buttonQuit.onClick.AddListener(Quit);
+        /////////////////////////////////////////
+        buttonBack.onClick.AddListener(CloseMultiplayerWindow);
+        buttonHostGame.onClick.AddListener(OpenWorldList);
+        /////////////////////////////////////////
+        buttonBackWorlds.onClick.AddListener(CloseMultiplayerWindow);
+        buttonNewWorld.onClick.AddListener(RunServer);
+        /////////////////////////////////////////
+
 
         
         buttonConnet.onClick.AddListener(OnButtonConnect);
-        buttonQuit.onClick.AddListener(Quit);
 
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
@@ -81,10 +97,32 @@ public class MenuManager : MonoBehaviour
         versionText.text = Application.productName + " " + Application.version;
     }
 
-    private void OpenMultiplayerWindow()
+    private void OpenWindow(GameObject window)
     {
         WindowsManager.instance.SwitchBackground(true);
-        connectionWindow.SetActive(true);
+        window.SetActive(true);
+    }
+    private void OpenWorldList()
+    {
+        if(worldList.transform.childCount > 0)
+        {
+            for (int i = worldList.transform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(worldList.transform.GetChild(i).gameObject);
+            }
+        }
+
+
+        OpenWindow(worldListWindow);
+        List<HeaderData> headers = LoadSystem.LoadHeaders()?.OrderByDescending(s => s.saveTime).ToList();
+        if (headers == null || headers.Count == 0) return;
+
+        foreach (HeaderData header in headers)
+        {
+            GameObject gameObject = Instantiate(worldRow, worldList.transform);
+            WorldRow row = gameObject.GetComponent<WorldRow>();
+            row.SetWorld(header, iconMaterial);
+        }
     }
 
     private static readonly Regex ipv4Regex = new Regex(
@@ -145,6 +183,7 @@ public class MenuManager : MonoBehaviour
         WindowsManager.instance.SwitchBackground(false);
         connectionWindow?.SetActive(false);
         worldListWindow?.SetActive(false);
+        multiplayerOptionsWindow?.SetActive(false);
     }
     private void Quit()
     {

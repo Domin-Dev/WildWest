@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8837c8bc4ac734c49be08c8e45e4bb1f
+guid: a4f085639a05138489226665df7dac17
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5641399511808209979
-    second: "ItemEQ \u2014 kopia_0"
+      213: -4756028443593143600
+    second: shadow_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -178,13 +178,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_0"
+      name: shadow_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 261
-        height: 26
+        x: 2
+        y: 2
+        width: 17
+        height: 9
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,8 +193,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b34f36177f64a4e40800000000000000
-      internalID: 5641399511808209979
+      spriteID: 0da0afd34513ffdb0800000000000000
+      internalID: -4756028443593143600
       vertices: []
       indices: 
       edges: []
@@ -211,7 +211,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      "ItemEQ \u2014 kopia_0": 5641399511808209979
+      shadow_0: -4756028443593143600
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

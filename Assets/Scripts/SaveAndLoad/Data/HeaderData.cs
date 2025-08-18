@@ -10,6 +10,7 @@ using Unity.Mathematics;
 public class HeaderData
 {
     public FixedString128Bytes playerName;
+    public Difficulty difficulty;
     public string worldName;
     public long creationTime;
     public long saveTime;

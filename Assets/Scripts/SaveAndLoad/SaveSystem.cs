@@ -14,23 +14,30 @@ using UnityEngine;
 public static class SaveSystem
 {
 
+    public static string savesPath
+    {
+        get
+        {
+            return Path.Combine(Application.persistentDataPath, "Saves");
+        }
+    }
+
+    public static string GetHeaderPath(string worldFolder)
+    {
+        return Path.Combine(worldFolder, "header.dan");
+    }
     public static void Save()
     {
         Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave hostPlayer);
-
-
-        foreach (var item in players)
-        {
-            Debug.Log(item.Key + " " + item.Value.playerName + " " + item.Value.characterLook.beardndex);
-        }
-
-
-
+        Debug.Log(hostPlayer + " ttto!");
 
         BinaryFormatter formatter = new BinaryFormatter();
 
+        Debug.Log(savesPath);
+        string folderPath = Path.Combine(savesPath, GameInfo.instance.worldName);
+        Debug.Log(folderPath);
 
-        string folderPath = Path.Combine(Application.persistentDataPath, "Saves", GameInfo.instance.worldName);
+
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
         string worldPath = Path.Combine(folderPath, "world.dust");
@@ -48,23 +55,23 @@ public static class SaveSystem
         
         stream.Close();
     }
-
     private static void SaveHeader(string folderPath, PlayerSave playerSave)
     {
         BinaryFormatter formatter = new BinaryFormatter();
-        string headerPath = Path.Combine(folderPath, "header.dan");
+        string headerPath = GetHeaderPath(folderPath);
         FileStream stream = new FileStream(headerPath, FileMode.Create);
         HeaderData headerData = new HeaderData();
         headerData.playerName = playerSave.playerName;
+        headerData.difficulty = GameInfo.instance.difficultyLevel;
+
         headerData.characterLook = playerSave.characterLook;
         headerData.worldName = GameInfo.instance.worldName; 
-        headerData.saveTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         headerData.creationTime = GameInfo.instance.creationTime;
 
         formatter.Serialize(stream, headerData);
         stream.Close();
-    }
-    
+    }   
     private static void SavePlayers(string folderPath, Dictionary<string, PlayerSave> players)
     {
         BinaryFormatter formatter = new BinaryFormatter();
@@ -76,11 +83,10 @@ public static class SaveSystem
             stream.Close();
         }
     }
-
     private static Dictionary<string,PlayerSave> GetPlayers(out PlayerSave hostPlayer)
     {
         hostPlayer = null;
-        var world = World.DefaultGameObjectInjectionWorld;
+        var world = ClientServerBootstrap.ServerWorld;
         var entityManager = world.EntityManager;
 
         var query = entityManager.CreateEntityQuery(typeof(Player), typeof(Simulate));
@@ -99,6 +105,8 @@ public static class SaveSystem
             playerSave.playerName = playerData.playerName;
             playerSave.characterLook = playerLook.look;
 
+            Debug.Log(entity);
+
             if (entityManager.HasComponent<GhostOwnerIsLocal>(entity))
             {
                 hostPlayer = playerSave;
@@ -109,5 +117,4 @@ public static class SaveSystem
         players.Dispose();
         return playersToSave;
     }
-
 }

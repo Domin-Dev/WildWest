@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public enum Difficulty
 {
     Easy,
-    Medium,
+    Normal,
     Hard
 }
 
