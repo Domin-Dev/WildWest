@@ -23,7 +23,7 @@ public static class LoadSystem
             try
             {
                 string path = SaveSystem.GetHeaderPath(file);
-                if (!File.Exists(path)) continue;
+                if (!File.Exists(path) || new FileInfo(path).Length == 0) continue;
                 FileStream fileStream = new FileStream(SaveSystem.GetHeaderPath(file), FileMode.Open);
                 HeaderData data = formatter.Deserialize(fileStream) as HeaderData;
 
@@ -39,6 +39,24 @@ public static class LoadSystem
 
         return headers;
     }
+    public static bool WorldExist(string name)
+    {
+        var files = Directory.GetDirectories(SaveSystem.savesPath);
 
+        foreach (var item in files)
+        {
+            if(Path.GetFileName(item) == name ) return true; 
+        }
+        return false;
+    }
+
+    public static void RemoveWorld(string name)
+    {
+        string file = Path.Combine(SaveSystem.savesPath, name);
+        if(Directory.Exists(file))
+        {
+            Directory.Delete(file, true);
+        }
+    }
 }
 

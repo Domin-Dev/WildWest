@@ -18,12 +18,16 @@ public class WorldRow : MonoBehaviour
     [SerializeField] private Image cover;
     [SerializeField] private TextMeshProUGUI saveTime;
     [SerializeField] private TextMeshProUGUI difficulty;
+    [SerializeField] private TextMeshProUGUI playTime;
+
 
 
 
     private string worldName;
     public void SetWorld(HeaderData header, Material materialIcon)
     {
+        remove.onClick.AddListener(() => MenuManager.instance.Confirmation(worldName));
+
         worldName = header.worldName;
         worldNameText.text = worldName;
 
@@ -40,15 +44,19 @@ public class WorldRow : MonoBehaviour
 
         difficulty.text = header.difficulty.ToString();
 
+        long m = ((long)header.playTime / 60 % 60);
+        long h = (long)header.playTime / 3600;
+        playTime.text = $"{h}h {m}m";
+
+
+        headIcon.SetMaterialDirty();
+        if (CheckBadges(h)) return;    
         if (header.characterLook.faceDetailsIndex == 9)
         {
             cover.gameObject.SetActive(true);
             cover.sprite = UIAssetsManager.instance.ironBarsUI;
-            cover.transform.parent.GetComponent<Image>().sprite = UIAssetsManager.instance.blackBacgroundUI;
+            SetBackground(UIAssetsManager.instance.blackBackgroundUI);
         }
-     //   difficulty.color = GetColor(header.difficulty);
-
-        headIcon.SetMaterialDirty();
     }
 
     private Color GetColor(Difficulty difficulty)
@@ -63,6 +71,25 @@ public class WorldRow : MonoBehaviour
                 return new Color(0.537f, 0.149f, 0.243f, 1f);
         }
         return Color.white;
+    }
+
+    private void SetBackground(Sprite sprite)
+    {
+        cover.transform.parent.GetComponent<Image>().sprite = sprite;
+    }
+
+    private bool CheckBadges(long hours)
+    {
+        if (hours > 100)
+            SetBackground(UIAssetsManager.instance.goldBackgroundUI);
+        else if(hours > 25)
+            SetBackground(UIAssetsManager.instance.silverBackgroundUI);
+        else if (hours > 10)
+            SetBackground(UIAssetsManager.instance.bronzeBackgroundUI);
+        else
+            return false;
+
+        return true;
     }
 }
 

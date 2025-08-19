@@ -10,10 +10,17 @@ using UnityEngine.SceneManagement;
 public class  UIAssetsManager : MonoBehaviour
 {
 
-    [SerializeField] public Sprite blackBacgroundUI;
+    [Header("Rewards")]
+    [SerializeField] public Sprite bronzeBackgroundUI;
+    [SerializeField] public Sprite silverBackgroundUI;
+    [SerializeField] public Sprite goldBackgroundUI;
+
+
+    [SerializeField] public Sprite blackBackgroundUI;
     [SerializeField] public Sprite woodenFrameUI;
     [Space]
     [SerializeField] public Sprite ironBarsUI;
+
 
 
     public static UIAssetsManager instance { private set; get; }

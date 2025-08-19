@@ -22,6 +22,7 @@ public class GameConfiguration: MonoBehaviour
 
         ClientServerBootstrap.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetUp();
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(LoadMap));
+
     }
 
     public void Action()

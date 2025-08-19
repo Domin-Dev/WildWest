@@ -63,6 +63,8 @@ public static class SaveSystem
         HeaderData headerData = new HeaderData();
         headerData.playerName = playerSave.playerName;
         headerData.difficulty = GameInfo.instance.difficultyLevel;
+        headerData.playTime = GameInfo.instance.playTime;
+
 
         headerData.characterLook = playerSave.characterLook;
         headerData.worldName = GameInfo.instance.worldName; 
@@ -88,10 +90,8 @@ public static class SaveSystem
         hostPlayer = null;
         var world = ClientServerBootstrap.ServerWorld;
         var entityManager = world.EntityManager;
-
         var query = entityManager.CreateEntityQuery(typeof(Player), typeof(Simulate));
         var players = query.ToEntityArray(Unity.Collections.Allocator.Temp);
-
         Dictionary<string,PlayerSave> playersToSave = new Dictionary<string, PlayerSave>();
 
         foreach (var entity in players)
@@ -100,12 +100,8 @@ public static class SaveSystem
 
             var playerData = entityManager.GetComponentData<Player>(entity);
             var playerLook = entityManager.GetComponentData<PlayerLook>(entity);
-
-
             playerSave.playerName = playerData.playerName;
             playerSave.characterLook = playerLook.look;
-
-            Debug.Log(entity);
 
             if (entityManager.HasComponent<GhostOwnerIsLocal>(entity))
             {

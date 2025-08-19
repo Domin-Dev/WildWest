@@ -14,5 +14,6 @@ public class HeaderData
     public string worldName;
     public long creationTime;
     public long saveTime;
+    public double playTime;
     public CharacterLook characterLook;
 }

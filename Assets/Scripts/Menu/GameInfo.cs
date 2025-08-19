@@ -14,11 +14,11 @@ public enum Difficulty
 
 public class GameInfo : MonoBehaviour 
 {
-
-
     public string worldName;
     public long creationTime;
     public Difficulty difficultyLevel;
+    public double playTime;
+
     public int seed;
     public bool isMultiplayer;
     public bool isHost;
@@ -36,6 +36,12 @@ public class GameInfo : MonoBehaviour
     public static GameInfo instance { get; private set; }
 
 
+    public void SetDefaultSettings()
+    {
+        difficultyLevel = Difficulty.Normal;
+        playTime = 0;
+
+    }
     public static void LoadScene(int newScene, int loadingMode, float maxProgress = 1f)
     {
         instance.loadingMode = loadingMode;
@@ -43,7 +49,6 @@ public class GameInfo : MonoBehaviour
         instance.maxProgress = maxProgress;
         SceneManager.LoadScene(3);
     }
-
     public static void SetUp()
     {
         instance.loadingMode = 2;

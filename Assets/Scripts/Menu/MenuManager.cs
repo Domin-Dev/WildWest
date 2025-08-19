@@ -23,7 +23,13 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject connectionWindow;
     [SerializeField] private GameObject worldListWindow;
     [SerializeField] private GameObject multiplayerOptionsWindow;
+    [SerializeField] private GameObject confirmationRemoveWindow;
 
+
+    [Header("Confirmation")]
+    [SerializeField] private TextMeshProUGUI confirmationText;
+    [SerializeField] private Button confirmationYes;
+    [SerializeField] private Button confirmationNo;
 
     [Header("Multiplayer Options")]
     [SerializeField] private Button buttonBack;
@@ -52,6 +58,13 @@ public class MenuManager : MonoBehaviour
     [Space]
     [SerializeField] private TextMeshProUGUI errorMessage;
 
+
+    public static MenuManager instance;
+    private string worldToRemove;
+    private void Awake()
+    {
+        if (instance == null) instance = this;
+    }
     private void Start()
     {
         GameInfo.instance.lastLoadedScene = -1;
@@ -72,9 +85,14 @@ public class MenuManager : MonoBehaviour
         buttonBackWorlds.onClick.AddListener(CloseMultiplayerWindow);
         buttonNewWorld.onClick.AddListener(RunServer);
         /////////////////////////////////////////
+        confirmationYes.onClick.AddListener(() => {
+            LoadSystem.RemoveWorld(worldToRemove);
+            OpenWorldList();
+        });
+        confirmationNo.onClick.AddListener(OpenWorldList);
 
+        //////////////////////////////////////////
 
-        
         buttonConnet.onClick.AddListener(OnButtonConnect);
 
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
@@ -87,7 +105,6 @@ public class MenuManager : MonoBehaviour
     {
         CloseMultiplayerWindow();
     }
-
     private void OnDestroy()
     {
         WindowsManager.instance.OnCloseWindows -= CloseWindows;
@@ -97,6 +114,13 @@ public class MenuManager : MonoBehaviour
         versionText.text = Application.productName + " " + Application.version;
     }
 
+    public void Confirmation(string worldName)
+    {
+        CloseMultiplayerWindow();
+        OpenWindow(confirmationRemoveWindow);
+        this.worldToRemove = worldName;
+        confirmationText.text = $"Are you sure you want to delete the world <Color=#5b3138>{worldName}</Color>?";
+    }
     private void OpenWindow(GameObject window)
     {
         WindowsManager.instance.SwitchBackground(true);
@@ -184,6 +208,7 @@ public class MenuManager : MonoBehaviour
         connectionWindow?.SetActive(false);
         worldListWindow?.SetActive(false);
         multiplayerOptionsWindow?.SetActive(false);
+        confirmationRemoveWindow?.SetActive(false);
     }
     private void Quit()
     {
@@ -263,29 +288,30 @@ public class MenuManager : MonoBehaviour
         WindowsManager.instance.SwitchBackground(false);
         GameInfo.LoadScene(4, 0);
 
-
-            foreach (World world in World.All)
+        for (int i = World.All.Count - 1; i >= 0; i--)
+        {
+            World world = World.All[i];
+            if(world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
             {
-                if (world.Flags == WorldFlags.GameClient)
-                {
-                    world.Dispose();
-                    break;
-                }
+                world.Dispose();
             }
-            World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");
-            World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
+        }
 
-            ClientWorldSetUp(clientWorld);
+        World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");
+        World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
 
-            if (World.DefaultGameObjectInjectionWorld == null)
-            {
-                World.DefaultGameObjectInjectionWorld = serverWorld;
-            }
+
+        ClientWorldSetUp(clientWorld);
+
+        if (World.DefaultGameObjectInjectionWorld == null)
+        {
+            World.DefaultGameObjectInjectionWorld = serverWorld;
+        }
 
             ushort port = ushort.Parse(portInput.text);
 
-            RefRW<NetworkStreamDriver> networkStreamDriver =
-                serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+        RefRW<NetworkStreamDriver> networkStreamDriver =
+            serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
 
         try
         {
