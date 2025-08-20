@@ -24,7 +24,14 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject worldListWindow;
     [SerializeField] private GameObject multiplayerOptionsWindow;
     [SerializeField] private GameObject confirmationRemoveWindow;
+    [SerializeField] private GameObject editWorldWindow;
 
+
+
+    [Header("Edit")]
+    [SerializeField] private WorldNameInput worldNameInput;
+    [SerializeField] private Button editYes;
+    [SerializeField] private Button editNo;
 
     [Header("Confirmation")]
     [SerializeField] private TextMeshProUGUI confirmationText;
@@ -60,7 +67,7 @@ public class MenuManager : MonoBehaviour
 
 
     public static MenuManager instance;
-    private string worldToRemove;
+    private string worldName;
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -79,18 +86,30 @@ public class MenuManager : MonoBehaviour
         });
         buttonQuit.onClick.AddListener(Quit);
         /////////////////////////////////////////
-        buttonBack.onClick.AddListener(CloseMultiplayerWindow);
+        buttonBack.onClick.AddListener(CloseWindows);
         buttonHostGame.onClick.AddListener(OpenWorldList);
         /////////////////////////////////////////
-        buttonBackWorlds.onClick.AddListener(CloseMultiplayerWindow);
+        buttonBackWorlds.onClick.AddListener(CloseWindows);
         buttonNewWorld.onClick.AddListener(RunServer);
         /////////////////////////////////////////
         confirmationYes.onClick.AddListener(() => {
-            LoadSystem.RemoveWorld(worldToRemove);
+            WorldManager.RemoveWorld(worldName);
             OpenWorldList();
         });
         confirmationNo.onClick.AddListener(OpenWorldList);
-
+        //////////////////////////////////////////
+        editNo.onClick.AddListener(OpenWorldList);
+        editYes.onClick.AddListener(() =>
+        {
+            string name = worldNameInput.GetWorldName();
+            if (name != string.Empty)
+            {
+                if (WorldManager.ChangeName(worldName, name))
+                {
+                    OpenWorldList();
+                }
+            }
+        });
         //////////////////////////////////////////
 
         buttonConnet.onClick.AddListener(OnButtonConnect);
@@ -101,10 +120,6 @@ public class MenuManager : MonoBehaviour
         WindowsManager.instance.OnCloseWindows += CloseWindows;
     }
 
-    private void CloseWindows()
-    {
-        CloseMultiplayerWindow();
-    }
     private void OnDestroy()
     {
         WindowsManager.instance.OnCloseWindows -= CloseWindows;
@@ -116,11 +131,20 @@ public class MenuManager : MonoBehaviour
 
     public void Confirmation(string worldName)
     {
-        CloseMultiplayerWindow();
+        CloseWindows();
         OpenWindow(confirmationRemoveWindow);
-        this.worldToRemove = worldName;
+        this.worldName = worldName;
         confirmationText.text = $"Are you sure you want to delete the world <Color=#5b3138>{worldName}</Color>?";
     }
+    public void Edit(string worldName)
+    {
+        CloseWindows();
+        OpenWindow(editWorldWindow);
+        worldNameInput.SetUp(worldName);
+        this.worldName = worldName;
+    }
+
+
     private void OpenWindow(GameObject window)
     {
         WindowsManager.instance.SwitchBackground(true);
@@ -202,13 +226,14 @@ public class MenuManager : MonoBehaviour
         PrintError("Invalid port format.");
         return false;
     }
-    private void CloseMultiplayerWindow()
+    private void CloseWindows()
     {
         WindowsManager.instance.SwitchBackground(false);
         connectionWindow?.SetActive(false);
         worldListWindow?.SetActive(false);
         multiplayerOptionsWindow?.SetActive(false);
         confirmationRemoveWindow?.SetActive(false);
+        editWorldWindow?.SetActive(false);
     }
     private void Quit()
     {

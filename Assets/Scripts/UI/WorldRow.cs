@@ -27,6 +27,7 @@ public class WorldRow : MonoBehaviour
     public void SetWorld(HeaderData header, Material materialIcon)
     {
         remove.onClick.AddListener(() => MenuManager.instance.Confirmation(worldName));
+        edit.onClick.AddListener(() => MenuManager.instance.Edit(worldName));
 
         worldName = header.worldName;
         worldNameText.text = worldName;

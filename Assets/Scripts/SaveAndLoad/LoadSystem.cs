@@ -39,24 +39,5 @@ public static class LoadSystem
 
         return headers;
     }
-    public static bool WorldExist(string name)
-    {
-        var files = Directory.GetDirectories(SaveSystem.savesPath);
-
-        foreach (var item in files)
-        {
-            if(Path.GetFileName(item) == name ) return true; 
-        }
-        return false;
-    }
-
-    public static void RemoveWorld(string name)
-    {
-        string file = Path.Combine(SaveSystem.savesPath, name);
-        if(Directory.Exists(file))
-        {
-            Directory.Delete(file, true);
-        }
-    }
 }
 
