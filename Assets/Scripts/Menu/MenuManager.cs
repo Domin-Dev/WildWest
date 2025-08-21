@@ -1,11 +1,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
@@ -67,7 +66,10 @@ public class MenuManager : MonoBehaviour
 
 
     public static MenuManager instance;
+
     private string worldName;
+    bool isSingleplayerList;
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -78,8 +80,13 @@ public class MenuManager : MonoBehaviour
         SetUpUI();
         errorMessage.gameObject.SetActive(false);
 
+        /////////////////////////////////////////
         buttonMultiplayer.onClick.AddListener(() => { OpenWindow(multiplayerOptionsWindow); });
-        buttonSingleplayer.onClick.AddListener(OpenWorldList);
+        buttonSingleplayer.onClick.AddListener(() =>
+        {
+            isSingleplayerList = true;
+            OpenWorldList();
+        });
         buttonSettings.onClick.AddListener(() => {
             GameInfo.instance.lastLoadedScene = -1;
             WindowsManager.instance.LoadScene(8);
@@ -87,12 +94,17 @@ public class MenuManager : MonoBehaviour
         buttonQuit.onClick.AddListener(Quit);
         /////////////////////////////////////////
         buttonBack.onClick.AddListener(CloseWindows);
-        buttonHostGame.onClick.AddListener(OpenWorldList);
+        buttonHostGame.onClick.AddListener(() => 
+        {
+            isSingleplayerList = false;
+            OpenWorldList();
+        });
         /////////////////////////////////////////
         buttonBackWorlds.onClick.AddListener(CloseWindows);
-        buttonNewWorld.onClick.AddListener(RunServer);
+        buttonNewWorld.onClick.AddListener(() => RunServer());
         /////////////////////////////////////////
-        confirmationYes.onClick.AddListener(() => {
+        confirmationYes.onClick.AddListener(() => 
+        {
             WorldManager.RemoveWorld(worldName);
             OpenWorldList();
         });
@@ -111,15 +123,14 @@ public class MenuManager : MonoBehaviour
             }
         });
         //////////////////////////////////////////
-
         buttonConnet.onClick.AddListener(OnButtonConnect);
-
+        //////////////////////////////////////////
+        
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
 
         WindowsManager.instance.OnCloseWindows += CloseWindows;
     }
-
     private void OnDestroy()
     {
         WindowsManager.instance.OnCloseWindows -= CloseWindows;
@@ -128,6 +139,8 @@ public class MenuManager : MonoBehaviour
     {
         versionText.text = Application.productName + " " + Application.version;
     }
+
+
 
     public void Confirmation(string worldName)
     {
@@ -142,6 +155,26 @@ public class MenuManager : MonoBehaviour
         OpenWindow(editWorldWindow);
         worldNameInput.SetUp(worldName);
         this.worldName = worldName;
+    }
+    public void Load(string worldName)
+    {
+        HeaderData data = LoadSystem.LoadHeader(worldName);
+        if (data == null) return;
+
+        if(isSingleplayerList)
+            LoadSingleplayer(data);
+        else
+            LoadMultiplayer(data);
+    }
+
+
+    private void LoadSingleplayer(HeaderData data)
+    {
+        RunServer(data);
+    }
+    private void LoadMultiplayer(HeaderData data)
+    {
+        RunServer(data);
     }
 
 
@@ -264,9 +297,6 @@ public class MenuManager : MonoBehaviour
         GameInfo.instance.isMultiplayer = false;
         GameInfo.LoadScene(2, 1);
     }
-
-
-
     private void Join()
     {
         GameInfo.instance.isMultiplayer = true;
@@ -306,12 +336,25 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Próba po³¹czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
-    private void RunServer()
+    private void RunServer(HeaderData headerData = null)
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = true;
         WindowsManager.instance.SwitchBackground(false);
-        GameInfo.LoadScene(4, 0);
+        
+
+        if(headerData == null)
+        {
+            GameInfo.LoadScene(4, 0);
+            GameInfo.instance.playerName = playerNameInput.text.ToString();
+        }
+        else
+        {
+            GameInfo.instance.SetValue(headerData);
+            GameInfo.LoadScene(1, 0, 0.5f);
+        }
+
+
 
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
@@ -354,19 +397,24 @@ public class MenuManager : MonoBehaviour
 
             Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
 
-            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
+            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
             ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 
+            if (headerData != null)
+            {
+                LocalPlayerLook playerLook = new LocalPlayerLook();
+                playerLook.characterLook = headerData.characterLook;
+                Entity e = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+                ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(e, playerLook);
+            }
         }
         catch
         (Exception ex)
         {
             GameInfo.instance.errorMessage = ex.Message;    
             SceneManager.LoadScene(10);
-            Debug.Log(ex.Message);
         }
     }
-
     private void ClientWorldSetUp(World clientWorld)
     {
         var simGroup = clientWorld.GetExistingSystemManaged<SimulationSystemGroup>(); 

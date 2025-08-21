@@ -26,6 +26,12 @@ public static class SaveSystem
     {
         return Path.Combine(worldFolder, "header.dan");
     }
+
+    public static string GetWorldPath(string worldName)
+    {
+        return Path.Combine(savesPath, worldName);
+    }
+
     public static void Save()
     {
         Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave hostPlayer);
@@ -68,6 +74,8 @@ public static class SaveSystem
 
         headerData.characterLook = playerSave.characterLook;
         headerData.worldName = GameInfo.instance.worldName; 
+        headerData.seed = GameInfo.instance.seed;   
+
         headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         headerData.creationTime = GameInfo.instance.creationTime;
 

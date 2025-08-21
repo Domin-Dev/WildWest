@@ -53,7 +53,7 @@ public class WorldNameInput : MonoBehaviour
     private bool CheckWorldName()
     {
         string name = inputField.text.Trim();
-        return name.Length > 0 && !WorldManager.WorldExist(name.ToLower());
+        return name.Length > 0 && (!WorldManager.WorldExist(name.ToLower()) || (setValue != string.Empty && setValue == name));
     }
     private void ValidateInput(string input)
     {

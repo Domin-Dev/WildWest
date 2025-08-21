@@ -34,6 +34,7 @@ public static class WorldManager
 
     public static bool ChangeName(string oldName, string newName)
     {
+        if(oldName == newName) return true;
         string oldPath = Path.Combine(SaveSystem.savesPath, oldName);
         string newPath = Path.Combine(SaveSystem.savesPath, newName);
         if (Directory.Exists(oldPath) && !Directory.Exists(newPath))

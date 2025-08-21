@@ -28,6 +28,8 @@ public class WorldRow : MonoBehaviour
     {
         remove.onClick.AddListener(() => MenuManager.instance.Confirmation(worldName));
         edit.onClick.AddListener(() => MenuManager.instance.Edit(worldName));
+        play.onClick.AddListener(() => MenuManager.instance.Load(worldName));
+
 
         worldName = header.worldName;
         worldNameText.text = worldName;

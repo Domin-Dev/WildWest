@@ -24,7 +24,7 @@ public static class LoadSystem
             {
                 string path = SaveSystem.GetHeaderPath(file);
                 if (!File.Exists(path) || new FileInfo(path).Length == 0) continue;
-                FileStream fileStream = new FileStream(SaveSystem.GetHeaderPath(file), FileMode.Open);
+                FileStream fileStream = new FileStream(path, FileMode.Open);
                 HeaderData data = formatter.Deserialize(fileStream) as HeaderData;
 
                 if(data == null) continue;  
@@ -38,6 +38,29 @@ public static class LoadSystem
         }
 
         return headers;
+    }
+    public static HeaderData LoadHeader(string worldName)
+    {
+        string worldPath = SaveSystem.GetWorldPath(worldName);
+        if (!Directory.Exists(worldPath)) return null;
+        BinaryFormatter formatter = new BinaryFormatter();
+        HeaderData headerData = null;
+
+        try
+        {
+            string path = SaveSystem.GetHeaderPath(worldPath);
+            if (!File.Exists(path) || new FileInfo(path).Length == 0) return null; 
+            FileStream fileStream = new FileStream(path, FileMode.Open);
+            headerData = formatter.Deserialize(fileStream) as HeaderData;
+            fileStream.Close();
+        }
+        catch (Exception ex)
+        {
+            Debug.Log(ex);
+        }
+        
+
+        return headerData;
     }
 }
 

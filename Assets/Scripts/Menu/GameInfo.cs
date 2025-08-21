@@ -14,23 +14,22 @@ public enum Difficulty
 
 public class GameInfo : MonoBehaviour 
 {
+    public string playerName;
     public string worldName;
     public long creationTime;
     public Difficulty difficultyLevel;
     public double playTime;
-
     public int seed;
+    [Space]
     public bool isMultiplayer;
     public bool isHost;
-    //////////////////
+    [Space]
     public int loadingMode;
     public int nextScene;
     public float maxProgress;
-    //////////////////
-    public string errorMessage;
-    //////////////////
     public int lastLoadedScene;
-    //////////////////
+    [Space]
+    public string errorMessage;
 
 
     public static GameInfo instance { get; private set; }
@@ -53,6 +52,16 @@ public class GameInfo : MonoBehaviour
     {
         instance.loadingMode = 2;
         instance.nextScene = 1;
+    }
+
+    public void SetValue(HeaderData data)
+    {
+        playerName = data.playerName.ToString();
+        worldName = data.worldName;
+        creationTime = data.creationTime;
+        difficultyLevel = data.difficulty;
+        playTime = data.playTime;
+        seed = data.seed;
     }
 
     void Awake()

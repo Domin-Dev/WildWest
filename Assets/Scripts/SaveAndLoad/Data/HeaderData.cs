@@ -11,6 +11,8 @@ public class HeaderData
 {
     public FixedString128Bytes playerName;
     public Difficulty difficulty;
+
+    public int seed;
     public string worldName;
     public long creationTime;
     public long saveTime;
