@@ -912,7 +912,6 @@ public class UIManager : MonoBehaviour
 
 
 
-
     public void NewCollectedItem(int id,int count)
     {
         for (int i = 0; i < 5; i++)
@@ -938,7 +937,6 @@ public class UIManager : MonoBehaviour
         collectedItemTimers[index].Cancel();
         CreateNotice(id,count, index);
     }
-
     private void CreateNotice(int itemID,int count,int index)
     {
         Transform item = notices[index];
@@ -967,7 +965,6 @@ public class UIManager : MonoBehaviour
             return false;
         });
     }
-
     private void SetCollectItem(int itemID, int itemCount , Transform obj)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
@@ -975,49 +972,6 @@ public class UIManager : MonoBehaviour
         obj.GetChild(1).GetComponent<Image>().sprite = item.icon;
         obj.GetChild(2).GetComponent<TextMeshProUGUI>().text = item.name;
     }
-
-
-    // Windows ///
-    public void LoadScene(int index)
-    {
-        bool load = !loadedScene.Contains(index);
-        LoadScene(index, load);
-    }
-    public void LoadScene(int index, bool background)
-    {
-        bool load = !loadedScene.Contains(index);
-        if (load)
-        {
-            SceneManager.LoadScene(index, LoadSceneMode.Additive);
-            CloseOpenWindows();
-            loadedScene.Add(index);
-        }
-        else
-        {
-            UnloadScene(index);
-        }
-        UIManager.instance.SwitchBackground(background);
-    }
-
-    public bool CloseOpenWindows()
-    {
-        if (loadedScene.Count == 0) return false;
-        for (int i = 0; i < loadedScene.Count; i++)
-        {
-            UnloadScene(loadedScene[i]);
-        }
-        loadedScene.Clear();
-        UIManager.instance.SwitchBackground(false);
-        return true;
-    }
-
-    public void UnloadScene(int index)
-    {
-        if (SceneManager.GetSceneByBuildIndex(index).isLoaded)
-            SceneManager.UnloadSceneAsync(index);
-        loadedScene.Remove(index);
-    }
-
 }
 
 

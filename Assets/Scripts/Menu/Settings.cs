@@ -122,6 +122,7 @@ public class Settings: MonoBehaviour
         var refreshRate = Screen.currentResolution.refreshRateRatio;
         float fps = ((float)refreshRate.numerator / refreshRate.denominator);
         SetFPSLimit(fps);
+        fpsLimit.value = fps;
     }
 }
 

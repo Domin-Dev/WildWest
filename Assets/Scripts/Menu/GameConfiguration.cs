@@ -29,6 +29,7 @@ public class GameConfiguration: MonoBehaviour
     {
         Destroy(gameObj);
         if(blackScreen != null) blackScreen.SetTrigger("BlackScreen");
+        WindowsManager.instance.escScene = 11;
         loading.gameIsReady -= Action;
     }
 }

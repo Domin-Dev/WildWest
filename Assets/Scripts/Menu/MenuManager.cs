@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using TMPro;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -24,7 +26,16 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject multiplayerOptionsWindow;
     [SerializeField] private GameObject confirmationRemoveWindow;
     [SerializeField] private GameObject editWorldWindow;
+    [SerializeField] private GameObject connectToIPWindow;
 
+
+    [Header("ConnectToIP")]
+    [SerializeField] private TMP_InputField adressIPInput;
+    [SerializeField] private TMP_InputField portInput;
+    [SerializeField] private TMP_InputField playerNameInput;
+    [SerializeField] private Button buttonConnet;
+    [SerializeField] private Button buttonBackConnectToIP;
+    [SerializeField] private TextMeshProUGUI errorMessage;
 
 
     [Header("Edit")]
@@ -55,15 +66,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button buttonQuit;
 
     [Space]
-    [SerializeField] private Button buttonConnet;
-    [Space]
-    [SerializeField] private TMP_InputField adressIPInput;
-    [SerializeField] private TMP_InputField portInput;
-    [SerializeField] private TMP_InputField playerNameInput;
     [SerializeField] private TMP_Dropdown connectionMode;
-    [Space]
-    [SerializeField] private TextMeshProUGUI errorMessage;
-
 
     public static MenuManager instance;
 
@@ -74,7 +77,7 @@ public class MenuManager : MonoBehaviour
     {
         if (instance == null) instance = this;
     }
-    private void Start()
+    private async Task Start()
     {
         GameInfo.instance.lastLoadedScene = -1;
         SetUpUI();
@@ -98,6 +101,11 @@ public class MenuManager : MonoBehaviour
         {
             isSingleplayerList = false;
             OpenWorldList();
+        });
+        buttonConnectToIP.onClick.AddListener(() =>
+        {
+            CloseWindows();
+            OpenWindow(connectToIPWindow); 
         });
         /////////////////////////////////////////
         buttonBackWorlds.onClick.AddListener(CloseWindows);
@@ -123,11 +131,11 @@ public class MenuManager : MonoBehaviour
             }
         });
         //////////////////////////////////////////
-        buttonConnet.onClick.AddListener(OnButtonConnect);
-        //////////////////////////////////////////
-        
+        buttonConnet.onClick.AddListener(Join);
+        buttonBackConnectToIP.onClick.AddListener(CloseWindows);
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
+
 
         WindowsManager.instance.OnCloseWindows += CloseWindows;
     }
@@ -267,6 +275,7 @@ public class MenuManager : MonoBehaviour
         multiplayerOptionsWindow?.SetActive(false);
         confirmationRemoveWindow?.SetActive(false);
         editWorldWindow?.SetActive(false);
+        connectToIPWindow?.SetActive(false);
     }
     private void Quit()
     {

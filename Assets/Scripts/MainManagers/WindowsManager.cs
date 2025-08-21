@@ -41,9 +41,13 @@ public class WindowsManager : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.Escape)) 
         {
             if (escScene == -1)
-            {
                 CloseOpenWindows();
+            else
+            {
+                if (!CloseOpenWindows())
+                    LoadScene(escScene);
             }
+
         }
     }
 

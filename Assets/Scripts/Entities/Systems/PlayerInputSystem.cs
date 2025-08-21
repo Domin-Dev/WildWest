@@ -11,13 +11,13 @@ using UnityEngine.SceneManagement;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup),OrderFirst = true)]
 partial struct PlayerInputSystem : ISystem
-{    public void OnCreate(ref SystemState state)
+{   public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkStreamInGame>();
         state.RequireForUpdate<PlayerInput>();
     }
 
-   
+
     public void OnUpdate(ref SystemState state)
     {
         float2 input = float2.zero;
@@ -38,15 +38,15 @@ partial struct PlayerInputSystem : ISystem
         float2 sightDirection = new float2(target.x,target.y);
 
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!UIManager.instance.CloseOpenWindows())
-                UIManager.instance.LoadScene(11);
-        }
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        //{
+        //    if (!WindowsManager.instance.CloseOpenWindows())
+        //        WindowsManager.instance.LoadScene(11);
+        //}
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            UIManager.instance.LoadScene(9);
+            WindowsManager.instance.LoadScene(9);
         }
 
 

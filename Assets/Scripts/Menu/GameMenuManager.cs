@@ -12,13 +12,15 @@ public class GameMenuManager : MonoBehaviour
 
     private void Awake()
     {
-        resume.onClick.AddListener(() => { UIManager.instance.CloseOpenWindows(); });
+        resume.onClick.AddListener(() => { WindowsManager.instance.CloseOpenWindows(); });
         settinngs.onClick.AddListener(() =>
         {
             GameInfo.instance.lastLoadedScene = 11;
-            UIManager.instance.LoadScene(8, true);
+            WindowsManager.instance.LoadScene(8, true);
         });
         exit.onClick.AddListener(() => {
+            WindowsManager.instance.SwitchBackground(false);
+            WindowsManager.instance.escScene = -1;
             SaveSystem.Save();
             if (ClientServerBootstrap.HasServerWorld)
             {
