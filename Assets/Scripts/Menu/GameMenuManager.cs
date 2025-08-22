@@ -19,14 +19,14 @@ public class GameMenuManager : MonoBehaviour
             WindowsManager.instance.LoadScene(8, true);
         });
         exit.onClick.AddListener(() => {
-            WindowsManager.instance.SwitchBackground(false);
             WindowsManager.instance.escScene = -1;
-            SaveSystem.Save();
             if (ClientServerBootstrap.HasServerWorld)
             {
+                SaveSystem.Save();
                 RPCHelper.StopServer(ClientServerBootstrap.ServerWorld);
             }
             SceneManager.LoadScene(0);
+            WindowsManager.instance.SwitchBackground(false);
         });
     }
 }

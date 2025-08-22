@@ -6,7 +6,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -26,11 +28,26 @@ public static class SaveSystem
     {
         return Path.Combine(worldFolder, "header.dan");
     }
-
     public static string GetWorldPath(string worldName)
     {
         return Path.Combine(savesPath, worldName);
     }
+    public static string GetPlayersFolderByWorldName(string worldName)
+    {
+        return GetPlayersFolder(GetWorldPath(worldName));
+    }
+    public static string GetPlayersFolder(string worldPath)
+    {
+        return Path.Combine(worldPath, "Players");
+    }
+    public static string GetPlayerDataPath(string worldFolder,string playerName)
+    {
+        return Path.Combine(GetPlayersFolderByWorldName(worldFolder), playerName);
+    }
+
+
+
+
 
     public static void Save()
     {
@@ -40,7 +57,7 @@ public static class SaveSystem
         BinaryFormatter formatter = new BinaryFormatter();
 
         Debug.Log(savesPath);
-        string folderPath = Path.Combine(savesPath, GameInfo.instance.worldName);
+        string folderPath = GetWorldPath(GameInfo.instance.worldName);
         Debug.Log(folderPath);
 
 
@@ -53,12 +70,11 @@ public static class SaveSystem
         SaveHeader(folderPath, hostPlayer);
 
 
-        string playersPath = Path.Combine(folderPath, "Players");
+
+        string playersPath = GetPlayersFolder(folderPath);
         if (!Directory.Exists(playersPath))
             Directory.CreateDirectory(playersPath);
         SavePlayers(playersPath,players);
-
-        
         stream.Close();
     }
     private static void SaveHeader(string folderPath, PlayerSave playerSave)
@@ -96,7 +112,7 @@ public static class SaveSystem
     private static Dictionary<string,PlayerSave> GetPlayers(out PlayerSave hostPlayer)
     {
         hostPlayer = null;
-        var world = ClientServerBootstrap.ServerWorld;
+        var world = ClientServerBootstrap.ClientWorld;
         var entityManager = world.EntityManager;
         var query = entityManager.CreateEntityQuery(typeof(Player), typeof(Simulate));
         var players = query.ToEntityArray(Unity.Collections.Allocator.Temp);
@@ -108,14 +124,28 @@ public static class SaveSystem
 
             var playerData = entityManager.GetComponentData<Player>(entity);
             var playerLook = entityManager.GetComponentData<PlayerLook>(entity);
+            var pos = entityManager.GetComponentData<LocalTransform>(entity);
+
+            var health = entityManager.GetComponentData<Health>(entity);
+            var hunger = entityManager.GetComponentData<Hunger>(entity);
+            var thirst = entityManager.GetComponentData<Thirst>(entity);
+
+
+
             playerSave.playerName = playerData.playerName;
             playerSave.characterLook = playerLook.look;
+            playerSave.playerPosition = new float2(pos.Position.x,pos.Position.y);
 
-            if (entityManager.HasComponent<GhostOwnerIsLocal>(entity))
+            playerSave.health = health.Value;
+            playerSave.hunger = hunger.Value;
+            playerSave.thirst = thirst.Value;
+
+
+            if (entityManager.IsComponentEnabled<GhostOwnerIsLocal>(entity))
             {
                 hostPlayer = playerSave;
             }
-            playersToSave.Add(playerSave.playerName.ToString(),playerSave);
+            playersToSave.TryAdd(playerSave.playerName.ToString(),playerSave);
         }
 
         players.Dispose();

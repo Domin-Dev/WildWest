@@ -30,19 +30,24 @@ partial struct GoInGameServerSystem : ISystem
 
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
 
-            entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(networkId * 0.5f, 0, 0)));
-            entityCommandBuffer.SetComponent(character, new PlayerLook() { look = requestRPC.characterLook });
+
+            PlayerSave playerSave = LoadSystem.LoadPlayerSave(requestRPC.playerName.ToString());
+            if (playerSave == null)
+                GetDefaultPlayerSave(requestRPC, ref playerSave);
+            
+            entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.playerPosition.x, playerSave.playerPosition.y, playerSave.playerPosition.y)));
+            entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
             entityCommandBuffer.SetComponent(character, new Player()
             {
                 speed = 1f,
-                playerName = requestRPC.playerName
+                playerName = playerSave.playerName
             });
 
 
-            entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = 100 });
-            entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = 100 });
-            entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = 100 });
+            entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
+            entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
+            entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });
 
 
 
@@ -55,6 +60,17 @@ partial struct GoInGameServerSystem : ISystem
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
+    }
+
+    private void GetDefaultPlayerSave(GoInGameRequestRPC requestRPC,ref PlayerSave playerSave)
+    {
+        playerSave = new PlayerSave();
+        playerSave.playerName = requestRPC.playerName;
+        playerSave.characterLook = requestRPC.characterLook;
+        playerSave.playerPosition = float2.zero;
+        playerSave.health = 100;
+        playerSave.thirst = 100;
+        playerSave.hunger = 100;
     }
 
     [BurstCompile]
