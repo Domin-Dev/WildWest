@@ -3,7 +3,6 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateAfter(typeof(CharacterAimSystem))]
 public class EntityFollower : MonoBehaviour
 {
     public Entity entity;

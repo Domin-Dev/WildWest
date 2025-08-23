@@ -39,6 +39,15 @@ public class HybridManager : MonoBehaviour
         var array = entites.ToEntityArray(Allocator.Temp);
         entityFollower.SetEntity(array[0]);
 
+        var pos = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<LocalTransform>(array[0]);
+        Vector3 cameraPos = virtualCamera.transform.position;
+        cameraPos.x = pos.Position.x;
+        cameraPos.y = pos.Position.y;
+
+        Debug.Log(pos);
+
+        virtualCamera.transform.position = cameraPos;
+        Camera.main.transform.position = cameraPos;
         virtualCamera.Follow = entityFollower.transform;
         entites.Dispose();
         entityQueryBuilder.Dispose();

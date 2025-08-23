@@ -65,6 +65,7 @@ public static class LoadSystem
     public static PlayerSave LoadPlayerSave(string worldName,string playerName)
     {
         string path = SaveSystem.GetPlayerDataPath(worldName, playerName);
+        Debug.Log(path);
         BinaryFormatter formatter = new BinaryFormatter();
 
         if (!File.Exists(path) || new FileInfo(path).Length == 0) return null;

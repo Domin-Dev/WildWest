@@ -4,7 +4,9 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -54,6 +56,7 @@ public class LoadingManager : MonoBehaviour
     {
         ConnectionTimeoutSystem.connectionFailed -= ConnectionFailed;
         ConnectionTimeoutSystem.connectionSuccessful -= Connected;
+        WaitForConfirmation.connection -= Verification;
     }
 
     private void Connecting()
@@ -61,18 +64,34 @@ public class LoadingManager : MonoBehaviour
         loadingText.text = "Connecting...";
         ConnectionTimeoutSystem.connectionSuccessful += Connected;
         ConnectionTimeoutSystem.connectionFailed += ConnectionFailed;
+        WaitForConfirmation.connection += Verification;
     }
     private async void Connected()
     {
         target = 0.5f;
         await Task.Delay(200);
-
         SetValue(0.5f);
-        await Task.Delay(50);
-
-        loadingText.text = "Loading...";
         ConnectionTimeoutSystem.connectionSuccessful -= Connected;
-        Loading(1f,0.5f);
+        loadingText.text = "Verifying...";
+    }
+
+    private async void Verification(CharacterLook? characterLook)
+    {
+        Debug.Log(characterLook.HasValue);
+        if (characterLook.HasValue)
+        {
+            Debug.Log("new Look ");
+            GameInfo.instance.nextScene = 1;
+            LocalPlayerLook playerLook = new LocalPlayerLook();
+            playerLook.characterLook = characterLook.Value;
+            Entity e = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(e, playerLook);
+        }
+
+        await Task.Delay(50);
+        loadingText.text = "Loading...";
+        Loading(1f, 0.5f);
+        WaitForConfirmation.connection -= Verification;
     }
     private void LoadGame()
     {

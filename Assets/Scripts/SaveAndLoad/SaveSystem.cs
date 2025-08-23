@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -42,7 +39,7 @@ public static class SaveSystem
     }
     public static string GetPlayerDataPath(string worldFolder,string playerName)
     {
-        return Path.Combine(GetPlayersFolderByWorldName(worldFolder), playerName);
+        return Path.Combine(GetPlayersFolderByWorldName(worldFolder), playerName + ".dat");
     }
 
 
@@ -112,9 +109,15 @@ public static class SaveSystem
     private static Dictionary<string,PlayerSave> GetPlayers(out PlayerSave hostPlayer)
     {
         hostPlayer = null;
-        var world = ClientServerBootstrap.ClientWorld;
+        var world = ClientServerBootstrap.ServerWorld;
         var entityManager = world.EntityManager;
         var query = entityManager.CreateEntityQuery(typeof(Player), typeof(Simulate));
+
+        var queryNetworkID = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamConnection));
+        var array = queryNetworkID.ToEntityArray(Allocator.Temp);
+        int hostID = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<NetworkId>(array[0]).Value;
+
+
         var players = query.ToEntityArray(Unity.Collections.Allocator.Temp);
         Dictionary<string,PlayerSave> playersToSave = new Dictionary<string, PlayerSave>();
 
@@ -130,7 +133,8 @@ public static class SaveSystem
             var hunger = entityManager.GetComponentData<Hunger>(entity);
             var thirst = entityManager.GetComponentData<Thirst>(entity);
 
-
+            Debug.Log(playerData.playerName);
+            Debug.Log(health.Value  + " " + hunger.Value + " " + thirst.Value);
 
             playerSave.playerName = playerData.playerName;
             playerSave.characterLook = playerLook.look;
@@ -141,13 +145,16 @@ public static class SaveSystem
             playerSave.thirst = thirst.Value;
 
 
-            if (entityManager.IsComponentEnabled<GhostOwnerIsLocal>(entity))
+            if (entityManager.GetComponentData<GhostOwner>(entity).NetworkId == hostID)
             {
                 hostPlayer = playerSave;
             }
             playersToSave.TryAdd(playerSave.playerName.ToString(),playerSave);
         }
 
+        array.Dispose();
+        query.Dispose();
+        queryNetworkID.Dispose();
         players.Dispose();
         return playersToSave;
     }

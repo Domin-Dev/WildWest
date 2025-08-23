@@ -24,6 +24,7 @@ partial struct LoadMapCilientSystem : ISystem
         {
             entityCommandBuffer.DestroyEntity(SystemAPI.GetSingletonEntity<LoadMap>());
             Debug.Log("load map!");
+
             Entity rpcEntity = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(rpcEntity, new NewPlayerJoinRPC() 
             { 

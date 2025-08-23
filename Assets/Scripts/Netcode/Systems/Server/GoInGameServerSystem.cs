@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct GoInGameServerSystem : ISystem
@@ -31,10 +32,14 @@ partial struct GoInGameServerSystem : ISystem
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
 
 
+
             PlayerSave playerSave = LoadSystem.LoadPlayerSave(requestRPC.playerName.ToString());
+
+            Debug.Log(playerSave);
             if (playerSave == null)
                 GetDefaultPlayerSave(requestRPC, ref playerSave);
-            
+            Debug.Log(playerSave.health);
+
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.playerPosition.x, playerSave.playerPosition.y, playerSave.playerPosition.y)));
             entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });

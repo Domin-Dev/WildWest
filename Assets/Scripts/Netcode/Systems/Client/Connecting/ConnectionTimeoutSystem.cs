@@ -44,7 +44,10 @@ public partial class ConnectionTimeoutSystem : SystemBase
 
         if(isConnected)
         {
-            Connected();
+            EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+            Connected(ref ecb);
+            ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+            ecb.Dispose();
             return;
         }
 
@@ -61,14 +64,15 @@ public partial class ConnectionTimeoutSystem : SystemBase
             ecb.Dispose();
             connectionFailed?.Invoke();
             Enabled = false;
-
         }
     }
-    private void Connected()
+    private void Connected(ref EntityCommandBuffer entityCommandBuffer)
     {
         Debug.Log("? Po³¹czenie nawi¹zane!");
         connectionSuccessful?.Invoke();
-        ClientServerBootstrap.ClientWorld.EntityManager.DestroyEntity(SystemAPI.GetSingletonEntity<EnableConnectionTimeoutCheck>());
+        entityCommandBuffer.DestroyEntity(SystemAPI.GetSingletonEntity<EnableConnectionTimeoutCheck>());
+        RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
         this.Enabled = false;
+
     }
 }
