@@ -18,6 +18,7 @@ partial struct VerifyingNewPlayersSystem : ISystem
         entityQueryBuilder.Dispose();
     }
 
+    
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);

@@ -26,8 +26,7 @@ public partial class WaitForConfirmation : SystemBase
             Debug.Log("odpowiedz!!!");
             connection?.Invoke(a.playerDataIsOnServer ? a.characterLook : null);
             this.Enabled = false;
-
-          //  entityCommandBuffer.DestroyEntity(e);
+            entityCommandBuffer.DestroyEntity(e);
         }).WithStructuralChanges().WithoutBurst().Run();
 
         entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);

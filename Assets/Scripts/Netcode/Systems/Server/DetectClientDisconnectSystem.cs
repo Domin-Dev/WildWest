@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,14 +7,13 @@ using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
-[BurstCompile]
 public partial struct NetCodeConnectionEventListener : ISystem
 {
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -24,19 +24,27 @@ public partial struct NetCodeConnectionEventListener : ISystem
             {
                 case ConnectionState.State.Disconnected:
                     SaveSystem.Save();
+                    Player playerDisconnected = new Player();
+                    Entity playerEntity = Entity.Null;
 
                     foreach ((RefRO<GhostOwner> owner, RefRO<Player> player, Entity entity) in
                     SystemAPI.Query<RefRO<GhostOwner>,RefRO<Player>>().WithEntityAccess())
                     {
                         if(owner.ValueRO.NetworkId == evt.Id.Value)
                         {
-                            entityCommandBuffer.DestroyEntity(entity);
+                            playerDisconnected = player.ValueRO;
+                            playerEntity = entity;
+                            break;
                         }
                     }
-                break;
-                case ConnectionState.State.Connecting:
-                    break;
-                case ConnectionState.State.Connected:
+
+                    RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerLeftRPC()
+                    { 
+                        messageTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                        playerName = playerDisconnected.playerName,
+                        ReasonCode = (byte)evt.DisconnectReason,
+                    });
+                    entityCommandBuffer.DestroyEntity(playerEntity);
                     break;
             }
 

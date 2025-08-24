@@ -1,4 +1,6 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
 
 public static class RPCHelper
@@ -28,6 +30,19 @@ public static class RPCHelper
     }
 
 
+
+
+    public static void SendMessageToClients(ref EntityCommandBuffer ecb, string serverMessage)
+    {
+        var rpc = new NewMessageServerRPC()
+        {
+            message = serverMessage,
+            sender = "Server",
+            messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            senderIsServer = true
+        };
+        SendRpc(ref ecb, rpc);
+    }
     private static void DisconnectAllClients(World serverWorld)
     {
         var em = serverWorld.EntityManager;

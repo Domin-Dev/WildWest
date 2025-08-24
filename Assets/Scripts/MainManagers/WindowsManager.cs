@@ -52,7 +52,10 @@ public class WindowsManager : MonoBehaviour
     }
 
 
-
+    public bool HasOpenWidnows()
+    {
+        return loadedScene.Count > 0;
+    }
     public void LoadScene(int index)
     {
         bool load = !loadedScene.Contains(index);

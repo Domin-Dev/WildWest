@@ -10,13 +10,6 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-using Unity.Entities;
-using Unity.Collections;
-using Unity.Mathematics;
-using Unity.NetCode;
-using Unity.Transforms;
-using UnityEngine;
-
 [DisableAutoCreation]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 public partial class MapLoadingClientSystem : SystemBase

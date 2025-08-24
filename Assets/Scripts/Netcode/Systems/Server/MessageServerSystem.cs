@@ -32,7 +32,8 @@ partial struct MessageServerSystem : ISystem
                 {
                     message = requestRPC.message,
                     sender = sender,
-                    messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+                    messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                    senderIsServer = false
                 });
                 entityCommandBuffer.AddComponent(message, new SendRpcCommandRequest()
                 {

@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -27,7 +28,13 @@ partial struct NewPlayerServerSystem : ISystem
 
             entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection, new PlayerName() { name = newPlayer.playerName });
             entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection, new SendMap() { position = new float2(0.5f, 0.5f) });
-            entityCommandBuffer.DestroyEntity(entity);           
+            entityCommandBuffer.DestroyEntity(entity);
+
+            RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerJoinRPC()
+            {
+                messageTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                playerName = newPlayer.playerName
+            });
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

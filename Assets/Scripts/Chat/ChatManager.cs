@@ -82,7 +82,7 @@ public class ChatManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.T) && !chatInputField.isFocused)
+        if (Input.GetKeyDown(KeyCode.T) && !chatInputField.isFocused && !WindowsManager.instance.HasOpenWidnows())
         {
             SwitchChat();
         }
@@ -182,9 +182,9 @@ public class ChatManager : MonoBehaviour
         isTimer = true;
         LastIndex = content.childCount - 1;
         AddNewTimer(LastIndex);
-        if (content.childCount > maxLog)
+        if (content.childCount > maxLog + 1)
         {
-            Destroy(content.GetChild(0).gameObject);
+            Destroy(content.GetChild(1).gameObject);
             for (int i = 0; i < indexes.Length; i++)
             {
                 if (indexes[i] != -1) indexes[i]--;
@@ -193,14 +193,12 @@ public class ChatManager : MonoBehaviour
     }
     private void SendMessage()
     {
-
         string text = chatInputField.text.Trim();
         SwitchChat();
         if (text.Length > 0)
         {
             if (text[0] == '/')
             {
-                PrintPlayerMessage(DateTimeOffset.Now.ToUnixTimeSeconds(),text, GameInfo.instance.playerName);
                 CheckCommands(text.Trim());
             }
             else
@@ -245,23 +243,18 @@ public class ChatManager : MonoBehaviour
         Transform message = Instantiate(messagePrefab, content).transform;
         TextMeshProUGUI textMeshProUGUI = message.GetChild(0).GetComponent<TextMeshProUGUI>();
         Image image = message.GetComponent<Image>();
-        textMeshProUGUI.color = invisible;
+        textMeshProUGUI.color = Color.white; ;
         textMeshProUGUI.text = text;
         chatScrollbar.value = 0;
         SetTimerToDisappear();
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(message.GetComponent<RectTransform>());
-        Timer.Create(0.05f, () => { 
-            textMeshProUGUI.color = Color.white;
-            if (isChat)
-                image.color = new Color(1, 1, 1, 1f);
-            else
-                image.color = new Color(1, 1, 1, 0.5f);
-            return true;
-        });
+        if (isChat)
+            image.color = new Color(1, 1, 1, 1f);
+        else
+            image.color = new Color(1, 1, 1, 0.5f);
+
         return message;
     }
-
     public void PrintPlayerMessage(long time,string text, string player)
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
@@ -274,22 +267,8 @@ public class ChatManager : MonoBehaviour
         DateTime localTime = date.ToLocalTime().DateTime;
         Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIAssetsManager.instance.ironBackgroundUI;
     }
-
     private void CheckCommands(string command)
     {
-        //for (int i = 0; i < command.Length; i++)
-        //{
-        //    char c = command[i];
-        //    if (c == '/')
-        //    {
-        //        break;
-        //    }
-        //    else if (command[i] != ' ')
-        //    {
-        //        return;
-        //    }
-        //}
-
         string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         properties[0] = properties[0].Remove(0,1);
         List<CommandBase> hints = new List<CommandBase>();
@@ -336,7 +315,10 @@ public class ChatManager : MonoBehaviour
                 }
             }
         }
-
+        if(hints.Count == 0)
+        {
+            Print("<Color=red>Incorrect command: </color>" + command);
+        }
         PrintHint(hints.ToArray());
     }
     private void PrintHint(params CommandBase[] commandBase)
@@ -347,16 +329,15 @@ public class ChatManager : MonoBehaviour
             sb.Append($"/{commandBase[i].commandId} {commandBase[i].commandFormat}");
             if(i != commandBase.Length - 1) sb.Append("\n");
         }
-        Print(sb.ToString());
+        if(sb.Length > 0) Print(sb.ToString());
     }
-
-
     private void SetUp()
     {
         chatScrollbar = chatScrollRect.verticalScrollbar;
         chathandle = chatScrollbar.handleRect;
         content = chatScrollRect.content;
         commandList = this.AddComponent<DebugController>().GetCommandList();
+        isChatting = false;
     }
     private void SwitchChat()
     {
@@ -376,7 +357,7 @@ public class ChatManager : MonoBehaviour
         chatScrollbar.value = 0;
         chathandle.gameObject.SetActive(true);
         chatScrollRect.enabled = true;
-        for (int i = 0; i < content.childCount; i++)
+        for (int i = 1; i < content.childCount; i++)
         {
             content.GetChild(i).gameObject.SetActive(true);
         }
@@ -399,7 +380,7 @@ public class ChatManager : MonoBehaviour
         chatScrollbar.value = 0;
         chathandle.gameObject.SetActive(false);
         chatScrollRect.enabled = false;
-        for (int i = 0; i < content.childCount; i++)
+        for (int i = 1; i < content.childCount; i++)
         {
             content.GetChild(i).gameObject.SetActive(false);
         }
