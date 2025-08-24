@@ -56,7 +56,7 @@ partial struct GoInGameServerSystem : ISystem
 
 
 
-            entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
+            //entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
             Entity confirmation = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent<YouAreInGameRPC>(confirmation);

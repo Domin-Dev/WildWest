@@ -58,7 +58,7 @@ public class WorldRow : MonoBehaviour
         {
             cover.gameObject.SetActive(true);
             cover.sprite = UIAssetsManager.instance.ironBarsUI;
-            SetBackground(UIAssetsManager.instance.blackBackgroundUI);
+            SetBackground(UIAssetsManager.instance.blackFrameUI);
         }
     }
 
@@ -75,7 +75,7 @@ public class WorldRow : MonoBehaviour
         }
         return Color.white;
     }
-
+     
     private void SetBackground(Sprite sprite)
     {
         cover.transform.parent.GetComponent<Image>().sprite = sprite;

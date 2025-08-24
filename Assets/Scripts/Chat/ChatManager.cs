@@ -1,12 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
 using TMPro;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using System;
-using Unity.Entities;
-using Unity.NetCode;
 
 public class ChatManager : MonoBehaviour
 {
@@ -27,17 +28,18 @@ public class ChatManager : MonoBehaviour
     private List<string> history = new List<string>();
     private int LastHistory;
     private int currentLastHistory = -1;
-    private const int maxHistory = 10;
-    //
 
-    //Massages
-    private const int maxLog = 20;
+    private const int maxHistory = 10;
+    private const int maxLog = 30;
     private const int maxMessageOnScreen = 8;
     private const int timeToDisappear = 10;
+
+    private static Color invisible = new Color(1, 1, 1, 0);
+
     private bool isTimer = false;
     private  int LastIndex = 0;
-    private int[] indexes = new int[maxMessageOnScreen];
-    private int[] timers = new int[maxMessageOnScreen];
+    public int[] indexes = new int[maxMessageOnScreen];
+    public int[] timers = new int[maxMessageOnScreen];
     //
 
     private bool isChat = false;
@@ -62,8 +64,8 @@ public class ChatManager : MonoBehaviour
     private void Start()
     {
         ClearIndexes();
-        chatInputField.onSelect.AddListener((string k) => { isChatting = true; });
-        chatInputField.onDeselect.AddListener((string k) => { isChatting = false; SwitchChat();});
+       // chatInputField.onSelect.AddListener((string k) => { isChatting = true; });
+      //  chatInputField.onDeselect.AddListener((string k) => { isChatting = false; SwitchChat();});
     }
 
 
@@ -115,7 +117,6 @@ public class ChatManager : MonoBehaviour
                 if (index < 0) index = history.Count + index;
                 if (index < history.Count) chatInputField.text = history[index];
             }
-
         }
     }
     private void UpdateTimers()
@@ -133,8 +134,9 @@ public class ChatManager : MonoBehaviour
                     if (!isChat)
                     {
                         content.GetChild(index).gameObject.SetActive(false);
-                        content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 1);
                     }
+                    content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 1);
+                    
                     indexes[i] = -1;                 
                 }
             }
@@ -159,9 +161,8 @@ public class ChatManager : MonoBehaviour
                 if (!isChat)
                 {
                     content.GetChild(indexes[i]).gameObject.SetActive(false);
-                                            content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 1);
                 }
-
+                content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 1);
                 indexes[i] = index;
                 timers[i] = 0;
                 return;
@@ -179,6 +180,8 @@ public class ChatManager : MonoBehaviour
     private void SetTimerToDisappear()
     {
         isTimer = true;
+        LastIndex = content.childCount - 1;
+        AddNewTimer(LastIndex);
         if (content.childCount > maxLog)
         {
             Destroy(content.GetChild(0).gameObject);
@@ -187,18 +190,26 @@ public class ChatManager : MonoBehaviour
                 if (indexes[i] != -1) indexes[i]--;
             }
         }
-        LastIndex = content.childCount - 1;
-        AddNewTimer(LastIndex);
     }
     private void SendMessage()
     {
-        if (chatInputField.text.Length > 0)
-        {
-            SendRPC(chatInputField.text);
-            SaveToHistory();
-            CheckCommands();
-        }
+
+        string text = chatInputField.text.Trim();
         SwitchChat();
+        if (text.Length > 0)
+        {
+            if (text[0] == '/')
+            {
+                PrintPlayerMessage(DateTimeOffset.Now.ToUnixTimeSeconds(),text, GameInfo.instance.playerName);
+                CheckCommands(text.Trim());
+            }
+            else
+            {
+                SendRPC(chatInputField.text);
+            }
+            SaveToHistory();
+      
+        }
     }
     private void SaveToHistory()
     {
@@ -229,39 +240,55 @@ public class ChatManager : MonoBehaviour
         entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    public void Print(string text)
+    public Transform Print(string text)
     {
         Transform message = Instantiate(messagePrefab, content).transform;
-        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = text;
+        TextMeshProUGUI textMeshProUGUI = message.GetChild(0).GetComponent<TextMeshProUGUI>();
+        Image image = message.GetComponent<Image>();
+        textMeshProUGUI.color = invisible;
+        textMeshProUGUI.text = text;
         chatScrollbar.value = 0;
         SetTimerToDisappear();
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(message.GetComponent<RectTransform>());
+        Timer.Create(0.05f, () => { 
+            textMeshProUGUI.color = Color.white;
+            if (isChat)
+                image.color = new Color(1, 1, 1, 1f);
+            else
+                image.color = new Color(1, 1, 1, 0.5f);
+            return true;
+        });
+        return message;
     }
+
     public void PrintPlayerMessage(long time,string text, string player)
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
         DateTime localTime = date.ToLocalTime().DateTime;
-
-        Transform message = Instantiate(messagePrefab, content).transform;
-        message.GetChild(0).GetComponent<TextMeshProUGUI>().text = $"[{localTime.ToString("HH:mm:ss")}] <Color=#E68D31>{player}</color>: {text}";
-        chatScrollbar.value = 0;
-        SetTimerToDisappear();
+        Print($"[{localTime.ToString("HH:mm:ss")}] <Color=#E68D31>{player}</color>: {text}");
     }
-    private void CheckCommands()
+    public void PrintServerMessage(long time, string text)
     {
-        string command = chatInputField.text;
+        DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
+        DateTime localTime = date.ToLocalTime().DateTime;
+        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIAssetsManager.instance.ironBackgroundUI;
+    }
 
-        for (int i = 0; i < command.Length; i++)
-        {
-            char c = command[i];
-            if (c == '/')
-            {
-                break;
-            }
-            else if (command[i] != ' ')
-            {
-                return;
-            }
-        }
+    private void CheckCommands(string command)
+    {
+        //for (int i = 0; i < command.Length; i++)
+        //{
+        //    char c = command[i];
+        //    if (c == '/')
+        //    {
+        //        break;
+        //    }
+        //    else if (command[i] != ' ')
+        //    {
+        //        return;
+        //    }
+        //}
 
         string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         properties[0] = properties[0].Remove(0,1);
@@ -275,7 +302,7 @@ public class ChatManager : MonoBehaviour
                 if (item is DebugCommand)
                 {
                     (item as DebugCommand).Invoke();
-                    return;
+                    return ;
                 }
                 else if (item is DebugCommand<int>)
                 {
@@ -310,15 +337,20 @@ public class ChatManager : MonoBehaviour
             }
         }
 
-        foreach (CommandBase item in hints)
-        {
-            PrintHint(item);
-        }
+        PrintHint(hints.ToArray());
     }
-    private void PrintHint(CommandBase commandBase)
+    private void PrintHint(params CommandBase[] commandBase)
     {
-        Print($"/{commandBase.commandId} {commandBase.commandFormat}");
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < commandBase.Length; i++)
+        {
+            sb.Append($"/{commandBase[i].commandId} {commandBase[i].commandFormat}");
+            if(i != commandBase.Length - 1) sb.Append("\n");
+        }
+        Print(sb.ToString());
     }
+
+
     private void SetUp()
     {
         chatScrollbar = chatScrollRect.verticalScrollbar;
@@ -335,7 +367,9 @@ public class ChatManager : MonoBehaviour
     private void TurnOnChat()
     {
         isChat = true;
+        isChatting = true;
         chatInputField.gameObject.SetActive(true);
+
         chatInputField.text = string.Empty;
         chatInputField.ActivateInputField();
         chatBackground.color = Color.white;
@@ -360,6 +394,7 @@ public class ChatManager : MonoBehaviour
         isChatting = false;
         isChat = false;
         chatInputField.gameObject.SetActive(false);
+
         chatBackground.color = new Color(1, 1, 1, 0);
         chatScrollbar.value = 0;
         chathandle.gameObject.SetActive(false);
@@ -373,10 +408,8 @@ public class ChatManager : MonoBehaviour
         {
             if (indexes[i] != -1)
             {
-                content.GetChild(indexes[i]).gameObject.SetActive(true);
-                content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+                content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
             }
         }
     }
-
 }

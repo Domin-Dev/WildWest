@@ -92,7 +92,6 @@ public class Timer
             }
         }
     }
-
     public void Update()
     {
         if(!timerIsOver)
@@ -126,7 +125,6 @@ public class Timer
     {
         return timer;
     }
-
     public bool IsEnd()
     {
         return timerIsOver;

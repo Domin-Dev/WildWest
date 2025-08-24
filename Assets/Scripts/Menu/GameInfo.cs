@@ -14,6 +14,7 @@ public enum Difficulty
 
 public class GameInfo : MonoBehaviour 
 {
+
     public string playerName;
     public string worldName;
     public long creationTime;
@@ -30,7 +31,6 @@ public class GameInfo : MonoBehaviour
     public int lastLoadedScene;
     [Space]
     public string errorMessage;
-
 
     public static GameInfo instance { get; private set; }
 

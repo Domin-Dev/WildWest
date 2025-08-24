@@ -44,7 +44,7 @@ partial struct PlayerInputSystem : ISystem
         //        WindowsManager.instance.LoadScene(11);
         //}
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Tab) && !ChatManager.instance.isChatting)
         {
             WindowsManager.instance.LoadScene(9);
         }
