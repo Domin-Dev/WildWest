@@ -49,14 +49,8 @@ public static class SaveSystem
     public static void Save()
     {
         Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave hostPlayer);
-        Debug.Log(hostPlayer + " ttto!");
-
         BinaryFormatter formatter = new BinaryFormatter();
-
-        Debug.Log(savesPath);
         string folderPath = GetWorldPath(GameInfo.instance.worldName);
-        Debug.Log(folderPath);
-
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);

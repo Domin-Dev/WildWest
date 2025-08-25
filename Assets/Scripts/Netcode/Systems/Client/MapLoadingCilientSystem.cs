@@ -79,8 +79,6 @@ public partial class MapLoadingClientSystem : SystemBase
                         );
 
 
-
-                        
                         BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb, gridObject, pos);
 
                         i += value + 8;

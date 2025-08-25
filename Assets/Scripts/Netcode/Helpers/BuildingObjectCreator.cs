@@ -16,6 +16,7 @@ public static class BuildingObjectCreator
 {
     public static void CreateObject(ref EntitiesReferences entitiesReferences, EntityManager entityManager, ref EntityCommandBuffer entityCommand, GridObject gridObject, float2 localPos)
     {
+        Debug.Log("New OBJ  " + entityManager.World.Flags);
         float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(gridObject.ID).shadowPixels;
 
         float2 worldPos = new float2(localPos.x * ClientMap.cellSize, localPos.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);

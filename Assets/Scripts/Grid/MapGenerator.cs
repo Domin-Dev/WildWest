@@ -96,7 +96,6 @@ public class MapGenerator
         foreach (var item in map.chunks)
         {
 
-
             for (int y = 0; y < chunkSize; y++)
             {
                 for (int x = 0; x < chunkSize; x++)
@@ -180,7 +179,7 @@ public class MapGenerator
         float tempValue = Generate(posX,posY, offsetTemp, scaleTemp);
         float heightValue = Generate(posX,posY, offsetHeight, scaleHeight);
 
-        if(heightValue < 0.15f) SetGridHole(chunk, x, y);
+      //  if(heightValue < 0.15f) SetGridHole(chunk, x, y);
         //else if (rand.Next(0, 100) <= 2)
         //{
         //    SetBuildingObject(chunk, x, y, 5);

@@ -64,6 +64,8 @@ public static class LoadSystem
     }
     public static PlayerSave LoadPlayerSave(string worldName,string playerName)
     {
+        if(worldName == string.Empty) return null;
+
         string path = SaveSystem.GetPlayerDataPath(worldName, playerName);
         Debug.Log(path);
         BinaryFormatter formatter = new BinaryFormatter();

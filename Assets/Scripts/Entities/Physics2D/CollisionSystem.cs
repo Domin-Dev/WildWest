@@ -9,6 +9,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Localization.SmartFormat.Utilities;
 using static UnityEngine.EventSystems.EventTrigger;
 
 
@@ -248,7 +249,7 @@ public partial struct CollisionSystem : ISystem
                 if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
                 entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(new float3(100000, 100000, 100000)));
 
-                Debug.Log("destory ! " + entity);
+                Debug.Log("destory ! " + entity + " " + state.EntityManager.World.Flags);
             }
             else
             {

@@ -77,7 +77,7 @@ public class MenuManager : MonoBehaviour
     {
         if (instance == null) instance = this;
     }
-    private async Task Start()
+    private void Start()
     {
         GameInfo.instance.lastLoadedScene = -1;
         SetUpUI();
@@ -135,8 +135,9 @@ public class MenuManager : MonoBehaviour
         buttonBackConnectToIP.onClick.AddListener(CloseWindows);
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
-
-
+        //////////////////////////////////////////
+        GameInfo.instance.SetDefaultSettings();
+        Debug.Log("dz");
         WindowsManager.instance.OnCloseWindows += CloseWindows;
     }
     private void OnDestroy()
@@ -354,6 +355,7 @@ public class MenuManager : MonoBehaviour
 
         if(headerData == null)
         {
+            Debug.Log("null");
             GameInfo.LoadScene(4, 0);
             GameInfo.instance.playerName = playerNameInput.text.ToString();
         }
@@ -395,8 +397,9 @@ public class MenuManager : MonoBehaviour
             var endPoint = NetworkEndpoint.AnyIpv4.WithPort(port);
             if (!endPoint.IsValid) throw new Exception($"Invalid endpoint: port {port} is out of range or address is invalid.");
             bool result = networkStreamDriver.ValueRW.Listen(endPoint);
-            if (!result) throw new Exception($"Failed to listen on port {endPoint.Port}. Port may be in use.");
+            Debug.Log(result);
 
+            if (!result) throw new Exception($"Failed to listen on port {endPoint.Port}. Port may be in use.");
 
             NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
             networkStreamDriver =

@@ -41,6 +41,7 @@ public partial struct DestroyEntitySystem : ISystem
             else
             {
                 if(SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);  
+                Debug.Log(entity.ToString() + " usuniete!!!");
                 localTransform.ValueRW.Position = new float3(100000, 100000,100000);
                 entityCommandBuffer.RemoveComponent<Simulate>(entity);
                 if (!state.EntityManager.HasComponent<GhostInstance>(entity))

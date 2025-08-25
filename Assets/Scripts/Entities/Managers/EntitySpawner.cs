@@ -101,7 +101,6 @@ public class EntitySpawner : MonoBehaviour
     public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion)
     {
         Entity prefab = GetParticleIndex(indexParticle);
-        if (indexParticle == 3) Debug.Log("spawn!!!");
 
         Entity entity = entityManager.Instantiate(prefab);
         position.z = position.y;

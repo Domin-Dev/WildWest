@@ -73,6 +73,5 @@ public partial class ConnectionTimeoutSystem : SystemBase
         entityCommandBuffer.DestroyEntity(SystemAPI.GetSingletonEntity<EnableConnectionTimeoutCheck>());
         RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
         this.Enabled = false;
-
     }
 }
