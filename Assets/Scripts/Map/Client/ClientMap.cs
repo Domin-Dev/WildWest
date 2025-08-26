@@ -75,6 +75,7 @@ namespace Game.Client.Map
             return new int2(x + chunk.chunkCoordinates.x, y + chunk.chunkCoordinates.y);
         }
 
+
         public bool GetNextChunk(out ClientChunk clientChunk)
         {
             if (chunksToRender.Count > 0)

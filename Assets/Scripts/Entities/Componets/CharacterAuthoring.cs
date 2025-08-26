@@ -12,7 +12,6 @@ public class CharacterAuthoring : MonoBehaviour
 {
     public class Baker : Baker<CharacterAuthoring>
     {
-
         public override void Bake(CharacterAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
@@ -31,13 +30,13 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Health());
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
+
+            AddBuffer<InventorySlot>(entity);
   
             AddBuffer<CooldownTargetTick>(entity);
-          
         }
     }
 }
-
 
 
 
@@ -130,8 +129,15 @@ public struct Thirst : IComponentData
     [GhostField] public int Max;
 }
 
+public struct LastChunk : IComponentData
+{
+    public int value;
+}
 
-
+public struct InterestArea : IComponentData
+{
+    public float radius;
+}
 public struct PlayerSourceConnection : IComponentData {
     public Entity value;
 }

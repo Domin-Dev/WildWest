@@ -152,7 +152,6 @@ public class DebugManager : MonoBehaviour
 
         var entityManager = world.EntityManager;
 
-        Debug.Log(world.Flags);
         var query = entityManager.CreateEntityQuery(
             ComponentType.ReadOnly<NetworkStreamConnection>(),
             ComponentType.ReadOnly<NetworkSnapshotAck>()

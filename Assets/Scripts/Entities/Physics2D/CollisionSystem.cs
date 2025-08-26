@@ -1,3 +1,4 @@
+using Game.Client.Map;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -120,7 +121,8 @@ public partial struct CollisionSystem : ISystem
                 playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
                 velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
-                if(shouldBeChanged) state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
+                if(shouldBeChanged) 
+                    state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
             }
         }
         else
@@ -241,6 +243,9 @@ public partial struct CollisionSystem : ISystem
                     }
                 }
             }
+
+
+            LocalTransform localTransform = new LocalTransform();
 
             if (destroy)
             {
@@ -376,13 +381,15 @@ public partial struct CollisionSystem : ISystem
                 tempTransform1.z = tempTransform1.y;
 
 
-                LocalTransform localTransform = getPosition[entity];
+                localTransform = getPosition[entity];
                 localTransform.Position = tempTransform1;
                 getPosition[entity] = localTransform;
 
             }
             if (isChanged.HasComponent(entity))
             {
+                if (state.World.IsServer() && state.EntityManager.HasComponent<Player>(entity))
+                    PlayerChangeChunk(ref state, ref entityCommandBuffer,localTransform,entity);
                 isChanged.SetComponentEnabled(entity, false);
             }
             
@@ -398,7 +405,6 @@ public partial struct CollisionSystem : ISystem
                 entityCommandBuffer.RemoveComponent<ForceImpulse2D>(e);
         }
 
-
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
         physics.Dispose();
@@ -409,6 +415,17 @@ public partial struct CollisionSystem : ISystem
         hitboxes.Dispose();
     }
 
+    public void PlayerChangeChunk(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
+    {
+        int index = MapServerSystem.Map.GetChunkIndex(newPos.Position);
+        var lastChunk = state.EntityManager.GetComponentData<LastChunk>(player);
+        if (lastChunk.value != index)
+        {
+            lastChunk.value = index;
+            entityCommandBuffer.SetComponent(player, lastChunk);
+            entityCommandBuffer.SetComponentEnabled<NeedChunks>(player, true);
+        }
+    }
     public float3 GetWorldPosition(Entity entity)
     {
         if (getParent.HasComponent(entity))
@@ -417,8 +434,7 @@ public partial struct CollisionSystem : ISystem
         }
         else
             return getPosition[entity].Position;
-    }
-    
+    } 
     public float2 GetVelocity(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer,Entity entity)
     {
         float2 velocity = getVelocity[entity].Value;
@@ -429,8 +445,6 @@ public partial struct CollisionSystem : ISystem
         velocity *= deltaTime;
         return velocity;
     }
-
-
     private bool BulletHit(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity target, Entity bullet)
     {
         LocalTransform lt = getPosition[bullet];
@@ -493,7 +507,6 @@ public partial struct CollisionSystem : ISystem
 
         return true;
     }
-
     private Color GetPopupColor(float multipler)
     {
         if(multipler > 1f)
@@ -505,7 +518,6 @@ public partial struct CollisionSystem : ISystem
             return damageColor;
         }
     }
-
     private void PlayerIsDead(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer,Entity player)
     {
         LocalTransform lt = getPosition[player];

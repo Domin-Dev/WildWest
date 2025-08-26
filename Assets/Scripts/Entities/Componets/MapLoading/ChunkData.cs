@@ -6,10 +6,16 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.NetCode;
 
-[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToOwner)]
+[GhostComponent(OwnerSendType = SendToOwnerType.All)]
 public struct ChunkData : IComponentData
 {
     [GhostField] public int Value;
     [GhostField] public int Max;
 }
+public struct SentChunks: IBufferElementData
+{
+    public int chunkIndex;
+}
+
+public struct NeedChunks : IComponentData, IEnableableComponent{}
 

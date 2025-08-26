@@ -41,7 +41,6 @@ public class GameInfo : MonoBehaviour
         worldName = string.Empty;
         playTime = 0;
         Debug.Log("co???");
-
     }
     public static void LoadScene(int newScene, int loadingMode, float maxProgress = 1f)
     {

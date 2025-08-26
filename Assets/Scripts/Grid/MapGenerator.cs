@@ -26,7 +26,7 @@ public class MapGenerator
     [SerializeField] private Vector2 scaleHeight;
     [SerializeField] private Vector2 offsetHeight;
     [Header("Chunk Settings")]
-    [SerializeField] private int chunkSize = 10;
+    public static int chunkSize = 10;
 
     private static readonly Vector2 gridOffset = new Vector2(0,0); 
 

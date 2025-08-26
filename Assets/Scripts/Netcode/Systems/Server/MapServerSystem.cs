@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Burst;
 using Unity.Collections;
@@ -13,24 +14,31 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapServerSystem : SystemBase
 {
-
-    public Map map;
+    private static Map map;
     private MapGenerator generator;
     public float2 spawnPoint;
     int simulationTickRate = 60;
     private const int ChunksPerTick = 2;
+    private const int renderChunksSize = 2;
+
     private NetworkTick currentTick;
     private EntitiesReferences entitiesReferences;
 
+
+
+    public static Map Map { get { return map; } }
+
     protected override void OnCreate()
     {
-        RequireForUpdate<SendMap>();
+        //RequireForUpdate<SendMap>();
+
         if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
     protected override void OnDestroy()
     {
         base.OnDestroy();
     }
+
 
     public void GenerateMap()
     {
@@ -82,6 +90,25 @@ public partial class MapServerSystem : SystemBase
 
             entityCommandBuffer.RemoveComponent<SendMap>(entity);
         }
+        
+
+        foreach ((RefRO<LastChunk> chunk, Entity entity) in
+        SystemAPI.Query<RefRO<LastChunk>>().WithAll<NeedChunks>().WithEntityAccess())
+        {
+            var sentChunks = SystemAPI.GetBuffer<SentChunks>(entity);
+            var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.value,renderChunksSize);
+            Debug.Log(chunksToSend.Length);
+            for (int i = 0; i < chunksToSend.Length; i++)
+            {
+                SentChunks sentChunk = new SentChunks() { chunkIndex = chunksToSend[i] };
+                if (!sentChunks.Contains(sentChunk))
+                {
+                    sentChunks.Add(sentChunk);
+                }
+            }
+            entityCommandBuffer.SetComponentEnabled<NeedChunks>(entity, false);
+        }
+
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }

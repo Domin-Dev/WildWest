@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Unity.Mathematics;
+using System;
 
-public class Map
+public class 
+    Map
 {
     public Vector2 offset { private set;  get; }
     public float cellSize { private set;  get; }
@@ -42,6 +45,34 @@ public class Map
         mapHeightOnWorldScale = heightInChunks * chunkSizeOnWorldScale;
         mapWidthOnWorldScale = width * chunkSizeOnWorldScale;
 
+    }
+
+    public int GetChunkIndex(float2 position)
+    {
+        return ((int)(position.x / cellSize / chunkSize) + (int)(position.y / cellSize / chunkSize) * widthInChunks);
+    }
+    public int GetChunkIndex(float3 position)
+    {
+        return GetChunkIndex(MyTools.ConvertFloat(position));
+    }
+    
+    public int2 GetChunkPos(int chunkIndex)
+    {
+        return new int2(chunkIndex % widthInChunks, chunkIndex / widthInChunks);
+    }
+    public int[] GetNeighboringChunkIndexes(int chunkIndex,int renderSize)
+    {
+        List<int> indexes = new List<int>();
+        int2 pos = GetChunkPos(chunkIndex);
+        for (int y = -renderSize; y <= renderSize; y++)
+        {
+            for (int x = -renderSize; x <= renderSize; x++)
+            {
+                if (pos.x + x >= 0 && pos.y + y >= 0)
+                    indexes.Add(chunkIndex + x + y * widthInChunks);
+            }
+        }
+        return indexes.ToArray();   
     }
 }
 

@@ -30,19 +30,15 @@ partial struct GoInGameServerSystem : ISystem
             var networkId = state.EntityManager.GetComponentData<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
-
-
-
             PlayerSave playerSave = LoadSystem.LoadPlayerSave(requestRPC.playerName.ToString());
 
-            Debug.Log(playerSave);
             if (playerSave == null)
                 GetDefaultPlayerSave(requestRPC, ref playerSave);
-            Debug.Log(playerSave.health);
 
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.playerPosition.x, playerSave.playerPosition.y, playerSave.playerPosition.y)));
             entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
+            entityCommandBuffer.AddComponent(character, new InterestArea() { radius = 8f });
             entityCommandBuffer.SetComponent(character, new Player()
             {
                 speed = 1f,
@@ -50,11 +46,15 @@ partial struct GoInGameServerSystem : ISystem
             });
 
 
+            entityCommandBuffer.AddComponent(character, new LastChunk());
+            entityCommandBuffer.AddBuffer<SentChunks>(character);
+            entityCommandBuffer.AddComponent(character, new NeedChunks());
+            entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, false);
+
+
             entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
             entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
             entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });
-
-
 
             //entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
