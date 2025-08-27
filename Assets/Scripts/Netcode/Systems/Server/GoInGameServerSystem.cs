@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct GoInGameServerSystem : ISystem
@@ -18,7 +19,6 @@ partial struct GoInGameServerSystem : ISystem
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
     }
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -47,9 +47,9 @@ partial struct GoInGameServerSystem : ISystem
 
 
             entityCommandBuffer.AddComponent(character, new LastChunk());
-            entityCommandBuffer.AddBuffer<SentChunks>(character);
             entityCommandBuffer.AddComponent(character, new NeedChunks());
-            entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, false);
+            entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, true);
+            entityCommandBuffer.AddComponent(character, new SendToPlayer());
 
 
             entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
@@ -65,6 +65,19 @@ partial struct GoInGameServerSystem : ISystem
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
+    }
+
+    private void ServerComponents(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity character,int networkID)
+    {
+        entityCommandBuffer.AddComponent(character, new LastChunk());
+        entityCommandBuffer.AddComponent(character, new NeedChunks());
+        entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, false);
+        var key = new RelevantGhostForConnection()
+        {
+            Ghost = SystemAPI.GetComponent<GhostInstance>(character).ghostId,
+            Connection = networkID
+        };
+        SystemAPI.GetSingletonRW<GhostRelevancy>().ValueRW.GhostRelevancySet.TryAdd(key, 0);
     }
 
     private void GetDefaultPlayerSave(GoInGameRequestRPC requestRPC,ref PlayerSave playerSave)

@@ -24,18 +24,21 @@ public partial class MapServerSystem : SystemBase
     private NetworkTick currentTick;
     private EntitiesReferences entitiesReferences;
 
-
+    private NativeHashMap<int,Entity> loadedChunks;
+    private NativeHashMap<int, NativeHashMap<int,int>> playerChunks;
 
     public static Map Map { get { return map; } }
 
     protected override void OnCreate()
     {
-        //RequireForUpdate<SendMap>();
-
         if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+        loadedChunks = new NativeHashMap<int, Entity>(100, Allocator.Persistent);
+        playerChunks = new NativeHashMap<int, NativeHashMap<int,int>>(50, Allocator.Persistent);
     }
     protected override void OnDestroy()
     {
+        loadedChunks.Dispose();
+        playerChunks.Dispose();
         base.OnDestroy();
     }
 
@@ -49,8 +52,6 @@ public partial class MapServerSystem : SystemBase
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-
-
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
@@ -60,19 +61,20 @@ public partial class MapServerSystem : SystemBase
                 GenerateMap();
             }
 
-            for (int i = 0; i < map.chunks.Count; i++)
-            {
-                Entity chunk = entityCommandBuffer.CreateEntity();
-                FixedChunk fixedChunk = new FixedChunk();
-                GetChunk(i, ref fixedChunk);
+
+            //for (int i = 0; i < map.chunks.Count; i++)
+            //{
+            //    Entity chunk = entityCommandBuffer.CreateEntity();
+            //    FixedChunk fixedChunk = new FixedChunk();
+            //    GetChunk(i, ref fixedChunk);
 
 
-                uint lifetimeInTicks = (uint)(i / ChunksPerTick);
-                var targetTick = currentTick;
-                targetTick.Add(lifetimeInTicks);
-                entityCommandBuffer.AddComponent(chunk,fixedChunk);
-                entityCommandBuffer.AddComponent(chunk, new RPCSendQueue() { target = entity, tick = targetTick });
-            }
+            //    uint lifetimeInTicks = (uint)(i / ChunksPerTick);
+            //    var targetTick = currentTick;
+            //    targetTick.Add(lifetimeInTicks);
+            //    entityCommandBuffer.AddComponent(chunk, fixedChunk);
+            //    entityCommandBuffer.AddComponent(chunk, new RPCSendQueue() { target = entity, tick = targetTick });
+            //}
 
 
             GetChunkObjects(0, ref entityCommandBuffer, entity);
@@ -92,40 +94,83 @@ public partial class MapServerSystem : SystemBase
         }
         
 
-        foreach ((RefRO<LastChunk> chunk, Entity entity) in
-        SystemAPI.Query<RefRO<LastChunk>>().WithAll<NeedChunks>().WithEntityAccess())
+
+        foreach ((RefRO<LastChunk> chunk,RefRO<GhostOwner> networkID, Entity entity) in
+        SystemAPI.Query<RefRO<LastChunk>,RefRO<GhostOwner>>().WithAll<NeedChunks>().WithEntityAccess())
         {
-            var sentChunks = SystemAPI.GetBuffer<SentChunks>(entity);
             var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.value,renderChunksSize);
-            Debug.Log(chunksToSend.Length);
-            for (int i = 0; i < chunksToSend.Length; i++)
+
+            Debug.Log("new Chunk");
+
+            for (int i = 0; i < chunksToSend.Count; i++)
             {
-                SentChunks sentChunk = new SentChunks() { chunkIndex = chunksToSend[i] };
-                if (!sentChunks.Contains(sentChunk))
+                int index = chunksToSend[i];
+                if (PlayerHasChunk(networkID.ValueRO.NetworkId, index)) continue;
+                Entity chunkEntity;
+
+                if (!loadedChunks.TryGetValue(index, out chunkEntity))
                 {
-                    sentChunks.Add(sentChunk);
+                    CreateChunk(ref entityCommandBuffer, index);
+                    chunkEntity = loadedChunks[index];
                 }
+
+                playerChunks[networkID.ValueRO.NetworkId].Add(index,0);
+                Debug.Log(SystemAPI.GetComponent<GhostInstance>(chunkEntity).ghostId);
             }
+
             entityCommandBuffer.SetComponentEnabled<NeedChunks>(entity, false);
         }
 
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    private void GetChunk(int index, ref FixedChunk chunkStruct)
-    {
-        Chunk chunk = map.chunks[index];
 
-        chunkStruct.worldPosition = chunk.worldPosition;
-        chunkStruct.chunkCoordinates = new int2((int)chunk.chunkCoordinates.x, (int)chunk.chunkCoordinates.y);
+
+
+    private bool PlayerHasChunk(int networkID, int chunkIndex)
+    {
+        if(playerChunks.ContainsKey(networkID))
+        {
+            var chunks = playerChunks[networkID];
+            return chunks.ContainsKey(chunkIndex);
+        }
+        else
+        {
+            playerChunks.Add(networkID, new NativeHashMap<int,int>((int)math.pow(renderChunksSize + 1,2), Allocator.Persistent));
+        }
+        return false;
+    }
+    private void CreateChunk(ref EntityCommandBuffer entityCommandBuffer,int index)
+    {
+        var entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        Entity chunkEntity = ClientServerBootstrap.ServerWorld.EntityManager.Instantiate(entitiesReferences.chunkEntity);
+        var tiles = SystemAPI.GetBuffer<TileChunk>(chunkEntity);
+        ChunkComponent chunkComponent = new ChunkComponent();
+
+        Chunk chunk = map.chunks[index];
+        chunkComponent.worldPos = chunk.worldPosition;
+        chunkComponent.index = index;
 
         for (int i = 0; i < 10; i++)
         {
             for (int j = 0; j < 10; j++)
             {
-                chunkStruct[i, j] = new FixedTile(chunk.grid[i,j]);
+                GridTile tile = chunk.grid[j, i];
+                tiles.Add(new TileChunk()
+                {
+                    tileID = tile.tileID,
+                    variant = (byte)tile.variant
+                });
             }
         }
+
+        entityCommandBuffer.SetComponent(chunkEntity,chunkComponent);
+        loadedChunks.Add(index, chunkEntity);
+    }
+
+    private void SendToPlayer(int index, ref FixedChunk chunkStruct)
+    {
+
     }
     private void GetChunkObjects(int index, ref EntityCommandBuffer entityCommandBuffer,Entity target)
     {

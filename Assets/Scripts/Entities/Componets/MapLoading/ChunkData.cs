@@ -4,18 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
-public struct ChunkData : IComponentData
+public struct ChunkComponent : IComponentData
 {
-    [GhostField] public int Value;
-    [GhostField] public int Max;
+    [GhostField] public int index;
+    [GhostField] public float2 worldPos;
 }
-public struct SentChunks: IBufferElementData
+
+[GhostComponent(OwnerSendType = SendToOwnerType.All)]
+public struct TileChunk : IBufferElementData
 {
-    public int chunkIndex;
+    [GhostField] public int tileID;
+    [GhostField] public byte variant;
 }
 
 public struct NeedChunks : IComponentData, IEnableableComponent{}
 
+
+
+[GhostComponent(OwnerSendType = SendToOwnerType.All)]
+public struct ChunkIsUpdated : IComponentData, IEnableableComponent
+{
+}

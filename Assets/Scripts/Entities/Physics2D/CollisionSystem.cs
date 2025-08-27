@@ -388,7 +388,7 @@ public partial struct CollisionSystem : ISystem
             }
             if (isChanged.HasComponent(entity))
             {
-                if (state.World.IsServer() && state.EntityManager.HasComponent<Player>(entity))
+                if (state.World.IsServer() && state.EntityManager.HasComponent<LastChunk>(entity))
                     PlayerChangeChunk(ref state, ref entityCommandBuffer,localTransform,entity);
                 isChanged.SetComponentEnabled(entity, false);
             }

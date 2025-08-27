@@ -32,7 +32,7 @@ public class TimeTickSystem : MonoBehaviour
     private void Awake()
     {
         tick = 0;
-        totalTime = GameInfo.instance.playTime;
+        totalTime = (GameInfo.instance?.playTime).GetValueOrDefault();
     }
 
     private void Update()

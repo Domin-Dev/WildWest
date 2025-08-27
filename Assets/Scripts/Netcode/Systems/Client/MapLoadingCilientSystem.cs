@@ -45,14 +45,14 @@ public partial class MapLoadingClientSystem : SystemBase
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
 
-        Entities
-            .WithAll<ReceiveRpcCommandRequest, FixedChunk>()
-            .ForEach((Entity entity, in FixedChunk chunkStruct) =>
-            {
-                clientMap.AddChunk(chunkStruct);
-                ecb.DestroyEntity(entity);
-            }).WithoutBurst().Run();
-        mapVis.RenderNewChunks();
+        //Entities
+        //    .WithAll<ReceiveRpcCommandRequest, FixedChunk>()
+        //    .ForEach((Entity entity, in FixedChunk chunkStruct) =>
+        //    {
+        //        clientMap.AddChunk(chunkStruct);
+        //        ecb.DestroyEntity(entity);
+        //    }).WithoutBurst().Run();
+        //mapVis.RenderNewChunks();
 
         Entities
             .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()

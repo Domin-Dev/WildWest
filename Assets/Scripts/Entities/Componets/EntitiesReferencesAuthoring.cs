@@ -5,10 +5,12 @@ using UnityEngine;
 
 public class EntitiesReferencesAuthoring : MonoBehaviour
 {
+    [Header("Game")]
+    public GameObject characterPrefab;
+    public GameObject chunkPrefab;
     [Header("Prefabs")]
     public GameObject shadowPrefab;
     public GameObject worldItemPrefab;
-    public GameObject characterPrefab;
     public GameObject worldTextPrefab;
     public GameObject buildObjectEntityPrefab;
     public GameObject bulletPrefab;
@@ -27,6 +29,8 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 shadowEntity = GetEntity(authoring.shadowPrefab, TransformUsageFlags.Dynamic),
                 worldItemEntity = GetEntity(authoring.worldItemPrefab, TransformUsageFlags.Dynamic),
                 characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
+                chunkEntity = GetEntity(authoring.chunkPrefab, TransformUsageFlags.Dynamic),
+                
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
                 worldTextEntity = GetEntity(authoring.worldTextPrefab, TransformUsageFlags.Dynamic),
 
@@ -41,11 +45,14 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
 }
 public struct EntitiesReferences : IComponentData
 {
+    public Entity characterEntity;
+    public Entity chunkEntity;
+    [Space]
+
     public Entity shadowEntity;
     public Entity worldItemEntity;
-    public Entity characterEntity;
     public Entity worldTextEntity;
-    
+    [Space]
     public Entity buildObjectEntity;
     public Entity bulletEntity;
     [Space]

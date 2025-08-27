@@ -60,7 +60,7 @@ public class
     {
         return new int2(chunkIndex % widthInChunks, chunkIndex / widthInChunks);
     }
-    public int[] GetNeighboringChunkIndexes(int chunkIndex,int renderSize)
+    public List<int> GetNeighboringChunkIndexes(int chunkIndex,int renderSize)
     {
         List<int> indexes = new List<int>();
         int2 pos = GetChunkPos(chunkIndex);
@@ -72,7 +72,7 @@ public class
                     indexes.Add(chunkIndex + x + y * widthInChunks);
             }
         }
-        return indexes.ToArray();   
+        return indexes;   
     }
 }
 
