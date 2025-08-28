@@ -18,5 +18,5 @@ public struct AnswerPlayerVerificationRPC : IRpcCommand
 }
 public struct MapIsLoaded : IRpcCommand
 {
-
+    public int widthInChunks;
 }

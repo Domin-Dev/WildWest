@@ -22,7 +22,7 @@ partial struct GoInGameCilientSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-        foreach ((RefRO<ReceiveRpcCommandRequest> request, Entity rpc) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>>().WithAll<MapIsLoaded>().WithEntityAccess())
+        foreach ((RefRO<ReceiveRpcCommandRequest> request, RefRO<MapIsLoaded> map, Entity rpc) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<MapIsLoaded>>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(rpc);
 
@@ -31,6 +31,10 @@ partial struct GoInGameCilientSystem : ISystem
                 entityCommandBuffer.AddComponent<NetworkStreamInGame>(entity);
 
                 Entity rpcEntity = entityCommandBuffer.CreateEntity();
+
+                var mapData = entityCommandBuffer.CreateEntity();
+                entityCommandBuffer.AddComponent(mapData, new MapClientData() { widthInChunks = map.ValueRO.widthInChunks });
+                ClientServerBootstrap.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetMapSettings(map.ValueRO);
 
                 PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
                 LocalPlayerLook look = SystemAPI.GetSingleton<LocalPlayerLook>();

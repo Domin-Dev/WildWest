@@ -15,7 +15,7 @@ public struct ChunkComponent : IComponentData
 }
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
-public struct TileChunk : IBufferElementData
+public struct ChunkTiles : IBufferElementData
 {
     [GhostField] public int tileID;
     [GhostField] public byte variant;
@@ -24,8 +24,3 @@ public struct TileChunk : IBufferElementData
 public struct NeedChunks : IComponentData, IEnableableComponent{}
 
 
-
-[GhostComponent(OwnerSendType = SendToOwnerType.All)]
-public struct ChunkIsUpdated : IComponentData, IEnableableComponent
-{
-}

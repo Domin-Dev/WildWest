@@ -62,6 +62,38 @@ public partial struct GlobalRelevancySystem : ISystem
             entityCommandBuffer.RemoveComponent<SendToPlayer>(entity);
         }
 
+        foreach ((RefRO<GhostInstance> ghost, DynamicBuffer<ChunkRecipients> chunkRecipients, Entity entity)
+        in SystemAPI.Query<RefRO<GhostInstance> , DynamicBuffer<ChunkRecipients>>().WithAll<SendChunk>().WithEntityAccess())
+        {
+            if (ghost.ValueRO.ghostId == 0) continue;
+            for (int i = chunkRecipients.Length - 1; i >= 0; i--)
+            {
+                var client = chunkRecipients[i];
+                var key = new RelevantGhostForConnection()
+                {
+                    Ghost = ghost.ValueRO.ghostId,
+                    Connection = client.networkID
+                };
+                ghostRelevancy.GhostRelevancySet.Add(key, 0);
+                chunkRecipients.RemoveAt(i);
+                foreach ((DynamicBuffer<ChunkEvents> events, RefRO<GhostOwner> ghostOwner , RefRW<ChunkEventCounter> counter)
+                in SystemAPI.Query<DynamicBuffer<ChunkEvents>,RefRO<GhostOwner>, RefRW<ChunkEventCounter>>().WithAll<Player>())
+                {
+                    if(ghostOwner.ValueRO.NetworkId == client.networkID)
+                    {
+                        events.Add(new ChunkEvents()
+                        {
+                            value = SystemAPI.GetComponent<ChunkComponent>(entity).index,
+                            flags = 1,
+                            index = counter.ValueRO.index,
+                        });
+                        counter.ValueRW.index++;
+                    }
+                }
+            }
+            entityCommandBuffer.SetComponentEnabled<SendChunk>(entity,false);
+
+        }
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

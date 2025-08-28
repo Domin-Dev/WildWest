@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.VisualScripting;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -50,6 +52,7 @@ public class MapVisualization : MonoBehaviour
     public Texture2D borderTexture;
     float width1border;
     float height1border;
+    private EntityManager entityManager;
 
 
 
@@ -63,6 +66,8 @@ public class MapVisualization : MonoBehaviour
     public const float cornerSize = 0.1f;
     public float getCornerDistance { get { return cellSize - 2 * cornerSize; } }
     public Vector2 getCornerVector { get { return new Vector2(cornerSize, cornerSize); } }
+
+
 
 
     public ClientMap clientMap;
@@ -84,18 +89,27 @@ public class MapVisualization : MonoBehaviour
         SetUpMapMaterial();
     }
 
+    public void Start()
+    {
+        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+    }
 
     public void RenderNewChunks()
     {
         if (clientMap == null) return;
 
-        while (clientMap.GetNextChunk(out ClientChunk chunk))
+        while (clientMap.GetNextChunk(out Entity? chunk) && chunk.HasValue)
         {
-            clientMap.AddNewRenderedChunk(CreateMesh(chunk),chunk.chunkCoordinates);
+            Debug.Log("wczytywanie ChunkU!!!");
+            clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),clientMap.ChunkIndexToChunkCoordinates(entityManager.GetComponentData<ChunkComponent>(chunk.Value).index));
         }
     }
-    public Transform CreateMesh(ClientChunk chunk)
+    public Transform CreateMesh(Entity chunk)
     {
+
+        ChunkComponent chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
+        DynamicBuffer<ChunkTiles> chunkTiles = entityManager.GetBuffer<ChunkTiles>(chunk);
+
         Transform partOfMap = new GameObject("part of map").transform;
         Transform borders = new GameObject("Lines").transform;
         borders.SetParent(partOfMap);
@@ -109,7 +123,7 @@ public class MapVisualization : MonoBehaviour
         Mesh mesh = new Mesh();
         Mesh bordersMesh = new Mesh();
 
-        meshFilter.transform.position = new Vector3(chunk.worldPosition.x, chunk.worldPosition.y, 10);
+        meshFilter.transform.position = new Vector3(chunkComponent.worldPos.x, chunkComponent.worldPos.y, 10);
 
         Vector3[] vertices = new Vector3[4 * (numberOfTiles)];
         int[] triangles = new int[6 * (numberOfTiles)];
@@ -124,7 +138,7 @@ public class MapVisualization : MonoBehaviour
             for (int x = 0; x < chunkSize; x++)
             {
                 int index = x + y * chunkSize;
-                int tileID = chunk[x, y].tileID;
+                int tileID = chunkTiles[index].tileID;
 
                 vertices[index * 4 + 0] = new Vector3(x * cellSize, y * cellSize);
                 vertices[index * 4 + 1] = new Vector3(x * cellSize, (y + 1) * cellSize);
@@ -139,11 +153,11 @@ public class MapVisualization : MonoBehaviour
                 triangles[index * 6 + 4] = index * 4 + 2;
                 triangles[index * 6 + 5] = index * 4 + 3;
 
-                UV[] uvs = GetBorderUVs(GetNeighbors(x, y,chunk,true), tileID);
+                UV[] uvs = GetBorderUVs(GetNeighbors(x, y,chunk,ref chunkTiles,true), tileID);
                 SetTileBorders(uvs,borderUV, borderTriangles, borderVertices,index, new Vector2(x * cellSize, y * cellSize));
                
                 Vector2 uv11, uv00;
-                GetUVTile(tileID, chunk[x,y].variant, out uv00, out uv11);
+                GetUVTile(tileID, chunkTiles[index].variant, out uv00, out uv11);
                 UVSet(uv, index, uv00, uv11);
             }
         }
@@ -182,7 +196,10 @@ public class MapVisualization : MonoBehaviour
             int2 localpoas = ClientMap.MapPosToLocalChunkPos(x, y);
             
             Transform chunkTransform = clientMap.renderedChunks[coordinates];
-            ClientChunk clientChunk = clientMap.chunks[coordinates];
+            Entity clientChunk = clientMap.chunks[coordinates];
+
+            DynamicBuffer<ChunkTiles> chunkTiles = entityManager.GetBuffer<ChunkTiles>(clientChunk);
+
 
             Mesh mesh = chunkTransform.GetComponent<MeshFilter>().mesh;
             Mesh lineMesh = chunkTransform.GetChild(0).GetComponent<MeshFilter>().mesh;
@@ -194,11 +211,11 @@ public class MapVisualization : MonoBehaviour
             int2 localPos = ClientMap.MapPosToLocalChunkPos(x, y);
 
             int index = localPos.x + localPos.y * chunkSize;
-            ClientTile tile = clientMap[x, y];
+            ChunkTiles tile = clientMap[x, y].Value;
             Vector2 uv11, uv00;
 
 
-            var neighbors = GetNeighbors(localPos.x, localPos.y, clientChunk);
+            var neighbors = GetNeighbors(localPos.x,localPos.y,clientChunk,ref chunkTiles);
             UV[] uvs = GetBorderUVs(neighbors, tile.tileID);
             UpdateTileBorders(uvs,linesUv, index);
             GetUVTile(tile.tileID, tile.variant, out uv00, out uv11);
@@ -341,7 +358,7 @@ public class MapVisualization : MonoBehaviour
             values[2] = neighbors[0];
         return values;
     }
-    private int[] GetNeighbors(int x, int y, ClientChunk chunk,bool updateNeighbors = false)
+    private int[] GetNeighbors(int x, int y,Entity entityChunk, ref DynamicBuffer<ChunkTiles> chunk,bool updateNeighbors = false)
     {
         int[] neighbors = new int[8];
         Vector2 position = new Vector2(x, y);
@@ -351,15 +368,15 @@ public class MapVisualization : MonoBehaviour
             int id = -1;
             if (v.x < 10 && v.x >= 0 && v.y < 10 && v.y >= 0)
             {
-                id = chunk[(int)v.x, (int)v.y].tileID;
+                id = chunk[ClientMap.LocalTilePosToTileIndex((int)v.x, (int)v.y)].tileID;
             }
             else
             {
-                var tile = clientMap[chunk,(int)v.x, (int)v.y];
+                var tile = clientMap[entityChunk, (int)v.x, (int)v.y];
                 if (tile != null) 
                 {
-                    id = tile.tileID;
-                    if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(chunk, (int)v.x, (int)v.y), false);
+                    id = tile.Value.tileID;
+                  //  if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(chunk, (int)v.x, (int)v.y), false);
                 }
             }
 

@@ -77,14 +77,14 @@ public partial class MapServerSystem : SystemBase
             //}
 
 
-            GetChunkObjects(0, ref entityCommandBuffer, entity);
-            GetChunkObjects(1, ref entityCommandBuffer, entity);
-            GetChunkObjects(2, ref entityCommandBuffer, entity);
-            GetChunkObjects(3, ref entityCommandBuffer, entity);
+            //GetChunkObjects(0, ref entityCommandBuffer, entity);
+            //GetChunkObjects(1, ref entityCommandBuffer, entity);
+            //GetChunkObjects(2, ref entityCommandBuffer, entity);
+            //GetChunkObjects(3, ref entityCommandBuffer, entity);
 
 
             Entity loaded = entityCommandBuffer.CreateEntity();
-            entityCommandBuffer.AddComponent(loaded, new MapIsLoaded());
+            entityCommandBuffer.AddComponent(loaded, new MapIsLoaded() {  widthInChunks = map.widthInChunks});
             entityCommandBuffer.AddComponent(loaded, new SendRpcCommandRequest()
             {
                 TargetConnection = entity
@@ -115,7 +115,11 @@ public partial class MapServerSystem : SystemBase
                 }
 
                 playerChunks[networkID.ValueRO.NetworkId].Add(index,0);
-                Debug.Log(SystemAPI.GetComponent<GhostInstance>(chunkEntity).ghostId);
+                entityCommandBuffer.SetComponentEnabled<SendChunk>(chunkEntity, true);
+                entityCommandBuffer.AppendToBuffer(chunkEntity,new ChunkRecipients()
+                {
+                    networkID = networkID.ValueRO.NetworkId
+                });
             }
 
             entityCommandBuffer.SetComponentEnabled<NeedChunks>(entity, false);
@@ -144,8 +148,10 @@ public partial class MapServerSystem : SystemBase
     {
         var entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         Entity chunkEntity = ClientServerBootstrap.ServerWorld.EntityManager.Instantiate(entitiesReferences.chunkEntity);
-        var tiles = SystemAPI.GetBuffer<TileChunk>(chunkEntity);
+        var tiles = SystemAPI.GetBuffer<ChunkTiles>(chunkEntity);
         ChunkComponent chunkComponent = new ChunkComponent();
+        entityCommandBuffer.AddComponent<SendChunk>(chunkEntity);
+        entityCommandBuffer.AddBuffer<ChunkRecipients>(chunkEntity);
 
         Chunk chunk = map.chunks[index];
         chunkComponent.worldPos = chunk.worldPosition;
@@ -156,7 +162,7 @@ public partial class MapServerSystem : SystemBase
             for (int j = 0; j < 10; j++)
             {
                 GridTile tile = chunk.grid[j, i];
-                tiles.Add(new TileChunk()
+                tiles.Add(new ChunkTiles()
                 {
                     tileID = tile.tileID,
                     variant = (byte)tile.variant

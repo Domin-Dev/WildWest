@@ -1,13 +1,17 @@
 using Game.Client.Map;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 
 [DisableAutoCreation]
@@ -21,27 +25,41 @@ public partial class MapLoadingClientSystem : SystemBase
     {
         clientMap = new ClientMap();
         MapVisualization.instance.map = clientMap;
-        Debug.Log(MapVisualization.instance.clientMap);
     }
+
+    public void SetMapSettings(MapIsLoaded map)
+    { 
+        clientMap.widthInChunks = map.widthInChunks;
+    }
+
 
     protected override void OnCreate()
     {
         base.OnCreate();
-        var entityQueryDesc = new EntityQueryDesc
-        {
-            All = new ComponentType[] { typeof(ReceiveRpcCommandRequest) },
-            Any = new ComponentType[] { typeof(FixedChunk), typeof(FixedBuildingObjects) }
-        };
-        RequireForUpdate(GetEntityQuery(entityQueryDesc));
+        //var entityQueryDesc = new EntityQueryDesc
+        //{
+        //    All = new ComponentType[] { typeof(ReceiveRpcCommandRequest) },
+        //    Any = new ComponentType[] { typeof(FixedChunk), typeof(FixedBuildingObjects) }
+        //};
+        //RequireForUpdate(GetEntityQuery(entityQueryDesc));
     }
 
     protected override void OnStartRunning()
     {
-        entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+      //  entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
     }
 
+
+    private float timer = 0f;
     protected override void OnUpdate()
     {
+        float deltaTime = SystemAPI.Time.DeltaTime;
+        timer += deltaTime;
+
+        if (timer < 0.25f) return; // wykonuj co 1 sekundê
+        timer = 0f;
+
+
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
 
@@ -52,43 +70,89 @@ public partial class MapLoadingClientSystem : SystemBase
         //        clientMap.AddChunk(chunkStruct);
         //        ecb.DestroyEntity(entity);
         //    }).WithoutBurst().Run();
-        //mapVis.RenderNewChunks();
-
-        Entities
-            .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()
-            .ForEach((Entity entity, in FixedBuildingObjects buildingObjects) =>
-            {
-                for (int i = 0; i < FixedBuildingObjects.size; i++)
-                {
-                    int value = buildingObjects[i];
-                    if (value != 0)
-                    {
-                        byte[] bytes = new byte[value];
-                        byte[] bytes2 = new byte[8];
-
-                        for (int j = i + 1; j <= 8 + i; j++)
-                            bytes2[j - i - 1] = buildingObjects[j];
-
-                        for (int j = i + 9; j <= value + i + 8; j++)
-                            bytes[j - i - 9] = buildingObjects[j];
-
-                        var gridObject = new GridObject(bytes);
-                        var pos = new float2(
-                            BitConverter.ToInt32(bytes2, 0) + buildingObjects.chunkCoordinates.x,
-                            BitConverter.ToInt32(bytes2, 4) + buildingObjects.chunkCoordinates.y
-                        );
 
 
-                        BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb, gridObject, pos);
+       Entities
+       .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
+       {
+           Debug.Log("ech!");
+           if (events.IsEmpty) return;
+           while (true)
+           {
+               bool isEvent = false;
+               for (int i = 0; i < events.Length; i++)
+               {
+                   var ev = events[i];
+                   if (ev.index == counter.index)
+                   {
+                       counter.index++;
+                       Debug.Log(counter.index + "akcja!");
 
-                        i += value + 8;
-                    }
-                }
+                       switch (ev.flags)
+                       {
+                           case 1:
+                               LoadChunk(ev.value.x);
+                               break;
+                       }
 
-                ecb.DestroyEntity(entity);
-            }).WithoutBurst().Run();
+                       isEvent = true;
+                       break;
+                   }
+               }
+               if (!isEvent) break; 
+           }
+           ecb.SetComponent(e, counter);
+           mapVis.RenderNewChunks();
+       })
+       .WithoutBurst().Run();
+
+        //Entities
+        //    .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()
+        //    .ForEach((Entity entity, in FixedBuildingObjects buildingObjects) =>
+        //    {
+        //        for (int i = 0; i < FixedBuildingObjects.size; i++)
+        //        {
+        //            int value = buildingObjects[i];
+        //            if (value != 0)
+        //            {
+        //                byte[] bytes = new byte[value];
+        //                byte[] bytes2 = new byte[8];
+
+        //                for (int j = i + 1; j <= 8 + i; j++)
+        //                    bytes2[j - i - 1] = buildingObjects[j];
+
+        //                for (int j = i + 9; j <= value + i + 8; j++)
+        //                    bytes[j - i - 9] = buildingObjects[j];
+
+        //                var gridObject = new GridObject(bytes);
+        //                var pos = new float2(
+        //                    BitConverter.ToInt32(bytes2, 0) + buildingObjects.chunkCoordinates.x,
+        //                    BitConverter.ToInt32(bytes2, 4) + buildingObjects.chunkCoordinates.y
+        //                );
+
+
+        //                BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb, gridObject, pos);
+
+        //                i += value + 8;
+        //            }
+        //        }
+
+        //        ecb.DestroyEntity(entity);
+        //    }).WithoutBurst().Run();
 
         ecb.Playback(EntityManager);
         ecb.Dispose();
+    }
+
+    public void LoadChunk(int chunkIndex)
+    {
+        Entities
+        .ForEach((Entity e, ChunkComponent chunk) =>
+        {
+            if (chunk.index == chunkIndex)
+            {
+                clientMap.AddChunk(chunkIndex,e);
+            }
+        }).WithoutBurst().Run();
     }
 }
