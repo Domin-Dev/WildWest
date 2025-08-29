@@ -55,7 +55,6 @@ public class
     {
         return GetChunkIndex(MyTools.ConvertFloat(position));
     }
-    
     public int2 GetChunkPos(int chunkIndex)
     {
         return new int2(chunkIndex % widthInChunks, chunkIndex / widthInChunks);
@@ -68,11 +67,16 @@ public class
         {
             for (int x = -renderSize; x <= renderSize; x++)
             {
-                if (pos.x + x >= 0 && pos.y + y >= 0)
+                if (pos.x + x >= 0 && pos.y + y >= 0  && pos.x + x < widthInChunks && pos.y + y < heightInChunks)
                     indexes.Add(chunkIndex + x + y * widthInChunks);
             }
         }
         return indexes;   
+    }
+
+    public bool CheckChunkIndex(int chunkIndex)
+    {
+        return chunkIndex >= 0 && chunkIndex < widthInChunks * heightInChunks;
     }
 }
 

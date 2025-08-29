@@ -9,7 +9,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -91,13 +90,12 @@ public class MapVisualization : MonoBehaviour
 
     public void Start()
     {
-        entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
     }
 
     public void RenderNewChunks()
     {
         if (clientMap == null) return;
-
         while (clientMap.GetNextChunk(out Entity? chunk) && chunk.HasValue)
         {
             Debug.Log("wczytywanie ChunkU!!!");
@@ -106,7 +104,7 @@ public class MapVisualization : MonoBehaviour
     }
     public Transform CreateMesh(Entity chunk)
     {
-
+        Debug.Log(chunk);
         ChunkComponent chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
         DynamicBuffer<ChunkTiles> chunkTiles = entityManager.GetBuffer<ChunkTiles>(chunk);
 

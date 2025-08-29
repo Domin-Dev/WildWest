@@ -29,11 +29,10 @@ namespace Game.Client.Map
             chunks = new Dictionary<int2, Entity>();
             chunksToRender = new List<Entity>();
             renderedChunks = new Dictionary<int2,Transform>();
-            entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
         }
         public void AddChunk(int chunkIndex,Entity chunk)
         {
-
             int2 key = ChunkIndexToChunkCoordinates(chunkIndex);
 
             Debug.Log(chunkIndex + "  " + chunk);

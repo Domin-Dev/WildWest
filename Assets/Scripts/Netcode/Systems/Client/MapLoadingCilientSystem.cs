@@ -8,10 +8,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEditor.PackageManager;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 
 [DisableAutoCreation]
@@ -20,6 +18,7 @@ public partial class MapLoadingClientSystem : SystemBase
 {
     private ClientMap clientMap;
     private EntitiesReferences entitiesReferences;
+    private NativeHashSet<int> chunksToLoad;
 
     public void SetUp()
     {
@@ -36,6 +35,7 @@ public partial class MapLoadingClientSystem : SystemBase
     protected override void OnCreate()
     {
         base.OnCreate();
+        chunksToLoad = new NativeHashSet<int>(30,Allocator.Persistent);
         //var entityQueryDesc = new EntityQueryDesc
         //{
         //    All = new ComponentType[] { typeof(ReceiveRpcCommandRequest) },
@@ -43,6 +43,11 @@ public partial class MapLoadingClientSystem : SystemBase
         //};
         //RequireForUpdate(GetEntityQuery(entityQueryDesc));
     }
+    protected override void OnDestroy()
+    {
+        chunksToLoad.Dispose();
+    }
+
 
     protected override void OnStartRunning()
     {
@@ -62,7 +67,7 @@ public partial class MapLoadingClientSystem : SystemBase
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
-
+       
         //Entities
         //    .WithAll<ReceiveRpcCommandRequest, FixedChunk>()
         //    .ForEach((Entity entity, in FixedChunk chunkStruct) =>
@@ -75,7 +80,6 @@ public partial class MapLoadingClientSystem : SystemBase
        Entities
        .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
        {
-           Debug.Log("ech!");
            if (events.IsEmpty) return;
            while (true)
            {
@@ -86,12 +90,12 @@ public partial class MapLoadingClientSystem : SystemBase
                    if (ev.index == counter.index)
                    {
                        counter.index++;
-                       Debug.Log(counter.index + "akcja!");
+                       Debug.Log(counter.index + "akcja!" + ev.flags);
 
                        switch (ev.flags)
                        {
                            case 1:
-                               LoadChunk(ev.value.x);
+                               chunksToLoad.Add(ev.value.x);
                                break;
                        }
 
@@ -105,6 +109,20 @@ public partial class MapLoadingClientSystem : SystemBase
            mapVis.RenderNewChunks();
        })
        .WithoutBurst().Run();
+
+        if (!chunksToLoad.IsEmpty)
+        {
+            Entities.ForEach((Entity e, ChunkComponent chunk) =>
+            {
+                if(chunksToLoad.Contains(chunk.index))
+                {
+                    Debug.Log("find!");
+                    clientMap.AddChunk(chunk.index, e);
+                    chunksToLoad.Remove(chunk.index);
+                }
+            }).WithoutBurst().Run();
+        }
+
 
         //Entities
         //    .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()
@@ -146,13 +164,16 @@ public partial class MapLoadingClientSystem : SystemBase
 
     public void LoadChunk(int chunkIndex)
     {
+        Debug.Log("LOading! " + chunkIndex);
         Entities
         .ForEach((Entity e, ChunkComponent chunk) =>
         {
             if (chunk.index == chunkIndex)
             {
+                Debug.Log("find!");
                 clientMap.AddChunk(chunkIndex,e);
             }
         }).WithoutBurst().Run();
+        Debug.Log("koniec!");
     }
 }

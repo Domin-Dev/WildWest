@@ -8,11 +8,15 @@ using Unity.Mathematics;
 using Unity.NetCode;
 
 
-public struct SendChunk : IComponentData, IEnableableComponent{}
-public struct ChunkRecipients : IBufferElementData
+public struct NewChunkServerAction : IComponentData, IEnableableComponent{}
+public struct ChunkServerActions : IBufferElementData
 {
      public int networkID;
+     public byte action;
 }
+// Action
+// 0 - start streaming chunk
+// 1 - stop streaming chunk
 
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
