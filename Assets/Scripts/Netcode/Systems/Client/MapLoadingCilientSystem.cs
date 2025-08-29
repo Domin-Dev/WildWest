@@ -97,6 +97,9 @@ public partial class MapLoadingClientSystem : SystemBase
                            case 1:
                                chunksToLoad.Add(ev.value.x);
                                break;
+                           case 2:
+                               clientMap.RemoveChunk(ev.value.x);
+                               break;
                        }
 
                        isEvent = true;
@@ -106,7 +109,6 @@ public partial class MapLoadingClientSystem : SystemBase
                if (!isEvent) break; 
            }
            ecb.SetComponent(e, counter);
-           mapVis.RenderNewChunks();
        })
        .WithoutBurst().Run();
 
@@ -122,6 +124,7 @@ public partial class MapLoadingClientSystem : SystemBase
                 }
             }).WithoutBurst().Run();
         }
+        mapVis?.RenderNewChunks();
 
 
         //Entities
@@ -160,20 +163,5 @@ public partial class MapLoadingClientSystem : SystemBase
 
         ecb.Playback(EntityManager);
         ecb.Dispose();
-    }
-
-    public void LoadChunk(int chunkIndex)
-    {
-        Debug.Log("LOading! " + chunkIndex);
-        Entities
-        .ForEach((Entity e, ChunkComponent chunk) =>
-        {
-            if (chunk.index == chunkIndex)
-            {
-                Debug.Log("find!");
-                clientMap.AddChunk(chunkIndex,e);
-            }
-        }).WithoutBurst().Run();
-        Debug.Log("koniec!");
     }
 }

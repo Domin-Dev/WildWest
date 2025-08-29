@@ -43,6 +43,9 @@ public class Switch : BaseSwitch
 
     private void ChangSwitchText(object sender, int e)
     {
-        text.text = nameSwitch + " " + e.ToString();
+        if(nameSwitch == string.Empty)
+            text.text = e.ToString();
+        else
+            text.text = nameSwitch + " " + e.ToString();
     }
 }

@@ -150,6 +150,8 @@ public class GridObject: IHitPoints
         return bytes.ToArray();
     }
 
+
+
     public override string ToString()
     {
         return ItemsAsset.instance.GetItem(ID).name + " " + this.variantIndex + " " + this.mainPosition;

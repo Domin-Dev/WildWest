@@ -18,7 +18,7 @@ namespace Game.Client.Map
         public int widthInChunks = 10;
 
         public Dictionary<int2, Entity> chunks { private set; get; }
-        public Dictionary<int2, Transform> renderedChunks { private set; get; }
+        public Dictionary<int, Transform> renderedChunks { private set; get; }
         public List<Entity> chunksToRender;
       
         private EntityManager entityManager;
@@ -28,7 +28,7 @@ namespace Game.Client.Map
         { 
             chunks = new Dictionary<int2, Entity>();
             chunksToRender = new List<Entity>();
-            renderedChunks = new Dictionary<int2,Transform>();
+            renderedChunks = new Dictionary<int,Transform>();
             entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
         }
         public void AddChunk(int chunkIndex,Entity chunk)
@@ -43,8 +43,21 @@ namespace Game.Client.Map
             }
         }
 
-        public bool k = false;
+        public void RemoveChunk(int chunkIndex)
+        {
+            Debug.Log("usun!!!");
+            int2 coords = ChunkIndexToChunkCoordinates(chunkIndex);
+            if (chunks.ContainsKey(coords))       
+                chunks.Remove(coords);
 
+            if (renderedChunks.ContainsKey(chunkIndex))
+            {
+                MapVisualization.instance.RemoveMesh(renderedChunks[chunkIndex]);
+                renderedChunks.Remove(chunkIndex);
+            }
+        }
+
+        public bool k = false;
         public ChunkTiles? this[int x,int y]
         { 
             get
@@ -52,9 +65,8 @@ namespace Game.Client.Map
                 if(x < 0 || y < 0) return null;
 
                 int2 coordinates = MapPosToChunkCoordinates(x, y);
-                if (chunks.ContainsKey(coordinates))
+                if (chunks.TryGetValue(coordinates,out Entity clientChunk) && entityManager.Exists(clientChunk))
                 {
-                    Entity clientChunk = chunks[coordinates];
                     int index  = LocalTilePosToTileIndex(MapPosToLocalChunkPos(x, y));
                     ChunkTiles tile = entityManager.GetBuffer<ChunkTiles>(clientChunk)[index];
                     return tile;
@@ -88,6 +100,11 @@ namespace Game.Client.Map
             return LocalTilePosToTileIndex(new int2(x,y));
         }
 
+
+        public int ChunkCoordiantesToChunkIndex(int2 coords)
+        {
+            return coords.x + coords.y * widthInChunks;
+        }
         public int2 LocalChunkPosToMapPos(ClientChunk chunk,int x,int y)
         {
             return new int2(x + chunk.chunkCoordinates.x, y + chunk.chunkCoordinates.y);
@@ -100,8 +117,15 @@ namespace Game.Client.Map
         {
             return ChunkIndexToChunkCoordinates(chunkIndex) * chunkSize;
         }
+        public bool ChunkWasLoaded(int2 chunkCoordinates)
+        {
+           return renderedChunks.ContainsKey(ChunkCoordiantesToChunkIndex(chunkCoordinates));
+        }
 
-
+        public bool ChunkWasLoaded(int2 chunkCoordinates, out Transform chunk)
+        {
+            return renderedChunks.TryGetValue(ChunkCoordiantesToChunkIndex(chunkCoordinates),out chunk);
+        }
         public bool GetNextChunk(out Entity? clientChunk)
         {
             foreach (var item in chunksToRender)
@@ -121,9 +145,9 @@ namespace Game.Client.Map
                 return false;
             }
         }
-        public void AddNewRenderedChunk(Transform transform, int2 chunkCoordinates)
+        public void AddNewRenderedChunk(Transform transform, int chunkIndex)
         {
-            renderedChunks.Add(chunkCoordinates, transform);
+            renderedChunks.Add(chunkIndex, transform);
         }
     }
 }

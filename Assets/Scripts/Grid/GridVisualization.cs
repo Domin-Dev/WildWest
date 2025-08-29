@@ -49,8 +49,8 @@ public class GridVisualization : MonoBehaviour
 
     [SerializeField] public GameObject worldItem;
     public const int renderChunks = 2;
-    public const int maxLoadedChunks = 30;
-    public const int chunkSize = 10;
+    public const int maxLoadedChunks = 1;
+    public const int chunkSize = 12;
 
 
 

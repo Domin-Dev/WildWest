@@ -26,6 +26,9 @@ public class WorldRow : MonoBehaviour
     private string worldName;
     public void SetWorld(HeaderData header, Material materialIcon)
     {
+        Sprite background = null;
+        Sprite coverSprite = null;
+
         remove.onClick.AddListener(() => MenuManager.instance.Confirmation(worldName));
         edit.onClick.AddListener(() => MenuManager.instance.Edit(worldName));
         play.onClick.AddListener(() => MenuManager.instance.Load(worldName));
@@ -53,12 +56,19 @@ public class WorldRow : MonoBehaviour
 
 
         headIcon.SetMaterialDirty();
-        if (CheckBadges(h)) return;    
         if (header.characterLook.faceDetailsIndex == 9)
         {
+            coverSprite = UIAssetsManager.instance.ironBarsUI;
+            background = UIAssetsManager.instance.blackFrameUI;
+        }
+        CheckBadges(h, ref background, coverSprite);
+
+        Debug.Log(background);
+        if (background != null) SetBackground(background);
+        if (coverSprite != null)
+        {
             cover.gameObject.SetActive(true);
-            cover.sprite = UIAssetsManager.instance.ironBarsUI;
-            SetBackground(UIAssetsManager.instance.blackFrameUI);
+            cover.sprite = coverSprite;
         }
     }
 
@@ -81,14 +91,14 @@ public class WorldRow : MonoBehaviour
         cover.transform.parent.GetComponent<Image>().sprite = sprite;
     }
 
-    private bool CheckBadges(long hours)
+    private bool CheckBadges(long hours,ref Sprite background, Sprite cover)
     {
-        if (hours > 100)
-            SetBackground(UIAssetsManager.instance.goldBackgroundUI);
-        else if(hours > 25)
-            SetBackground(UIAssetsManager.instance.silverBackgroundUI);
-        else if (hours > 10)
-            SetBackground(UIAssetsManager.instance.bronzeBackgroundUI);
+        if (hours >= 100)
+            background = UIAssetsManager.instance.goldBackgroundUI;
+        else if(hours >= 25)
+            background = UIAssetsManager.instance.silverBackgroundUI;
+        else if (hours >= 5)
+            background = UIAssetsManager.instance.bronzeBackgroundUI;
         else
             return false;
 

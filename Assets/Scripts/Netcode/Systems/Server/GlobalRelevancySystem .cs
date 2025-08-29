@@ -69,6 +69,7 @@ public partial struct GlobalRelevancySystem : ISystem
         in SystemAPI.Query<RefRO<GhostInstance> , DynamicBuffer<ChunkServerActions>>().WithAll<NewChunkServerAction>().WithEntityAccess())
         {
             if (ghost.ValueRO.ghostId == 0) continue;
+            
             for (int i = chunkRecipients.Length - 1; i >= 0; i--)
             {
                 ChunkServerActions action = chunkRecipients[i];
@@ -93,20 +94,21 @@ public partial struct GlobalRelevancySystem : ISystem
 
     private void StartStreamingChunks(ref SystemState state,ChunkServerActions action,int ghostID, Entity entity)
     {
+        Debug.Log(ghostID + " " + action.networkID);
         var key = new RelevantGhostForConnection()
         {
             Ghost = ghostID,
             Connection = action.networkID
         };
-        ghostRelevancy.GhostRelevancySet.Add(key, 0);
+        if(!ghostRelevancy.GhostRelevancySet.ContainsKey(key))
+            ghostRelevancy.GhostRelevancySet.Add(key, 0);
         CreateNewChunkEvent(ref state,action.networkID, new ChunkEvents()
         {
             value = SystemAPI.GetComponent<ChunkComponent>(entity).index,
             flags = 1
         });
     }
-
-    private void CreateNewChunkEvent(ref SystemState,int networkID, ChunkEvents chunkEvent)
+    private void CreateNewChunkEvent(ref SystemState state, int networkID, ChunkEvents chunkEvent)
     {
         foreach ((DynamicBuffer<ChunkEvents> events, RefRO<GhostOwner> ghostOwner, RefRW<ChunkEventCounter> counter)
         in SystemAPI.Query<DynamicBuffer<ChunkEvents>, RefRO<GhostOwner>, RefRW<ChunkEventCounter>>().WithAll<Player>())

@@ -10,6 +10,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapServerSystem : SystemBase
@@ -20,13 +21,14 @@ public partial class MapServerSystem : SystemBase
     int simulationTickRate = 60;
     private const int ChunksPerTick = 3;
     private const int renderChunksSize = 3;
-    private const int maxChunkPreClient = 60;
+    private const int maxChunkPreClient = 55;
 
     private NetworkTick currentTick;
     private EntitiesReferences entitiesReferences;
 
     private NativeHashMap<int,Entity> loadedChunks;
-    private NativeHashMap<int, NativeHashSet<int>> playerChunks;
+    private NativeList<Entity> toUnloadChunks;
+    private NativeHashMap<int, NativeHashMap<int,double>> playerChunks;
 
     public static Map Map { get { return map; } }
 
@@ -34,10 +36,14 @@ public partial class MapServerSystem : SystemBase
     {
         if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
         loadedChunks = new NativeHashMap<int, Entity>(100, Allocator.Persistent);
-        playerChunks = new NativeHashMap<int, NativeHashSet<int>>(50, Allocator.Persistent);
+        toUnloadChunks = new NativeList<Entity>(30, Allocator.Persistent);
+        playerChunks = new NativeHashMap<int, NativeHashMap<int, double>>(50, Allocator.Persistent);
     }
     protected override void OnDestroy()
     {
+        foreach (var item in playerChunks)
+            item.Value.Dispose();
+        toUnloadChunks.Dispose();    
         loadedChunks.Dispose();
         playerChunks.Dispose();
         base.OnDestroy();
@@ -53,6 +59,11 @@ public partial class MapServerSystem : SystemBase
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+
+
+        ServerUnloadChunks(ref entityCommandBuffer);
+
+
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
@@ -96,13 +107,15 @@ public partial class MapServerSystem : SystemBase
         
 
 
+
+
         foreach ((RefRO<LastChunk> chunk,RefRO<GhostOwner> networkID, Entity entity) in
         SystemAPI.Query<RefRO<LastChunk>,RefRO<GhostOwner>>().WithAll<NeedChunks>().WithEntityAccess())
         {
             var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.value,renderChunksSize);
 
             if(!playerChunks.ContainsKey(networkID.ValueRO.NetworkId))
-                playerChunks.Add(networkID.ValueRO.NetworkId, new NativeHashSet<int>(maxChunkPreClient, Allocator.Persistent));
+                playerChunks.Add(networkID.ValueRO.NetworkId, new NativeHashMap<int, double>(maxChunkPreClient, Allocator.Persistent));
 
             UnloadChunks(ref entityCommandBuffer, chunksToSend, networkID.ValueRO.NetworkId);
             for (int i = 0; i < chunksToSend.Count; i++)
@@ -117,7 +130,7 @@ public partial class MapServerSystem : SystemBase
                     chunkEntity = loadedChunks[index];
                 }
 
-                playerChunks[networkID.ValueRO.NetworkId].Add(index);
+                playerChunks[networkID.ValueRO.NetworkId].Add(index,(float)SystemAPI.Time.ElapsedTime);
                 entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunkEntity, true);
                 entityCommandBuffer.AppendToBuffer(chunkEntity, new ChunkServerActions()
                 {
@@ -127,13 +140,12 @@ public partial class MapServerSystem : SystemBase
             }
             entityCommandBuffer.SetComponentEnabled<NeedChunks>(entity, false);
         }
-
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }
 
 
-    private void UnloadChunks(ref EntityCommandBuffer entityCommandBuffer,List<int> neighboringChunks, int networkID)
+    private void UnloadChunks(ref EntityCommandBuffer entityCommandBuffer, List<int> neighboringChunks, int networkID)
     {
         var list = playerChunks[networkID];
         if (list.IsEmpty) return;
@@ -141,29 +153,83 @@ public partial class MapServerSystem : SystemBase
         var toRemove = new NativeList<int>(Allocator.Temp);
         foreach (var item in list)
         {
-            if(!neighboringChunks.Contains(item))
+            if (!neighboringChunks.Contains(item.Key))
             {
-                Entity chunk = loadedChunks[item];
-                entityCommandBuffer.AppendToBuffer(chunk, new ChunkServerActions()
-                { 
-                    networkID = networkID,
-                    action = 2
-                });
-                entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk, true);
-                toRemove.Add(item);
+                toRemove.Add(item.Key);
             }
         }
 
-        foreach (var item in toRemove)
-            list.Remove(item);
+
+
+        int number = toRemove.Length + neighboringChunks.Count - maxChunkPreClient;
+
+
+        while (number > 0 && toRemove.Length > 0)
+        {
+            int chunkIndex = GetChunkToRemove(ref toRemove, networkID);
+            Entity chunk = loadedChunks[chunkIndex];
+                
+            entityCommandBuffer.AppendToBuffer(chunk, new ChunkServerActions()
+            {
+                networkID = networkID,
+                action = 2
+            });
+            entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk, true);
+
+            list.Remove(chunkIndex);
+            AddToUnload(chunkIndex, ref entityCommandBuffer);
+            number--;
+        }
+        
         toRemove.Dispose();
     }
-
+    private int GetChunkToRemove(ref NativeList<int> list,int networkID)
+    {
+        double minTime = double.MaxValue;
+        int k = 0;
+        for (var i = list.Length - 1; i >= 0; i--)
+        {
+            double time = playerChunks[networkID][list[i]];
+            if (time < minTime)
+            {
+                k = i;
+                minTime = time; 
+            }
+        }
+        int chunkIndex = list[k];
+        list.RemoveAt(k);
+        return chunkIndex;
+    }
+    private void ServerUnloadChunks(ref EntityCommandBuffer entityCommandBuffer)
+    {
+        if (!toUnloadChunks.IsEmpty)
+        {
+            for (int i = toUnloadChunks.Length - 1; i >= 0; i--)
+            {
+                Entity entity = toUnloadChunks[i];
+                if (SystemAPI.GetBuffer<ChunkServerActions>(entity).IsEmpty)
+                {
+                    toUnloadChunks.RemoveAt(i);
+                    entityCommandBuffer.DestroyEntity(entity);
+                }
+            }
+        }
+    }
+    private void AddToUnload(int index, ref EntityCommandBuffer entityCommandBuffer)
+    {
+        foreach (var item in playerChunks)
+        {
+            if (item.Value.ContainsKey(index))
+                return;
+        }
+        Entity entity = loadedChunks[index];
+        toUnloadChunks.Add(entity);
+        loadedChunks.Remove(index);
+    }
     private bool PlayerHasChunk(int networkID, int chunkIndex)
     {
         var chunks = playerChunks[networkID];
-        return chunks.Contains(chunkIndex);
-        return false;
+        return chunks.ContainsKey(chunkIndex);
     }
     private bool CreateChunk(ref EntityCommandBuffer entityCommandBuffer,int index)
     {
@@ -171,6 +237,9 @@ public partial class MapServerSystem : SystemBase
         var entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         Entity chunkEntity = ClientServerBootstrap.ServerWorld.EntityManager.Instantiate(entitiesReferences.chunkEntity);
         var tiles = SystemAPI.GetBuffer<ChunkTiles>(chunkEntity);
+        var objects = SystemAPI.GetBuffer<BuildingObjects>(chunkEntity);
+
+
         ChunkComponent chunkComponent = new ChunkComponent();
         entityCommandBuffer.AddComponent<NewChunkServerAction>(chunkEntity);
         entityCommandBuffer.AddBuffer<ChunkServerActions>(chunkEntity);
@@ -189,6 +258,18 @@ public partial class MapServerSystem : SystemBase
                     tileID = tile.tileID,
                     variant = (byte)tile.variant
                 });
+
+                if (tile.gridObject != null)
+                {
+                    objects.Add(new BuildingObjects()
+                    {
+                        id = tile.gridObject.ID,
+                        position = new int2(tile.x, tile.y),
+                        variantIndex = tile.gridObject.variantIndex,
+                        stateIndex = tile.gridObject.stateIndex,
+                        hitPoints = tile.gridObject.hitPoints
+                    });
+                }
             }
         }
 
@@ -196,7 +277,6 @@ public partial class MapServerSystem : SystemBase
         loadedChunks.Add(index, chunkEntity);
         return true;
     }
-
     private void SendToPlayer(int index, ref FixedChunk chunkStruct)
     {
 

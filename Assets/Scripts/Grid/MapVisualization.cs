@@ -99,7 +99,7 @@ public class MapVisualization : MonoBehaviour
         while (clientMap.GetNextChunk(out Entity? chunk) && chunk.HasValue)
         {
             Debug.Log("wczytywanie ChunkU!!!");
-            clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),clientMap.ChunkIndexToChunkCoordinates(entityManager.GetComponentData<ChunkComponent>(chunk.Value).index));
+            clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),entityManager.GetComponentData<ChunkComponent>(chunk.Value).index);
         }
     }
     public Transform CreateMesh(Entity chunk)
@@ -182,6 +182,10 @@ public class MapVisualization : MonoBehaviour
         return meshFilter.transform;
     }
 
+    public void RemoveMesh(Transform chunk)
+    {
+        Destroy(chunk.gameObject);
+    }
     public void UpdateMesh(int2 pos, bool repeat)
     {
         UpdateMesh(pos.x,pos.y,repeat);
@@ -189,15 +193,11 @@ public class MapVisualization : MonoBehaviour
     public void UpdateMesh(int x, int y, bool repeat)
     {
         int2 coordinates = ClientMap.MapPosToChunkCoordinates(x, y);
-        if(x >= 0 && y >= 0 && clientMap.renderedChunks.ContainsKey(coordinates))
+        if(x >= 0 && y >= 0 && clientMap.ChunkWasLoaded(coordinates, out Transform chunkTransform))
         {
-            int2 localpoas = ClientMap.MapPosToLocalChunkPos(x, y);
-            
-            Transform chunkTransform = clientMap.renderedChunks[coordinates];
+            int2 localpoas = ClientMap.MapPosToLocalChunkPos(x, y);       
             Entity clientChunk = clientMap.chunks[coordinates];
-
             DynamicBuffer<ChunkTiles> chunkTiles = entityManager.GetBuffer<ChunkTiles>(clientChunk);
-
 
             Mesh mesh = chunkTransform.GetComponent<MeshFilter>().mesh;
             Mesh lineMesh = chunkTransform.GetChild(0).GetComponent<MeshFilter>().mesh;
@@ -236,6 +236,10 @@ public class MapVisualization : MonoBehaviour
             }
         }
     }
+
+
+
+
 
 
     private UV[] GetBorderUVs(int[] neighbors, int tileID)

@@ -27,9 +27,15 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject confirmationRemoveWindow;
     [SerializeField] private GameObject editWorldWindow;
     [SerializeField] private GameObject connectToIPWindow;
+    [SerializeField] private GameObject serverSettingsWindow;
 
+    [Header("Server Settings")]
+    [SerializeField] private TMP_InputField passwordInput;
+    [SerializeField] private Switch playerLimit;
+    [SerializeField] private Button buttonHostServer;
+    [SerializeField] private Button buttonBackSettingsServer;
 
-    [Header("ConnectToIP")]
+    [Header("Connect To IP")]
     [SerializeField] private TMP_InputField adressIPInput;
     [SerializeField] private TMP_InputField portInput;
     [SerializeField] private TMP_InputField playerNameInput;
@@ -58,7 +64,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button buttonNewWorld;
     [SerializeField] private GameObject worldList;
     [SerializeField] private GameObject worldRow;
-     
+
     [Header("Connection")]
     [SerializeField] private Button buttonSingleplayer;
     [SerializeField] private Button buttonMultiplayer;
@@ -90,14 +96,15 @@ public class MenuManager : MonoBehaviour
             isSingleplayerList = true;
             OpenWorldList();
         });
-        buttonSettings.onClick.AddListener(() => {
+        buttonSettings.onClick.AddListener(() =>
+        {
             GameInfo.instance.lastLoadedScene = -1;
             WindowsManager.instance.LoadScene(8);
         });
         buttonQuit.onClick.AddListener(Quit);
         /////////////////////////////////////////
         buttonBack.onClick.AddListener(CloseWindows);
-        buttonHostGame.onClick.AddListener(() => 
+        buttonHostGame.onClick.AddListener(() =>
         {
             isSingleplayerList = false;
             OpenWorldList();
@@ -105,13 +112,12 @@ public class MenuManager : MonoBehaviour
         buttonConnectToIP.onClick.AddListener(() =>
         {
             CloseWindows();
-            OpenWindow(connectToIPWindow); 
+            OpenWindow(connectToIPWindow);
         });
         /////////////////////////////////////////
         buttonBackWorlds.onClick.AddListener(CloseWindows);
-        buttonNewWorld.onClick.AddListener(() => RunServer());
         /////////////////////////////////////////
-        confirmationYes.onClick.AddListener(() => 
+        confirmationYes.onClick.AddListener(() =>
         {
             WorldManager.RemoveWorld(worldName);
             OpenWorldList();
@@ -133,9 +139,12 @@ public class MenuManager : MonoBehaviour
         //////////////////////////////////////////
         buttonConnet.onClick.AddListener(Join);
         buttonBackConnectToIP.onClick.AddListener(CloseWindows);
-        adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff();});
+        adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff(); });
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
         //////////////////////////////////////////
+        buttonBackSettingsServer.onClick.AddListener(CloseWindows);
+        //////////////////////////////////////////
+
         GameInfo.instance.SetDefaultSettings();
         Debug.Log("dz");
         WindowsManager.instance.OnCloseWindows += CloseWindows;
@@ -170,7 +179,8 @@ public class MenuManager : MonoBehaviour
         HeaderData data = LoadSystem.LoadHeader(worldName);
         if (data == null) return;
 
-        if(isSingleplayerList)
+        CloseWindows();
+        if (isSingleplayerList)
             LoadSingleplayer(data);
         else
             LoadMultiplayer(data);
@@ -183,7 +193,9 @@ public class MenuManager : MonoBehaviour
     }
     private void LoadMultiplayer(HeaderData data)
     {
-        RunServer(data);
+        OpenServerSettings();
+        buttonHostServer.onClick.RemoveAllListeners();
+        buttonHostServer.onClick.AddListener(() => RunServer(data));
     }
 
 
@@ -191,6 +203,14 @@ public class MenuManager : MonoBehaviour
     {
         WindowsManager.instance.SwitchBackground(true);
         window.SetActive(true);
+    }
+
+    private void OpenServerSettings()
+    {
+        CloseWindows();
+        OpenWindow(serverSettingsWindow);
+        passwordInput.text = string.Empty;
+        playerLimit.SetUpSwitch(1, 17,string.Empty);
     }
     private void OpenWorldList()
     {
@@ -202,6 +222,11 @@ public class MenuManager : MonoBehaviour
             }
         }
 
+        buttonNewWorld.onClick.RemoveAllListeners();
+        if(isSingleplayerList)
+            buttonNewWorld.onClick.AddListener(() => RunServer());
+        else
+            buttonNewWorld.onClick.AddListener(OpenServerSettings);
 
         OpenWindow(worldListWindow);
         List<HeaderData> headers = LoadSystem.LoadHeaders()?.OrderByDescending(s => s.saveTime).ToList();
@@ -277,6 +302,7 @@ public class MenuManager : MonoBehaviour
         confirmationRemoveWindow?.SetActive(false);
         editWorldWindow?.SetActive(false);
         connectToIPWindow?.SetActive(false);
+        serverSettingsWindow?.SetActive(false);
     }
     private void Quit()
     {

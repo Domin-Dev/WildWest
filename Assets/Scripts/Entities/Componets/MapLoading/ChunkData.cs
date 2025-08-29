@@ -21,6 +21,18 @@ public struct ChunkTiles : IBufferElementData
     [GhostField] public byte variant;
 }
 
+[GhostComponent(OwnerSendType = SendToOwnerType.All)]
+public struct BuildingObjects : IBufferElementData
+{
+    [GhostField] public int2 position;
+    [GhostField] public int id;
+    [GhostField] public short variantIndex;
+    [GhostField] public short stateIndex;
+
+    [GhostField] public float hitPoints;
+    [GhostField] public float maxHitPoints;
+}
+
 public struct NeedChunks : IComponentData, IEnableableComponent{}
 
 
