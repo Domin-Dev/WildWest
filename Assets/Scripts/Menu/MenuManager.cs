@@ -438,7 +438,6 @@ public class MenuManager : MonoBehaviour
             ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
             ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 
-
         }
         catch
         (Exception ex)
