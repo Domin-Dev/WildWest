@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
@@ -438,6 +439,19 @@ public class MenuManager : MonoBehaviour
             ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
             ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 
+           
+            bool isPassword = !string.IsNullOrEmpty(passwordInput.text);
+            Entity serverSettings = ClientServerBootstrap.ServerWorld.EntityManager.CreateEntity(typeof(ServerData));
+
+            ClientServerBootstrap.ServerWorld.EntityManager.SetComponentData(serverSettings, new ServerData()
+            {
+                hash = isPassword ? AuthUtils.ComputeSha256(passwordInput.text.ToArray()) : "",
+                isPassword = isPassword,
+                isHost = true,
+                playersLimit = playerLimit.GetValue(),
+                hostNetworkID = int.MinValue,
+            });
+
         }
         catch
         (Exception ex)
@@ -454,5 +468,6 @@ public class MenuManager : MonoBehaviour
         simGroup.AddSystemToUpdateList(mapLoadingSystem);
         simGroup.SortSystems();
     }
+
 
 }

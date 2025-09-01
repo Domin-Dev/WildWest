@@ -68,10 +68,8 @@ public partial class ConnectionTimeoutSystem : SystemBase
     }
     private void Connected(ref EntityCommandBuffer entityCommandBuffer)
     {
-        Debug.Log("? Po³¹czenie nawi¹zane!");
         connectionSuccessful?.Invoke();
         entityCommandBuffer.DestroyEntity(SystemAPI.GetSingletonEntity<EnableConnectionTimeoutCheck>());
-        RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
         this.Enabled = false;
     }
 }

@@ -63,7 +63,6 @@ public class WorldRow : MonoBehaviour
         }
         CheckBadges(h, ref background, coverSprite);
 
-        Debug.Log(background);
         if (background != null) SetBackground(background);
         if (coverSprite != null)
         {

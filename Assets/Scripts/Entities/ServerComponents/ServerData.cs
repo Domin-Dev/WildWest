@@ -12,6 +12,9 @@ using Unity.NetCode;
 
 public struct ServerData : IComponentData
 {
-    public FixedBytes510 hash;
-
+    public FixedString128Bytes hash;
+    public bool isPassword;
+    public bool isHost;
+    public int playersLimit;
+    public int hostNetworkID;
 }

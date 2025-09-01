@@ -1,9 +1,11 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TMPro;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -16,14 +18,21 @@ public class LoadingManager : MonoBehaviour
 {
     [SerializeField] private GameObject loadingWindow;
     [SerializeField] private GameObject errorWindow;
+    [SerializeField] private GameObject password;
     [Space]
     [SerializeField] private TextMeshProUGUI errorText;
     [SerializeField] private Button errorButton;
     [Space]
     [SerializeField] private TextMeshProUGUI loadingText;
     [SerializeField] private Image loadingBar;
+    [Space]
+    [SerializeField] private Button sendPassword;
+    [SerializeField] private TMP_InputField inputField;
 
     private float target;
+    private FixedString128Bytes salt;
+
+
 
     public Action gameIsReady;
 
@@ -57,6 +66,7 @@ public class LoadingManager : MonoBehaviour
         ConnectionTimeoutSystem.connectionFailed -= ConnectionFailed;
         ConnectionTimeoutSystem.connectionSuccessful -= Connected;
         WaitForConfirmation.connection -= Verification;
+        ClientAuthSystem.passwordRequired -= PasswordRequired;
     }
 
     private void Connecting()
@@ -64,6 +74,7 @@ public class LoadingManager : MonoBehaviour
         loadingText.text = "Connecting...";
         ConnectionTimeoutSystem.connectionSuccessful += Connected;
         ConnectionTimeoutSystem.connectionFailed += ConnectionFailed;
+        ClientAuthSystem.passwordRequired += PasswordRequired; 
         WaitForConfirmation.connection += Verification;
     }
     private async void Connected()
@@ -74,7 +85,6 @@ public class LoadingManager : MonoBehaviour
         ConnectionTimeoutSystem.connectionSuccessful -= Connected;
         loadingText.text = "Verifying...";
     }
-
     private async void Verification(CharacterLook? characterLook)
     {
         Debug.Log(characterLook.HasValue);
@@ -157,5 +167,24 @@ public class LoadingManager : MonoBehaviour
         loadingWindow.SetActive(false);
         errorText.text = message;
     }
+    public void PasswordRequired(FixedString128Bytes salt)
+    {
+        this.salt = salt;
+        loadingWindow.SetActive(false);
+        password.SetActive(true);
+        sendPassword.onClick.AddListener(SendPassword);
+        inputField.text = "";
+    }
 
+
+    private void SendPassword()
+    {
+        loadingWindow.SetActive(true);
+        password.SetActive(false);
+
+        Debug.Log(inputField.text + " " + salt);
+        var hash = AuthUtils.ComputeSha256(inputField.text.ToArray());
+        Debug.Log(hash.ToString());
+        sendPassword.onClick.RemoveAllListeners();
+    }
 }

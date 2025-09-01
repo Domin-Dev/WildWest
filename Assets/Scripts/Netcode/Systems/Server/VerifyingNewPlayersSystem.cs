@@ -28,7 +28,6 @@ partial struct VerifyingNewPlayersSystem : ISystem
             PlayerSave playerSave = LoadSystem.LoadPlayerSave(commandRpc.playerName.ToString());
             bool isSave = playerSave != null;
 
-
             var answer = new AnswerPlayerVerificationRPC();
             answer.playerDataIsOnServer = isSave;
             if (isSave)

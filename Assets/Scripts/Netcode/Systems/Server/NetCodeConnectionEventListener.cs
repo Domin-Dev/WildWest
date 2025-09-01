@@ -14,6 +14,15 @@ using static UnityEngine.EventSystems.EventTrigger;
 [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
 public partial struct NetCodeConnectionEventListener : ISystem
 {
+
+    public void OnCreate(ref SystemState state)
+    {
+        if (ClientServerBootstrap.HasClientWorlds)
+        {
+            SystemAPI.GetSingletonRW<ServerData>().ValueRW.hostNetworkID = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntityQuery(typeof(NetworkId)).GetSingleton<NetworkId>().Value;
+            Debug.Log("dzial!!!!");
+        }
+    }
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -46,6 +55,23 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     });
                     entityCommandBuffer.DestroyEntity(playerEntity);
                     break;
+                case ConnectionState.State.Connected:
+                    var serverData = SystemAPI.GetSingletonRW<ServerData>();
+
+                    if (serverData.ValueRO.isHost && serverData.ValueRO.hostNetworkID < 0)
+                        serverData.ValueRW.hostNetworkID = evt.Id.Value;
+
+                    if (serverData.ValueRO.isPassword && serverData.ValueRO.hostNetworkID != evt.Id.Value)
+                    {
+                        Debug.Log("nowa sol!");
+                        RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerSaltRPC()
+                        {
+                            salt = AuthUtils.GetSalt()
+                        });
+                    }
+                    else
+                        RPCHelper.SendRpc(ref entityCommandBuffer, new AuthResponse() { success = true });   
+                break;
             }
 
             UnityEngine.Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.ToFixedString()}!");

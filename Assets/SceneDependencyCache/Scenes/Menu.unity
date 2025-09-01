@@ -6650,7 +6650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6275949975335066146, guid: 5d0d698e5fee1ac4791ab12b3e8b2826, type: 3}
       propertyPath: m_Text
-      value: k0oo0o0o0o
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 6275949975335066146, guid: 5d0d698e5fee1ac4791ab12b3e8b2826, type: 3}
       propertyPath: m_InputType

@@ -63,4 +63,9 @@ public class BaseSwitch : MonoBehaviour
         }
         OnChangedValue?.Invoke(this,value);
     }
+
+    public int GetValue()
+    {
+        return value;
+    }
 }

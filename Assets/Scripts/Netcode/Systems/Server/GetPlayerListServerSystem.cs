@@ -26,7 +26,6 @@ partial struct GetPlayerListServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, GetPlayerDashboardRPC requestRPC, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, GetPlayerDashboardRPC>().WithEntityAccess())
         {
-            Debug.Log(" lista players ");
             if(playerLists.IsEmpty)
                 GetPlayers(ref state,ref playerLists, ref entityCommandBuffer);
 
