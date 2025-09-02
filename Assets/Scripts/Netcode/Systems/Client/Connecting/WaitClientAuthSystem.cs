@@ -1,9 +1,10 @@
-using Unity.Burst;
-using Unity.Entities;
-using UnityEngine;
-using Unity.NetCode;
-using Unity.Collections;
 using System;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.NetCode;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 public partial class WaitClientAuthSystem : SystemBase
@@ -23,6 +24,11 @@ public partial class WaitClientAuthSystem : SystemBase
             {
                 RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
                 this.Enabled = false;
+            }
+            else
+            {
+                GameInfo.instance.errorMessage = "Incorrect password.";
+                SceneManager.LoadScene(10);
             }
             entityCommandBuffer.DestroyEntity(e);
         }

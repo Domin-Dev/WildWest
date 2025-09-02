@@ -181,10 +181,13 @@ public class LoadingManager : MonoBehaviour
     {
         loadingWindow.SetActive(true);
         password.SetActive(false);
+        sendPassword.onClick.RemoveAllListeners();
 
         Debug.Log(inputField.text + " " + salt);
         var hash = AuthUtils.ComputeSha256(inputField.text.ToArray());
-        Debug.Log(hash.ToString());
-        sendPassword.onClick.RemoveAllListeners();
+        inputField.text = "";
+        var finishHash = AuthUtils.GetSaltHash(hash,salt);
+        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(SendRpcCommandRequest));
+        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new ClientHashRPC() { hash = finishHash });
     }
 }

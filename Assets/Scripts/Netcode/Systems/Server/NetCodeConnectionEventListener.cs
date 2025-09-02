@@ -14,19 +14,12 @@ using static UnityEngine.EventSystems.EventTrigger;
 [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
 public partial struct NetCodeConnectionEventListener : ISystem
 {
-
-    public void OnCreate(ref SystemState state)
-    {
-        if (ClientServerBootstrap.HasClientWorlds)
-        {
-            SystemAPI.GetSingletonRW<ServerData>().ValueRW.hostNetworkID = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntityQuery(typeof(NetworkId)).GetSingleton<NetworkId>().Value;
-            Debug.Log("dzial!!!!");
-        }
-    }
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         var connectionEventsForClient = SystemAPI.GetSingleton<NetworkStreamDriver>().ConnectionEventsForTick;
+        var serverData = SystemAPI.GetSingletonRW<ServerData>();
+
         foreach (var evt in connectionEventsForClient)
         {
             switch (evt.State)
@@ -53,26 +46,37 @@ public partial struct NetCodeConnectionEventListener : ISystem
                         playerName = playerDisconnected.playerName,
                         ReasonCode = (byte)evt.DisconnectReason,
                     });
-                    entityCommandBuffer.DestroyEntity(playerEntity);
+                    if(playerEntity != Entity.Null)  entityCommandBuffer.DestroyEntity(playerEntity);
                     break;
                 case ConnectionState.State.Connected:
-                    var serverData = SystemAPI.GetSingletonRW<ServerData>();
+                    EntityQuery query = state.EntityManager.CreateEntityQuery(typeof(Player));
+                    int playerCount = query.CalculateEntityCount();
+                    Debug.Log(playerCount + " koniec!");
+
+                    if (playerCount >= serverData.ValueRO.playersLimit)
+                    {
+                        Debug.Log(playerCount + " koniec!");
+                        entityCommandBuffer.AddComponent(evt.ConnectionEntity, new NetworkStreamRequestDisconnect());
+                    }
+
 
                     if (serverData.ValueRO.isHost && serverData.ValueRO.hostNetworkID < 0)
                         serverData.ValueRW.hostNetworkID = evt.Id.Value;
 
                     if (serverData.ValueRO.isPassword && serverData.ValueRO.hostNetworkID != evt.Id.Value)
                     {
-                        Debug.Log("nowa sol!");
-                        RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerSaltRPC()
+                        FixedString128Bytes clientSalt = AuthUtils.GetSalt();
+                        entityCommandBuffer.AddComponent(evt.ConnectionEntity, new ClientSalt() { salt = clientSalt });
+                        RPCHelper.SendRpc(ref entityCommandBuffer,evt.ConnectionEntity, new PlayerSaltRPC()
                         {
-                            salt = AuthUtils.GetSalt()
+                            salt = clientSalt
                         });
                     }
                     else
-                        RPCHelper.SendRpc(ref entityCommandBuffer, new AuthResponse() { success = true });   
+                        RPCHelper.SendRpc(ref entityCommandBuffer,evt.ConnectionEntity, new AuthResponse() { success = true });   
                 break;
             }
+
 
             UnityEngine.Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.ToFixedString()}!");
         }

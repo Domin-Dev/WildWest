@@ -37,9 +37,11 @@ public static class AuthUtils
         string saltHex = BitConverter.ToString(salt).Replace("-", "").ToLower();
         FixedString128Bytes saltFixed = new FixedString128Bytes();
         saltFixed.Append(saltHex);
-        UnityEngine.Debug.Log(saltFixed.ToString());
         return saltFixed;
     }
 
-
+    public static FixedString128Bytes GetSaltHash(FixedString128Bytes hash, FixedString128Bytes salt)
+    {
+        return AuthUtils.ComputeSha256((hash.ToString() + salt.ToString()).ToArray());
+    }
 }

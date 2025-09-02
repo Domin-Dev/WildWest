@@ -20,7 +20,6 @@ public partial class ClientAuthSystem : SystemBase
 
         foreach ((RefRO < PlayerSaltRPC > salt, RefRO<ReceiveRpcCommandRequest> rp, Entity e) in SystemAPI.Query<RefRO<PlayerSaltRPC>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
         {
-            Debug.Log("jest sol!! " + salt.ValueRO.salt);
             passwordRequired?.Invoke(salt.ValueRO.salt);
             entityCommandBuffer.DestroyEntity(e);
             this.Enabled = false;
