@@ -434,6 +434,24 @@ public class MenuManager : MonoBehaviour
             networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
 
+
+
+
+  if (isServer)
+{
+    using var drvQuery = server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.RequireConnectionApproval = true;
+drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(ep);
+}
+else
+{
+    using var drvQuery = client.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+    drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.RequireConnectionApproval = true;
+    drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(client.EntityManager, ep);
+}
+
+
+
             Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
 
             ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });

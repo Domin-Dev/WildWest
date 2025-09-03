@@ -24,6 +24,7 @@ public class GameInfo : MonoBehaviour
     [Space]
     public bool isMultiplayer;
     public bool isHost;
+    public bool isInGame;
     [Space]
     public int loadingMode;
     public int nextScene;

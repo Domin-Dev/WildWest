@@ -1,4 +1,7 @@
+using Unity.Collections;
+using Unity.Entities;
 using Unity.NetCode;
+using Unity.Networking.Transport;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -20,11 +23,21 @@ public class GameMenuManager : MonoBehaviour
         });
         exit.onClick.AddListener(() => {
             WindowsManager.instance.escScene = -1;
+            GameInfo.instance.isInGame = false;
             if (ClientServerBootstrap.HasServerWorld)
             {
                 SaveSystem.Save();
                 RPCHelper.StopServer(ClientServerBootstrap.ServerWorld);
             }
+            else
+            {
+                var queryNetworkID = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamConnection));
+                var array = queryNetworkID.ToEntityArray(AllocatorManager.Temp);
+                ClientServerBootstrap.ClientWorld.EntityManager.AddComponent(array[0], typeof(NetworkStreamRequestDisconnect));
+                queryNetworkID.Dispose();
+                array.Dispose();
+            }
+
             SceneManager.LoadScene(0);
             WindowsManager.instance.SwitchBackground(false);
         });

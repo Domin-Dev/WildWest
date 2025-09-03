@@ -33,6 +33,7 @@ partial struct ServerAuthSystem : ISystem
             {
                 Debug.Log("Witamy!!!");
                 RPCHelper.SendRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new AuthResponse() { success = true });
+                entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection, new AuthorizedClient());
             }
             else
             {

@@ -24,13 +24,17 @@ public partial struct ClientConnectionEventListener : ISystem
             switch (evt.State)
             {
                 case ConnectionState.State.Disconnected:
-                    if (!SystemAPI.HasSingleton<NetworkStreamConnection>() && !GameInfo.instance.isHost)
+                    if (!GameInfo.instance.isHost && GameInfo.instance.isInGame)
                     {
                         WindowsManager.instance.escScene = -1;
                         GameInfo.instance.errorMessage = "Lost connection to server.";
                         SceneManager.LoadScene(10);
                     }
-                    break;           
+                    GameInfo.instance.isInGame = false;
+                    break; 
+                case ConnectionState.State.Connected:
+                    GameInfo.instance.isInGame = true;
+                    break;
             }
 
 
