@@ -210,7 +210,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      "ItemEQ \u2014 kopia-export_0": 828761774692171491
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -210,7 +210,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      UIBackgrounds-export_0: 7082732758815607172
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

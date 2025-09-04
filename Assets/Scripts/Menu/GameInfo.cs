@@ -43,7 +43,6 @@ public class GameInfo : MonoBehaviour
         difficultyLevel = Difficulty.Normal;
         worldName = string.Empty;
         playTime = 0;
-        Debug.Log("co???");
     }
     public static void LoadScene(int newScene, int loadingMode, float maxProgress = 1f)
     {
@@ -61,7 +60,6 @@ public class GameInfo : MonoBehaviour
     public void SetValue(HeaderData data)
     {
         playerName = data.playerName.ToString();
-        Debug.Log(data.playerName); 
         worldName = data.worldName;
         creationTime = data.creationTime;
         difficultyLevel = data.difficulty;

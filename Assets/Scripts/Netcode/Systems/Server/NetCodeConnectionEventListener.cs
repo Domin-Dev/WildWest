@@ -25,6 +25,8 @@ public partial struct NetCodeConnectionEventListener : ISystem
             switch (evt.State)
             {
                 case ConnectionState.State.Disconnected:
+                    if (!SystemAPI.HasComponent<ConnectionApproved>(evt.ConnectionEntity))
+                        break;
                     SaveSystem.Save();
                     Player playerDisconnected = new Player();
                     Entity playerEntity = Entity.Null;
@@ -51,14 +53,10 @@ public partial struct NetCodeConnectionEventListener : ISystem
                 case ConnectionState.State.Connected:
                     EntityQuery query = state.EntityManager.CreateEntityQuery(typeof(Player));
                     int playerCount = query.CalculateEntityCount();
-                    Debug.Log(playerCount + " koniec!");
 
                     if (playerCount >= serverData.ValueRO.playersLimit)
-                    {
-                        Debug.Log(playerCount + " koniec!");
                         entityCommandBuffer.AddComponent(evt.ConnectionEntity, new NetworkStreamRequestDisconnect());
-                    }
-
+                   
 
                     if (serverData.ValueRO.isHost && serverData.ValueRO.hostNetworkID < 0)
                         serverData.ValueRW.hostNetworkID = evt.Id.Value;

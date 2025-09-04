@@ -14,7 +14,7 @@ public struct EnableConnectionTimeoutCheck : IComponentData
 public partial class ConnectionTimeoutSystem : SystemBase
 {
     private double startTime;
-    private const float timeoutSeconds = 2f;
+    private const float timeoutSeconds = 20f;
 
     public static event Action connectionFailed;
     public static event Action connectionSuccessful;

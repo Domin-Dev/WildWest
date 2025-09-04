@@ -20,7 +20,7 @@ public partial class MapServerSystem : SystemBase
     public float2 spawnPoint;
     int simulationTickRate = 60;
     private const int ChunksPerTick = 3;
-    private const int renderChunksSize = 3;
+    private const int renderChunksSize = 2;
     private const int maxChunkPreClient = 55;
 
     private NetworkTick currentTick;

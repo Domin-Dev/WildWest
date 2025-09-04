@@ -10,7 +10,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -375,6 +374,7 @@ public class MenuManager : MonoBehaviour
     }
     private void RunServer(HeaderData headerData = null)
     {
+        bool isPassword = !string.IsNullOrEmpty(passwordInput.text);
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = true;
         WindowsManager.instance.SwitchBackground(false);
@@ -423,6 +423,7 @@ public class MenuManager : MonoBehaviour
         {
             var endPoint = NetworkEndpoint.AnyIpv4.WithPort(port);
             if (!endPoint.IsValid) throw new Exception($"Invalid endpoint: port {port} is out of range or address is invalid.");
+            networkStreamDriver.ValueRW.RequireConnectionApproval = isPassword;
             bool result = networkStreamDriver.ValueRW.Listen(endPoint);
             Debug.Log(result);
 
@@ -431,24 +432,14 @@ public class MenuManager : MonoBehaviour
             NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
             networkStreamDriver =
                 clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+            networkStreamDriver.ValueRW.RequireConnectionApproval = isPassword;
             networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
 
 
 
+      
 
-  if (isServer)
-{
-    using var drvQuery = server.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.RequireConnectionApproval = true;
-drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(ep);
-}
-else
-{
-    using var drvQuery = client.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-    drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.RequireConnectionApproval = true;
-    drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(client.EntityManager, ep);
-}
 
 
 
@@ -458,7 +449,6 @@ else
             ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 
            
-            bool isPassword = !string.IsNullOrEmpty(passwordInput.text);
             Entity serverSettings = ClientServerBootstrap.ServerWorld.EntityManager.CreateEntity(typeof(ServerData));
 
             ClientServerBootstrap.ServerWorld.EntityManager.SetComponentData(serverSettings, new ServerData()
