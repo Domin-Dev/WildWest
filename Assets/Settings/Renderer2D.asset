@@ -28,6 +28,9 @@ MonoBehaviour:
   - {fileID: 700515511973145011}
   m_RendererFeatureMap: b369cf8a25bbb809
   m_UseNativeRenderPass: 0
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   m_TransparencySortMode: 3
   m_TransparencySortAxis: {x: 0, y: 0, z: 1}
   m_HDREmulationScale: 1
@@ -53,6 +56,7 @@ MonoBehaviour:
   m_MaxShadowRenderTextureCount: 1
   m_PostProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   m_DefaultMaterialType: 0
+  m_DefaultCustomMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
 --- !u!114 &700515511973145011
 MonoBehaviour:
   m_ObjectHideFlags: 0

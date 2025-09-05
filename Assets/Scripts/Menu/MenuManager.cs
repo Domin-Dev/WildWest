@@ -16,8 +16,6 @@ using UnityEngine.UI;
 
 public class MenuManager : MonoBehaviour
 {
-
-    [SerializeField] private Material iconMaterial;
     [SerializeField] private TextMeshProUGUI versionText;
 
 
@@ -236,7 +234,7 @@ public class MenuManager : MonoBehaviour
         {
             GameObject gameObject = Instantiate(worldRow, worldList.transform);
             WorldRow row = gameObject.GetComponent<WorldRow>();
-            row.SetWorld(header, iconMaterial);
+            row.SetWorld(header, UIAssetsManager.instance.UIHeadMaterial);
         }
     }
 

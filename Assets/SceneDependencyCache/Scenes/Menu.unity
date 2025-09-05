@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -3377,7 +3378,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aba9bfa659ab2354693e2d6bbd109c73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  iconMaterial: {fileID: 2100000, guid: ff6675fc472c32141994132de05f9aea, type: 2}
   versionText: {fileID: 330373315}
   connectionWindow: {fileID: 1718331052}
   worldListWindow: {fileID: 1157120269}
@@ -4022,7 +4022,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -4030,6 +4029,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &593497819
 GameObject:
   m_ObjectHideFlags: 0
@@ -7549,6 +7549,7 @@ MonoBehaviour:
   seed: 0
   isMultiplayer: 0
   isHost: 0
+  isInGame: 0
   loadingMode: 0
   nextScene: 0
   maxProgress: 0
@@ -7581,6 +7582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4cfab531b66e324292168ec47d16723, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UIHeadMaterial: {fileID: 2100000, guid: df6d9abd4c7883d4684371e2537265b4, type: 2}
   bronzeBackgroundUI: {fileID: -387067171, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   silverBackgroundUI: {fileID: 1922422707, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   goldBackgroundUI: {fileID: 1532682267, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
@@ -8114,7 +8116,7 @@ MonoBehaviour:
   m_ContentType: 2
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 4
+  m_KeyboardType: 2
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
@@ -9845,6 +9847,7 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!1 &1559411875
 GameObject:
   m_ObjectHideFlags: 0

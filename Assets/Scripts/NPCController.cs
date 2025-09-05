@@ -90,11 +90,11 @@ public class NPCController : MonoBehaviour, ILifePoints,IUsesWeapons
     }
     public void Follow()
     {
-       rigidbody2D.velocity = target.position - transform.position;    
+       rigidbody2D.linearVelocity = target.position - transform.position;    
     }
     public void StopFollow()
     {
-        rigidbody2D.velocity = Vector3.zero;
+        rigidbody2D.linearVelocity = Vector3.zero;
     }
     public float GetDistance()
     {

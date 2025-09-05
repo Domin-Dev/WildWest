@@ -9,7 +9,8 @@ using UnityEngine.SceneManagement;
 
 public class  UIAssetsManager : MonoBehaviour
 {
-
+    [Header("Materials")]
+    [SerializeField] public Material UIHeadMaterial;
     [Header("Rewards")]
     [SerializeField] public Sprite bronzeBackgroundUI;
     [SerializeField] public Sprite silverBackgroundUI;

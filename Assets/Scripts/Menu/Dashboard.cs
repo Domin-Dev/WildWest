@@ -20,7 +20,6 @@ public class Dashboard : MonoBehaviour
     [SerializeField] private GameObject dashboard;
     [SerializeField] private GameObject rowClient;
     [SerializeField] private GameObject rowAdmin;
-    [SerializeField] private Material materialIcon;
 
     World world;
 
@@ -92,7 +91,7 @@ public class Dashboard : MonoBehaviour
             Row rowComp = row.GetComponent<Row>();
 
             rowComp.playerName.text = playerData.playerName.ToString();
-            mat = new Material(materialIcon);
+            mat = new Material(UIAssetsManager.instance.UIHeadMaterial);
             rowComp.playerIcon.material = mat;
             rowComp.pingText.text = "???";
 

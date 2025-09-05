@@ -58,7 +58,7 @@ public partial struct ServerConnectionApprovalSystem : ISystem
 
 
             Debug.Log($"Klient połączony z IP: {ip}, port: {port}");
-            if (approvalMsg.ValueRO.Payload.Equals("ABeC"))
+            if (approvalMsg.ValueRO.Payload.Equals("ABC"))
             {
                 ecb.AddComponent<ConnectionApproved>(connectionEntity);
                 ecb.DestroyEntity(entity);

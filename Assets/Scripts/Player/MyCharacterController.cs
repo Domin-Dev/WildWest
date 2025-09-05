@@ -53,7 +53,7 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
 
     private void WindowOpen(object sender, EventArgs e)
     {
-        rigidbody2D.velocity = Vector2.zero;
+        rigidbody2D.linearVelocity = Vector2.zero;
         animator.SetBool("Idle", true);
     }
 
@@ -114,7 +114,7 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
     {
         if (!isRepulsed)
         {
-            rigidbody2D.velocity = moveDir * speed;
+            rigidbody2D.linearVelocity = moveDir * speed;
             if(moveDir == new Vector2(0,0))
             {
                 animator.SetBool("Idle", true);

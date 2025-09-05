@@ -36,7 +36,7 @@ public class NPC : MonoBehaviour
     public void Follow()
     {
         Vector2 vector2 = target - (Vector2)transform.position;
-        rigidbody2D.velocity = vector2.normalized * 0.4f;
+        rigidbody2D.linearVelocity = vector2.normalized * 0.4f;
       //  characterSpriteController.UpdateSprite(vector2.normalized, vector2.normalized);
         if (Vector2.Distance(transform.position, target) <= 0.01)
         {
@@ -47,7 +47,7 @@ public class NPC : MonoBehaviour
             }
             else
             {
-                rigidbody2D.velocity = Vector2.zero;
+                rigidbody2D.linearVelocity = Vector2.zero;
                 path = null;
                 Debug.Log("end");
                 NewPath(Random.Range(0, 20), Random.Range(0, 20));

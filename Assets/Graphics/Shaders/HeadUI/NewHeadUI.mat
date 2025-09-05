@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HeadUI
-  m_Shader: {fileID: 4800000, guid: 68273dcf609a5b5469f1adcf1a127247, type: 3}
+  m_Name: NewHeadUI
+  m_Shader: {fileID: -6465566751694194690, guid: 7bec2898e0c635044a7479c9314d608e, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -73,34 +73,26 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BUILTIN_AlphaClip: 0
-    - _BUILTIN_Blend: 0
-    - _BUILTIN_CullMode: 0
-    - _BUILTIN_DstBlend: 0
-    - _BUILTIN_QueueControl: -1
-    - _BUILTIN_QueueOffset: 0
-    - _BUILTIN_SrcBlend: 1
-    - _BUILTIN_Surface: 1
-    - _BUILTIN_ZTest: 4
-    - _BUILTIN_ZWrite: 0
-    - _BUILTIN_ZWriteControl: 0
     - _BeardIndex: 0
     - _ColorMask: 15
     - _Direction: 0
     - _EyesIndex: 2
-    - _HairIndex: 8
+    - _HairIndex: 3
     - _HairUnderHat: 0
     - _MouthIndex: 2
-    - _PaintingsIndex: 0
+    - _PaintingsIndex: 3
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
+    - _UIMaskSoftnessX: 1
+    - _UIMaskSoftnessY: 1
     m_Colors:
-    - _HairColor: {r: 0.3886792, g: 0.23394087, b: 0.23394087, a: 1}
+    - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
+    - _HairColor: {r: 0.45660365, g: 0.26073897, b: 0.054275475, a: 1}
     - _HatColor: {r: 0.43396226, g: 0.048308954, b: 0.21363688, a: 1}
-    - _MaskColor: {r: 0.8784314, g: 0.19940385, b: 0.19940385, a: 1}
-    - _SkinColor: {r: 1, g: 0.89934075, b: 0.76792455, a: 1}
+    - _MaskColor: {r: 0.282353, g: 0.2392157, b: 0.5450981, a: 1}
+    - _SkinColor: {r: 0.80377346, g: 0.59834296, b: 0.34425768, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
