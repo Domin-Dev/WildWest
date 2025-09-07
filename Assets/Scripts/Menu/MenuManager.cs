@@ -41,7 +41,6 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button buttonBackConnectToIP;
     [SerializeField] private TextMeshProUGUI errorMessage;
 
-
     [Header("Edit")]
     [SerializeField] private WorldNameInput worldNameInput;
     [SerializeField] private Button editYes;
@@ -380,7 +379,6 @@ public class MenuManager : MonoBehaviour
 
         if(headerData == null)
         {
-            Debug.Log("null");
             GameInfo.LoadScene(4, 0);
             GameInfo.instance.playerName = playerNameInput.text.ToString();
         }
@@ -405,6 +403,8 @@ public class MenuManager : MonoBehaviour
         World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
 
 
+
+
         ClientWorldSetUp(clientWorld);
 
         if (World.DefaultGameObjectInjectionWorld == null)
@@ -416,27 +416,31 @@ public class MenuManager : MonoBehaviour
 
         RefRW<NetworkStreamDriver> networkStreamDriver =
             serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-
+ 
         try
         {
             var endPoint = NetworkEndpoint.AnyIpv4.WithPort(port);
             if (!endPoint.IsValid) throw new Exception($"Invalid endpoint: port {port} is out of range or address is invalid.");
-            networkStreamDriver.ValueRW.RequireConnectionApproval = isPassword;
+            networkStreamDriver.ValueRW.RequireConnectionApproval = true;
             bool result = networkStreamDriver.ValueRW.Listen(endPoint);
-            Debug.Log(result);
 
             if (!result) throw new Exception($"Failed to listen on port {endPoint.Port}. Port may be in use.");
+
+            serverWorld.EntityManager.CreateEntityQuery(typeof(ClientServerTickRate)).GetSingletonRW<ClientServerTickRate>().ValueRW.HandshakeApprovalTimeoutMS = 20000u;
+
+            Debug.Log(serverWorld.EntityManager.CreateEntityQuery(typeof(ClientServerTickRate)).IsEmpty);
+
 
             NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
             networkStreamDriver =
                 clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-            networkStreamDriver.ValueRW.RequireConnectionApproval = isPassword;
+            networkStreamDriver.ValueRW.RequireConnectionApproval = true;
             networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
+            clientWorld.EntityManager.CreateEntityQuery(typeof(ClientServerTickRate)).GetSingletonRW<ClientServerTickRate>().ValueRW.HandshakeApprovalTimeoutMS = 20000u;
 
 
 
-      
 
 
 

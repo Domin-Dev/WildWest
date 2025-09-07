@@ -14,6 +14,22 @@ using static UnityEngine.EventSystems.EventTrigger;
 [UpdateAfter(typeof(NetworkReceiveSystemGroup))]
 public partial struct NetCodeConnectionEventListener : ISystem
 {
+    
+    private NativeParallelHashSet<int> approvedConnections;
+
+    public static event Action<int> OnClientDisconnected;
+    public void OnCreate(ref SystemState state)
+    {
+        approvedConnections = new NativeParallelHashSet<int>(16, Allocator.Persistent);
+
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+        if (approvedConnections.IsCreated)
+            approvedConnections.Dispose();
+
+    }
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -25,8 +41,10 @@ public partial struct NetCodeConnectionEventListener : ISystem
             switch (evt.State)
             {
                 case ConnectionState.State.Disconnected:
-                    if (!SystemAPI.HasComponent<ConnectionApproved>(evt.ConnectionEntity))
+
+                    if (evt.Id.Value <= 0)
                         break;
+                    OnClientDisconnected?.Invoke(evt.Id.Value);
                     SaveSystem.Save();
                     Player playerDisconnected = new Player();
                     Entity playerEntity = Entity.Null;
@@ -48,30 +66,47 @@ public partial struct NetCodeConnectionEventListener : ISystem
                         playerName = playerDisconnected.playerName,
                         ReasonCode = (byte)evt.DisconnectReason,
                     });
-                    if(playerEntity != Entity.Null)  entityCommandBuffer.DestroyEntity(playerEntity);
+                    if (playerEntity != Entity.Null)
+                    {
+                        GlobalRelevancySystem.OnGhostDestroyed(SystemAPI.GetComponentRO<GhostInstance>(playerEntity).ValueRO.ghostId);
+                        entityCommandBuffer.DestroyEntity(playerEntity);
+                    }
                     break;
                 case ConnectionState.State.Connected:
+                    approvedConnections.Add(evt.Id.Value);
+                    var connection = state.EntityManager.GetComponentData<NetworkStreamConnection>(evt.ConnectionEntity);
+                    var driver = SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRO;
+                    var remoteEP = driver.GetRemoteEndPoint(connection);
+
+                    if (serverData.ValueRO.isHost && remoteEP.IsLoopback && serverData.ValueRO.hostNetworkID < 0)
+                        serverData.ValueRW.hostNetworkID = evt.Id.Value;
+                    break;
+                case ConnectionState.State.Approval:
+
+                  //  string ip = remoteEP;
+                 //   ushort port = remoteEP.Port;
+
+
                     EntityQuery query = state.EntityManager.CreateEntityQuery(typeof(Player));
                     int playerCount = query.CalculateEntityCount();
 
                     if (playerCount >= serverData.ValueRO.playersLimit)
-                        entityCommandBuffer.AddComponent(evt.ConnectionEntity, new NetworkStreamRequestDisconnect());
-                   
+                        entityCommandBuffer.AddComponent(evt.ConnectionEntity, new NetworkStreamRequestDisconnect() { Reason = NetworkStreamDisconnectReason.ClosedByRemote});
 
-                    if (serverData.ValueRO.isHost && serverData.ValueRO.hostNetworkID < 0)
-                        serverData.ValueRW.hostNetworkID = evt.Id.Value;
-
-                    if (serverData.ValueRO.isPassword && serverData.ValueRO.hostNetworkID != evt.Id.Value)
+                    if (serverData.ValueRO.isPassword && !(serverData.ValueRO.isHost && serverData.ValueRO.hostNetworkID < 0))
                     {
                         FixedString128Bytes clientSalt = AuthUtils.GetSalt();
                         entityCommandBuffer.AddComponent(evt.ConnectionEntity, new ClientSalt() { salt = clientSalt });
-                        RPCHelper.SendRpc(ref entityCommandBuffer,evt.ConnectionEntity, new PlayerSaltRPC()
+                        RPCHelper.SendApprovalRpc(ref entityCommandBuffer, evt.ConnectionEntity, new PlayerSaltRPC()
                         {
                             salt = clientSalt
                         });
                     }
                     else
-                        RPCHelper.SendRpc(ref entityCommandBuffer,evt.ConnectionEntity, new AuthResponse() { success = true });   
+                    {
+                        entityCommandBuffer.AddComponent<ConnectionApproved>(evt.ConnectionEntity);
+                        RPCHelper.SendApprovalRpc(ref entityCommandBuffer, evt.ConnectionEntity, new AuthResponse() { success = true });
+                    }
                 break;
             }
 

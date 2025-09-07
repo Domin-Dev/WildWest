@@ -16,15 +16,19 @@ using static UnityEngine.EventSystems.EventTrigger;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct GlobalRelevancySystem : ISystem
 {
-    GhostRelevancy ghostRelevancy;
+    static GhostRelevancy ghostRelevancy;
     public void OnCreate(ref SystemState state)
     {
         var gh = SystemAPI.GetSingletonRW<GhostRelevancy>();
         gh.ValueRW.GhostRelevancyMode = GhostRelevancyMode.SetIsRelevant;
         ghostRelevancy = gh.ValueRO;
+        NetCodeConnectionEventListener.OnClientDisconnected += OnClientDisconnected;
     }
 
-
+    public void OnDestroy(ref SystemState state)
+    {
+        NetCodeConnectionEventListener.OnClientDisconnected -= OnClientDisconnected;
+    }
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -135,4 +139,39 @@ public partial struct GlobalRelevancySystem : ISystem
             flags = 2
         });
     }
+
+    public static void OnClientDisconnected(int connectionId)
+    {
+        var keysToRemove = new NativeList<RelevantGhostForConnection>(Allocator.Temp);
+
+        foreach (var kvp in ghostRelevancy.GhostRelevancySet)
+        {
+            if (kvp.Key.Connection == connectionId)
+            {
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var key in keysToRemove)
+        {
+            ghostRelevancy.GhostRelevancySet.Remove(key);
+        }
+        keysToRemove.Dispose();
+    }
+    public static void OnGhostDestroyed(int ghostID)
+    {
+        var keysToRemove = new NativeList<RelevantGhostForConnection>(Allocator.Temp);
+        foreach (var kvp in ghostRelevancy.GhostRelevancySet)
+        {
+            if (kvp.Key.Ghost == ghostID)
+            {
+                keysToRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var key in keysToRemove)
+        {
+            ghostRelevancy.GhostRelevancySet.Remove(key);
+        }
+        keysToRemove.Dispose();
+    }
+
 }

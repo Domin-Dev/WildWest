@@ -18,11 +18,10 @@ public partial class WaitClientAuthSystem : SystemBase
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach ((RefRO < AuthResponse > response, RefRO<ReceiveRpcCommandRequest> rp, Entity e) in SystemAPI.Query<RefRO<AuthResponse>, RefRO<ReceiveRpcCommandRequest> >().WithEntityAccess())
+        foreach ((RefRO <AuthResponse> response, RefRO<ReceiveRpcCommandRequest> rp, Entity e) in SystemAPI.Query<RefRO<AuthResponse>, RefRO<ReceiveRpcCommandRequest> >().WithEntityAccess())
         {
             if(response.ValueRO.success)
             {
-                RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
                 this.Enabled = false;
             }
             else

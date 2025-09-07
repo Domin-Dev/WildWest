@@ -31,8 +31,6 @@ public partial class WaitForConfirmation : SystemBase
             entityCommandBuffer.DestroyEntity(e);
         }).WithStructuralChanges().WithoutBurst().Run();
 
-
-
         entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
         entityCommandBuffer.Dispose();
     }

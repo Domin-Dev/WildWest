@@ -18,7 +18,7 @@ public partial class ClientAuthSystem : SystemBase
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach ((RefRO < PlayerSaltRPC > salt, RefRO<ReceiveRpcCommandRequest> rp, Entity e) in SystemAPI.Query<RefRO<PlayerSaltRPC>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
+        foreach ((RefRO <PlayerSaltRPC> salt, RefRO<ReceiveRpcCommandRequest> rp, Entity e) in SystemAPI.Query<RefRO<PlayerSaltRPC>, RefRO<ReceiveRpcCommandRequest>>().WithEntityAccess())
         {
             passwordRequired?.Invoke(salt.ValueRO.salt);
             entityCommandBuffer.DestroyEntity(e);

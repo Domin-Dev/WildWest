@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-public struct PlayerSaltRPC : IRpcCommand
+public struct AuthResponse : IApprovalRpcCommand
 {
-    public FixedString128Bytes salt;
+    public bool success;
 }

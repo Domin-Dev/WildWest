@@ -21,7 +21,7 @@ public partial class MapServerSystem : SystemBase
     int simulationTickRate = 60;
     private const int ChunksPerTick = 3;
     private const int renderChunksSize = 2;
-    private const int maxChunkPreClient = 55;
+    private const int maxChunkPreClient = 20;
 
     private NetworkTick currentTick;
     private EntitiesReferences entitiesReferences;
@@ -38,6 +38,14 @@ public partial class MapServerSystem : SystemBase
         loadedChunks = new NativeHashMap<int, Entity>(100, Allocator.Persistent);
         toUnloadChunks = new NativeList<Entity>(30, Allocator.Persistent);
         playerChunks = new NativeHashMap<int, NativeHashMap<int, double>>(50, Allocator.Persistent);
+
+        NetCodeConnectionEventListener.OnClientDisconnected += OnClientDisconnected;
+    }
+
+    private void OnClientDisconnected(int NetworkId)
+    {
+        playerChunks[NetworkId].Dispose();
+        playerChunks.Remove(NetworkId);
     }
     protected override void OnDestroy()
     {
@@ -46,6 +54,7 @@ public partial class MapServerSystem : SystemBase
         toUnloadChunks.Dispose();    
         loadedChunks.Dispose();
         playerChunks.Dispose();
+        NetCodeConnectionEventListener.OnClientDisconnected -= OnClientDisconnected;
         base.OnDestroy();
     }
 
