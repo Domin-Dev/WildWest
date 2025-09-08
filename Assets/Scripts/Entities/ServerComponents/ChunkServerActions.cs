@@ -30,7 +30,14 @@ public struct ChunkEvents : IBufferElementData
     // 1 readChunk Value.x = chunk index
 }
 
-public struct ChunkEventCounter : IComponentData
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+public struct ChunkEventCounter : IInputComponentData
+{
+    [GhostField(Quantization = 0)] public uint index;
+}
+
+
+public struct ServerChunkEventCounter : IComponentData
 {
     public uint index;
 }

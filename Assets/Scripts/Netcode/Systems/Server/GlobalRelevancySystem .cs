@@ -17,6 +17,9 @@ using static UnityEngine.EventSystems.EventTrigger;
 public partial struct GlobalRelevancySystem : ISystem
 {
     static GhostRelevancy ghostRelevancy;
+
+    private const int maxChunkEventsBufferPreClient = 50;
+    private const int cutoffBorder = 100000;
     public void OnCreate(ref SystemState state)
     {
         var gh = SystemAPI.GetSingletonRW<GhostRelevancy>();
@@ -114,14 +117,28 @@ public partial struct GlobalRelevancySystem : ISystem
     }
     private void CreateNewChunkEvent(ref SystemState state, int networkID, ChunkEvents chunkEvent)
     {
-        foreach ((DynamicBuffer<ChunkEvents> events, RefRO<GhostOwner> ghostOwner, RefRW<ChunkEventCounter> counter)
-        in SystemAPI.Query<DynamicBuffer<ChunkEvents>, RefRO<GhostOwner>, RefRW<ChunkEventCounter>>().WithAll<Player>())
+        foreach ((DynamicBuffer<ChunkEvents> events, RefRO<GhostOwner> ghostOwner, RefRW<ServerChunkEventCounter> counter, RefRO<ChunkEventCounter> clientCounter)
+        in SystemAPI.Query<DynamicBuffer<ChunkEvents>, RefRO<GhostOwner>, RefRW<ServerChunkEventCounter>, RefRO<ChunkEventCounter>>().WithAll<Player>())
         {
             if (ghostOwner.ValueRO.NetworkId == networkID)
             {
                 chunkEvent.index = counter.ValueRO.index;
                 events.Add(chunkEvent);
                 counter.ValueRW.index++;
+                if(events.Length > maxChunkEventsBufferPreClient)
+                {
+                    for (int i = events.Length - 1; i >= 0; i--)
+                    {
+                        long dis = Math.Abs((long)events[i].index - (long)clientCounter.ValueRO.index);
+                        Debug.Log(dis + "    " +  events[i].index);
+                        if ((events[i].index < clientCounter.ValueRO.index && dis < cutoffBorder)
+                          ||(events[i].index > clientCounter.ValueRO.index && dis > cutoffBorder))
+                        {
+                            events.RemoveAt(i);
+                        }
+                    }
+
+                }
             }
         }
     }

@@ -425,24 +425,12 @@ public class MenuManager : MonoBehaviour
             bool result = networkStreamDriver.ValueRW.Listen(endPoint);
 
             if (!result) throw new Exception($"Failed to listen on port {endPoint.Port}. Port may be in use.");
-
-            serverWorld.EntityManager.CreateEntityQuery(typeof(ClientServerTickRate)).GetSingletonRW<ClientServerTickRate>().ValueRW.HandshakeApprovalTimeoutMS = 20000u;
-
-            Debug.Log(serverWorld.EntityManager.CreateEntityQuery(typeof(ClientServerTickRate)).IsEmpty);
-
-
+         
             NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
             networkStreamDriver =
                 clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
             networkStreamDriver.ValueRW.RequireConnectionApproval = true;
             networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
-
-            clientWorld.EntityManager.CreateEntityQuery(typeof(ClientServerTickRate)).GetSingletonRW<ClientServerTickRate>().ValueRW.HandshakeApprovalTimeoutMS = 20000u;
-
-
-
-
-
 
 
             Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
@@ -461,7 +449,6 @@ public class MenuManager : MonoBehaviour
                 playersLimit = playerLimit.GetValue(),
                 hostNetworkID = int.MinValue,
             });
-
         }
         catch
         (Exception ex)

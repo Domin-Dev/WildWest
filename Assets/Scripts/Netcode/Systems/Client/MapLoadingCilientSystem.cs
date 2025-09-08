@@ -67,15 +67,6 @@ public partial class MapLoadingClientSystem : SystemBase
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
-       
-        //Entities
-        //    .WithAll<ReceiveRpcCommandRequest, FixedChunk>()
-        //    .ForEach((Entity entity, in FixedChunk chunkStruct) =>
-        //    {
-        //        clientMap.AddChunk(chunkStruct);
-        //        ecb.DestroyEntity(entity);
-        //    }).WithoutBurst().Run();
-
 
        Entities
        .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
@@ -90,6 +81,7 @@ public partial class MapLoadingClientSystem : SystemBase
                    if (ev.index == counter.index)
                    {
                        counter.index++;
+
                        Debug.Log(counter.index + "akcja!" + ev.flags);
 
                        switch (ev.flags)

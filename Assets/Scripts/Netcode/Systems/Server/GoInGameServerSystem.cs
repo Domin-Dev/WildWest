@@ -44,6 +44,8 @@ partial struct GoInGameServerSystem : ISystem
                 speed = 1f,
                 playerName = playerSave.playerName
             });
+            entityCommandBuffer.AddComponent(character, new ServerChunkEventCounter() { index = uint.MaxValue });
+
 
 
             entityCommandBuffer.AddComponent(character, new LastChunk());
