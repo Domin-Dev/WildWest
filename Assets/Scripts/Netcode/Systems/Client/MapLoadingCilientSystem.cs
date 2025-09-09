@@ -82,7 +82,7 @@ public partial class MapLoadingClientSystem : SystemBase
                    {
                        counter.index++;
 
-                       Debug.Log(counter.index + "akcja!" + ev.flags);
+                     // Debug.Log(counter.index + "akcja!" + ev.flags);
 
                        switch (ev.flags)
                        {
@@ -110,7 +110,6 @@ public partial class MapLoadingClientSystem : SystemBase
             {
                 if(chunksToLoad.Contains(chunk.index))
                 {
-                    Debug.Log("find!");
                     clientMap.AddChunk(chunk.index, e);
                     chunksToLoad.Remove(chunk.index);
                 }

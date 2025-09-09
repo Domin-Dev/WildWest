@@ -15,11 +15,14 @@ public static class WorldManager
 {
     public static bool WorldExist(string name)
     {
-        var files = Directory.GetDirectories(SaveSystem.savesPath);
-
-        foreach (var item in files)
+        if (Directory.Exists(SaveSystem.savesPath))
         {
-            if (Path.GetFileName(item) == name) return true;
+            var files = Directory.GetDirectories(SaveSystem.savesPath);
+
+            foreach (var item in files)
+            {
+                if (Path.GetFileName(item) == name) return true;
+            }
         }
         return false;
     }

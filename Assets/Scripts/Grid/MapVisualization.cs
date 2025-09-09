@@ -96,15 +96,14 @@ public class MapVisualization : MonoBehaviour
     public void RenderNewChunks()
     {
         if (clientMap == null) return;
+        //Debug.Log("liczba : " + clientMap.chunksToRender.Count);
         while (clientMap.GetNextChunk(out Entity? chunk) && chunk.HasValue)
         {
-            Debug.Log("wczytywanie ChunkU!!!");
             clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),entityManager.GetComponentData<ChunkComponent>(chunk.Value).index);
         }
     }
     public Transform CreateMesh(Entity chunk)
     {
-        Debug.Log(chunk);
         ChunkComponent chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
         DynamicBuffer<ChunkTiles> chunkTiles = entityManager.GetBuffer<ChunkTiles>(chunk);
 
@@ -375,10 +374,14 @@ public class MapVisualization : MonoBehaviour
             else
             {
                 var tile = clientMap[entityChunk, (int)v.x, (int)v.y];
-                if (tile != null) 
+                if (tile != null)
                 {
                     id = tile.Value.tileID;
-                  //  if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(chunk, (int)v.x, (int)v.y), false);
+                    //if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(chunk, (int)v.x, (int)v.y), false);
+                }
+                else
+                {
+                  //  Debug.Log((int)v.x + "," + (int)v.y);
                 }
             }
 

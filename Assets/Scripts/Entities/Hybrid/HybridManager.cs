@@ -33,11 +33,12 @@ public class HybridManager : MonoBehaviour
     private void IsPlayer()
     {
         EntityFollower entityFollower = new GameObject("PlayerFollower", typeof(EntityFollower)).GetComponent<EntityFollower>();
+        entityFollower.transform.position = new Vector3(0, 0, -10f);
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp).WithAll<Player,GhostOwnerIsLocal>();
         var entites = entityQueryBuilder.Build(ClientServerBootstrap.ClientWorld.EntityManager);
         var array = entites.ToEntityArray(Allocator.Temp);
-        entityFollower.SetEntity(array[0]);
+        entityFollower.SetEntity(array[0],false);
 
         var pos = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<LocalTransform>(array[0]);
         Vector3 cameraPos = virtualCamera.transform.position;
@@ -57,7 +58,7 @@ public class HybridManager : MonoBehaviour
     public void SetEntity(Entity entity,Vector3 position)
     {
         GameObject obj = Instantiate(trailBullet, position, Quaternion.identity);
-        obj.GetComponent<EntityFollower>().SetEntity(entity);
+        obj.GetComponent<EntityFollower>().SetEntity(entity,true);
         connectedObjects.Add(entity, obj);
     }
 

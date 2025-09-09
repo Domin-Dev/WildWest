@@ -35,7 +35,6 @@ namespace Game.Client.Map
         {
             int2 key = ChunkIndexToChunkCoordinates(chunkIndex);
 
-            Debug.Log(chunkIndex + "  " + chunk);
             if (!chunks.ContainsKey(key))
             {
                 chunks.Add(key, chunk);
@@ -128,11 +127,6 @@ namespace Game.Client.Map
         }
         public bool GetNextChunk(out Entity? clientChunk)
         {
-            foreach (var item in chunksToRender)
-            {
-                Debug.Log(item);
-            }
-
             if (chunksToRender.Count > 0)
             {
                 clientChunk = chunksToRender[0];

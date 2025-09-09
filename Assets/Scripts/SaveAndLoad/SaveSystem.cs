@@ -52,6 +52,9 @@ public static class SaveSystem
         BinaryFormatter formatter = new BinaryFormatter();
         string folderPath = GetWorldPath(GameInfo.instance.worldName);
 
+        if(!Directory.Exists(savesPath))
+            Directory.CreateDirectory(savesPath);
+
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
         string worldPath = Path.Combine(folderPath, "world.dust");

@@ -7,7 +7,6 @@ using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -15,20 +14,13 @@ using static UnityEngine.EventSystems.EventTrigger;
 public partial struct NetCodeConnectionEventListener : ISystem
 {
     
-    private NativeParallelHashSet<int> approvedConnections;
 
     public static event Action<int> OnClientDisconnected;
+
     public void OnCreate(ref SystemState state)
     {
-        approvedConnections = new NativeParallelHashSet<int>(16, Allocator.Persistent);
-
-    }
-
-    public void OnDestroy(ref SystemState state)
-    {
-        if (approvedConnections.IsCreated)
-            approvedConnections.Dispose();
-
+        state.RequireForUpdate<ServerData>();
+        state.RequireForUpdate<NetworkStreamDriver>();
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -73,18 +65,19 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     }
                     break;
                 case ConnectionState.State.Connected:
-                    approvedConnections.Add(evt.Id.Value);
                     var connection = state.EntityManager.GetComponentData<NetworkStreamConnection>(evt.ConnectionEntity);
                     var driver = SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRO;
                     var remoteEP = driver.GetRemoteEndPoint(connection);
+
+                    Debug.Log(remoteEP.Address);
+
 
                     if (serverData.ValueRO.isHost && remoteEP.IsLoopback && serverData.ValueRO.hostNetworkID < 0)
                         serverData.ValueRW.hostNetworkID = evt.Id.Value;
                     break;
                 case ConnectionState.State.Approval:
 
-                  //  string ip = remoteEP;
-                 //   ushort port = remoteEP.Port;
+
 
 
                     EntityQuery query = state.EntityManager.CreateEntityQuery(typeof(Player));

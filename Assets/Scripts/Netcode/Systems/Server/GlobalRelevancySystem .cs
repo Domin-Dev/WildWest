@@ -101,7 +101,6 @@ public partial struct GlobalRelevancySystem : ISystem
 
     private void StartStreamingChunks(ref SystemState state,ChunkServerActions action,int ghostID, Entity entity)
     {
-        Debug.Log(ghostID + " " + action.networkID);
         var key = new RelevantGhostForConnection()
         {
             Ghost = ghostID,
