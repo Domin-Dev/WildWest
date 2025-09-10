@@ -30,12 +30,11 @@ public partial class MapLoadingClientSystem : SystemBase
     { 
         clientMap.widthInChunks = map.widthInChunks;
     }
-
-
     protected override void OnCreate()
     {
         base.OnCreate();
         chunksToLoad = new NativeHashSet<int>(30,Allocator.Persistent);
+        RequireForUpdate<EntitiesReferences>();
         //var entityQueryDesc = new EntityQueryDesc
         //{
         //    All = new ComponentType[] { typeof(ReceiveRpcCommandRequest) },
@@ -47,13 +46,10 @@ public partial class MapLoadingClientSystem : SystemBase
     {
         chunksToLoad.Dispose();
     }
-
-
     protected override void OnStartRunning()
     {
-      //  entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
     }
-
 
     private float timer = 0f;
     protected override void OnUpdate()
@@ -106,12 +102,18 @@ public partial class MapLoadingClientSystem : SystemBase
 
         if (!chunksToLoad.IsEmpty)
         {
-            Entities.ForEach((Entity e, ChunkComponent chunk) =>
+            Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects, DynamicBuffer<LinkedEntityGroup> linkedEntities) =>
             {
                 if(chunksToLoad.Contains(chunk.index))
                 {
                     clientMap.AddChunk(chunk.index, e);
                     chunksToLoad.Remove(chunk.index);
+
+                    foreach (var item in buildingObjects)
+                    {
+                        Entity bObject = BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb,item );
+                        linkedEntities.Add(bObject);
+                    }
                 }
             }).WithoutBurst().Run();
         }

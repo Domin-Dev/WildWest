@@ -41,7 +41,6 @@ namespace Game.Client.Map
                 chunksToRender.Add(chunk);
             }
         }
-
         public void RemoveChunk(int chunkIndex)
         {
             Debug.Log("usun!!!");
@@ -82,6 +81,7 @@ namespace Game.Client.Map
                  return this[pos.x + x, pos.y + y];  
             }
         }
+
         public static int2 MapPosToChunkCoordinates(int x,int y)
         {
             return new int2((x / chunkSize), (y / chunkSize));
@@ -98,16 +98,17 @@ namespace Game.Client.Map
         {
             return LocalTilePosToTileIndex(new int2(x,y));
         }
-
-
         public int ChunkCoordiantesToChunkIndex(int2 coords)
         {
             return coords.x + coords.y * widthInChunks;
         }
-        public int2 LocalChunkPosToMapPos(ClientChunk chunk,int x,int y)
+        public int2 LocalChunkPosToMapPos(Entity chunk, int x, int y)
         {
-            return new int2(x + chunk.chunkCoordinates.x, y + chunk.chunkCoordinates.y);
+            var chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
+            int2 pos = ChunkIndexToMapPosition(chunkComponent.index);
+            return new int2(x + pos.x, y + pos.y);
         }
+
         public int2 ChunkIndexToChunkCoordinates(int chunkIndex)
         {
             return new int2(chunkIndex % widthInChunks, chunkIndex / widthInChunks);
@@ -120,7 +121,6 @@ namespace Game.Client.Map
         {
            return renderedChunks.ContainsKey(ChunkCoordiantesToChunkIndex(chunkCoordinates));
         }
-
         public bool ChunkWasLoaded(int2 chunkCoordinates, out Transform chunk)
         {
             return renderedChunks.TryGetValue(ChunkCoordiantesToChunkIndex(chunkCoordinates),out chunk);

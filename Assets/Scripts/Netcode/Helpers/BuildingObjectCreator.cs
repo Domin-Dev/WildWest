@@ -14,14 +14,14 @@ using UnityEngine.UI;
 
 public static class BuildingObjectCreator
 {
-    public static void CreateObject(ref EntitiesReferences entitiesReferences, EntityManager entityManager, ref EntityCommandBuffer entityCommand, GridObject gridObject, float2 localPos)
+    public static Entity CreateObject(ref EntitiesReferences entitiesReferences,EntityManager entityManager, ref EntityCommandBuffer entityCommand, BuildingObjects buildingObject)
     {
   //      Debug.Log("New OBJ  " + entityManager.World.Flags);
-        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(gridObject.ID).shadowPixels;
+        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
 
-        float2 worldPos = new float2(localPos.x * ClientMap.cellSize, localPos.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);
+        float2 worldPos = new float2(buildingObject.position.x * ClientMap.cellSize, buildingObject.position.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
-        RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(gridObject.ID, gridObject.variantIndex, gridObject.stateIndex)?.hitbox;
+        RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
         Entity entity;
 
 
@@ -37,12 +37,18 @@ public static class BuildingObjectCreator
         }
         else
         {
+            Debug.Log(entitiesReferences.buildObjectEntity);
+
+
+
             entity = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
+
+
             Entity sprite = entityManager.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
             SpriteRenderer spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(sprite);
             LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));
 
-            spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(gridObject.ID, gridObject.variantIndex);
+            spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
             entityCommand.SetComponent(entity, localTransform);
             entityCommand.SetComponent(sprite, spriteTransform);
 
@@ -59,6 +65,7 @@ public static class BuildingObjectCreator
             });
             entityCommand.AddComponent(entity, new Velocity2D() { Value = float2.zero });
         }
+        return entity;
     }
     
 }

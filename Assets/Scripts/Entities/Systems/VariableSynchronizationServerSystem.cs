@@ -27,7 +27,6 @@ partial struct VariableSynchronizationServerSystem : ISystem
             playerInputSync.ValueRW.rightButton = playerInput.ValueRO.rightButton;
             playerInputSync.ValueRW.handRotation = playerInput.ValueRO.handRotation;
 
-
             if (itemInHandInputSync.ValueRW.itemInHand != itemInHandInput.ValueRO.itemInHand)
             {
                 itemInHandInputSync.ValueRW.itemInHand = itemInHandInput.ValueRO.itemInHand;

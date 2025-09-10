@@ -102,6 +102,7 @@ public class MapVisualization : MonoBehaviour
             clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),entityManager.GetComponentData<ChunkComponent>(chunk.Value).index);
         }
     }
+    //
     public Transform CreateMesh(Entity chunk)
     {
         ChunkComponent chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
@@ -180,7 +181,6 @@ public class MapVisualization : MonoBehaviour
         meshFilter.mesh = mesh;
         return meshFilter.transform;
     }
-
     public void RemoveMesh(Transform chunk)
     {
         Destroy(chunk.gameObject);
@@ -235,12 +235,7 @@ public class MapVisualization : MonoBehaviour
             }
         }
     }
-
-
-
-
-
-
+    //
     private UV[] GetBorderUVs(int[] neighbors, int tileID)
     {
         UV[] uvs = new UV[12];
@@ -377,7 +372,7 @@ public class MapVisualization : MonoBehaviour
                 if (tile != null)
                 {
                     id = tile.Value.tileID;
-                    //if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(chunk, (int)v.x, (int)v.y), false);
+                    if(updateNeighbors) UpdateMesh(clientMap.LocalChunkPosToMapPos(entityChunk, (int)v.x, (int)v.y), false);
                 }
                 else
                 {

@@ -26,6 +26,7 @@ public partial class MapServerSystem : SystemBase
     private NetworkTick currentTick;
     private EntitiesReferences entitiesReferences;
 
+
     private NativeHashMap<int,Entity> loadedChunks;
     private NativeList<Entity> toUnloadChunks;
     private NativeHashMap<int, NativeHashMap<int,double>> playerChunks;
@@ -81,22 +82,6 @@ public partial class MapServerSystem : SystemBase
                 Debug.Log("new map!!!");
                 GenerateMap();
             }
-
-
-            //for (int i = 0; i < map.chunks.Count; i++)
-            //{
-            //    Entity chunk = entityCommandBuffer.CreateEntity();
-            //    FixedChunk fixedChunk = new FixedChunk();
-            //    GetChunk(i, ref fixedChunk);
-
-
-            //    uint lifetimeInTicks = (uint)(i / ChunksPerTick);
-            //    var targetTick = currentTick;
-            //    targetTick.Add(lifetimeInTicks);
-            //    entityCommandBuffer.AddComponent(chunk, fixedChunk);
-            //    entityCommandBuffer.AddComponent(chunk, new RPCSendQueue() { target = entity, tick = targetTick });
-            //}
-
 
             //GetChunkObjects(0, ref entityCommandBuffer, entity);
             //GetChunkObjects(1, ref entityCommandBuffer, entity);
@@ -270,14 +255,16 @@ public partial class MapServerSystem : SystemBase
 
                 if (tile.gridObject != null)
                 {
-                    objects.Add(new BuildingObjects()
+                    var obj = new BuildingObjects()
                     {
                         id = tile.gridObject.ID,
                         position = new int2(tile.x, tile.y),
                         variantIndex = tile.gridObject.variantIndex,
                         stateIndex = tile.gridObject.stateIndex,
                         hitPoints = tile.gridObject.hitPoints
-                    });
+                    };
+                    objects.Add(obj);
+                    BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref entityCommandBuffer, obj);
                 }
             }
         }
@@ -286,64 +273,64 @@ public partial class MapServerSystem : SystemBase
         loadedChunks.Add(index, chunkEntity);
         return true;
     }
-    private void SendToPlayer(int index, ref FixedChunk chunkStruct)
-    {
 
-    }
-    private void GetChunkObjects(int index, ref EntityCommandBuffer entityCommandBuffer,Entity target)
-    {
-        Chunk chunk = map.chunks[index];
 
-        FixedBuildingObjects fixedBuildingObjects = new FixedBuildingObjects();
-        fixedBuildingObjects.chunkCoordinates = new int2((int)chunk.chunkCoordinates.x, (int)chunk.chunkCoordinates.y);
-        Entity rpc;
 
-        int counter = 0;
 
-        for (int i = 0; i < 10; i++)
-        {
-            for (int j = 0; j < 10; j++)
-            {
-                GridObject gridObject = chunk.grid[i, j].gridObject;
+    //private void GetChunkObjects(int index, ref EntityCommandBuffer entityCommandBuffer,Entity target)
+    //{
+    //    Chunk chunk = map.chunks[index];
 
-                if (gridObject != null)
-                {
-                    byte[] bytes = gridObject.GetBytes();
-                    List<byte> posXY = new List<byte>();
-                    posXY.AddRange(BitConverter.GetBytes(i));
-                    posXY.AddRange(BitConverter.GetBytes(j));
+    //    FixedBuildingObjects fixedBuildingObjects = new FixedBuildingObjects();
+    //    fixedBuildingObjects.chunkCoordinates = new int2((int)chunk.chunkCoordinates.x, (int)chunk.chunkCoordinates.y);
+    //    Entity rpc;
 
-                    if(bytes.Length + 8 < FixedBuildingObjects.size - counter)
-                    {
-                        fixedBuildingObjects[counter] = (byte)bytes.Length;
-                        counter++;
-                        for (int l = 0; l < posXY.Count; l++)
-                        {
-                            fixedBuildingObjects[counter] = posXY[l];
-                            counter++;
-                        }
-                        for (int k = 0; k < bytes.Length; k++)
-                        {
-                            fixedBuildingObjects[counter] = bytes[k];
-                            counter++;
-                        }
-                    }
-                    else
-                    {
-                        SendBuidlingObjectRPC(1,ref entityCommandBuffer, fixedBuildingObjects, ref target);
-                        fixedBuildingObjects = new FixedBuildingObjects();
-                        counter = 0;
-                    }
+    //    int counter = 0;
+
+    //    for (int i = 0; i < 10; i++)
+    //    {
+    //        for (int j = 0; j < 10; j++)
+    //        {
+    //            GridObject gridObject = chunk.grid[i, j].gridObject;
+
+    //            if (gridObject != null)
+    //            {
+    //                byte[] bytes = gridObject.GetBytes();
+    //                List<byte> posXY = new List<byte>();
+    //                posXY.AddRange(BitConverter.GetBytes(i));
+    //                posXY.AddRange(BitConverter.GetBytes(j));
+
+    //                if(bytes.Length + 8 < FixedBuildingObjects.size - counter)
+    //                {
+    //                    fixedBuildingObjects[counter] = (byte)bytes.Length;
+    //                    counter++;
+    //                    for (int l = 0; l < posXY.Count; l++)
+    //                    {
+    //                        fixedBuildingObjects[counter] = posXY[l];
+    //                        counter++;
+    //                    }
+    //                    for (int k = 0; k < bytes.Length; k++)
+    //                    {
+    //                        fixedBuildingObjects[counter] = bytes[k];
+    //                        counter++;
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    SendBuidlingObjectRPC(1,ref entityCommandBuffer, fixedBuildingObjects, ref target);
+    //                    fixedBuildingObjects = new FixedBuildingObjects();
+    //                    counter = 0;
+    //                }
 
                     
-                    BuildingObjectCreator.CreateObject(ref entitiesReferences,EntityManager,ref entityCommandBuffer, gridObject, new float2(i + chunk.chunkCoordinates.x, j + chunk.chunkCoordinates.y));
-                }
-            }
-        }
+    //                BuildingObjectCreator.CreateObject(ref entitiesReferences,EntityManager,ref entityCommandBuffer, gridObject, new float2(i + chunk.chunkCoordinates.x, j + chunk.chunkCoordinates.y));
+    //            }
+    //        }
+    //    }
 
-        if (counter != 0) SendBuidlingObjectRPC(index,ref entityCommandBuffer, fixedBuildingObjects, ref target);
+    //    if (counter != 0) SendBuidlingObjectRPC(index,ref entityCommandBuffer, fixedBuildingObjects, ref target);
 
-    }
+    //}
     private void SendBuidlingObjectRPC(int i,ref EntityCommandBuffer entityCommandBuffer, FixedBuildingObjects fixedBuildingObjects, ref Entity target)
     {
         var rpc = entityCommandBuffer.CreateEntity();
