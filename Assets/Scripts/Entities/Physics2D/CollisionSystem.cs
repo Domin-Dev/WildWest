@@ -21,7 +21,7 @@ public partial struct CollisionSystem : ISystem
 {
     private const float CellSize = 0.5f;
     private const float DampingValue = 8f;
-    private const float CleanupInterval = 180f;
+    private const float CleanupInterval = 90f;
 
     readonly static int hitBoxLayer = 3;
 
@@ -181,7 +181,6 @@ public partial struct CollisionSystem : ISystem
 
             for (int j = 0; j < potentialCollisions.Length; j++)
             {
-
                 Entity entityToCheck = potentialCollisions[j];
                 if (!SystemAPI.Exists(entityToCheck)) continue;
                 if (entityToCheck == entity || !getPhysics.HasComponent(entityToCheck) || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;

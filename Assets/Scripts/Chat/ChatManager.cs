@@ -14,7 +14,6 @@ public class ChatManager : MonoBehaviour
     [SerializeField] private TMP_InputField chatInputField;
     [SerializeField] private Image chatBackground;
     [SerializeField] private ScrollRect chatScrollRect;
-
     [SerializeField] private GameObject messagePrefab;
 
 
@@ -44,7 +43,6 @@ public class ChatManager : MonoBehaviour
 
     private bool isChat = false;
 
-    private List<object> commandList;
 
     public static ChatManager instance { private set; get; }
     public bool isChatting { private set; get; }
@@ -197,16 +195,8 @@ public class ChatManager : MonoBehaviour
         SwitchChat();
         if (text.Length > 0)
         {
-            if (text[0] == '/')
-            {
-                CheckCommands(text.Trim());
-            }
-            else
-            {
-                SendRPC(chatInputField.text);
-            }
+            SendRPC(chatInputField.text);
             SaveToHistory();
-      
         }
     }
     private void SaveToHistory()
@@ -267,60 +257,7 @@ public class ChatManager : MonoBehaviour
         DateTime localTime = date.ToLocalTime().DateTime;
         Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIAssetsManager.instance.ironBackgroundUI;
     }
-    private void CheckCommands(string command)
-    {
-        string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        properties[0] = properties[0].Remove(0,1);
-        List<CommandBase> hints = new List<CommandBase>();
-
-        foreach (var item in commandList)
-        {
-            CommandBase commandBase = item as CommandBase;
-            if (string.Compare(commandBase.commandId, properties[0], true) == 0)
-            {
-                if (item is DebugCommand)
-                {
-                    (item as DebugCommand).Invoke();
-                    return ;
-                }
-                else if (item is DebugCommand<int>)
-                {
-                    int arg;
-                    if (properties.Length > 1 && int.TryParse(properties[1], out arg))
-                    {      
-                        (item as DebugCommand<int>).Invoke(arg);
-                        return;
-                    }
-                    else hints.Add(commandBase);
-                }
-                else if (item is DebugCommand<int,int>)
-                {
-                    int arg1,arg2;
-                    if (properties.Length > 2 && int.TryParse(properties[1], out arg1) && int.TryParse(properties[2], out arg2))
-                    {
-                        (item as DebugCommand<int, int>).Invoke(arg1, arg2);
-                        return;
-                    }
-                    else hints.Add(commandBase);
-                }
-                else if (item is DebugCommand<int, int, int>)
-                {
-                    int arg1, arg2, arg3;
-                    if (properties.Length > 2 && int.TryParse(properties[1], out arg1) && int.TryParse(properties[2], out arg2) && int.TryParse(properties[3], out arg3))
-                    {
-                        (item as DebugCommand<int, int,int>).Invoke(arg1, arg2,arg3);
-                        return;
-                    }
-                    else hints.Add(commandBase);
-                }
-            }
-        }
-        if(hints.Count == 0)
-        {
-            Print("<Color=red>Incorrect command: </color>" + command);
-        }
-        PrintHint(hints.ToArray());
-    }
+  
     private void PrintHint(params CommandBase[] commandBase)
     {
         StringBuilder sb = new StringBuilder();
@@ -336,7 +273,6 @@ public class ChatManager : MonoBehaviour
         chatScrollbar = chatScrollRect.verticalScrollbar;
         chathandle = chatScrollbar.handleRect;
         content = chatScrollRect.content;
-        commandList = this.AddComponent<DebugController>().GetCommandList();
         isChatting = false;
     }
     private void SwitchChat()

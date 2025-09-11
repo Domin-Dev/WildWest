@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class DebugController : MonoBehaviour
+public static class DebugController 
 {
-    List<object> commandList = new List<object>();
-    public List<object> GetCommandList()
+    static List<object> commandList;
+    public static List<object> GetCommandList()
     {
+        if (commandList != null) return commandList;
+        commandList = new List<object>();
         commandList.Add(new DebugCommand("set_time", "Sets the time", "", () =>
         {
             Debug.Log("time set to 10");
@@ -55,7 +57,7 @@ public class DebugController : MonoBehaviour
         {
             string text = $"Teleport to [{x},{y}] :\n";
             Vector2 vec = GridVisualization.instance.GetWorldPosition(x, y);
-            FindAnyObjectByType<MyCharacterController>().SetPosition(vec);
+          //  FindAnyObjectByType<MyCharacterController>().SetPosition(vec);
             ChatManager.instance.Print(text);
         }));
         commandList.Add(new DebugCommand<int,int,int>("wt", "Water transfer ", "[TileX] [TileY] [Number]", (x,y, water) =>
@@ -65,5 +67,7 @@ public class DebugController : MonoBehaviour
         }));
         return commandList;
     }
+
+
 
 }
