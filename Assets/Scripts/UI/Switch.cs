@@ -17,13 +17,23 @@ public class SwitchArgs : EventArgs
 public class Switch : BaseSwitch
 {
     [SerializeField] private TextMeshProUGUI text;
-    [SerializeField] private string nameSwitch;
+    public string nameSwitch;
 
-    public void SetUpSwitch(int minValue, int maxValue,string name)
+    private bool printIndex = true;
+    private bool updateText = true;
+
+    public void SetUpSwitch(int minValue, int maxValue,string name, bool printIndex = true, bool updateText = true)
     {
+        this.printIndex = printIndex;   
         nameSwitch = name;
-        ChangSwitchText(null, value);
+        
         base.SetUpSwitch(minValue, maxValue);
+
+        if (updateText)
+        {
+            OnChangedValue += ChangSwitchText;
+            ChangSwitchText(null, minValue);
+        }
     }
 
     private void Start()
@@ -37,15 +47,10 @@ public class Switch : BaseSwitch
         {
             IncreaseValue();
         });
-
-        OnChangedValue += ChangSwitchText;
     }
 
     private void ChangSwitchText(object sender, int e)
     {
-        if(nameSwitch == string.Empty)
-            text.text = e.ToString();
-        else
-            text.text = nameSwitch + " " + e.ToString();
+        text.text = (nameSwitch.Length == 0 ? (nameSwitch + " ") : "") + (printIndex ? e.ToString() : "");
     }
 }

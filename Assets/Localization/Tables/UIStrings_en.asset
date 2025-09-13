@@ -10,24 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: StringTable_pl
+  m_Name: UIStrings_en
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
   m_LocaleId:
-    m_Code: pl
-  m_SharedData: {fileID: 11400000, guid: 3d66f9936b3480c43981c5922b9f7f4c, type: 2}
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 738863494e82c4f47ac07b67ed1feb6d, type: 2}
   m_Metadata:
     m_Items: []
   m_TableData:
-  - m_Id: 21785653248
-    m_Localized: Polski
+  - m_Id: 214006411264
+    m_Localized: English
     m_Metadata:
       m_Items: []
-  - m_Id: 718327626772480
-    m_Localized: Polski
+  - m_Id: 316301291520
+    m_Localized: Back
     m_Metadata:
       m_Items: []
-  - m_Id: 724084711665664
-    m_Localized: elo
+  - m_Id: 493581938688
+    m_Localized: Restore defaults
+    m_Metadata:
+      m_Items: []
+  - m_Id: 6309751992320
+    m_Localized: Resolution
     m_Metadata:
       m_Items: []
   references:

@@ -1,16 +1,26 @@
+using System;
+using System.Collections;
+using System.Data;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class LocaleSelector : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Switch localeSwitch;
+
+    private void Start()
     {
-        
+        localeSwitch.SetUpSwitch(0, LocalizationSettings.AvailableLocales.Locales.Count,"",false,false);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
+        localeSwitch.OnChangedValue += LocaleManager.instance.ChangeLocale;
+    }
+
+    private void OnDisable()
+    {
+        localeSwitch.OnChangedValue -= LocaleManager.instance.ChangeLocale;
     }
 }

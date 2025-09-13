@@ -36,6 +36,7 @@ public class BaseSwitch : MonoBehaviour
     {
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.value = minValue;
     }
 
     protected void DecreaseValue()

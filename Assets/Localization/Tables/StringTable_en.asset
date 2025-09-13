@@ -19,7 +19,15 @@ MonoBehaviour:
     m_Items: []
   m_TableData:
   - m_Id: 21785653248
-    m_Localized: Hello world!
+    m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 718327626772480
+    m_Localized: Polish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 724084711665664
+    m_Localized: hi
     m_Metadata:
       m_Items: []
   references:
