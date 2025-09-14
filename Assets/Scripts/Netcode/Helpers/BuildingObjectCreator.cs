@@ -27,7 +27,7 @@ public static class BuildingObjectCreator
 
         if (entityManager.World.IsServer())
         {
-            entity = entityCommand.CreateEntity();
+            entity  = entityManager.CreateEntity();
             entityCommand.AddComponent(entity, localTransform);
             entityCommand.AddComponent(entity, new Physics2D()
             {
@@ -37,9 +37,6 @@ public static class BuildingObjectCreator
         }
         else
         {
-            Debug.Log(entitiesReferences.buildObjectEntity);
-
-
 
             entity = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
 

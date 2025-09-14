@@ -86,10 +86,10 @@ Material:
     - _BUILTIN_ZTest: 4
     - _BUILTIN_ZWrite: 0
     - _BUILTIN_ZWriteControl: 0
-    - _BeardIndex: 0
+    - _BeardIndex: 1
     - _Direction: 0
     - _EyesIndex: 2
-    - _HairIndex: 0
+    - _HairIndex: 20
     - _HairUnderHat: 0
     - _MouthIndex: 2
     - _PaintingsIndex: 0

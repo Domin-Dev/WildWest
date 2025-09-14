@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -7,21 +8,20 @@ using UnityEditor;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-partial struct MessageServerSystem : ISystem
+public partial class MessageServerSystem : SystemBase
 {
 
-    private List<object> commandList;
-
-    public void OnCreate(ref SystemState state)
+    private List<CommandBase> commandList;
+    protected override void OnCreate()
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<NewMessageRPC,ReceiveRpcCommandRequest>();
-        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+            .WithAll<NewMessageRPC, ReceiveRpcCommandRequest>();
+        RequireForUpdate(GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
         commandList = DebugController.GetCommandList();
     }
 
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((NewMessageRPC requestRPC, ReceiveRpcCommandRequest receiveRpc, Entity entity) in
@@ -44,15 +44,14 @@ partial struct MessageServerSystem : ISystem
             }
             else
             {
-               CheckCommands(requestRPC.message.ToString().Trim());
+                CheckCommands(ref entityCommandBuffer,requestRPC.message.ToString().Trim(),receiveRpc.SourceConnection);
             }
         }
-        entityCommandBuffer.Playback(state.EntityManager);
+        entityCommandBuffer.Playback(EntityManager);
         entityCommandBuffer.Dispose();
     }
 
-
-    public void CheckCommands(string command)
+    public void CheckCommands(ref EntityCommandBuffer entityCommandBuffer, string command,Entity connectionEntity)
     {
         string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         properties[0] = properties[0].Remove(0, 1);
@@ -63,48 +62,25 @@ partial struct MessageServerSystem : ISystem
             CommandBase commandBase = item as CommandBase;
             if (string.Compare(commandBase.commandId, properties[0], true) == 0)
             {
-                if (item is DebugCommand)
+                string[] args = properties.Skip(1).ToArray();
+                if (item.Validate(args))
                 {
-                    (item as DebugCommand).Invoke();
-                    return;
-                }
-                else if (item is DebugCommand<int>)
-                {
-                    int arg;
-                    if (properties.Length > 1 && int.TryParse(properties[1], out arg))
+                    if(item.isAdminCommand)
                     {
-                        (item as DebugCommand<int>).Invoke(arg);
-                        return;
-                    }
-                    else hints.Add(commandBase);
-                }
-                else if (item is DebugCommand<int, int>)
-                {
-                    int arg1, arg2;
-                    if (properties.Length > 2 && int.TryParse(properties[1], out arg1) && int.TryParse(properties[2], out arg2))
-                    {
-                        (item as DebugCommand<int, int>).Invoke(arg1, arg2);
-                        return;
-                    }
-                    else hints.Add(commandBase);
-                }
-                else if (item is DebugCommand<int, int, int>)
-                {
-                    int arg1, arg2, arg3;
-                    if (properties.Length > 2 && int.TryParse(properties[1], out arg1) && int.TryParse(properties[2], out arg2) && int.TryParse(properties[3], out arg3))
-                    {
-                        (item as DebugCommand<int, int, int>).Invoke(arg1, arg2, arg3);
-                        return;
-                    }
-                    else hints.Add(commandBase);
-                }
-            }
-        }
+                        if(SystemAPI.HasComponent<Admin>(connectionEntity))
+                        {
+                            var output = item.Invoke(args);
+                            if (!string.IsNullOrEmpty(output))
+                                RPCHelper.SendMessageToClient(ref entityCommandBuffer, output, connectionEntity);
+                        }
+                        else
+                        {
+                            RPCHelper.SendMessageToClient(ref entityCommandBuffer,"you are not admin!", connectionEntity);
 
-        //if (hints.Count == 0)
-        //{
-        //    Print("<Color=red>Incorrect command: </color>" + command);
-        //}
-        //PrintHint(hints.ToArray());
+                        }
+                    }
+                }      
+            }
+        }  
     }
 }

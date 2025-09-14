@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,7 +44,7 @@ public class ChatManager : MonoBehaviour
     //
 
     private bool isChat = false;
-
+    private List<CommandBase> commandList = new List<CommandBase>();
 
     public static ChatManager instance { private set; get; }
     public bool isChatting { private set; get; }
@@ -62,8 +64,10 @@ public class ChatManager : MonoBehaviour
     private void Start()
     {
         ClearIndexes();
-       // chatInputField.onSelect.AddListener((string k) => { isChatting = true; });
-      //  chatInputField.onDeselect.AddListener((string k) => { isChatting = false; SwitchChat();});
+        commandList = DebugController.GetCommandList();
+
+        // chatInputField.onSelect.AddListener((string k) => { isChatting = true; });
+        //  chatInputField.onDeselect.AddListener((string k) => { isChatting = false; SwitchChat();});
     }
 
 
@@ -195,8 +199,19 @@ public class ChatManager : MonoBehaviour
         SwitchChat();
         if (text.Length > 0)
         {
-            SendRPC(chatInputField.text);
-            SaveToHistory();
+            if (text[0] == '/')
+            {
+                if(CheckCommands(text))
+                {
+                    SendRPC(chatInputField.text);
+                    SaveToHistory();
+                }
+            }
+            else
+            {
+                SendRPC(chatInputField.text);
+                SaveToHistory();
+            }
         }
     }
     private void SaveToHistory()
@@ -328,5 +343,41 @@ public class ChatManager : MonoBehaviour
                 content.GetChild(indexes[i]).GetComponent<Image>().color = new Color(1, 1, 1, 0.5f);
             }
         }
+    }
+
+    public bool CheckCommands(string command)
+    {
+        string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        properties[0] = properties[0].Remove(0, 1);
+        List<CommandBase> hints = new List<CommandBase>();
+        foreach (var item in commandList)
+        {
+            Debug.Log(item.commandId);
+            CommandBase commandBase = item as CommandBase;
+            if (string.Compare(commandBase.commandId, properties[0], true) == 0)
+            {
+                string[] args = properties.Skip(1).ToArray();
+                if (item.Validate(args))
+                {
+                    if (!item.isServerCommand && !item.isAdminCommand)
+                    {
+                        var output = item.Invoke(args);
+                        if (!string.IsNullOrEmpty(output))
+                            Print(output);
+                        return false;
+                    }
+                    else
+                        return true;
+                }
+                else hints.Add(commandBase);
+            }
+        }
+
+        if (hints.Count == 0)
+        {
+            Print("<Color=red>Incorrect command: </Color>" + command);
+        }
+        PrintHint(hints.ToArray());
+        return false;
     }
 }

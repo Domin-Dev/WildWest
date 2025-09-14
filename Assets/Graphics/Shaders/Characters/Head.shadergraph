@@ -1983,12 +1983,12 @@
     "m_CustomSlotLabel": "",
     "m_DismissedVersion": 0,
     "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
+    "overrideHLSLDeclaration": true,
+    "hlslDeclarationOverride": 2,
     "m_Hidden": false,
     "m_PerRendererData": false,
     "m_customAttributes": [],
-    "m_Value": true
+    "m_Value": false
 }
 
 {
@@ -2917,10 +2917,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -578.4000244140625,
-            "y": -1807.200439453125,
+            "x": -579.2000732421875,
+            "y": -1862.4000244140625,
             "width": 119.20001220703125,
-            "height": 33.60009765625
+            "height": 33.5999755859375
         }
     },
     "m_Slots": [
@@ -3075,10 +3075,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -267.2000732421875,
-            "y": -1794.400390625,
-            "width": 262.40008544921877,
-            "height": 734.400146484375
+            "x": -260.79998779296877,
+            "y": -1784.0,
+            "width": 262.3999938964844,
+            "height": 734.39990234375
         }
     },
     "m_Slots": [

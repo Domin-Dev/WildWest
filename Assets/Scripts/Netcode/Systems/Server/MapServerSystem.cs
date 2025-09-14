@@ -69,10 +69,7 @@ public partial class MapServerSystem : SystemBase
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-
-
         ServerUnloadChunks(ref entityCommandBuffer);
-
 
         foreach ((RefRO<SendMap> send,Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
@@ -99,9 +96,6 @@ public partial class MapServerSystem : SystemBase
             entityCommandBuffer.RemoveComponent<SendMap>(entity);
         }
         
-
-
-
 
         foreach ((RefRO<LastChunk> chunk,RefRO<GhostOwner> networkID, Entity entity) in
         SystemAPI.Query<RefRO<LastChunk>,RefRO<GhostOwner>>().WithAll<NeedChunks>().WithEntityAccess())
@@ -232,6 +226,7 @@ public partial class MapServerSystem : SystemBase
         Entity chunkEntity = ClientServerBootstrap.ServerWorld.EntityManager.Instantiate(entitiesReferences.chunkEntity);
         var tiles = SystemAPI.GetBuffer<ChunkTiles>(chunkEntity);
         var objects = SystemAPI.GetBuffer<BuildingObjects>(chunkEntity);
+        var linkedEntitity = SystemAPI.GetBuffer<LinkedEntityGroup>(chunkEntity);
 
 
         ChunkComponent chunkComponent = new ChunkComponent();
@@ -264,7 +259,8 @@ public partial class MapServerSystem : SystemBase
                         hitPoints = tile.gridObject.hitPoints
                     };
                     objects.Add(obj);
-                    BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref entityCommandBuffer, obj);
+                    var bObject =  BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref entityCommandBuffer, obj);
+                    linkedEntitity.Add(bObject);
                 }
             }
         }

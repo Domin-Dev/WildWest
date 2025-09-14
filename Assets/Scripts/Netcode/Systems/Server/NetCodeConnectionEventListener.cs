@@ -73,13 +73,12 @@ public partial struct NetCodeConnectionEventListener : ISystem
 
 
                     if (serverData.ValueRO.isHost && remoteEP.IsLoopback && serverData.ValueRO.hostNetworkID < 0)
+                    {
+                        entityCommandBuffer.AddComponent<Admin>(evt.ConnectionEntity);
                         serverData.ValueRW.hostNetworkID = evt.Id.Value;
+                    }
                     break;
                 case ConnectionState.State.Approval:
-
-
-
-
                     EntityQuery query = state.EntityManager.CreateEntityQuery(typeof(Player));
                     int playerCount = query.CalculateEntityCount();
 

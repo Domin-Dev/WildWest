@@ -51,6 +51,19 @@ public static class RPCHelper
         };
         SendRpc(ref ecb, rpc);
     }
+
+    public static void SendMessageToClient(ref EntityCommandBuffer ecb, string serverMessage, Entity client)
+    {
+        var rpc = new NewMessageServerRPC()
+        {
+            message = serverMessage,
+            sender = "Server",
+            messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+            senderIsServer = true
+        };
+        SendRpc(ref ecb, client, rpc);
+    }
+
     private static void DisconnectAllClients(World serverWorld)
     {
         var em = serverWorld.EntityManager;

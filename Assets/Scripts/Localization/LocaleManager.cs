@@ -13,7 +13,7 @@ public class LocaleManager : MonoBehaviour
         if (instance == null)
             instance = this;
         else
-            Destroy(instance);
+            Destroy(gameObject);
     }
     private void Start()
     {
@@ -36,8 +36,11 @@ public class LocaleManager : MonoBehaviour
     {
         active = true;
         yield return LocalizationSettings.InitializationOperation;
-        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
-        PlayerPrefs.SetInt("LocaleID", index);
+        if (index < LocalizationSettings.AvailableLocales.Locales.Count && index >= 0)
+        {
+            LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
+            PlayerPrefs.SetInt("LocaleID", index);
+        }
         active = false;
     }
 }
