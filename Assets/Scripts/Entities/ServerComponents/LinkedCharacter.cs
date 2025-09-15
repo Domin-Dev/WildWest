@@ -10,7 +10,7 @@ using Unity.NetCode;
 
 
 
-public struct Admin : IComponentData
+public struct LinkedCharacter : IComponentData
 {
-
+    public Entity entity;
 }

@@ -302,7 +302,7 @@ public class EquipmentManager : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void Update()   
     {
         if (!ChatManager.instance.isChatting)
         {

@@ -78,5 +78,12 @@ public class
     {
         return chunkIndex >= 0 && chunkIndex < widthInChunks * heightInChunks;
     }
+
+    public float3 MapPositionToWorldPosition(int x, int y)
+    {
+        return new float3(offset.x + x * cellSize, offset.y + y * cellSize, offset.y + y * cellSize); 
+    }
+
+
 }
 

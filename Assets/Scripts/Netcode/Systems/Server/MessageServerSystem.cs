@@ -69,14 +69,13 @@ public partial class MessageServerSystem : SystemBase
                     {
                         if(SystemAPI.HasComponent<Admin>(connectionEntity))
                         {
-                            var output = item.Invoke(args);
+                            var output = item.Invoke(args, ref entityCommandBuffer, connectionEntity);
                             if (!string.IsNullOrEmpty(output))
                                 RPCHelper.SendMessageToClient(ref entityCommandBuffer, output, connectionEntity);
                         }
                         else
                         {
-                            RPCHelper.SendMessageToClient(ref entityCommandBuffer,"you are not admin!", connectionEntity);
-
+                            RPCHelper.SendMessageToClient(ref entityCommandBuffer, "You don’t have permission!", connectionEntity);
                         }
                     }
                 }      

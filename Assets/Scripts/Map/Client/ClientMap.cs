@@ -82,6 +82,8 @@ namespace Game.Client.Map
             }
         }
 
+
+    
         public static int2 MapPosToChunkCoordinates(int x,int y)
         {
             return new int2((x / chunkSize), (y / chunkSize));
@@ -108,7 +110,6 @@ namespace Game.Client.Map
             int2 pos = ChunkIndexToMapPosition(chunkComponent.index);
             return new int2(x + pos.x, y + pos.y);
         }
-
         public int2 ChunkIndexToChunkCoordinates(int chunkIndex)
         {
             return new int2(chunkIndex % widthInChunks, chunkIndex / widthInChunks);

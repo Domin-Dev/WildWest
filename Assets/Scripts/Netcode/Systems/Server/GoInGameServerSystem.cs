@@ -35,6 +35,8 @@ partial struct GoInGameServerSystem : ISystem
             if (playerSave == null)
                 GetDefaultPlayerSave(requestRPC, ref playerSave);
 
+
+            entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection,new LinkedCharacter() { entity = character }); 
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.playerPosition.x, playerSave.playerPosition.y, playerSave.playerPosition.y)));
             entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
@@ -46,6 +48,9 @@ partial struct GoInGameServerSystem : ISystem
             });
             entityCommandBuffer.AddComponent(character, new ServerChunkEventCounter() { index = uint.MaxValue });
 
+            if (SystemAPI.HasComponent<Host>(rpcCommandRequest.ValueRO.SourceConnection) ||
+                playerSave.isAdmin)
+                entityCommandBuffer.AddComponent<Admin>(rpcCommandRequest.ValueRO.SourceConnection);
 
 
             entityCommandBuffer.AddComponent(character, new LastChunk());
@@ -91,6 +96,7 @@ partial struct GoInGameServerSystem : ISystem
         playerSave.health = 100;
         playerSave.thirst = 100;
         playerSave.hunger = 100;
+        playerSave.isAdmin = false;
     }
 
     [BurstCompile]

@@ -74,7 +74,7 @@ public partial struct NetCodeConnectionEventListener : ISystem
 
                     if (serverData.ValueRO.isHost && remoteEP.IsLoopback && serverData.ValueRO.hostNetworkID < 0)
                     {
-                        entityCommandBuffer.AddComponent<Admin>(evt.ConnectionEntity);
+                        entityCommandBuffer.AddComponent<Host>(evt.ConnectionEntity);
                         serverData.ValueRW.hostNetworkID = evt.Id.Value;
                     }
                     break;

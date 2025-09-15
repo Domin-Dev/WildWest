@@ -10,7 +10,6 @@ using Unity.NetCode;
 
 
 
-public struct Admin : IComponentData
+public struct Host : IComponentData
 {
-
 }

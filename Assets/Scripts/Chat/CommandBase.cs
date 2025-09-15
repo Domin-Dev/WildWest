@@ -1,4 +1,5 @@
 using System;
+using Unity.Entities;
 using UnityEngine;
 
 public abstract class CommandBase 
@@ -55,5 +56,5 @@ public abstract class CommandBase
         return false;
     }
 
-    public abstract string Invoke(string[] args);
+    public abstract string Invoke(string[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender);
 }

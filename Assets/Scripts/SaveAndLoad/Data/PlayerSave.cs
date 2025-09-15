@@ -16,4 +16,6 @@ public class PlayerSave
     public int health;
     public int hunger;
     public int thirst;
+
+    public bool isAdmin;
 }

@@ -123,6 +123,8 @@ public static class SaveSystem
             PlayerSave playerSave = new PlayerSave();
 
             var playerData = entityManager.GetComponentData<Player>(entity);
+            var source = entityManager.GetComponentData<PlayerSourceConnection>(entity);      
+
             var playerLook = entityManager.GetComponentData<PlayerLook>(entity);
             var pos = entityManager.GetComponentData<LocalTransform>(entity);
 
@@ -130,8 +132,8 @@ public static class SaveSystem
             var hunger = entityManager.GetComponentData<Hunger>(entity);
             var thirst = entityManager.GetComponentData<Thirst>(entity);
 
-            Debug.Log(playerData.playerName);
-            Debug.Log(health.Value  + " " + hunger.Value + " " + thirst.Value);
+
+            playerSave.isAdmin = entityManager.HasComponent<Admin>(source.value);
 
             playerSave.playerName = playerData.playerName;
             playerSave.characterLook = playerLook.look;
@@ -140,6 +142,7 @@ public static class SaveSystem
             playerSave.health = health.Value;
             playerSave.hunger = hunger.Value;
             playerSave.thirst = thirst.Value;
+
 
 
             if (entityManager.GetComponentData<GhostOwner>(entity).NetworkId == hostID)

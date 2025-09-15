@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMPro;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -361,7 +362,10 @@ public class ChatManager : MonoBehaviour
                 {
                     if (!item.isServerCommand && !item.isAdminCommand)
                     {
-                        var output = item.Invoke(args);
+                        var ecb = new EntityCommandBuffer(Allocator.Temp);
+                        var output = item.Invoke(args,ref ecb,Entity.Null);
+                        ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+                        ecb.Dispose();
                         if (!string.IsNullOrEmpty(output))
                             Print(output);
                         return false;
