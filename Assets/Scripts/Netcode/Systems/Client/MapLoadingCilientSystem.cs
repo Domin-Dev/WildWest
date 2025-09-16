@@ -57,10 +57,8 @@ public partial class MapLoadingClientSystem : SystemBase
         float deltaTime = SystemAPI.Time.DeltaTime;
         timer += deltaTime;
 
-        if (timer < 0.25f) return; // wykonuj co 1 sekundê
+        if (timer < 0.25f) return; 
         timer = 0f;
-
-
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
 
@@ -118,41 +116,6 @@ public partial class MapLoadingClientSystem : SystemBase
             }).WithoutBurst().Run();
         }
         mapVis?.RenderNewChunks();
-
-
-        //Entities
-        //    .WithAll<ReceiveRpcCommandRequest,FixedBuildingObjects>()
-        //    .ForEach((Entity entity, in FixedBuildingObjects buildingObjects) =>
-        //    {
-        //        for (int i = 0; i < FixedBuildingObjects.size; i++)
-        //        {
-        //            int value = buildingObjects[i];
-        //            if (value != 0)
-        //            {
-        //                byte[] bytes = new byte[value];
-        //                byte[] bytes2 = new byte[8];
-
-        //                for (int j = i + 1; j <= 8 + i; j++)
-        //                    bytes2[j - i - 1] = buildingObjects[j];
-
-        //                for (int j = i + 9; j <= value + i + 8; j++)
-        //                    bytes[j - i - 9] = buildingObjects[j];
-
-        //                var gridObject = new GridObject(bytes);
-        //                var pos = new float2(
-        //                    BitConverter.ToInt32(bytes2, 0) + buildingObjects.chunkCoordinates.x,
-        //                    BitConverter.ToInt32(bytes2, 4) + buildingObjects.chunkCoordinates.y
-        //                );
-
-
-        //                BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb, gridObject, pos);
-
-        //                i += value + 8;
-        //            }
-        //        }
-
-        //        ecb.DestroyEntity(entity);
-        //    }).WithoutBurst().Run();
 
         ecb.Playback(EntityManager);
         ecb.Dispose();

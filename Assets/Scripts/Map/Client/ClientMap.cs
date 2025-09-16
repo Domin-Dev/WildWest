@@ -14,7 +14,6 @@ namespace Game.Client.Map
     {
         public const int chunkSize = 10;
         public const float cellSize = 0.25f;
-
         public int widthInChunks = 10;
 
         public Dictionary<int2, Entity> chunks { private set; get; }

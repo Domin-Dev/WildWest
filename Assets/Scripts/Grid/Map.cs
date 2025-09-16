@@ -81,7 +81,7 @@ public class
 
     public float3 MapPositionToWorldPosition(int x, int y)
     {
-        return new float3(offset.x + x * cellSize, offset.y + y * cellSize, offset.y + y * cellSize); 
+        return new float3(offset.x + (x + 0.5f) * cellSize, offset.y + (y + 0.5f) * cellSize, offset.y + (y + 0.5f) * cellSize); 
     }
 
 

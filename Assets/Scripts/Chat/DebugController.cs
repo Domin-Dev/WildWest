@@ -55,7 +55,11 @@ public static class DebugController
                 {
                     if(entity == e)
                     {
-                        ecb.SetComponent(entityManager.GetComponentData<LinkedCharacter>(e).entity, LocalTransform.FromPosition(MapServerSystem.Map.MapPositionToWorldPosition(x, y)));
+                        var character = entityManager.GetComponentData<LinkedCharacter>(e).entity;
+                        var position =  LocalTransform.FromPosition(MapServerSystem.Map.MapPositionToWorldPosition(x, y));
+                        ecb.SetComponent(character, position);
+                        ecb.SetComponentEnabled<IsChanged>(character, true);
+                        CollisionSystem.PlayerChangeChunk(entityManager, ref ecb, position, character);
                     }
                 }
                 entities.Dispose();

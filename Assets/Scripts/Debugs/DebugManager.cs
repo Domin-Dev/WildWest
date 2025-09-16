@@ -6,10 +6,12 @@ using TMPro;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 public class DebugManager : MonoBehaviour
 {
@@ -25,6 +27,7 @@ public class DebugManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI gameVersionText;
     [Space]
     [SerializeField] TextMeshProUGUI playerPositionText;
+    [SerializeField] TextMeshProUGUI enginePlayerPositionText;
     [SerializeField] TextMeshProUGUI chunkStatsText;
 
     Dictionary<int, Transform> debuggingChunks;
@@ -60,8 +63,8 @@ public class DebugManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        GridVisualization.instance.onPlayerMove -= UpdatePosition;
-        GridVisualization.instance.onChangeChunk -= UpdateChunkDebugger;
+        CollisionSystem.onPlayerMove -= UpdatePosition;
+      //  GridVisualization.instance.onChangeChunk -= UpdateChunkDebugger;
         if (debuggingChunks.Count > 0) TurnOffChunkDebugger();
         StopCoroutine(UpdateStats());
     }
@@ -114,14 +117,23 @@ public class DebugManager : MonoBehaviour
         SetUpDebugStats();
         StartCoroutine(UpdateStats());
 
-
-     //   GridVisualization.instance.onPlayerMove += UpdatePosition;
-     //   GridVisualization.instance.onChangeChunk += UpdateChunkDebugger;
-
+        CollisionSystem.onPlayerMove += UpdatePosition;
         gameVersionText.text = Application.productName + " " + Application.version;
-      //  SetPlayerPosition(GridVisualization.instance.lastPlayerPosition);
-//int chunkIndex = GridVisualization.instance.lastPlayerChunk;
-      //  SetChunk(MapVisualization.instance.GetChunkCoordinates(chunkIndex), chunkIndex);
+        var query = world.EntityManager.CreateEntityQuery(
+         ComponentType.ReadOnly<Player>(),
+         ComponentType.ReadOnly<LocalTransform>(),
+         ComponentType.ReadOnly<GhostOwnerIsLocal>()
+        );
+        if (!query.IsEmpty)
+        {
+            var array = query.ToComponentDataArray<LocalTransform>(Unity.Collections.Allocator.Temp);
+            UpdatePosition(MyTools.ConvertFloat(array[0].Position));
+            array.Dispose();
+        }
+        query.Dispose();
+
+        //int chunkIndex = GridVisualization.instance.lastPlayerChunk;
+        //  SetChunk(MapVisualization.instance.GetChunkCoordinates(chunkIndex), chunkIndex);
     }
     private float CalculateFPS()
     {
@@ -136,7 +148,6 @@ public class DebugManager : MonoBehaviour
 
     private void SetUpDebugStats()
     {
-
         PingCounterText.gameObject.SetActive(GameInfo.instance.isMultiplayer);
     }
     private void UpdateDebugStats()
@@ -165,13 +176,12 @@ public class DebugManager : MonoBehaviour
         var pingArray = query.ToComponentDataArray<NetworkSnapshotAck>(Unity.Collections.Allocator.Temp);
         PingCounterText.text = "Ping: " + pingArray.FirstOrDefault().EstimatedRTT.ToString("F2") + " ms";
 
-
+        query.Dispose();
         pingArray.Dispose();
     }
-    private void UpdatePosition(object sender, PlayerPositionArgs e)
+    private void UpdatePosition(float2 postion)
     {
-        SetPlayerPosition(e.playerPosition);
-       // SetChunk(e.chunkCoordinates, e.chunkIndex);
+        playerPositionText.text = ($"Engine position: [ {postion.x.ToString("F2")} , {postion.y.ToString("F2")} ]");
     }
     private void UpdateChunkDebugger(object sender, PlayerPositionArgs e)
     {
@@ -210,10 +220,7 @@ public class DebugManager : MonoBehaviour
             debuggingChunks.Remove(item);
         }
     }
-    private void SetPlayerPosition(Vector2 position)
-    {
-        playerPositionText.text = ($"Position: [ {(int)position.x} , {(int)position.y} ]");
-    }
+
     private void SetChunk(int2 chunkCoordinates, int chunkIndex)
     {
         chunkStatsText.text = ($"Chunk: [ {chunkCoordinates.x} , {chunkCoordinates.y} ]  Index: {chunkIndex}");

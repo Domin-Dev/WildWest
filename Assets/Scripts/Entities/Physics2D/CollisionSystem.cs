@@ -22,9 +22,7 @@ public partial struct CollisionSystem : ISystem
     private const float CellSize = 0.5f;
     private const float DampingValue = 8f;
     private const float CleanupInterval = 90f;
-
     readonly static int hitBoxLayer = 3;
-
     readonly static bool[,] collisionTab =
     //                  Buildings Players Bullets HitBox
     {                   // 0      1       2     3
@@ -36,9 +34,8 @@ public partial struct CollisionSystem : ISystem
     readonly static Color damageColor = new Color(0.69f,0.16f,0.16f,1f);
     readonly static Color criticalHitColor = new Color(1f,0.0f,0.0f,1f);
 
+    public static event Action<float2> onPlayerMove;
 
-
-    static int k = 0;
     struct Box
     {
         public Box(float2 pos, float2 size, float2 velocity)
@@ -55,9 +52,6 @@ public partial struct CollisionSystem : ISystem
             return pos.ToString() + size.ToString() + velocity.ToString();
         }
     }
-
-
-
 
     NativeHashMap<int2, NativeList<Entity>> entityMap;
 
@@ -175,7 +169,6 @@ public partial struct CollisionSystem : ISystem
             float minTime = float.MaxValue;
             int index = -1;
             float2 collision = float2.zero;
-            k++;
             NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
             bool destroy = false;
 
@@ -387,8 +380,8 @@ public partial struct CollisionSystem : ISystem
             }
             if (isChanged.HasComponent(entity))
             {
-                if (state.World.IsServer() && state.EntityManager.HasComponent<LastChunk>(entity))
-                    PlayerChangeChunk(ref state, ref entityCommandBuffer,localTransform,entity);
+                if (state.EntityManager.HasComponent<Player>(entity))
+                    PlayerChangePosition(ref state, ref entityCommandBuffer,localTransform,entity);
                 isChanged.SetComponentEnabled(entity, false);
             }
             
@@ -414,10 +407,10 @@ public partial struct CollisionSystem : ISystem
         hitboxes.Dispose();
     }
 
-    public void PlayerChangeChunk(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
+    public static void PlayerChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
     {
         int index = MapServerSystem.Map.GetChunkIndex(newPos.Position);
-        var lastChunk = state.EntityManager.GetComponentData<LastChunk>(player);
+        var lastChunk = entityManager.GetComponentData<LastChunk>(player);
         if (lastChunk.value != index)
         {
             lastChunk.value = index;
@@ -425,6 +418,15 @@ public partial struct CollisionSystem : ISystem
             entityCommandBuffer.SetComponentEnabled<NeedChunks>(player, true);
         }
     }
+
+    public void PlayerChangePosition(ref SystemState state, ref EntityCommandBuffer ecb, LocalTransform newPos, Entity player)
+    {
+        if (state.World.IsServer())
+            PlayerChangeChunk(state.EntityManager, ref ecb, newPos, player);
+        else if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
+            onPlayerMove?.Invoke(MyTools.ConvertFloat(newPos.Position));
+    }
+
     public float3 GetWorldPosition(Entity entity)
     {
         if (getParent.HasComponent(entity))
@@ -814,19 +816,6 @@ public partial struct CollisionSystem : ISystem
             return new float3(overlapX * (min1.x < min2.x ? -1 : 1), 0, 0);
         else
             return new float3(0, overlapY * (min1.y < min2.y ? -1 : 1), 0);
-    }
-    private float2 CheckEdges(Box b1, Box b2)
-    {
-        float2 min1 = new float2(b1.pos.x, b1.pos.y - b1.size.y);
-        float2 max1 = new float2(b1.pos.x + b1.size.x, b1.pos.y);
-
-        float2 min2 = new float2(b2.pos.x, b2.pos.y - b2.size.y);
-        float2 max2 = new float2(b2.pos.x + b2.size.x, b2.pos.y);
-
-        float overlapX = System.Math.Min(max1.x - min2.x, max2.x - min1.x);
-        float overlapY = System.Math.Min(max1.y - min2.y, max2.y - min1.y);
-
-        return new float2(overlapY >= 0 ? 1 : 0, overlapY >= 0 ? 1 : 0);
     }
     private float2 GetCollisionNormal(Box b1, Box b2)
     {
