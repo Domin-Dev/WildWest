@@ -1,3 +1,4 @@
+using Game.Client.Map;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,7 +81,7 @@ public class DebugManager : MonoBehaviour
     }
     private void ChunkDebugger()
     {
-        float distance = GridVisualization.instance.map.chunkSizeOnWorldScale;
+       // float distance = GridVisualization.instance.map.chunkSizeOnWorldScale;
         foreach (var item in GridVisualization.instance.loadedChunks)
         {
          //   debuggingChunks.Add(item.Key, CreateChunkBorder(item.Value.transform.position, distance));
@@ -181,7 +182,12 @@ public class DebugManager : MonoBehaviour
     }
     private void UpdatePosition(float2 postion)
     {
-        playerPositionText.text = ($"Engine position: [ {postion.x.ToString("F2")} , {postion.y.ToString("F2")} ]");
+        enginePlayerPositionText.text = ($"Engine position: [ x:{postion.x.ToString("F1")} y:{postion.y.ToString("F1")} ]");
+        int2 mapPos =  MapVisualization.instance.clientMap.EnginePositionToMapPos(postion);
+        playerPositionText.text = ($"Player position: [ x:{mapPos.x} y:{mapPos.y} ]");
+        int2 chunkCoords = ClientMap.MapPosToChunkCoordinates(mapPos);
+        int index = MapVisualization.instance.clientMap.ChunkCoordiantesToChunkIndex(chunkCoords);
+        chunkStatsText.text = ($"Chunk: [ x:{chunkCoords.x} y:{chunkCoords.y} ] Index");
     }
     private void UpdateChunkDebugger(object sender, PlayerPositionArgs e)
     {

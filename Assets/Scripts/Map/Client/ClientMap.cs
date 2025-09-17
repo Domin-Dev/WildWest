@@ -15,6 +15,7 @@ namespace Game.Client.Map
         public const int chunkSize = 10;
         public const float cellSize = 0.25f;
         public int widthInChunks = 10;
+        public float2 mapOffset = float2.zero;
 
         public Dictionary<int2, Entity> chunks { private set; get; }
         public Dictionary<int, Transform> renderedChunks { private set; get; }
@@ -82,10 +83,17 @@ namespace Game.Client.Map
         }
 
 
-    
+        public int2 EnginePositionToMapPos(float2 position)
+        {
+            return new int2((int)((position.x - mapOffset.x) / cellSize), (int)((position.y - mapOffset.y) / cellSize));
+        }
         public static int2 MapPosToChunkCoordinates(int x,int y)
         {
             return new int2((x / chunkSize), (y / chunkSize));
+        }
+        public static int2 MapPosToChunkCoordinates(int2 pos)
+        {
+            return MapPosToChunkCoordinates(pos.x, pos.y);  
         }
         public static int2 MapPosToLocalChunkPos(int x, int y)
         {

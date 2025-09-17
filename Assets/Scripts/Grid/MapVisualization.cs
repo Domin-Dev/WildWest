@@ -70,9 +70,6 @@ public class MapVisualization : MonoBehaviour
 
 
     public ClientMap clientMap;
-    public ClientMap map { set {
-             clientMap = value;
-        } }
     public static MapVisualization instance { private set; get; }
 
     public void Awake()

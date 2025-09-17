@@ -23,7 +23,7 @@ public partial class MapLoadingClientSystem : SystemBase
     public void SetUp()
     {
         clientMap = new ClientMap();
-        MapVisualization.instance.map = clientMap;
+        MapVisualization.instance.clientMap = clientMap;
     }
 
     public void SetMapSettings(MapIsLoaded map)
