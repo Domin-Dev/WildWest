@@ -150,6 +150,9 @@ public class DebugManager : MonoBehaviour
     private void SetUpDebugStats()
     {
         PingCounterText.gameObject.SetActive(GameInfo.instance.isMultiplayer);
+        CPUStatsText.text = "";
+        GPUStatsText.text = "";
+        FPSCounterText.text = "";
     }
     private void UpdateDebugStats()
     {
@@ -158,7 +161,6 @@ public class DebugManager : MonoBehaviour
 
         float gpuFrameTime = Time.deltaTime * 1000.0f;
         GPUStatsText.text = "GPU Frame Time: " + gpuFrameTime.ToString("F2") + " ms";
-
         FPSCounterText.text = "FPS: " + ((int)CalculateFPS()).ToString();
 
 
@@ -187,7 +189,7 @@ public class DebugManager : MonoBehaviour
         playerPositionText.text = ($"Player position: [ x:{mapPos.x} y:{mapPos.y} ]");
         int2 chunkCoords = ClientMap.MapPosToChunkCoordinates(mapPos);
         int index = MapVisualization.instance.clientMap.ChunkCoordiantesToChunkIndex(chunkCoords);
-        chunkStatsText.text = ($"Chunk: [ x:{chunkCoords.x} y:{chunkCoords.y} ] Index");
+        chunkStatsText.text = ($"Chunk: [ x:{chunkCoords.x} y:{chunkCoords.y} ] Index: {index}");
     }
     private void UpdateChunkDebugger(object sender, PlayerPositionArgs e)
     {
