@@ -36,6 +36,7 @@ public partial struct DestroyEntitySystem : ISystem
             if(state.World.IsServer())
             {
                 if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
+                if (SystemAPI.HasComponent<GhostInstance>(entity)) GlobalRelevancySystem.OnGhostDestroyed(state.EntityManager.GetComponentData<GhostInstance>(entity).ghostId);
                 entityCommandBuffer.DestroyEntity(entity);
             }
             else

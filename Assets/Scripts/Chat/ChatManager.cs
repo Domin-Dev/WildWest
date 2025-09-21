@@ -19,7 +19,7 @@ public class ChatManager : MonoBehaviour
     [SerializeField] private ScrollRect chatScrollRect;
     [SerializeField] private GameObject messagePrefab;
 
-
+    
     //chat
     private Scrollbar chatScrollbar;
     private RectTransform chathandle;
@@ -35,6 +35,7 @@ public class ChatManager : MonoBehaviour
     private const int maxLog = 30;
     private const int maxMessageOnScreen = 8;
     private const int timeToDisappear = 10;
+    public readonly Color highlightColor = new Color(218f / 255f, 165f / 255f, 32f / 255f);
 
     private static Color invisible = new Color(1, 1, 1, 0);
 
@@ -279,7 +280,7 @@ public class ChatManager : MonoBehaviour
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < commandBase.Length; i++)
         {
-            sb.Append($"/{commandBase[i].commandId} {commandBase[i].commandFormat}");
+            sb.Append($"/<Color=#{highlightColor.ToHexString()}>{commandBase[i].commandId}</Color> {commandBase[i].commandFormat}");
             if(i != commandBase.Length - 1) sb.Append("\n");
         }
         if(sb.Length > 0) Print(sb.ToString());

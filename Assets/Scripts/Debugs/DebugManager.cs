@@ -150,9 +150,9 @@ public class DebugManager : MonoBehaviour
     private void SetUpDebugStats()
     {
         PingCounterText.gameObject.SetActive(GameInfo.instance.isMultiplayer);
-        CPUStatsText.text = "";
-        GPUStatsText.text = "";
-        FPSCounterText.text = "";
+        CPUStatsText.text = "???";
+        GPUStatsText.text = "???";
+        FPSCounterText.text = "???";
     }
     private void UpdateDebugStats()
     {

@@ -304,8 +304,8 @@ partial struct CharacterAimSystem : ISystem
         localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 15);
         localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, deltaTime * 5f);
 
-        if (direction.y > 0) localMain.Position.z = localMain.Position.y;
-        else localMain.Position.z = 0;      
+        if (direction.y > 0) localMain.Position.z = 0.0011f;
+        else localMain.Position.z = -0.001f;
     }
 
     private float GetActionTime(int index)
