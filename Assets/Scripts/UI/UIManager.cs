@@ -5,6 +5,7 @@ using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -138,10 +139,6 @@ public class UIManager : MonoBehaviour
         clothesGrid = new EquipmentGrid(equipmentClothes, 2);
         containerGrid = new EquipmentGrid(equipmentContainer, 3);
     }
-    private void SetUpNetworkUI()
-    {
-      
-    }
     public void SetUpUIEquipment(EquipmentManager eqManager)
     { 
         eqManager.UpdateSelectedSlotInBar += UpdateSelectedSlot;
@@ -162,14 +159,7 @@ public class UIManager : MonoBehaviour
         eqManager.TurnPlaceholder += TurnPlaceholder;
 
 
-        OpenEquipment(this, new BoolArgs(true));
-        LoadSlots(mainEquipmentGrid,EquipmentManager.SlotCount, false);
-        LoadSlots(equipmentBarGrid,EquipmentManager.BarSlotCount, true);
-        LoadSlots(barGrid,EquipmentManager.BarSlotCount,true);
         LoadClothesSlots(clothesGrid);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.GetComponent<RectTransform>());
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.parent.GetComponent<RectTransform>());
-        OpenEquipment(this, new BoolArgs(false));
     }
 
     public void LoadSlotsContainer(ItemStats[] items)
@@ -616,8 +606,9 @@ public class UIManager : MonoBehaviour
             grid.gridTransform.GetChild(i).GetComponent<DropSlot>().SetSlotPosition(i, grid.gridIndex);
         }
     }
-    private void LoadSlots(EquipmentGrid equipmentGrid,int number,bool numbering)
+    public void LoadSlots(EquipmentGrid equipmentGrid,int number,bool numbering)
     {
+        OpenEquipment(this, new BoolArgs(true));
         bool isMainBar = equipmentGrid == barGrid;
         if (numbering)
         {
@@ -643,6 +634,10 @@ public class UIManager : MonoBehaviour
 
 
         }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.GetComponent<RectTransform>());
+        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.parent.GetComponent<RectTransform>());
+        OpenEquipment(this, new BoolArgs(false));
     }
     private Transform GetItem(SlotPosition position)
     {

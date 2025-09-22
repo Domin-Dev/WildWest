@@ -59,6 +59,9 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent(character, new SendToPlayer());
 
 
+            AddEquipmentEntities(ref state, ref entityCommandBuffer, character, networkId);
+            
+
             entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
             entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
             entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });
@@ -99,9 +102,24 @@ partial struct GoInGameServerSystem : ISystem
         playerSave.isAdmin = false;
     }
 
-    [BurstCompile]
-    public void OnDestroy(ref SystemState state)
+    private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity character, int networkID)
     {
-        
+        var entities = SystemAPI.GetSingleton<EntitiesReferences>();
+
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,10,0);
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,30,1);
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,20,2);
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,5,3);
     }
+    private void CreateNewContainer(ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, int capacity, byte index)
+    {
+        var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
+        entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
+        entityCommandBuffer.SetComponent(e, new ContainerComponent() { 
+            capacity = capacity,
+            containerIndex = index,
+        });
+        entityCommandBuffer.AddComponent(e, new SendToPlayer());
+    }
+
 }

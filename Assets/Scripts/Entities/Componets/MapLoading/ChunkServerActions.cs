@@ -35,8 +35,6 @@ public struct ChunkEventCounter : IInputComponentData
 {
     [GhostField(Quantization = 0)] public uint index;
 }
-
-
 public struct ServerChunkEventCounter : IComponentData
 {
     public uint index;

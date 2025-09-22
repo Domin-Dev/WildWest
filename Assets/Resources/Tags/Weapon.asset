@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3c4558f02449b44c8e0828dbf60cfee, type: 3}
-  m_Name: IDManager
-  m_EditorClassIdentifier: 
-  LastID: 134
-  LastTagID: 6
+  m_Script: {fileID: 11500000, guid: b14d90bbc0b0b9b44b669c7c7e90daa0, type: 3}
+  m_Name: Weapon
+  m_EditorClassIdentifier: Assembly-CSharp::Tag
+  name: Weapon
+  ID: 0

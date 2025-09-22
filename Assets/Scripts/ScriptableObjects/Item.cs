@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]
 public class Item : ScriptableObject
@@ -11,6 +12,9 @@ public class Item : ScriptableObject
 
     [Header("Item graphic")]
     public Sprite icon;
+
+    [Header("Item Tags")]
+    public List<TagSelection> tags;
 
     [Header("Craft recipe")]
     public Ingredient[] crafingIngredients;
@@ -45,6 +49,17 @@ public class ItemID
     public ItemID(int itemID)
     {
         this.itemID = itemID;
+    }
+}
+
+[System.Serializable]
+public class TagSelection
+{
+    public int tagID;
+
+    public TagSelection(int tagID)
+    {
+        this.tagID = tagID;
     }
 }
 

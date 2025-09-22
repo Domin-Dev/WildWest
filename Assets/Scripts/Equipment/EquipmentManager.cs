@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
@@ -228,7 +229,6 @@ public class EquipmentManager : MonoBehaviour
     private ItemStats[] container;
 
     private Dictionary<int,int> dedicatedGrids = new Dictionary<int,int>();
-
     private SlotPosition selectedSlotInEQ;
     private ItemStats selectedItemStats;
     private List<int> placeholderGrids = new List<int>();
@@ -237,6 +237,14 @@ public class EquipmentManager : MonoBehaviour
     public static EquipmentManager instance { private set; get; }
 
     [SerializeField] private CharacterSpriteController player;
+    [SerializeField] private GameObject containerPrefab;
+    [SerializeField] private Transform containerParent;
+    public void LoadContainer(ContainerComponent containerComponent)
+    {
+        var container = Instantiate(containerPrefab, containerParent);
+        var v = new EquipmentGrid(container.transform, containerComponent.containerIndex);
+        UIManager.instance.LoadSlots(v,containerComponent.capacity,v.gridIndex == 0);
+    }
 
     private void Awake()
     {
@@ -336,9 +344,6 @@ public class EquipmentManager : MonoBehaviour
             }
         }
     }
-
-
-  
 
 
     ///////////////////////////////////////
@@ -1137,7 +1142,6 @@ public class EquipmentManager : MonoBehaviour
 
         return items;
     }
-
     private List<SlotPosition> FindItems(int ItemId, int[] gridIndexes)
     {
         List<SlotPosition> items = new List<SlotPosition>();

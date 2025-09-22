@@ -8,6 +8,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     [Header("Game")]
     public GameObject characterPrefab;
     public GameObject chunkPrefab;
+    public GameObject equipmentContainerPrefab;
     [Header("Prefabs")]
     public GameObject shadowPrefab;
     public GameObject worldItemPrefab;
@@ -30,7 +31,8 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 worldItemEntity = GetEntity(authoring.worldItemPrefab, TransformUsageFlags.Dynamic),
                 characterEntity = GetEntity(authoring.characterPrefab, TransformUsageFlags.Dynamic),
                 chunkEntity = GetEntity(authoring.chunkPrefab, TransformUsageFlags.Dynamic),
-                
+                equipmentContainerEntity = GetEntity(authoring.equipmentContainerPrefab, TransformUsageFlags.Dynamic),
+
                 buildObjectEntity = GetEntity(authoring.buildObjectEntityPrefab, TransformUsageFlags.Dynamic),
                 worldTextEntity = GetEntity(authoring.worldTextPrefab, TransformUsageFlags.Dynamic),
 
@@ -47,6 +49,7 @@ public struct EntitiesReferences : IComponentData
 {
     public Entity characterEntity;
     public Entity chunkEntity;
+    public Entity equipmentContainerEntity;
     [Space]
 
     public Entity shadowEntity;
