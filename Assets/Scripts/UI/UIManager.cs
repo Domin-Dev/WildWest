@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using TMPro;
+using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
@@ -42,8 +44,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject itembar;
     [Space]
     
-    [SerializeField] private Transform equipmentItemSlots;
-    [SerializeField] private Transform equipmentItemBar;
     [SerializeField] private Transform equipmentDragItems;
     [SerializeField] private Transform equipmentClothes;
     [SerializeField] private Transform equipmentContainer;
@@ -134,8 +134,6 @@ public class UIManager : MonoBehaviour
     private void SetGrids()
     {
         barGrid = new EquipmentGrid(mainItemBar, 0);
-        equipmentBarGrid = new EquipmentGrid(equipmentItemBar, 0);
-        mainEquipmentGrid = new EquipmentGrid(equipmentItemSlots, 1);
         clothesGrid = new EquipmentGrid(equipmentClothes, 2);
         containerGrid = new EquipmentGrid(equipmentContainer, 3);
     }
@@ -157,7 +155,6 @@ public class UIManager : MonoBehaviour
         eqManager.UpdateMainBarItemCount += UpdateMainBarItemCount;
         eqManager.UpdateItemBar += UpdateItemLifeBar;
         eqManager.TurnPlaceholder += TurnPlaceholder;
-
 
         LoadClothesSlots(clothesGrid);
     }
@@ -431,8 +428,6 @@ public class UIManager : MonoBehaviour
     {
         switch(gridIndex)
         {
-            case 0: return equipmentItemBar;
-            case 1: return equipmentItemSlots;
             case 2: return equipmentClothes;
             case 3: return equipmentContainer;
         }
@@ -521,7 +516,36 @@ public class UIManager : MonoBehaviour
         }
 
     }
+    private void NewItemUI(Transform gridUI, InventorySlot slot)
+    {
+        Debug.Log(slot.position.slotIndex +  "  ----");
+        Debug.Log(gridUI.childCount);
+        RectTransform transform = Instantiate(item, gridUI.GetChild(slot.position.slotIndex)).GetComponent<RectTransform>();
+        transform.SetAsFirstSibling();
 
+        //if (e.itemStats as IBarValue != null)
+        //{
+        //    Transform bar = Instantiate(itembar, transform).transform.GetChild(0);
+        //    SetBarColor(bar, slot.itemStats);
+        //    UpdateBar((e.itemStats as IBarValue).GetBarValue(), bar);
+        //}
+
+        transform.anchoredPosition = Vector2.zero;
+
+        transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(slot.ItemId);
+        if (slot.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity.ToString();
+        else transform.GetComponentInChildren<TextMeshProUGUI>().text = "";
+
+        if (gridUI != mainItemBar)
+        {
+            transform.GetComponent<DragDrop>().SetCanvas(mainCanvas);
+            transform.GetComponent<DragDrop>().IsInSlot();
+        }
+        else
+        {
+            transform.GetComponent<DragDrop>().enabled = false;
+        }
+    }
     public void SwitchBackground(bool value)
     {
         background.gameObject.SetActive(value);
@@ -572,6 +596,9 @@ public class UIManager : MonoBehaviour
     {
         if (e.lastSlot >= 0)
         {
+            if (mainItemBar.childCount == 1) return;
+
+            Debug.Log(mainItemBar.childCount);
             Transform last = mainItemBar.GetChild(e.lastSlot);
             last.GetComponent<Image>().sprite = unSelected;
             lastSlotUI = last.GetComponent<RectTransform>();
@@ -606,45 +633,67 @@ public class UIManager : MonoBehaviour
             grid.gridTransform.GetChild(i).GetComponent<DropSlot>().SetSlotPosition(i, grid.gridIndex);
         }
     }
-    public void LoadSlots(EquipmentGrid equipmentGrid,int number,bool numbering)
+    public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity,ContainerComponent containerComponent,bool numbering)
     {
         OpenEquipment(this, new BoolArgs(true));
-        bool isMainBar = equipmentGrid == barGrid;
+        bool isMainBar = equipmentGrid.gridIndex == 0;
+        Sprite icon = null;
+        if (containerComponent.mandatoryProperties == MandatoryProperties.tag)
+            icon = ItemsAsset.instance.GetTagIcon(containerComponent.mandatoryData);
+        else if (containerComponent.mandatoryProperties == MandatoryProperties.item)
+            icon = ItemsAsset.instance.GetIcon(containerComponent.mandatoryData);
+
+
         if (numbering)
         {
             int index;
-            for (int i = number - 1; i >= 0 ; i--)
+            for (int i = containerComponent.capacity - 1; i >= 0; i--)
             {
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
                 if (!isMainBar)
                     slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
-                if (index > 9) index = 0;
                 slot.SetAsFirstSibling();
-                Instantiate(slotIndex,slot).GetComponent<TextMeshProUGUI>().text = index.ToString();
+                Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
             }
         }
         else
         {
-            for (int i = 0; i < number; i++)
+            for (int i = 0; i < containerComponent.capacity; i++)
             {
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
+                if (icon != null)
+                {
+                    Transform grey = Instantiate(greyIcon, slot).transform;
+                    grey.GetComponent<Image>().sprite = icon;
+                }
                 slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
             }
-
-
         }
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.GetComponent<RectTransform>());
-        LayoutRebuilder.ForceRebuildLayoutImmediate(mainEquipmentGrid.gridTransform.parent.GetComponent<RectTransform>());
+        Debug.Log(equipmentGrid.gridTransform.childCount);
+        var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
+        foreach (InventorySlot slot in slots)
+        {
+            if (icon != null) equipmentGrid.gridTransform.GetChild(slot.position.slotIndex).GetChild(0).gameObject.SetActive(false);
+            NewItemUI(equipmentGrid.gridTransform,slot);
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.GetComponent<RectTransform>());
         OpenEquipment(this, new BoolArgs(false));
     }
+  
+    public EquipmentGrid LoadBarSlots(ContainerComponent containerComponent, Entity entity)
+    {
+        EquipmentGrid equipmentGrid = new EquipmentGrid(mainItemBar, 0);
+        LoadSlots(equipmentGrid,entity, containerComponent, true);
+        return equipmentGrid;
+    }
+    
     private Transform GetItem(SlotPosition position)
     {
         Transform parent = null;
-        if (position.gridIndex == 0) parent = equipmentItemBar;
-        else if (position.gridIndex == 1) parent = equipmentItemSlots;
-        else if (position.gridIndex == 3) parent = equipmentContainer;
+        if (position.gridIndex == 3) parent = equipmentContainer;
 
         if(parent != null)
         {

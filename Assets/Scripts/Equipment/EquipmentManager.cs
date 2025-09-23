@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -239,11 +241,20 @@ public class EquipmentManager : MonoBehaviour
     [SerializeField] private CharacterSpriteController player;
     [SerializeField] private GameObject containerPrefab;
     [SerializeField] private Transform containerParent;
-    public void LoadContainer(ContainerComponent containerComponent)
+
+
+
+    private Dictionary<int,Entity> containers = new Dictionary<int,Entity>();
+
+    public void LoadContainer(ContainerComponent containerComponent, Entity entity)
     {
+        containers.Add(containerComponent.containerIndex, entity);
         var container = Instantiate(containerPrefab, containerParent);
         var v = new EquipmentGrid(container.transform, containerComponent.containerIndex);
-        UIManager.instance.LoadSlots(v,containerComponent.capacity,v.gridIndex == 0);
+
+        UIManager.instance.LoadSlots(v,entity,containerComponent,v.gridIndex == 0);
+        if (containerComponent.containerIndex == 0)
+            UIManager.instance.LoadBarSlots(containerComponent,entity);
     }
 
     private void Awake()

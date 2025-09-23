@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b14d90bbc0b0b9b44b669c7c7e90daa0, type: 3}
   m_Name: Weapon
   m_EditorClassIdentifier: Assembly-CSharp::Tag
+  icon: {fileID: -1828702530, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   name: Weapon
   ID: 0

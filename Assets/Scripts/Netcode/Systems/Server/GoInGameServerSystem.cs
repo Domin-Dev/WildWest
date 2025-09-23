@@ -108,17 +108,23 @@ partial struct GoInGameServerSystem : ISystem
 
         CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,10,0);
         CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,30,1);
-        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,20,2);
-        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,5,3);
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,20,2,MandatoryProperties.item, 136);
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,5,3,MandatoryProperties.tag,1);
+        CreateNewContainer(ref entityCommandBuffer, ref entities,networkID,10,4,MandatoryProperties.tag,2);
     }
-    private void CreateNewContainer(ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, int capacity, byte index)
+    private void CreateNewContainer(ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, int capacity, byte index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
         var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
         entityCommandBuffer.SetComponent(e, new ContainerComponent() { 
             capacity = capacity,
             containerIndex = index,
+            mandatoryProperties = mandatory,
+            mandatoryData = mandatoryData
         });
+
+
+        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { ItemId = 30, quantity = 20, position = new InventoryPosition() { container = index, slotIndex = 1 } });
         entityCommandBuffer.AddComponent(e, new SendToPlayer());
     }
 

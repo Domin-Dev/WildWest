@@ -11,7 +11,7 @@ public struct InventorySlot : IBufferElementData
 {
     [GhostField] public InventoryPosition position;
     [GhostField] public int ItemId;    
-    [GhostField] public int Quantity; 
+    [GhostField] public int quantity; 
 }
 
 public struct InventoryPosition
@@ -25,7 +25,9 @@ public struct ContainerComponent : IComponentData
 {
     [GhostField] public byte containerIndex;
     [GhostField] public int capacity;
-    [GhostField] public InventorySlot slot;
+
+    [GhostField] public MandatoryProperties mandatoryProperties; 
+    [GhostField] public int mandatoryData;
 }
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
@@ -35,4 +37,12 @@ public struct Equipment : IBufferElementData
 
 public struct ContainerLoaded : IComponentData
 {
+}
+
+
+public enum MandatoryProperties : byte
+{ 
+    none = 0,
+    tag = 1,
+    item = 2,
 }

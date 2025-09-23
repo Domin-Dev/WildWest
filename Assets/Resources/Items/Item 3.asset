@@ -18,11 +18,12 @@ MonoBehaviour:
   stackMax: 50
   icon: {fileID: -534398875, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags:
-  - tagID: 0
+  - tagID: -26
+  - tagID: 98
   - tagID: 0
   crafingIngredients:
   - itemID: 7
-    number: 0
+    number: 24
   - itemID: 7
     number: 0
   - itemID: 7

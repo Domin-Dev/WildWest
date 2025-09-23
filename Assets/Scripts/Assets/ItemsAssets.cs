@@ -31,6 +31,7 @@ public class ItemsAsset : MonoBehaviour
     }
 
     private Dictionary<int, Item> items = new Dictionary<int, Item>();
+    private Dictionary<int, Tag> tags = new Dictionary<int, Tag>();
     private List<AmmoInfo> ammoList;
 
     private Dictionary<int, Item[]> itemRecipes;
@@ -130,7 +131,10 @@ public class ItemsAsset : MonoBehaviour
     private void LoadItems()
     {
         Item[] loadedItems = Resources.LoadAll<Item>("Items");
+        Tag[] loadedTags = Resources.LoadAll<Tag>("Tags");
+
         Dictionary<int, List<Item>> recipes = new Dictionary<int, List<Item>>();
+
 
         ammoList = new List<AmmoInfo>();
         for (int i = 0; i < loadedItems.Length; i++)
@@ -152,6 +156,11 @@ public class ItemsAsset : MonoBehaviour
         foreach (var item in recipes)
         {
             itemRecipes.Add(item.Key, item.Value.ToArray());
+        }
+
+        foreach (var item in loadedTags)
+        {
+            tags.TryAdd(item.ID, item);
         }
     }
     public Sprite GetIcon(int itemID)
@@ -269,4 +278,20 @@ public class ItemsAsset : MonoBehaviour
         return ToolType.None;
     }
 
+    ////////
+    //////// TAG
+    ////////
+
+    public Tag GetTag(int tagID)
+    {
+        if(tags.ContainsKey(tagID))
+            return tags[tagID];
+        return null;
+    }
+    public Sprite GetTagIcon(int tagID)
+    {
+        if (tags.ContainsKey(tagID))
+            return tags[tagID].icon;
+        return null;
+    }
 }
