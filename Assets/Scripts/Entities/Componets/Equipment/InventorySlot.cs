@@ -9,15 +9,9 @@ using Unity.NetCode;
 [GhostComponent(OwnerSendType = SendToOwnerType.All)] 
 public struct InventorySlot : IBufferElementData
 {
-    [GhostField] public InventoryPosition position;
+    [GhostField] public SlotPosition position;
     [GhostField] public int ItemId;    
     [GhostField] public int quantity; 
-}
-
-public struct InventoryPosition
-{
-    [GhostField] public int slotIndex;
-    [GhostField] public byte container;
 }
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]

@@ -124,7 +124,7 @@ partial struct GoInGameServerSystem : ISystem
         });
 
 
-        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { ItemId = 30, quantity = 20, position = new InventoryPosition() { container = index, slotIndex = 1 } });
+        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { ItemId = 30, quantity = 20, position = new SlotPosition() { containerIndex = index, slotIndex = 1 } });
         entityCommandBuffer.AddComponent(e, new SendToPlayer());
     }
 

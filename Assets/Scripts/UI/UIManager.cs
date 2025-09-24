@@ -229,7 +229,7 @@ public class UIManager : MonoBehaviour
     }
     private void TurnPlaceholder(object sender, PlaceholderArgs e)
     {
-        SwitchPlaceholder(e.turn, GetGrid(e.slotPosition.gridIndex).GetChild(e.slotPosition.slotIndex));
+        SwitchPlaceholder(e.turn, GetGrid(e.slotPosition.containerIndex).GetChild(e.slotPosition.slotIndex));
     }
 
     public void SetUpUIPlayer(HandsController handsController)
@@ -304,7 +304,7 @@ public class UIManager : MonoBehaviour
     {
         Transform slot = GetItem(e.position);
         FindBar(e.barValue,slot);
-        if(e.position.gridIndex == 0)
+        if(e.position.containerIndex == 0)
         {
             slot = GetItemFromMainBar(e.position);
             FindBar(e.barValue, slot);
@@ -342,18 +342,18 @@ public class UIManager : MonoBehaviour
     }
     private void MoveMainBarItem(object sender, MoveItemArgs e)
     {
-        if(e.from.gridIndex == 0 && e.to.gridIndex == 0)
+        if(e.from.containerIndex == 0 && e.to.containerIndex == 0)
         {
             DragDrop slot = mainItemBar.GetChild(e.from.slotIndex).GetComponentInChildren<DragDrop>();
             slot.transform.SetParent(mainItemBar.GetChild(e.to.slotIndex));
             slot.transform.SetAsFirstSibling();
             slot.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
         }
-        else if(e.from.gridIndex == 0)
+        else if(e.from.containerIndex == 0)
         {
             RemoveItem(mainItemBar, new PositionArgs(e.from));
         }
-        else if (e.to.gridIndex == 0)
+        else if (e.to.containerIndex == 0)
         {
             ItemStats item = EquipmentManager.instance.GetItemStatsValue(e.to);
             NewItemUI(mainItemBar, new CreateItemArgs(item,e.to,false));
@@ -373,9 +373,9 @@ public class UIManager : MonoBehaviour
     }
     private void UpdateItemCount(object sender, UpdateItemCountArgs e)
     {
-        Transform grid = GetGrid(e.position.gridIndex);
+        Transform grid = GetGrid(e.position.containerIndex);
         UpdateCount(grid, e);
-        if(e.position.gridIndex == 0)
+        if(e.position.containerIndex == 0)
         {
             UpdateCount(mainItemBar,e);
         }    
@@ -388,14 +388,14 @@ public class UIManager : MonoBehaviour
     }
     private void RemoveItemUI(object sender, PositionArgs e)
     {
-        Transform grid = GetGrid(e.position.gridIndex);
+        Transform grid = GetGrid(e.position.containerIndex);
         if(EquipmentManager.instance.HasPlaceholders(e.position))
         {
             SwitchPlaceholder(true,grid.GetChild(e.position.slotIndex));
         }
 
         RemoveItem(grid, e);
-        if(e.position.gridIndex == 0)
+        if(e.position.containerIndex == 0)
         {
             RemoveItem(mainItemBar, e);
         }
@@ -437,8 +437,8 @@ public class UIManager : MonoBehaviour
 
     private void MoveItemUI(object sender, MoveItemUIArgs e)
     {
-        Transform gridFrom = GetGrid(e.from.gridIndex);
-        Transform gridTo = GetGrid(e.to.gridIndex);
+        Transform gridFrom = GetGrid(e.from.containerIndex);
+        Transform gridTo = GetGrid(e.to.containerIndex);
         
         if(EquipmentManager.instance.HasPlaceholders(e.to))
         {
@@ -446,7 +446,7 @@ public class UIManager : MonoBehaviour
         }
       
 
-        if (e.to.gridIndex == 0 || e.from.gridIndex == 0) MoveMainBarItem(this, new MoveItemArgs(e.from, e.to));
+        if (e.to.containerIndex == 0 || e.from.containerIndex == 0) MoveMainBarItem(this, new MoveItemArgs(e.from, e.to));
 
 
         DragDrop slot = gridFrom.GetChild(e.from.slotIndex).GetComponentInChildren<DragDrop>();
@@ -457,14 +457,14 @@ public class UIManager : MonoBehaviour
     }
     private void CreateItemUI(object sender, CreateItemArgs e)
     {
-        Transform gridUI = GetGrid(e.position.gridIndex);
+        Transform gridUI = GetGrid(e.position.containerIndex);
         if (EquipmentManager.instance.HasPlaceholders(e.position))
         {
             SwitchPlaceholder(false,gridUI.GetChild(e.position.slotIndex));
         }
 
         NewItemUI(gridUI, e);
-        if(e.position.gridIndex == 0 && !e.isDrag)
+        if(e.position.containerIndex == 0 && !e.isDrag)
         {
             NewItemUI(mainItemBar, e);
         }
@@ -693,7 +693,7 @@ public class UIManager : MonoBehaviour
     private Transform GetItem(SlotPosition position)
     {
         Transform parent = null;
-        if (position.gridIndex == 3) parent = equipmentContainer;
+        if (position.containerIndex == 3) parent = equipmentContainer;
 
         if(parent != null)
         {

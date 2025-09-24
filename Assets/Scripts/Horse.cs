@@ -13,3 +13,4 @@ public class Horse : MonoBehaviour
         sortingGroup = GetComponent<SortingGroup>();
     }
 }
+

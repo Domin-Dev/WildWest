@@ -30,6 +30,12 @@ public class ItemStats
         this.itemCount = itemCount;
     }
 
+    public ItemStats(InventorySlot inventorySlot)
+    {
+        itemID = inventorySlot.ItemId;
+        itemCount = inventorySlot.quantity;
+    }
+
     public int GetMaxStack()
     {
         return ItemsAsset.instance.GetStackMax(itemID);
@@ -39,6 +45,7 @@ public class ItemStats
         if (itemID != -1) return false;
         else return true;
     }
+
 
     public virtual ItemStats Clon()
     {
