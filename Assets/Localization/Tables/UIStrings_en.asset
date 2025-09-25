@@ -34,6 +34,26 @@ MonoBehaviour:
     m_Localized: Resolution
     m_Metadata:
       m_Items: []
+  - m_Id: 344462253797376
+    m_Localized: Video
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4458596545245184
+    m_Localized: Sounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4458995629076480
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4459597272625152
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 4459802764161024
+    m_Localized: Credits
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -63,6 +63,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject worldRow;
 
     [Header("Connection")]
+    [SerializeField] private CanvasGroup menuButtons;
     [SerializeField] private Button buttonSingleplayer;
     [SerializeField] private Button buttonMultiplayer;
     [SerializeField] private Button buttonSettings;
@@ -96,7 +97,8 @@ public class MenuManager : MonoBehaviour
         buttonSettings.onClick.AddListener(() =>
         {
             GameInfo.instance.lastLoadedScene = -1;
-            WindowsManager.instance.LoadScene(8);
+            SwitchMenuButtons(false);
+            WindowsManager.instance.LoadScene(12);
         });
         buttonQuit.onClick.AddListener(Quit);
         /////////////////////////////////////////
@@ -157,6 +159,10 @@ public class MenuManager : MonoBehaviour
 
 
 
+    public void SwitchMenuButtons(bool turnON)
+    {
+       if(menuButtons!= null) menuButtons.interactable = turnON;
+    }
     public void Confirmation(string worldName)
     {
         CloseWindows();

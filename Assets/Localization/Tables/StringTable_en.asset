@@ -26,10 +26,6 @@ MonoBehaviour:
     m_Localized: Polish
     m_Metadata:
       m_Items: []
-  - m_Id: 724084711665664
-    m_Localized: hi
-    m_Metadata:
-      m_Items: []
   references:
     version: 2
     RefIds: []

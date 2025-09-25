@@ -171,6 +171,19 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: VisionOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -200,8 +213,8 @@ TextureImporter:
       name: "ItemEQ \u2014 kopia_1"
       rect:
         serializedVersion: 2
-        x: 26
-        y: 0
+        x: 0
+        y: 26
         width: 26
         height: 26
       alignment: 0
@@ -469,7 +482,7 @@ TextureImporter:
         width: 26
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
@@ -491,7 +504,7 @@ TextureImporter:
         width: 26
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
@@ -513,7 +526,7 @@ TextureImporter:
         width: 26
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
@@ -522,6 +535,94 @@ TextureImporter:
       bones: []
       spriteID: 4e9876f24f1947349a075e9be24afcd9
       internalID: 1532682267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_7
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 52
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 4, y: 6, z: 4, w: 5}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15a0f006ebc641048912df238d2196d3
+      internalID: 1656743691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_8
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 26
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 4, y: 7, z: 4, w: 4}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62014f26b93699a4b98ae5099126fd79
+      internalID: 1288980219
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_9
+      rect:
+        serializedVersion: 2
+        x: 182
+        y: 26
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 4, y: 7, z: 4, w: 4}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b775420832e04c44d991ce81847af836
+      internalID: 1042351989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_10
+      rect:
+        serializedVersion: 2
+        x: 156
+        y: 26
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 4, y: 7, z: 4, w: 4}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6ebb37b690112d445ba61c490afed93c
+      internalID: 1057229142
       vertices: []
       indices: 
       edges: []
@@ -537,6 +638,8 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
       "ItemEQ \u2014 kopia_0": -155690521
       "ItemEQ \u2014 kopia_1": 130874801
@@ -549,11 +652,15 @@ TextureImporter:
       "ItemEQ \u2014 kopia_8": -350282367
       UIBackgrounds_0: -1448790104
       UIBackgrounds_1: -1476733124
+      UIBackgrounds_10: 1057229142
       UIBackgrounds_2: 1214819735
       UIBackgrounds_3: -144562309
       UIBackgrounds_4: -387067171
       UIBackgrounds_5: 1922422707
       UIBackgrounds_6: 1532682267
+      UIBackgrounds_7: 1656743691
+      UIBackgrounds_8: 1288980219
+      UIBackgrounds_9: 1042351989
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
