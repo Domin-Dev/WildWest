@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 
@@ -16,8 +18,9 @@ public class WindowsManager : MonoBehaviour
 
     private List<int> loadedScene = new List<int>();
     public static WindowsManager instance { private set; get; }
-
     public event Action OnCloseWindows;
+    private GameObject selectedObject;
+
 
 
     private void Awake()
@@ -49,6 +52,23 @@ public class WindowsManager : MonoBehaviour
                     LoadScene(escScene);
             }
         }
+    }
+
+
+    public void SetNewSelectedButton(GameObject gObject)
+    {
+        selectedObject = gObject;
+        if(!DisableMouseInputSystem.mouseEnabled) 
+            EventSystem.current.SetSelectedGameObject(gObject);
+    }
+    public void RefreshSelection()
+    {
+        if (selectedObject != null)
+            EventSystem.current.SetSelectedGameObject(selectedObject);
+    }
+    public void ClearSelection()
+    {
+        EventSystem.current.SetSelectedGameObject(null);
     }
 
 

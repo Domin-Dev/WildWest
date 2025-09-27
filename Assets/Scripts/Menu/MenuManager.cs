@@ -61,6 +61,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button buttonNewWorld;
     [SerializeField] private GameObject worldList;
     [SerializeField] private GameObject worldRow;
+    [SerializeField] private GamepadScroll gamepadDropdownScroll;
 
     [Header("Connection")]
     [SerializeField] private CanvasGroup menuButtons;
@@ -87,8 +88,18 @@ public class MenuManager : MonoBehaviour
         SetUpUI();
         errorMessage.gameObject.SetActive(false);
 
+        GameInfo.instance.SetDefaultSettings();
+        WindowsManager.instance.OnCloseWindows += CloseWindows;
+    }
+
+    private void OnEnable()
+    {
+
         /////////////////////////////////////////
-        buttonMultiplayer.onClick.AddListener(() => { OpenWindow(multiplayerOptionsWindow); });
+        buttonMultiplayer.onClick.AddListener(() => {
+            SwitchMenuButtons(false);
+            OpenWindow(multiplayerOptionsWindow, buttonBack);
+        });
         buttonSingleplayer.onClick.AddListener(() =>
         {
             isSingleplayerList = true;
@@ -97,8 +108,8 @@ public class MenuManager : MonoBehaviour
         buttonSettings.onClick.AddListener(() =>
         {
             GameInfo.instance.lastLoadedScene = -1;
-            SwitchMenuButtons(false);
             WindowsManager.instance.LoadScene(12);
+            SwitchMenuButtons(false);
         });
         buttonQuit.onClick.AddListener(Quit);
         /////////////////////////////////////////
@@ -111,7 +122,7 @@ public class MenuManager : MonoBehaviour
         buttonConnectToIP.onClick.AddListener(() =>
         {
             CloseWindows();
-            OpenWindow(connectToIPWindow);
+            OpenWindow(connectToIPWindow, buttonBackConnectToIP);
         });
         /////////////////////////////////////////
         buttonBackWorlds.onClick.AddListener(CloseWindows);
@@ -143,22 +154,51 @@ public class MenuManager : MonoBehaviour
         //////////////////////////////////////////
         buttonBackSettingsServer.onClick.AddListener(CloseWindows);
         //////////////////////////////////////////
-
-        GameInfo.instance.SetDefaultSettings();
-        Debug.Log("dz");
-        WindowsManager.instance.OnCloseWindows += CloseWindows;
     }
-    private void OnDestroy()
+
+    private void OnDisable()
+    {
+     /////////////////////////////////////////
+        buttonMultiplayer.onClick.RemoveAllListeners();
+        buttonSingleplayer.onClick.RemoveAllListeners();
+        buttonSettings.onClick.RemoveAllListeners();
+        buttonQuit.onClick.RemoveAllListeners();
+        /////////////////////////////////////////
+        buttonBack.onClick.RemoveAllListeners();
+        buttonHostGame.onClick.RemoveAllListeners();
+        buttonConnectToIP.onClick.RemoveAllListeners();
+        /////////////////////////////////////////
+        buttonBackWorlds.onClick.RemoveAllListeners();
+        /////////////////////////////////////////
+        confirmationYes.onClick.RemoveAllListeners();
+        confirmationNo.onClick.RemoveAllListeners();
+        //////////////////////////////////////////
+        editNo.onClick.RemoveAllListeners();
+        editYes.onClick.RemoveAllListeners();
+        //////////////////////////////////////////
+        buttonConnet.onClick.RemoveAllListeners();
+        buttonBackConnectToIP.onClick.RemoveAllListeners();
+        adressIPInput.onValueChanged.RemoveAllListeners();
+        portInput.onValueChanged.RemoveAllListeners();
+        //////////////////////////////////////////
+        buttonBackSettingsServer.onClick.RemoveAllListeners();
+        //////////////////////////////////////////
+    }
+private void OnDestroy()
     {
         WindowsManager.instance.OnCloseWindows -= CloseWindows;
     }
     private void SetUpUI()
     {
         versionText.text = Application.productName + " " + Application.version;
+        SetSelectedButton();
     }
 
 
-
+    public void SetSelectedButton()
+    {
+        WindowsManager.instance.SetNewSelectedButton(buttonSingleplayer.gameObject);
+    }
     public void SwitchMenuButtons(bool turnON)
     {
        if(menuButtons!= null) menuButtons.interactable = turnON;
@@ -166,14 +206,14 @@ public class MenuManager : MonoBehaviour
     public void Confirmation(string worldName)
     {
         CloseWindows();
-        OpenWindow(confirmationRemoveWindow);
+        OpenWindow(confirmationRemoveWindow, confirmationNo);
         this.worldName = worldName;
         confirmationText.text = $"Are you sure you want to delete the world <Color=#5b3138>{worldName}</Color>?";
     }
     public void Edit(string worldName)
     {
         CloseWindows();
-        OpenWindow(editWorldWindow);
+        OpenWindow(editWorldWindow,editNo);
         worldNameInput.SetUp(worldName);
         this.worldName = worldName;
     }
@@ -202,26 +242,29 @@ public class MenuManager : MonoBehaviour
     }
 
 
-    private void OpenWindow(GameObject window)
+    private void OpenWindow(GameObject window, Button selectedButton)
     {
+        SwitchMenuButtons(false);
         WindowsManager.instance.SwitchBackground(true);
+        WindowsManager.instance.SetNewSelectedButton(selectedButton.gameObject);
         window.SetActive(true);
     }
 
     private void OpenServerSettings()
     {
         CloseWindows();
-        OpenWindow(serverSettingsWindow);
+        OpenWindow(serverSettingsWindow, buttonBackSettingsServer);
         passwordInput.text = string.Empty;
         playerLimit.SetUpSwitch(1, 17,string.Empty);
     }
     private void OpenWorldList()
     {
+        CloseWindows();
         if(worldList.transform.childCount > 0)
         {
             for (int i = worldList.transform.childCount - 1; i >= 0; i--)
             {
-                Destroy(worldList.transform.GetChild(i).gameObject);
+                DestroyImmediate(worldList.transform.GetChild(i).gameObject);
             }
         }
 
@@ -231,7 +274,6 @@ public class MenuManager : MonoBehaviour
         else
             buttonNewWorld.onClick.AddListener(OpenServerSettings);
 
-        OpenWindow(worldListWindow);
         List<HeaderData> headers = LoadSystem.LoadHeaders()?.OrderByDescending(s => s.saveTime).ToList();
         if (headers == null || headers.Count == 0) return;
 
@@ -241,6 +283,8 @@ public class MenuManager : MonoBehaviour
             WorldRow row = gameObject.GetComponent<WorldRow>();
             row.SetWorld(header, UIAssetsManager.instance.UIHeadMaterial);
         }
+        OpenWindow(worldListWindow, buttonBackWorlds);
+        gamepadDropdownScroll.RefreshButtons();
     }
 
     private static readonly Regex ipv4Regex = new Regex(
@@ -298,6 +342,8 @@ public class MenuManager : MonoBehaviour
     }
     private void CloseWindows()
     {
+        SwitchMenuButtons(true);
+        SetSelectedButton();
         WindowsManager.instance.SwitchBackground(false);
         connectionWindow?.SetActive(false);
         worldListWindow?.SetActive(false);

@@ -14,7 +14,7 @@ public class SettingsMenu : MonoBehaviour
 
     private void Start()
     {
-        EventSystem.current.SetSelectedGameObject(graphicSettings.gameObject);
+        WindowsManager.instance.SetNewSelectedButton(graphicSettings.gameObject);
         back.onClick.AddListener(CloseSettings);
     }
 
@@ -26,6 +26,7 @@ public class SettingsMenu : MonoBehaviour
     private void CloseSettings()
     {
         WindowsManager.instance.UnloadScene(12);
+        MenuManager.instance?.SetSelectedButton();
         if (GameInfo.instance.lastLoadedScene == -1)
             WindowsManager.instance.SwitchBackground(false);
         else

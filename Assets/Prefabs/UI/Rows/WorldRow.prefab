@@ -697,6 +697,7 @@ GameObject:
   - component: {fileID: 4439244279338205076}
   - component: {fileID: 7754124491007924183}
   - component: {fileID: 5534784140665819480}
+  - component: {fileID: 206534099113369342}
   m_Layer: 5
   m_Name: WorldRow
   m_TagString: Untagged
@@ -730,7 +731,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 10, y: -71.3056}
   m_SizeDelta: {x: 1093, y: 133.8184}
-  m_Pivot: {x: 0, y: 0.5}
+  m_Pivot: {x: 0, y: 0}
 --- !u!222 &6888877308752462811
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -816,6 +817,18 @@ MonoBehaviour:
   saveTime: {fileID: 4363492543231919035}
   difficulty: {fileID: 1618151859640646531}
   playTime: {fileID: 7779527897227337793}
+--- !u!225 &206534099113369342
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3921594044452458896}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4074991065046287169
 GameObject:
   m_ObjectHideFlags: 0
