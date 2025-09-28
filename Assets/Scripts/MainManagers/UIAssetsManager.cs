@@ -16,12 +16,13 @@ public class  UIAssetsManager : MonoBehaviour
     [SerializeField] public Sprite silverBackgroundUI;
     [SerializeField] public Sprite goldBackgroundUI;
     [Header("Backgrounds")]
-
     [SerializeField] public Sprite woodBackgroundUI;
     [SerializeField] public Sprite ironBackgroundUI;
     [Header("Frames")]
     [SerializeField] public Sprite woodenFrameUI;
     [SerializeField] public Sprite blackFrameUI;
+    [Header("Selected")]
+    [SerializeField] public Sprite selectedWoodBackgroundUI;
 
 
     [Space]

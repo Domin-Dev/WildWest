@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: pl
   m_SharedData: {fileID: 11400000, guid: 738863494e82c4f47ac07b67ed1feb6d, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 6681689925784961132
   m_TableData:
   - m_Id: 214006411264
     m_Localized: 'Polski
@@ -56,6 +57,77 @@ MonoBehaviour:
     m_Localized: "Tw\xF3rcy"
     m_Metadata:
       m_Items: []
+  - m_Id: 5406015906820096
+    m_Localized: "Stw\xF3rz \u015Awiat"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5497548400144384
+    m_Localized: "Adres po\u0142\u0105czenia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5406813822824448
+    m_Localized: Tak
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5406831979966464
+    m_Localized: Nie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5411543521341440
+    m_Localized: "Czy na pewno chcesz usun\u0105\u0107 ten \u015Bwiat {0} ?"
+    m_Metadata:
+      m_Items:
+      - rid: 6681689925784961132
+  - m_Id: 5461343046381568
+    m_Localized: Tryb  Jednoosobowy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461699960680448
+    m_Localized: Tryb Wieloosobowy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461839618420736
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461946896134144
+    m_Localized: "Wyjd\u017A z gry"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5478708094087168
+    m_Localized: "Edytor \u015Bwiata"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5478890974130176
+    m_Localized: "Nazwa \u015Bwiata"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5490853393379328
+    m_Localized: "Do\u0142\u0105cz do gry"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5490868283158528
+    m_Localized: Uruchom serwer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5497633968140288
+    m_Localized: "Port po\u0142\u0105czenia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5516741640105984
+    m_Localized: Spacja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5521387704201216
+    m_Localized: Zapisz
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 6681689925784961132
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 5411543521341440

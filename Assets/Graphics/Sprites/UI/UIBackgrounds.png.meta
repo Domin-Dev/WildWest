@@ -197,7 +197,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -219,7 +219,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -329,7 +329,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -351,7 +351,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -373,7 +373,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -659,7 +659,7 @@ TextureImporter:
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 6, z: 4, w: 5}
+      border: {x: 5, y: 7, z: 5, w: 6}
       customData: 
       outline: []
       physicsShape: []
@@ -667,6 +667,28 @@ TextureImporter:
       bones: []
       spriteID: b05a795189e72b34f8f2ca57895650a3
       internalID: 2019817164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_13
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 26
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 5, y: 8, z: 5, w: 5}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba05d9afae3127d4199a81991446457e
+      internalID: -1728049519
       vertices: []
       indices: 
       edges: []
@@ -699,6 +721,7 @@ TextureImporter:
       UIBackgrounds_10: 1057229142
       UIBackgrounds_11: -107823657
       UIBackgrounds_12: 2019817164
+      UIBackgrounds_13: -1728049519
       UIBackgrounds_2: 1214819735
       UIBackgrounds_3: -144562309
       UIBackgrounds_4: -387067171

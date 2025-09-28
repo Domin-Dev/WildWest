@@ -15,12 +15,6 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Polish (pl)
   m_GUID: 0234c4a1a94fea440a6fa097db46a2c3
   m_SerializeEntries:
-  - m_GUID: 517ffec99dc7a2449915fa9823107219
-    m_Address: StringTable_pl
-    m_ReadOnly: 1
-    m_SerializedLabels:
-    - Locale-pl
-    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7595b8f3a663c3546aa3fec4bd85b5d0
     m_Address: UIStrings_pl
     m_ReadOnly: 1

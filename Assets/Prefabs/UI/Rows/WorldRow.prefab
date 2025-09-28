@@ -1475,19 +1475,104 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6454688253561595889, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 968126199245054498}
   m_SourcePrefab: {fileID: 100100000, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
 --- !u!224 &5323753094999329953 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4916388780696239746, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
   m_PrefabInstance: {fileID: 998462899268563491}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &6073359678818211282 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6454688253561595889, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
+  m_PrefabInstance: {fileID: 998462899268563491}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &968126199245054498
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073359678818211282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 9
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 10
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowDeselected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowDeselected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &7189476511723350049 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7934610802366470658, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
   m_PrefabInstance: {fileID: 998462899268563491}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 6073359678818211282}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
@@ -1596,6 +1681,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 440389625046139302, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4426936090907715932}
+    - targetCorrespondingSourceObject: {fileID: 440389625046139302, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8179375543254366394}
   m_SourcePrefab: {fileID: 100100000, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
 --- !u!1 &697335512591762821 stripped
 GameObject:
@@ -1622,6 +1710,83 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &8179375543254366394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697335512591762821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 9
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 10
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowDeselected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowDeselected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!224 &6967810154853452519 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7999334776497426116, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
@@ -1737,6 +1902,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1265903249416955783, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6444175999839513657}
+    - targetCorrespondingSourceObject: {fileID: 1265903249416955783, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5581362440533996096}
   m_SourcePrefab: {fileID: 100100000, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
 --- !u!224 &1950966405495997215 stripped
 RectTransform:
@@ -1768,6 +1936,83 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &5581362440533996096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740767073463509102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.EventSystems.EventTrigger
+  m_Delegates:
+  - eventID: 9
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 10
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowDeselected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowSelected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 1
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 5534784140665819480}
+          m_TargetAssemblyTypeName: WorldRow, Assembly-CSharp
+          m_MethodName: RowDeselected
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &6419699923172242221 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 517195296254932164, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}

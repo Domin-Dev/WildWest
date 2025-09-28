@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: 738863494e82c4f47ac07b67ed1feb6d, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 6681689925784961141
   m_TableData:
   - m_Id: 214006411264
     m_Localized: English
@@ -54,6 +55,79 @@ MonoBehaviour:
     m_Localized: Credits
     m_Metadata:
       m_Items: []
+  - m_Id: 5406015906820096
+    m_Localized: Create World
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5497548400144384
+    m_Localized: Connection Address
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5406813822824448
+    m_Localized: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5406831979966464
+    m_Localized: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5411543521341440
+    m_Localized: Are you sure you want to delete the world {0} ?
+    m_Metadata:
+      m_Items:
+      - rid: 6681689925784961141
+  - m_Id: 5461343046381568
+    m_Localized: Singleplayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461699960680448
+    m_Localized: Multiplayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461839618420736
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461946896134144
+    m_Localized: Quit Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5478708094087168
+    m_Localized: World Editor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5478890974130176
+    m_Localized: 'World Name
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5490853393379328
+    m_Localized: Join Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5490868283158528
+    m_Localized: Host Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5497633968140288
+    m_Localized: Connection Port
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5516741640105984
+    m_Localized: Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5521387704201216
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 6681689925784961141
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 5411543521341440

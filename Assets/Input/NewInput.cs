@@ -590,7 +590,7 @@ namespace UnityEngine.InputSystem
                     ""name"": ""Cancel"",
                     ""type"": ""Button"",
                     ""id"": ""d70c965e-5370-4f61-97e0-78a72a42ee15"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false

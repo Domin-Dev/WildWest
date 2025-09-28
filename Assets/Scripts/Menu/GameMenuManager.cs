@@ -22,6 +22,7 @@ public class GameMenuManager : MonoBehaviour
             WindowsManager.instance.LoadScene(8, true);
         });
         exit.onClick.AddListener(() => {
+            Debug.Log("dzia");
             WindowsManager.instance.escScene = -1;
             GameInfo.instance.isInGame = false;
             if (ClientServerBootstrap.HasServerWorld)

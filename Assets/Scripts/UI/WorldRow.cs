@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class WorldRow : MonoBehaviour
@@ -69,6 +70,15 @@ public class WorldRow : MonoBehaviour
             cover.gameObject.SetActive(true);
             cover.sprite = coverSprite;
         }
+    }
+
+    public void RowSelected()
+    {
+        GetComponent<Image>().sprite = UIAssetsManager.instance.selectedWoodBackgroundUI;
+    }
+    public void RowDeselected()
+    {
+        GetComponent<Image>().sprite = UIAssetsManager.instance.woodBackgroundUI;
     }
 
     private Color GetColor(Difficulty difficulty)

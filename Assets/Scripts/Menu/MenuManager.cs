@@ -11,6 +11,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using UnityEngine;
+using UnityEngine.Localization.Components;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -47,7 +48,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button editNo;
 
     [Header("Confirmation")]
-    [SerializeField] private TextMeshProUGUI confirmationText;
+    [SerializeField] private LocalizeStringEvent confirmationText;
     [SerializeField] private Button confirmationYes;
     [SerializeField] private Button confirmationNo;
 
@@ -155,7 +156,6 @@ public class MenuManager : MonoBehaviour
         buttonBackSettingsServer.onClick.AddListener(CloseWindows);
         //////////////////////////////////////////
     }
-
     private void OnDisable()
     {
      /////////////////////////////////////////
@@ -184,7 +184,7 @@ public class MenuManager : MonoBehaviour
         buttonBackSettingsServer.onClick.RemoveAllListeners();
         //////////////////////////////////////////
     }
-private void OnDestroy()
+    private void OnDestroy()
     {
         WindowsManager.instance.OnCloseWindows -= CloseWindows;
     }
@@ -207,8 +207,8 @@ private void OnDestroy()
     {
         CloseWindows();
         OpenWindow(confirmationRemoveWindow, confirmationNo);
-        this.worldName = worldName;
-        confirmationText.text = $"Are you sure you want to delete the world <Color=#5b3138>{worldName}</Color>?";
+        confirmationText.StringReference.Arguments = new object[] { $"<Color=#5b3138>{worldName}</Color>"};
+        confirmationText.RefreshString();
     }
     public void Edit(string worldName)
     {
@@ -269,20 +269,25 @@ private void OnDestroy()
         }
 
         buttonNewWorld.onClick.RemoveAllListeners();
+
+        
         if(isSingleplayerList)
             buttonNewWorld.onClick.AddListener(() => RunServer());
         else
             buttonNewWorld.onClick.AddListener(OpenServerSettings);
 
         List<HeaderData> headers = LoadSystem.LoadHeaders()?.OrderByDescending(s => s.saveTime).ToList();
-        if (headers == null || headers.Count == 0) return;
 
-        foreach (HeaderData header in headers)
+        if (headers != null)
         {
-            GameObject gameObject = Instantiate(worldRow, worldList.transform);
-            WorldRow row = gameObject.GetComponent<WorldRow>();
-            row.SetWorld(header, UIAssetsManager.instance.UIHeadMaterial);
+            foreach (HeaderData header in headers)
+            {
+                GameObject gameObject = Instantiate(worldRow, worldList.transform);
+                WorldRow row = gameObject.GetComponent<WorldRow>();
+                row.SetWorld(header, UIAssetsManager.instance.UIHeadMaterial);
+            }
         }
+
         OpenWindow(worldListWindow, buttonBackWorlds);
         gamepadDropdownScroll.RefreshButtons();
     }
@@ -517,6 +522,4 @@ private void OnDestroy()
         simGroup.AddSystemToUpdateList(mapLoadingSystem);
         simGroup.SortSystems();
     }
-
-
 }

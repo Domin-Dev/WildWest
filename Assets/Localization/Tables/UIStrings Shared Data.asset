@@ -51,6 +51,76 @@ MonoBehaviour:
     m_Key: Credits
     m_Metadata:
       m_Items: []
+  - m_Id: 5406015906820096
+    m_Key: 'CreateNewWorld
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5406813822824448
+    m_Key: Yes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5406831979966464
+    m_Key: No
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5411543521341440
+    m_Key: ConfirmationOfWorldDeletion
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461343046381568
+    m_Key: Singleplayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461699960680448
+    m_Key: Multiplayer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461839618420736
+    m_Key: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5461946896134144
+    m_Key: QuitGame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5478708094087168
+    m_Key: WorldEditor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5478890974130176
+    m_Key: 'WorldName
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5490853393379328
+    m_Key: JoinGame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5490868283158528
+    m_Key: 'HostGame
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5497548400144384
+    m_Key: ConnectionAddress
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5497633968140288
+    m_Key: ConnectionPort
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5516741640105984
+    m_Key: KeyboardSpace
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5521387704201216
+    m_Key: Save
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
