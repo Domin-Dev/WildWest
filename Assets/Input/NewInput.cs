@@ -657,6 +657,24 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FuncButtonLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""8179279c-097d-48ca-bf64-04b5f9e6e064"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FuncButtonRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""3c4f4faa-6e13-444d-81b2-ff35e384ad7b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1044,6 +1062,28 @@ namespace UnityEngine.InputSystem
                     ""action"": ""TrackedDeviceOrientation"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""031770b8-c1b9-4891-8e14-dd900e6ca7c4"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""FuncButtonLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ba4eb240-a4c1-46e0-8de8-c6545ab4db67"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Gamepad"",
+                    ""action"": ""FuncButtonRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1134,6 +1174,8 @@ namespace UnityEngine.InputSystem
             m_UI_ScrollWheel = m_UI.FindAction("ScrollWheel", throwIfNotFound: true);
             m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
             m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
+            m_UI_FuncButtonLeft = m_UI.FindAction("FuncButtonLeft", throwIfNotFound: true);
+            m_UI_FuncButtonRight = m_UI.FindAction("FuncButtonRight", throwIfNotFound: true);
         }
 
         ~@NewInput()
@@ -1409,6 +1451,8 @@ namespace UnityEngine.InputSystem
         private readonly InputAction m_UI_ScrollWheel;
         private readonly InputAction m_UI_TrackedDevicePosition;
         private readonly InputAction m_UI_TrackedDeviceOrientation;
+        private readonly InputAction m_UI_FuncButtonLeft;
+        private readonly InputAction m_UI_FuncButtonRight;
         /// <summary>
         /// Provides access to input actions defined in input action map "UI".
         /// </summary>
@@ -1460,6 +1504,14 @@ namespace UnityEngine.InputSystem
             /// Provides access to the underlying input action "UI/TrackedDeviceOrientation".
             /// </summary>
             public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/FuncButtonLeft".
+            /// </summary>
+            public InputAction @FuncButtonLeft => m_Wrapper.m_UI_FuncButtonLeft;
+            /// <summary>
+            /// Provides access to the underlying input action "UI/FuncButtonRight".
+            /// </summary>
+            public InputAction @FuncButtonRight => m_Wrapper.m_UI_FuncButtonRight;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1516,6 +1568,12 @@ namespace UnityEngine.InputSystem
                 @TrackedDeviceOrientation.started += instance.OnTrackedDeviceOrientation;
                 @TrackedDeviceOrientation.performed += instance.OnTrackedDeviceOrientation;
                 @TrackedDeviceOrientation.canceled += instance.OnTrackedDeviceOrientation;
+                @FuncButtonLeft.started += instance.OnFuncButtonLeft;
+                @FuncButtonLeft.performed += instance.OnFuncButtonLeft;
+                @FuncButtonLeft.canceled += instance.OnFuncButtonLeft;
+                @FuncButtonRight.started += instance.OnFuncButtonRight;
+                @FuncButtonRight.performed += instance.OnFuncButtonRight;
+                @FuncButtonRight.canceled += instance.OnFuncButtonRight;
             }
 
             /// <summary>
@@ -1557,6 +1615,12 @@ namespace UnityEngine.InputSystem
                 @TrackedDeviceOrientation.started -= instance.OnTrackedDeviceOrientation;
                 @TrackedDeviceOrientation.performed -= instance.OnTrackedDeviceOrientation;
                 @TrackedDeviceOrientation.canceled -= instance.OnTrackedDeviceOrientation;
+                @FuncButtonLeft.started -= instance.OnFuncButtonLeft;
+                @FuncButtonLeft.performed -= instance.OnFuncButtonLeft;
+                @FuncButtonLeft.canceled -= instance.OnFuncButtonLeft;
+                @FuncButtonRight.started -= instance.OnFuncButtonRight;
+                @FuncButtonRight.performed -= instance.OnFuncButtonRight;
+                @FuncButtonRight.canceled -= instance.OnFuncButtonRight;
             }
 
             /// <summary>
@@ -1803,6 +1867,20 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "FuncButtonLeft" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnFuncButtonLeft(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "FuncButtonRight" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnFuncButtonRight(InputAction.CallbackContext context);
         }
     }
 }

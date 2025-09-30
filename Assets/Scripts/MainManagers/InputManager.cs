@@ -4,12 +4,14 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public static NewInput input;
+    public static InputManager i;
 
     private void Awake()
     {
-        if (input == null)
+        if (i == null)
         {
             input = new NewInput();
+            i = this;
             DontDestroyOnLoad(gameObject);
         }
         else

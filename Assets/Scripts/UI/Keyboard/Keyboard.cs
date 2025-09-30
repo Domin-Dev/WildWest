@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -15,7 +16,9 @@ public class Keyboard : MonoBehaviour
     [SerializeField] private Button capsLock;
     [SerializeField] private Button space;
     [SerializeField] private Button backspace;
-    [SerializeField] private TextMeshProUGUI input;
+    [SerializeField] private KeyboardInput input;
+    [SerializeField] private Button back;
+    [SerializeField] private Button save;
     [Space]
     [SerializeField] private bool numbersEnabled = true;
     [SerializeField] private bool lettersEnabled = true;
@@ -24,7 +27,7 @@ public class Keyboard : MonoBehaviour
 
     [SerializeField] private bool autoBuild = true;
 
-
+    public Action<string> onSaveChanges;
     private bool capsLockOn = false;
     private int columns;
     private int counter;
@@ -43,11 +46,23 @@ public class Keyboard : MonoBehaviour
         "z","x","c","v","b","n","m",",",".","/"
     };
 
+
+
     private void Start()
     {
         if(autoBuild) Build(numbersEnabled, lettersEnabled, specialCharsEnabled);   
     }
 
+
+    private void Save()
+    {
+        onSaveChanges?.Invoke(input.text);
+    }
+    private IEnumerator SetBackNextFrame()
+    {
+        yield return null; 
+        EventSystem.current.SetSelectedGameObject(back.gameObject);
+    }
     public void Build(bool numbersEnabled = true, bool lettersEnabled = true, bool specialCharsEnabled = true)
     {
         this.numbersEnabled = numbersEnabled;
@@ -56,6 +71,10 @@ public class Keyboard : MonoBehaviour
         this.columns = keysParent.GetComponent<GridLayoutGroup>().constraintCount;
         this.counter = 0;
         buttons = new Button[columns,(int)Math.Ceiling(((float)numbers.Length + keys.Length)/(float)columns)];
+        
+        input.caretPosition = input.text.Length;
+        input.ActivateInputField();
+
 
         if (numbersEnabled)
         {
@@ -80,10 +99,12 @@ public class Keyboard : MonoBehaviour
         capsLock.onClick.AddListener(CapsLock);
         space.onClick.AddListener(Space);
         backspace.onClick.AddListener(Backspace);
+        save.onClick.AddListener(Save);
+
         backspace.GetComponent<ButtonHold>().action += Backspace;
         SetUpNavigation();
+        StartCoroutine(SetBackNextFrame());
     }
-
     private void SetUpNavigation()
     {
         int cols = buttons.GetLength(0);
@@ -99,10 +120,14 @@ public class Keyboard : MonoBehaviour
 
                 if (r > 0) nav.selectOnUp = buttons[c,r - 1];
                 if (r < rows - 1) nav.selectOnDown = buttons[c,r + 1];
+                
                 if (c > 0) nav.selectOnLeft = buttons[c - 1,r];
-                if (c < cols - 1) nav.selectOnRight = buttons[c + 1,r];
-               
-                if(nav.selectOnDown == null)
+                else nav.selectOnLeft = buttons[cols - 1, r];
+
+                if (c < cols - 1) nav.selectOnRight = buttons[c + 1, r];
+                else nav.selectOnRight = buttons[0, r];
+
+                if (nav.selectOnDown == null)
                 {
                     if (c < funKeySize)
                         nav.selectOnDown = capsLock;
@@ -116,7 +141,6 @@ public class Keyboard : MonoBehaviour
             }
         }
     }
-
     private void CreateNewKey(string key, bool enabled = true)
     {
         GameObject btnObj = Instantiate(keyPrefab, keysParent);
@@ -139,8 +163,8 @@ public class Keyboard : MonoBehaviour
         if (capsLockOn)
             value = value.ToUpper();
         input.text += value;
+        input.caretPosition = input.text.Length;
     }
-
     private void CapsLock()
     {
         capsLockOn = !capsLockOn;      
@@ -155,17 +179,18 @@ public class Keyboard : MonoBehaviour
             tmp.text = text;
         }      
     }
-
     private void Space()
     {
         string x = input.text;
         if (x.Length > 0 && x[x.Length - 1] != ' ') 
             input.text += ' ';
+        input.caretPosition = input.text.Length;
     }
     private void Backspace()
     {
         string x = input.text;
         if (x.Length > 0)
             input.text = x.Remove(x.Length - 1, 1);
+        input.caretPosition = input.text.Length;
     }
 }

@@ -1,10 +1,14 @@
-﻿using Unity.VisualScripting;
+﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class DisableMouseInputSystem : MonoBehaviour
 {
     public static DisableMouseInputSystem instance { private set; get; }
+
+    public Action onSwitchToGamepad;
+    public Action onSwitchToMouse;
     public static bool mouseEnabled { get; private set; } = true;
     InputAction anyGamepadAction;
     InputAction anyMouseAction;
@@ -53,10 +57,13 @@ public class DisableMouseInputSystem : MonoBehaviour
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         Debug.Log("➡️ Sterowanie przełączone na gamepad (mysz wyłączona)");
+        onSwitchToGamepad?.Invoke();
     }
 
     void SwitchToMouse()
     {
+        Debug.Log("➡️ Sterowanie przełączone na gamepad (mysz wyłączona)");
+
         if (mouseEnabled) return;
 
         WindowsManager.instance.ClearSelection();
@@ -65,6 +72,7 @@ public class DisableMouseInputSystem : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
 
         Debug.Log("➡️ Sterowanie przełączone na mysz (mysz włączona)");
+        onSwitchToMouse?.Invoke();
     }
 }
 
