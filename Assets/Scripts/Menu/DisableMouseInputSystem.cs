@@ -62,8 +62,6 @@ public class DisableMouseInputSystem : MonoBehaviour
 
     void SwitchToMouse()
     {
-        Debug.Log("➡️ Sterowanie przełączone na gamepad (mysz wyłączona)");
-
         if (mouseEnabled) return;
 
         WindowsManager.instance.ClearSelection();

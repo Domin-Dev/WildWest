@@ -191,13 +191,13 @@ TextureImporter:
       name: "ItemEQ \u2014 kopia_0"
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
+        x: 100
+        y: 69
         width: 26
-        height: 26
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 8, z: 5, w: 5}
+      border: {x: 5, y: 10, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -628,16 +628,16 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_11
+      name: GOld
       rect:
         serializedVersion: 2
-        x: 26
-        y: 26
+        x: 38
+        y: 104
         width: 26
-        height: 26
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 8, z: 5, w: 5}
+      border: {x: 5, y: 10, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -653,13 +653,13 @@ TextureImporter:
       name: UIBackgrounds_12
       rect:
         serializedVersion: 2
-        x: 26
-        y: 52
+        x: 72
+        y: 104
         width: 26
-        height: 26
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 7, z: 5, w: 6}
+      border: {x: 5, y: 10, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -680,7 +680,7 @@ TextureImporter:
         width: 26
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
@@ -689,6 +689,28 @@ TextureImporter:
       bones: []
       spriteID: ba05d9afae3127d4199a81991446457e
       internalID: -1728049519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_14
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 46
+        width: 50
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 20, y: 15, z: 20, w: 15}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 137bcdb702ea0a441b543872253e4be1
+      internalID: 1186568250
       vertices: []
       indices: 
       edges: []
@@ -705,8 +727,11 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
+      GOld: -107823657
       "ItemEQ \u2014 kopia_0": -155690521
       "ItemEQ \u2014 kopia_1": 130874801
       "ItemEQ \u2014 kopia_2": 1954819079
@@ -719,9 +744,9 @@ TextureImporter:
       UIBackgrounds_0: -1448790104
       UIBackgrounds_1: -1476733124
       UIBackgrounds_10: 1057229142
-      UIBackgrounds_11: -107823657
       UIBackgrounds_12: 2019817164
       UIBackgrounds_13: -1728049519
+      UIBackgrounds_14: 1186568250
       UIBackgrounds_2: 1214819735
       UIBackgrounds_3: -144562309
       UIBackgrounds_4: -387067171
