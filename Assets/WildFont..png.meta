@@ -1,7 +1,85 @@
 fileFormatVersion: 2
-guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c
+guid: a0e9885e3c79c554997424b95adb66d9
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -361336424261803869
+    second: WildFont._0
+  - first:
+      213: 3834122456250486724
+    second: WildFont._1
+  - first:
+      213: 7541901942522138897
+    second: WildFont._2
+  - first:
+      213: -2867632054555952948
+    second: WildFont._3
+  - first:
+      213: -6704075112591387402
+    second: WildFont._4
+  - first:
+      213: -2580613203676907393
+    second: WildFont._5
+  - first:
+      213: 2488804639212211086
+    second: WildFont._6
+  - first:
+      213: -8372516412698846781
+    second: WildFont._7
+  - first:
+      213: -7714613902904238332
+    second: WildFont._8
+  - first:
+      213: 7753677185228866064
+    second: WildFont._9
+  - first:
+      213: 8720347397466821680
+    second: WildFont._10
+  - first:
+      213: 7740674786330679522
+    second: WildFont._11
+  - first:
+      213: 3043371865322156253
+    second: WildFont._12
+  - first:
+      213: 933212739525076246
+    second: WildFont._13
+  - first:
+      213: -6981853315822319112
+    second: WildFont._14
+  - first:
+      213: -3051580380172837696
+    second: WildFont._15
+  - first:
+      213: -5102701891971878398
+    second: WildFont._16
+  - first:
+      213: 3184249857376931442
+    second: WildFont._17
+  - first:
+      213: -7266733051373348485
+    second: WildFont._18
+  - first:
+      213: -4679273274766609691
+    second: WildFont._19
+  - first:
+      213: -2895800488734678502
+    second: WildFont._20
+  - first:
+      213: -374910948673169788
+    second: WildFont._21
+  - first:
+      213: 1005053548896407013
+    second: WildFont._22
+  - first:
+      213: 4317264310863770732
+    second: WildFont._23
+  - first:
+      213: -1777258785903372386
+    second: WildFont._24
+  - first:
+      213: 695347114544918511
+    second: WildFont._25
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -21,7 +99,7 @@ TextureImporter:
     heightScale: 0.25
     normalMapFilter: 0
     flipGreenChannel: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -43,12 +121,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 50
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -188,529 +266,573 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_0"
+      name: WildFont._0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 120
-        width: 26
-        height: 28
+        x: 0
+        y: 302
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c32bfa364ca507c4baf0ed430c2d60e9
-      internalID: -155690521
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_1"
-      rect:
-        serializedVersion: 2
-        x: 122
-        y: 150
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4d47347ba9b0c3a4b8120f968ddb3477
-      internalID: 130874801
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_2"
-      rect:
-        serializedVersion: 2
-        x: 272
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 28759feb6b3cfd24aaba8409990d23bd
-      internalID: 1954819079
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_3"
-      rect:
-        serializedVersion: 2
-        x: 302
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ddc2da1ef93a0e64e97fbc7ff728b8a7
-      internalID: 406122447
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_4"
-      rect:
-        serializedVersion: 2
-        x: 104
-        y: 0
-        width: 26
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 82e82c28abf17844f90335e572f63305
-      internalID: 409571638
+      spriteID: 3a02773cf664cfaf0800000000000000
+      internalID: -361336424261803869
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_5"
+      name: WildFont._1
       rect:
         serializedVersion: 2
-        x: 130
-        y: 0
-        width: 26
-        height: 26
+        x: 18
+        y: 302
+        width: 12
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8be81cb10ce1bf94bb386fbdd9026ff5
-      internalID: -1004384454
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_6"
-      rect:
-        serializedVersion: 2
-        x: 92
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d60ce5c69c77f0447bf35dec3357d5d4
-      internalID: -1388937800
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_7"
-      rect:
-        serializedVersion: 2
-        x: 152
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 79049a1217d4fdc45a93976fed952f3b
-      internalID: -744353387
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_8"
-      rect:
-        serializedVersion: 2
-        x: 212
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d30dc628bcf9eff4db2b9f6aaadbb2fa
-      internalID: -350282367
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_0
-      rect:
-        serializedVersion: 2
-        x: 332
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f1c1b985c4ca88a449a4900833e5b49e
-      internalID: -1448790104
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_1
-      rect:
-        serializedVersion: 2
-        x: 362
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 57873e29bfc761f4c8371a90a0bafff8
-      internalID: -1476733124
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_2
-      rect:
-        serializedVersion: 2
-        x: 2
-        y: 92
-        width: 26
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: a680ceba75481e140a68a17aa41c958a
-      internalID: 1214819735
+      spriteID: 4cf88265f0a853530800000000000000
+      internalID: 3834122456250486724
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_3
+      name: WildFont._2
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 302
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1115cd6abd73aa860800000000000000
+      internalID: 7541901942522138897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._3
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 302
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc83ba9f6df1438d0800000000000000
+      internalID: -2867632054555952948
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._4
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 302
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f4147e643756f2a0800000000000000
+      internalID: -6704075112591387402
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._5
+      rect:
+        serializedVersion: 2
+        x: 83
+        y: 302
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f78b724c6f1df2cd0800000000000000
+      internalID: -2580613203676907393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._6
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 302
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e8b869312a20a8220800000000000000
+      internalID: 2488804639212211086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._7
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 302
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c915f0aea8decb80800000000000000
+      internalID: -8372516412698846781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._8
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 302
+        width: 8
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 40f5a12778f20f490800000000000000
+      internalID: -7714613902904238332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._9
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 302
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0120e98b1589a9b60800000000000000
+      internalID: 7753677185228866064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._10
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 302
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 034130071c5e40970800000000000000
+      internalID: 8720347397466821680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._11
+      rect:
+        serializedVersion: 2
+        x: 178
+        y: 302
+        width: 12
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e81011d4b66c6b60800000000000000
+      internalID: 7740674786330679522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._12
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 285
+        width: 16
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd0f1f7469a3c3a20800000000000000
+      internalID: 3043371865322156253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._13
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 302
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 615e24fca0073fc00800000000000000
+      internalID: 933212739525076246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._14
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 302
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f9078496697b1f90800000000000000
+      internalID: -6981853315822319112
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._15
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 302
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0cc1f3cefcb96a5d0800000000000000
+      internalID: -3051580380172837696
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._16
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 301
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2027d4e1aaf8f29b0800000000000000
+      internalID: -5102701891971878398
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._17
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 302
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27e4a09df5ab03c20800000000000000
+      internalID: 3184249857376931442
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._18
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 302
+        width: 13
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b791d436ac0672b90800000000000000
+      internalID: -7266733051373348485
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._19
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 302
+        width: 14
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e2be8a9fb1ef0fb0800000000000000
+      internalID: -4679273274766609691
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._20
       rect:
         serializedVersion: 2
         x: 1
-        y: 150
-        width: 26
-        height: 28
+        y: 282
+        width: 14
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 6, y: 10, z: 4, w: 5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: c4107992f56ed5c4dacf4e9297ab916d
-      internalID: -144562309
+      spriteID: a1221905ccc00d7d0800000000000000
+      internalID: -2895800488734678502
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_4
+      name: WildFont._21
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 282
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4865ee18a7c0ccaf0800000000000000
+      internalID: -374910948673169788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont._22
       rect:
         serializedVersion: 2
         x: 32
-        y: 150
-        width: 26
-        height: 28
+        y: 282
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: f8a008835392dc54086a82d6b3090334
-      internalID: -387067171
+      spriteID: 5ed4732b0eaa2fd00800000000000000
+      internalID: 1005053548896407013
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_5
+      name: WildFont._23
       rect:
         serializedVersion: 2
-        x: 62
-        y: 150
-        width: 26
-        height: 28
+        x: 49
+        y: 282
+        width: 14
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 5043d73ca3a1af548b9fe2b58e7c2b34
-      internalID: 1922422707
+      spriteID: c64b18254010aeb30800000000000000
+      internalID: 4317264310863770732
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_6
+      name: WildFont._24
       rect:
         serializedVersion: 2
-        x: 92
-        y: 150
-        width: 26
-        height: 28
+        x: 65
+        y: 282
+        width: 14
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 4e9876f24f1947349a075e9be24afcd9
-      internalID: 1532682267
+      spriteID: e979940fc88e557e0800000000000000
+      internalID: -1777258785903372386
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_7
+      name: WildFont._25
       rect:
         serializedVersion: 2
-        x: 152
-        y: 150
-        width: 26
-        height: 28
+        x: 82
+        y: 282
+        width: 12
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: 0
+      tessellationDetail: -1
       bones: []
-      spriteID: 15a0f006ebc641048912df238d2196d3
-      internalID: 1656743691
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_8
-      rect:
-        serializedVersion: 2
-        x: 242
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 62014f26b93699a4b98ae5099126fd79
-      internalID: 1288980219
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_9
-      rect:
-        serializedVersion: 2
-        x: 182
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b775420832e04c44d991ce81847af836
-      internalID: 1042351989
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_10
-      rect:
-        serializedVersion: 2
-        x: 122
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6ebb37b690112d445ba61c490afed93c
-      internalID: 1057229142
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: GOld
-      rect:
-        serializedVersion: 2
-        x: 32
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2bb360f736f2c2c48b7aeb6bed3a32d8
-      internalID: -107823657
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_12
-      rect:
-        serializedVersion: 2
-        x: 62
-        y: 120
-        width: 26
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b05a795189e72b34f8f2ca57895650a3
-      internalID: 2019817164
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_13
-      rect:
-        serializedVersion: 2
-        x: 52
-        y: 26
-        width: 26
-        height: 26
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 8, z: 5, w: 5}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ba05d9afae3127d4199a81991446457e
-      internalID: -1728049519
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: UIBackgrounds_14
-      rect:
-        serializedVersion: 2
-        x: 248
-        y: 46
-        width: 50
-        height: 32
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 20, y: 15, z: 20, w: 15}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 137bcdb702ea0a441b543872253e4be1
-      internalID: 1186568250
+      spriteID: fefea0e348e56a900800000000000000
+      internalID: 695347114544918511
       vertices: []
       indices: 
       edges: []
@@ -727,35 +849,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries:
-      - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
-    nameFileIdTable:
-      GOld: -107823657
-      "ItemEQ \u2014 kopia_0": -155690521
-      "ItemEQ \u2014 kopia_1": 130874801
-      "ItemEQ \u2014 kopia_2": 1954819079
-      "ItemEQ \u2014 kopia_3": 406122447
-      "ItemEQ \u2014 kopia_4": 409571638
-      "ItemEQ \u2014 kopia_5": -1004384454
-      "ItemEQ \u2014 kopia_6": -1388937800
-      "ItemEQ \u2014 kopia_7": -744353387
-      "ItemEQ \u2014 kopia_8": -350282367
-      UIBackgrounds_0: -1448790104
-      UIBackgrounds_1: -1476733124
-      UIBackgrounds_10: 1057229142
-      UIBackgrounds_11: -353293881
-      UIBackgrounds_12: 2019817164
-      UIBackgrounds_13: -1728049519
-      UIBackgrounds_14: 1186568250
-      UIBackgrounds_2: 1214819735
-      UIBackgrounds_3: -144562309
-      UIBackgrounds_4: -387067171
-      UIBackgrounds_5: 1922422707
-      UIBackgrounds_6: 1532682267
-      UIBackgrounds_7: 1656743691
-      UIBackgrounds_8: 1288980219
-      UIBackgrounds_9: 1042351989
+      entries: []
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
