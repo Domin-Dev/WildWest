@@ -1675,10 +1675,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'resolution:'
+  m_text: 'Resolution:'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 6837f5f0a906d60458a9840e89fb085b, type: 2}
-  m_sharedMaterial: {fileID: -2912871760992474241, guid: 6837f5f0a906d60458a9840e89fb085b, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: f512e0fa1394b2e41b439aced50be59c, type: 2}
+  m_sharedMaterial: {fileID: -8128411993457041554, guid: f512e0fa1394b2e41b439aced50be59c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1702,8 +1702,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 60
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2193,16 +2193,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_text
-      value: DOMINIK ORNOWSKI
+      value: "DOMINIK \u0106\xF3\u017B\u0179\xD3\u0104A\u0143\u0143EE\u0118"
       objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_fontSize
-      value: 30
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_fontAsset
       value: 
-      objectReference: {fileID: 11400000, guid: b78de8af311ea504289261289994721f, type: 2}
+      objectReference: {fileID: 11400000, guid: b1aff192b0cb4e844b6ed257b241eb4e, type: 2}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_fontColor.b
       value: 1
@@ -2217,15 +2217,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_fontSizeBase
-      value: 30
+      value: 45
       objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: 940948239819378204, guid: b78de8af311ea504289261289994721f, type: 2}
+      objectReference: {fileID: 1804463287910519066, guid: b1aff192b0cb4e844b6ed257b241eb4e, type: 2}
+    - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
+      propertyPath: m_characterSpacing
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4293585642
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 3106304516737080805, guid: 39debf84f46cbba46a04a5cd0431cbac, type: 3}
       propertyPath: m_paragraphSpacing
@@ -4725,7 +4729,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000030517578}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: -489.10022}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1739438175
