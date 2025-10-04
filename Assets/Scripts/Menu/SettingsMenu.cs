@@ -4,18 +4,24 @@ using UnityEngine.UI;
 
 public class SettingsMenu : MonoBehaviour
 {
-    [SerializeField] private Button graphicSettings;
+    [Header("Buttons")]
+    [SerializeField] private Button videoSettings;
     [SerializeField] private Button soundsSettings;
     [SerializeField] private Button controlSettings;
     [SerializeField] private Button languageSettings;
     [SerializeField] private Button credits;
 
     [SerializeField] private Button back;
+    [Header("Tabs")]
+    [SerializeField] private GameObject mainTab;
+    [SerializeField] private GameObject videoTab;
 
     private void Start()
     {
-        WindowsManager.instance.SetNewSelectedButton(graphicSettings.gameObject);
+        WindowsManager.instance.SetNewSelectedButton(videoSettings.gameObject);
         back.onClick.AddListener(CloseSettings);
+
+        videoSettings.onClick.AddListener(OpenVideoSettings);
     }
 
     private void OnDestroy()
@@ -32,4 +38,16 @@ public class SettingsMenu : MonoBehaviour
         else
             WindowsManager.instance.LoadScene(GameInfo.instance.lastLoadedScene);
     }
+
+    private void CloseTabs()
+    {
+        mainTab.SetActive(false);
+        videoTab.SetActive(false);    
+    }
+    private void OpenVideoSettings()
+    {
+        CloseTabs();
+        videoTab.SetActive(true);
+    }
+
 }
