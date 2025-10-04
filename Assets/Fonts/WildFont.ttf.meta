@@ -1,18 +1,16 @@
 fileFormatVersion: 2
-guid: 681f1679d72023b4ea5cbb0ed9f8a772
+guid: 4de90b8bfc311d64a9ffb473f6dcc11e
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
-  fontSize: 16
+  fontSize: 20
   forceTextureCase: -2
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
   fontNames:
   - WildFont
-  fallbackFontReferences:
-  - {fileID: 12800000, guid: 96ddb046f8762a049bc14920f48a0e46, type: 3}
-  - {fileID: 12800000, guid: bf9b960acb3b89a4a9e236e3554b9ccc, type: 3}
+  fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 2
   ascentCalculationMode: 2

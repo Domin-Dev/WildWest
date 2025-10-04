@@ -1,0 +1,2808 @@
+fileFormatVersion: 2
+guid: a35df036e448a094d9b3cdff04bce6be
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7922168326005535272
+    second: WildFont Atlas_0
+  - first:
+      213: -6938433992778812923
+    second: WildFont Atlas_1
+  - first:
+      213: -7823695867909496437
+    second: WildFont Atlas_2
+  - first:
+      213: 7768930897594414737
+    second: WildFont Atlas_3
+  - first:
+      213: 7853917218371001005
+    second: WildFont Atlas_4
+  - first:
+      213: 1856934222888421638
+    second: WildFont Atlas_5
+  - first:
+      213: -7755166259869258273
+    second: WildFont Atlas_6
+  - first:
+      213: 2953594514329645926
+    second: WildFont Atlas_7
+  - first:
+      213: -7626073399857257002
+    second: WildFont Atlas_8
+  - first:
+      213: -1653414705461938885
+    second: WildFont Atlas_9
+  - first:
+      213: 7540142068084273001
+    second: WildFont Atlas_10
+  - first:
+      213: 4250596645988577321
+    second: WildFont Atlas_11
+  - first:
+      213: 7287376418196086238
+    second: WildFont Atlas_12
+  - first:
+      213: 7298582115795277293
+    second: WildFont Atlas_13
+  - first:
+      213: -3952781044323828808
+    second: WildFont Atlas_14
+  - first:
+      213: 6587687286839022557
+    second: WildFont Atlas_15
+  - first:
+      213: -712394126218431822
+    second: WildFont Atlas_16
+  - first:
+      213: -270318203893737575
+    second: WildFont Atlas_17
+  - first:
+      213: 8964562331080528469
+    second: WildFont Atlas_18
+  - first:
+      213: -2009618516932922865
+    second: WildFont Atlas_19
+  - first:
+      213: 1738214421252436952
+    second: WildFont Atlas_20
+  - first:
+      213: 7271630769977254158
+    second: WildFont Atlas_21
+  - first:
+      213: -4295327233863494342
+    second: WildFont Atlas_22
+  - first:
+      213: -7206302090488097794
+    second: WildFont Atlas_23
+  - first:
+      213: 7367123524827440863
+    second: WildFont Atlas_24
+  - first:
+      213: -6246444307746207356
+    second: WildFont Atlas_25
+  - first:
+      213: -7686158818090088334
+    second: WildFont Atlas_26
+  - first:
+      213: 3213463437172001879
+    second: WildFont Atlas_27
+  - first:
+      213: -9162970079337078545
+    second: WildFont Atlas_28
+  - first:
+      213: -1088821520043879118
+    second: WildFont Atlas_29
+  - first:
+      213: 7235173995571785859
+    second: WildFont Atlas_30
+  - first:
+      213: -8907183242534565521
+    second: WildFont Atlas_31
+  - first:
+      213: -2519257757427876453
+    second: WildFont Atlas_32
+  - first:
+      213: 8245572764205203504
+    second: WildFont Atlas_33
+  - first:
+      213: -8131292863594884745
+    second: WildFont Atlas_34
+  - first:
+      213: -2262544889516638356
+    second: WildFont Atlas_35
+  - first:
+      213: -3197893373161773885
+    second: WildFont Atlas_36
+  - first:
+      213: -3017086054490155211
+    second: WildFont Atlas_37
+  - first:
+      213: 8346115064910745414
+    second: WildFont Atlas_38
+  - first:
+      213: -7561281153791557382
+    second: WildFont Atlas_39
+  - first:
+      213: 4630981381431071018
+    second: WildFont Atlas_40
+  - first:
+      213: 3942563532078043021
+    second: WildFont Atlas_41
+  - first:
+      213: -3574258875382497761
+    second: WildFont Atlas_42
+  - first:
+      213: 2394512591998183233
+    second: WildFont Atlas_43
+  - first:
+      213: -5698758211495043994
+    second: WildFont Atlas_44
+  - first:
+      213: -8214720285243606324
+    second: WildFont Atlas_45
+  - first:
+      213: 8433482131562631875
+    second: WildFont Atlas_46
+  - first:
+      213: -7413591614319713245
+    second: WildFont Atlas_47
+  - first:
+      213: -1681508800603550607
+    second: WildFont Atlas_48
+  - first:
+      213: 8758760238233721958
+    second: WildFont Atlas_49
+  - first:
+      213: -2871069514417498042
+    second: WildFont Atlas_50
+  - first:
+      213: -4809980586701661615
+    second: WildFont Atlas_51
+  - first:
+      213: 1476960573050184628
+    second: WildFont Atlas_52
+  - first:
+      213: 6638220966795390616
+    second: WildFont Atlas_53
+  - first:
+      213: 4269842573024227310
+    second: WildFont Atlas_54
+  - first:
+      213: 6211549634451196958
+    second: WildFont Atlas_55
+  - first:
+      213: -7248275563886702416
+    second: WildFont Atlas_56
+  - first:
+      213: 3401118495943735146
+    second: WildFont Atlas_57
+  - first:
+      213: -1059997589240977074
+    second: WildFont Atlas_58
+  - first:
+      213: 1407482752384226562
+    second: WildFont Atlas_59
+  - first:
+      213: -1072274796944687110
+    second: WildFont Atlas_60
+  - first:
+      213: -4176235200811231268
+    second: WildFont Atlas_61
+  - first:
+      213: 4968975886695852874
+    second: WildFont Atlas_62
+  - first:
+      213: -2879231516937416811
+    second: WildFont Atlas_63
+  - first:
+      213: -6377841036006306598
+    second: WildFont Atlas_64
+  - first:
+      213: 711897559431654426
+    second: WildFont Atlas_65
+  - first:
+      213: 4788175736799748775
+    second: WildFont Atlas_66
+  - first:
+      213: -5225425066668384303
+    second: WildFont Atlas_67
+  - first:
+      213: 7495824445684502178
+    second: WildFont Atlas_68
+  - first:
+      213: 9090023106534133757
+    second: WildFont Atlas_69
+  - first:
+      213: -4919451999415604195
+    second: WildFont Atlas_70
+  - first:
+      213: 6911390408704596325
+    second: WildFont Atlas_71
+  - first:
+      213: 8156505268950200025
+    second: WildFont Atlas_72
+  - first:
+      213: -842600632713581299
+    second: WildFont Atlas_73
+  - first:
+      213: 98337097778969593
+    second: WildFont Atlas_74
+  - first:
+      213: -3822569146370227893
+    second: WildFont Atlas_75
+  - first:
+      213: 3543861993162028779
+    second: WildFont Atlas_76
+  - first:
+      213: 4494078841250446073
+    second: WildFont Atlas_77
+  - first:
+      213: 276624082112914136
+    second: WildFont Atlas_78
+  - first:
+      213: -910574490771219677
+    second: WildFont Atlas_79
+  - first:
+      213: 7992253449962624013
+    second: WildFont Atlas_80
+  - first:
+      213: 6000375119187695407
+    second: WildFont Atlas_81
+  - first:
+      213: 2908023015836842613
+    second: WildFont Atlas_82
+  - first:
+      213: -4592949267708605518
+    second: WildFont Atlas_83
+  - first:
+      213: -8934547462450616160
+    second: WildFont Atlas_84
+  - first:
+      213: -1375428503535615239
+    second: WildFont Atlas_85
+  - first:
+      213: -4900369535028124828
+    second: WildFont Atlas_86
+  - first:
+      213: 4940397978692417030
+    second: WildFont Atlas_87
+  - first:
+      213: -8936037648590598031
+    second: WildFont Atlas_88
+  - first:
+      213: 8638626269347919366
+    second: WildFont Atlas_89
+  - first:
+      213: -506876493087505736
+    second: WildFont Atlas_90
+  - first:
+      213: 502894540881292413
+    second: WildFont Atlas_91
+  - first:
+      213: -5651536571430047915
+    second: WildFont Atlas_92
+  - first:
+      213: -1410600079840872377
+    second: WildFont Atlas_93
+  - first:
+      213: 4070192721268600665
+    second: WildFont Atlas_94
+  - first:
+      213: 6395387179793414957
+    second: WildFont Atlas_95
+  - first:
+      213: 46043703134872857
+    second: WildFont Atlas_96
+  - first:
+      213: 8416290874063522859
+    second: WildFont Atlas_97
+  - first:
+      213: -6926208383938516907
+    second: WildFont Atlas_98
+  - first:
+      213: -8144155487918182001
+    second: WildFont Atlas_99
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: tvOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: VisionOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WildFont Atlas_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 239
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ddc69581edce0290800000000000000
+      internalID: -7922168326005535272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_1
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 217
+        width: 11
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5027ce28b0bb5bf90800000000000000
+      internalID: -6938433992778812923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 200
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b8120925f06ac6390800000000000000
+      internalID: -7823695867909496437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 180
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 196fba36d79c0db60800000000000000
+      internalID: 7768930897594414737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_4
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 200
+        width: 7
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: daad3582918befc60800000000000000
+      internalID: 7853917218371001005
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_5
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 162
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 609c78656d725c910800000000000000
+      internalID: 1856934222888421638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_6
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 173
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fdde562106d106490800000000000000
+      internalID: -7755166259869258273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_7
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 156
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 663392ddf864df820800000000000000
+      internalID: 2953594514329645926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_8
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 162
+        width: 10
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d5e372c5aeba2690800000000000000
+      internalID: -7626073399857257002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_9
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 142
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b35b886e514ed09e0800000000000000
+      internalID: -1653414705461938885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_10
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 139
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 96f6424f247f3a860800000000000000
+      internalID: 7540142068084273001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_11
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 151
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 920bd9ff0272dfa30800000000000000
+      internalID: 4250596645988577321
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_12
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 139
+        width: 14
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eddd22ffd36f12560800000000000000
+      internalID: 7287376418196086238
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_13
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 151
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de51ff7c3c5c94560800000000000000
+      internalID: 7298582115795277293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_14
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 122
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8bb3e2a3596e429c0800000000000000
+      internalID: -3952781044323828808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_15
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 122
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd3956f2faa2c6b50800000000000000
+      internalID: 6587687286839022557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_16
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 125
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b2fcae01511d16f0800000000000000
+      internalID: -712394126218431822
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_17
+      rect:
+        serializedVersion: 2
+        x: 23
+        y: 112
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 99797989603af3cf0800000000000000
+      internalID: -270318203893737575
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_18
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 111
+        width: 10
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55217ee91f5886c70800000000000000
+      internalID: 8964562331080528469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_19
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 113
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f027a243b966c14e0800000000000000
+      internalID: -2009618516932922865
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_20
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 102
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d376328ec06f1810800000000000000
+      internalID: 1738214421252436952
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_21
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 113
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e016b4698a50ae460800000000000000
+      internalID: 7271630769977254158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_22
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 96
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a35518f63aee364c0800000000000000
+      internalID: -4295327233863494342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_23
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 113
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef35d48ed621efb90800000000000000
+      internalID: -7206302090488097794
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_24
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 102
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd663c920d74d3660800000000000000
+      internalID: 7367123524827440863
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_25
+      rect:
+        serializedVersion: 2
+        x: 53
+        y: 102
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 489c6874ffb2059a0800000000000000
+      internalID: -6246444307746207356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_26
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 101
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27801882747455590800000000000000
+      internalID: -7686158818090088334
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_27
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 113
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 75cc75f68f3889c20800000000000000
+      internalID: 3213463437172001879
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_28
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 79
+        width: 13
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fe0a495a24796d080800000000000000
+      internalID: -9162970079337078545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_29
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 79
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 235dbf9a89ab3e0f0800000000000000
+      internalID: -1088821520043879118
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_30
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 86
+        width: 19
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 38033365a60886460800000000000000
+      internalID: 7235173995571785859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_31
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 96
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f694a6f7804536480800000000000000
+      internalID: -8907183242534565521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_32
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 96
+        width: 10
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b9d3ddeca6cc90dd0800000000000000
+      internalID: -2519257757427876453
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_33
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 88
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 030461cfdb82e6270800000000000000
+      internalID: 8245572764205203504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_34
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 89
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77112c4d838d72f80800000000000000
+      internalID: -8131292863594884745
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_35
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 89
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c6f3cf31963d990e0800000000000000
+      internalID: -2262544889516638356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_36
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 60
+        width: 17
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c4ed179becce93d0800000000000000
+      internalID: -3197893373161773885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_37
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 70
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5375459f7382126d0800000000000000
+      internalID: -3017086054490155211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_38
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 69
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64f8a829e6b53d370800000000000000
+      internalID: 8346115064910745414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_39
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 77
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af0066d1adee01790800000000000000
+      internalID: -7561281153791557382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_40
+      rect:
+        serializedVersion: 2
+        x: 51
+        y: 78
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2195a9c70d844040800000000000000
+      internalID: 4630981381431071018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_41
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 65
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8fcbe1d4acc6b630800000000000000
+      internalID: 3942563532078043021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_42
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 78
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f1ef9857d7ea56ec0800000000000000
+      internalID: -3574258875382497761
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_43
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 64
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 147604804840b3120800000000000000
+      internalID: 2394512591998183233
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_44
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 40
+        width: 8
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66c5ff69991f9e0b0800000000000000
+      internalID: -5698758211495043994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_45
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 53
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ccafbdc8c637ffd80800000000000000
+      internalID: -8214720285243606324
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_46
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 51
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c2156fe05fb90570800000000000000
+      internalID: 8433482131562631875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_47
+      rect:
+        serializedVersion: 2
+        x: 39
+        y: 65
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 324a8a6a4b1ad1990800000000000000
+      internalID: -7413591614319713245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_48
+      rect:
+        serializedVersion: 2
+        x: 46
+        y: 51
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 17c0555a7a41aa8e0800000000000000
+      internalID: -1681508800603550607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_49
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 51
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66c9cb0e70e5d8970800000000000000
+      internalID: 8758760238233721958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_50
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 40
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64811bbfc79e728d0800000000000000
+      internalID: -2871069514417498042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_51
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 36
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 15a5f1904248f3db0800000000000000
+      internalID: -4809980586701661615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_52
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 34
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4b3e9efd0d73f7410800000000000000
+      internalID: 1476960573050184628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_53
+      rect:
+        serializedVersion: 2
+        x: 43
+        y: 34
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 89ea36a6cc2bf1c50800000000000000
+      internalID: 6638220966795390616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_54
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 34
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eefe2f39237814b30800000000000000
+      internalID: 4269842573024227310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_55
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 50
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1ccb2a7b7bd33650800000000000000
+      internalID: 6211549634451196958
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_56
+      rect:
+        serializedVersion: 2
+        x: 64
+        y: 34
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0b0936417c3f86b90800000000000000
+      internalID: -7248275563886702416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_57
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 34
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a67bcbd8043333f20800000000000000
+      internalID: 3401118495943735146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_58
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 50
+        width: 12
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4965860fc12a41f0800000000000000
+      internalID: -1059997589240977074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_59
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 34
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 205d95b2b12688310800000000000000
+      internalID: 1407482752384226562
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_60
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 50
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: afff18ad0c38e11f0800000000000000
+      internalID: -1072274796944687110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_61
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 20
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd71a2526380b06c0800000000000000
+      internalID: -4176235200811231268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_62
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 20
+        width: 6
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a4becfffd3955f440800000000000000
+      internalID: 4968975886695852874
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_63
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 19
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59f06dea03aea08d0800000000000000
+      internalID: -2879231516937416811
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_64
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 17
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: adc4fe67e5b5d77a0800000000000000
+      internalID: -6377841036006306598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_65
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 17
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1c246afe0b21e900800000000000000
+      internalID: 711897559431654426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_66
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 17
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a2e71ab674037240800000000000000
+      internalID: 4788175736799748775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_67
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 17
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1df1fcc569f8b77b0800000000000000
+      internalID: -5225425066668384303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_68
+      rect:
+        serializedVersion: 2
+        x: 84
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2aec6b76e94860860800000000000000
+      internalID: 7495824445684502178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_69
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 0
+        width: 18
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dff4f09badf362e70800000000000000
+      internalID: 9090023106534133757
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_70
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 16
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1c6f3d88789abbb0800000000000000
+      internalID: -4919451999415604195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_71
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 15
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56911e665f03aef50800000000000000
+      internalID: 6911390408704596325
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_72
+      rect:
+        serializedVersion: 2
+        x: 125
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9dee06cb35ab13170800000000000000
+      internalID: 8156505268950200025
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_73
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0d6697503b7e44f0800000000000000
+      internalID: -842600632713581299
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_74
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9fbbb55c11d5d5100800000000000000
+      internalID: 98337097778969593
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_75
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b410c3d3d9183fac0800000000000000
+      internalID: -3822569146370227893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_76
+      rect:
+        serializedVersion: 2
+        x: 173
+        y: 17
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: be63e63e4b35e2130800000000000000
+      internalID: 3543861993162028779
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_77
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 18
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9faf45d35ec2e5e30800000000000000
+      internalID: 4494078841250446073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_78
+      rect:
+        serializedVersion: 2
+        x: 195
+        y: 18
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d2a8a61324c6d300800000000000000
+      internalID: 276624082112914136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_79
+      rect:
+        serializedVersion: 2
+        x: 206
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32b9c08335dfc53f0800000000000000
+      internalID: -910574490771219677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_80
+      rect:
+        serializedVersion: 2
+        x: 218
+        y: 17
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0499effa203aee60800000000000000
+      internalID: 7992253449962624013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_81
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 17
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f27564a216d954350800000000000000
+      internalID: 6000375119187695407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_82
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 28
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57a7d99868f5b5820800000000000000
+      internalID: 2908023015836842613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_83
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 17
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2bb86dab9f09240c0800000000000000
+      internalID: -4592949267708605518
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_84
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a863cf8b6c120480800000000000000
+      internalID: -8934547462450616160
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_85
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 0
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f200d8301f79ece0800000000000000
+      internalID: -1375428503535615239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_86
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 0
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 463a0840fd36efbb0800000000000000
+      internalID: -4900369535028124828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_87
+      rect:
+        serializedVersion: 2
+        x: 47
+        y: 0
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 606f40949c1df8440800000000000000
+      internalID: 4940397978692417030
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_88
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1709d309a11dcf380800000000000000
+      internalID: -8936037648590598031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_89
+      rect:
+        serializedVersion: 2
+        x: 79
+        y: 0
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60637d392d092e770800000000000000
+      internalID: 8638626269347919366
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_90
+      rect:
+        serializedVersion: 2
+        x: 111
+        y: 0
+        width: 16
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b2068cd38637f8f0800000000000000
+      internalID: -506876493087505736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_91
+      rect:
+        serializedVersion: 2
+        x: 127
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7c66b4abe3aaf600800000000000000
+      internalID: 502894540881292413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_92
+      rect:
+        serializedVersion: 2
+        x: 141
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 55f68c07e65b191b0800000000000000
+      internalID: -5651536571430047915
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_93
+      rect:
+        serializedVersion: 2
+        x: 155
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74872f873ba8c6ce0800000000000000
+      internalID: -1410600079840872377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_94
+      rect:
+        serializedVersion: 2
+        x: 169
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 95f689617ba3c7830800000000000000
+      internalID: 4070192721268600665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_95
+      rect:
+        serializedVersion: 2
+        x: 183
+        y: 0
+        width: 14
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2b7cac71caf0c850800000000000000
+      internalID: 6395387179793414957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_96
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9156f79018493a000800000000000000
+      internalID: 46043703134872857
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_97
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2c0be265fbacc470800000000000000
+      internalID: 8416290874063522859
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_98
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5582303eb2a21ef90800000000000000
+      internalID: -6926208383938516907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFont Atlas_99
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 0
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f81b61bbbb52afe80800000000000000
+      internalID: -8144155487918182001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      WildFont Atlas_0: -7922168326005535272
+      WildFont Atlas_1: -6938433992778812923
+      WildFont Atlas_10: 7540142068084273001
+      WildFont Atlas_11: 4250596645988577321
+      WildFont Atlas_12: 7287376418196086238
+      WildFont Atlas_13: 7298582115795277293
+      WildFont Atlas_14: -3952781044323828808
+      WildFont Atlas_15: 6587687286839022557
+      WildFont Atlas_16: -712394126218431822
+      WildFont Atlas_17: -270318203893737575
+      WildFont Atlas_18: 8964562331080528469
+      WildFont Atlas_19: -2009618516932922865
+      WildFont Atlas_2: -7823695867909496437
+      WildFont Atlas_20: 1738214421252436952
+      WildFont Atlas_21: 7271630769977254158
+      WildFont Atlas_22: -4295327233863494342
+      WildFont Atlas_23: -7206302090488097794
+      WildFont Atlas_24: 7367123524827440863
+      WildFont Atlas_25: -6246444307746207356
+      WildFont Atlas_26: -7686158818090088334
+      WildFont Atlas_27: 3213463437172001879
+      WildFont Atlas_28: -9162970079337078545
+      WildFont Atlas_29: -1088821520043879118
+      WildFont Atlas_3: 7768930897594414737
+      WildFont Atlas_30: 7235173995571785859
+      WildFont Atlas_31: -8907183242534565521
+      WildFont Atlas_32: -2519257757427876453
+      WildFont Atlas_33: 8245572764205203504
+      WildFont Atlas_34: -8131292863594884745
+      WildFont Atlas_35: -2262544889516638356
+      WildFont Atlas_36: -3197893373161773885
+      WildFont Atlas_37: -3017086054490155211
+      WildFont Atlas_38: 8346115064910745414
+      WildFont Atlas_39: -7561281153791557382
+      WildFont Atlas_4: 7853917218371001005
+      WildFont Atlas_40: 4630981381431071018
+      WildFont Atlas_41: 3942563532078043021
+      WildFont Atlas_42: -3574258875382497761
+      WildFont Atlas_43: 2394512591998183233
+      WildFont Atlas_44: -5698758211495043994
+      WildFont Atlas_45: -8214720285243606324
+      WildFont Atlas_46: 8433482131562631875
+      WildFont Atlas_47: -7413591614319713245
+      WildFont Atlas_48: -1681508800603550607
+      WildFont Atlas_49: 8758760238233721958
+      WildFont Atlas_5: 1856934222888421638
+      WildFont Atlas_50: -2871069514417498042
+      WildFont Atlas_51: -4809980586701661615
+      WildFont Atlas_52: 1476960573050184628
+      WildFont Atlas_53: 6638220966795390616
+      WildFont Atlas_54: 4269842573024227310
+      WildFont Atlas_55: 6211549634451196958
+      WildFont Atlas_56: -7248275563886702416
+      WildFont Atlas_57: 3401118495943735146
+      WildFont Atlas_58: -1059997589240977074
+      WildFont Atlas_59: 1407482752384226562
+      WildFont Atlas_6: -7755166259869258273
+      WildFont Atlas_60: -1072274796944687110
+      WildFont Atlas_61: -4176235200811231268
+      WildFont Atlas_62: 4968975886695852874
+      WildFont Atlas_63: -2879231516937416811
+      WildFont Atlas_64: -6377841036006306598
+      WildFont Atlas_65: 711897559431654426
+      WildFont Atlas_66: 4788175736799748775
+      WildFont Atlas_67: -5225425066668384303
+      WildFont Atlas_68: 7495824445684502178
+      WildFont Atlas_69: 9090023106534133757
+      WildFont Atlas_7: 2953594514329645926
+      WildFont Atlas_70: -4919451999415604195
+      WildFont Atlas_71: 6911390408704596325
+      WildFont Atlas_72: 8156505268950200025
+      WildFont Atlas_73: -842600632713581299
+      WildFont Atlas_74: 98337097778969593
+      WildFont Atlas_75: -3822569146370227893
+      WildFont Atlas_76: 3543861993162028779
+      WildFont Atlas_77: 4494078841250446073
+      WildFont Atlas_78: 276624082112914136
+      WildFont Atlas_79: -910574490771219677
+      WildFont Atlas_8: -7626073399857257002
+      WildFont Atlas_80: 7992253449962624013
+      WildFont Atlas_81: 6000375119187695407
+      WildFont Atlas_82: 2908023015836842613
+      WildFont Atlas_83: -4592949267708605518
+      WildFont Atlas_84: -8934547462450616160
+      WildFont Atlas_85: -1375428503535615239
+      WildFont Atlas_86: -4900369535028124828
+      WildFont Atlas_87: 4940397978692417030
+      WildFont Atlas_88: -8936037648590598031
+      WildFont Atlas_89: 8638626269347919366
+      WildFont Atlas_9: -1653414705461938885
+      WildFont Atlas_90: -506876493087505736
+      WildFont Atlas_91: 502894540881292413
+      WildFont Atlas_92: -5651536571430047915
+      WildFont Atlas_93: -1410600079840872377
+      WildFont Atlas_94: 4070192721268600665
+      WildFont Atlas_95: 6395387179793414957
+      WildFont Atlas_96: 46043703134872857
+      WildFont Atlas_97: 8416290874063522859
+      WildFont Atlas_98: -6926208383938516907
+      WildFont Atlas_99: -8144155487918182001
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

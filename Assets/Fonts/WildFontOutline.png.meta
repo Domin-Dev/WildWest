@@ -1,0 +1,2708 @@
+fileFormatVersion: 2
+guid: 92a26ba3b85795a46a25abdec3575dde
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8126383146290306445
+    second: WildFontOutline_0
+  - first:
+      213: 1625034558717438561
+    second: WildFontOutline_1
+  - first:
+      213: -4083331873353646185
+    second: WildFontOutline_2
+  - first:
+      213: 835020581103849997
+    second: WildFontOutline_3
+  - first:
+      213: 2045507031086248069
+    second: WildFontOutline_4
+  - first:
+      213: -6539418074852354667
+    second: WildFontOutline_5
+  - first:
+      213: -5572894988931859248
+    second: WildFontOutline_6
+  - first:
+      213: 3876537523671593926
+    second: WildFontOutline_7
+  - first:
+      213: 6743004065593042087
+    second: WildFontOutline_8
+  - first:
+      213: -6550358532851264790
+    second: WildFontOutline_9
+  - first:
+      213: -6960823338239251355
+    second: WildFontOutline_10
+  - first:
+      213: 2754218763729952961
+    second: WildFontOutline_11
+  - first:
+      213: 3723354041289192154
+    second: WildFontOutline_12
+  - first:
+      213: 3810018530712693426
+    second: WildFontOutline_13
+  - first:
+      213: 420591408553430050
+    second: WildFontOutline_14
+  - first:
+      213: 1137387227184736897
+    second: WildFontOutline_15
+  - first:
+      213: -85251753051191875
+    second: WildFontOutline_16
+  - first:
+      213: 1896356121475947142
+    second: WildFontOutline_17
+  - first:
+      213: -2355521838011941203
+    second: WildFontOutline_18
+  - first:
+      213: -3749197225447512164
+    second: WildFontOutline_19
+  - first:
+      213: -5863791866701173765
+    second: WildFontOutline_20
+  - first:
+      213: 699344307312016434
+    second: WildFontOutline_21
+  - first:
+      213: -2097046341056082973
+    second: WildFontOutline_22
+  - first:
+      213: -6247284237879937732
+    second: WildFontOutline_23
+  - first:
+      213: 7229739013671148008
+    second: WildFontOutline_24
+  - first:
+      213: -6301201874979517010
+    second: WildFontOutline_25
+  - first:
+      213: -1141840106465816092
+    second: WildFontOutline_26
+  - first:
+      213: 6965009651919573514
+    second: WildFontOutline_27
+  - first:
+      213: 1859356017364640206
+    second: WildFontOutline_28
+  - first:
+      213: 7277309568526543380
+    second: WildFontOutline_29
+  - first:
+      213: -2307971640428145515
+    second: WildFontOutline_30
+  - first:
+      213: 9106530448407981954
+    second: WildFontOutline_31
+  - first:
+      213: 6860956643816958765
+    second: WildFontOutline_32
+  - first:
+      213: -2185511766520758056
+    second: WildFontOutline_33
+  - first:
+      213: 4591539499974300098
+    second: WildFontOutline_34
+  - first:
+      213: -3062376304859491161
+    second: WildFontOutline_35
+  - first:
+      213: 1079339284012833273
+    second: WildFontOutline_36
+  - first:
+      213: -5707876004992013144
+    second: WildFontOutline_37
+  - first:
+      213: -7925784839994674888
+    second: WildFontOutline_38
+  - first:
+      213: 4641116293133602053
+    second: WildFontOutline_39
+  - first:
+      213: 581555259980773414
+    second: WildFontOutline_40
+  - first:
+      213: -4356808395440942758
+    second: WildFontOutline_41
+  - first:
+      213: 1345095180930597274
+    second: WildFontOutline_42
+  - first:
+      213: -5886507003294901335
+    second: WildFontOutline_43
+  - first:
+      213: -2418384657403164263
+    second: WildFontOutline_44
+  - first:
+      213: -5845603144793407310
+    second: WildFontOutline_45
+  - first:
+      213: -2213737301157827291
+    second: WildFontOutline_46
+  - first:
+      213: 8621401580920850616
+    second: WildFontOutline_47
+  - first:
+      213: -7947286115133459991
+    second: WildFontOutline_48
+  - first:
+      213: 1013480979739827816
+    second: WildFontOutline_49
+  - first:
+      213: 2966187534033341399
+    second: WildFontOutline_50
+  - first:
+      213: -2055129761547257475
+    second: WildFontOutline_51
+  - first:
+      213: 5927485219403774449
+    second: WildFontOutline_52
+  - first:
+      213: -2351275046206344581
+    second: WildFontOutline_53
+  - first:
+      213: -2752717873672788171
+    second: WildFontOutline_54
+  - first:
+      213: -3613547994927991352
+    second: WildFontOutline_55
+  - first:
+      213: -6731652537801050515
+    second: WildFontOutline_56
+  - first:
+      213: 7750007062290124983
+    second: WildFontOutline_57
+  - first:
+      213: 2196788489913432537
+    second: WildFontOutline_58
+  - first:
+      213: 1394689286740212638
+    second: WildFontOutline_59
+  - first:
+      213: -1769766328461279709
+    second: WildFontOutline_60
+  - first:
+      213: 4664947954064824970
+    second: WildFontOutline_61
+  - first:
+      213: 5269100327099720986
+    second: WildFontOutline_62
+  - first:
+      213: -7768840696232439251
+    second: WildFontOutline_63
+  - first:
+      213: -6064461586200611762
+    second: WildFontOutline_64
+  - first:
+      213: -5371675068935695191
+    second: WildFontOutline_65
+  - first:
+      213: -7478710183745782458
+    second: WildFontOutline_66
+  - first:
+      213: 1881323771427177110
+    second: WildFontOutline_67
+  - first:
+      213: -4007890648940502235
+    second: WildFontOutline_68
+  - first:
+      213: -5031875744581335364
+    second: WildFontOutline_69
+  - first:
+      213: 39686506530285826
+    second: WildFontOutline_70
+  - first:
+      213: 3936581406635078532
+    second: WildFontOutline_71
+  - first:
+      213: 6754576678009814829
+    second: WildFontOutline_72
+  - first:
+      213: 5719645797997365670
+    second: WildFontOutline_73
+  - first:
+      213: 5837021193999629326
+    second: WildFontOutline_74
+  - first:
+      213: -3485556351726773567
+    second: WildFontOutline_75
+  - first:
+      213: 3703349316389755516
+    second: WildFontOutline_76
+  - first:
+      213: -8052001721073778591
+    second: WildFontOutline_77
+  - first:
+      213: -6478237218258540898
+    second: WildFontOutline_78
+  - first:
+      213: -4843882140487456806
+    second: WildFontOutline_79
+  - first:
+      213: 7832470890130715178
+    second: WildFontOutline_80
+  - first:
+      213: -717762137677009688
+    second: WildFontOutline_81
+  - first:
+      213: -2186307447794364640
+    second: WildFontOutline_82
+  - first:
+      213: 8155942334953535470
+    second: WildFontOutline_83
+  - first:
+      213: 3678153886259867211
+    second: WildFontOutline_84
+  - first:
+      213: -2356928095226106974
+    second: WildFontOutline_85
+  - first:
+      213: 8836412604609207249
+    second: WildFontOutline_86
+  - first:
+      213: 3052065252731067377
+    second: WildFontOutline_87
+  - first:
+      213: 9042739241066504084
+    second: WildFontOutline_88
+  - first:
+      213: 1491591693131111192
+    second: WildFontOutline_89
+  - first:
+      213: 5053885668834832265
+    second: WildFontOutline_90
+  - first:
+      213: -2975724214997369045
+    second: WildFontOutline_91
+  - first:
+      213: -4266415828448102427
+    second: WildFontOutline_92
+  - first:
+      213: 6035838787063489311
+    second: WildFontOutline_93
+  - first:
+      213: -2267182016375972354
+    second: WildFontOutline_94
+  - first:
+      213: -2153593532395331765
+    second: WildFontOutline_95
+  - first:
+      213: -2709893242783247531
+    second: WildFontOutline_96
+  - first:
+      213: 9011232430620058307
+    second: WildFontOutline_97
+  - first:
+      213: 8894527572876498909
+    second: WildFontOutline_98
+  - first:
+      213: 7226265316928575353
+    second: WildFontOutline_99
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 1
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Server
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: tvOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: VisionOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: WildFontOutline_0
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 301
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8dda578a66b6c070800000000000000
+      internalID: 8126383146290306445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_1
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 301
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 16a261442584d8610800000000000000
+      internalID: 1625034558717438561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_2
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 301
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 79fb9bcab471557c0800000000000000
+      internalID: -4083331873353646185
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_3
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 301
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d02d5dc5bc6969b00800000000000000
+      internalID: 835020581103849997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_4
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 301
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 580b575aec9136c10800000000000000
+      internalID: 2045507031086248069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_5
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 301
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59518a288e15f35a0800000000000000
+      internalID: -6539418074852354667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_6
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 301
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0dc7926b88919a2b0800000000000000
+      internalID: -5572894988931859248
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_7
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 301
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c3fae8c65a3cc530800000000000000
+      internalID: 3876537523671593926
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_8
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 301
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a420b0c876f39d50800000000000000
+      internalID: 6743004065593042087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_9
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 301
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ae293f1ae937815a0800000000000000
+      internalID: -6550358532851264790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_10
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 301
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 56c200ccd00366f90800000000000000
+      internalID: -6960823338239251355
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_11
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 301
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c0e6d58f53f83620800000000000000
+      internalID: 2754218763729952961
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_12
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 301
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad2be0cf5c20ca330800000000000000
+      internalID: 3723354041289192154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_13
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 301
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ba29c6daa7efd430800000000000000
+      internalID: 3810018530712693426
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_14
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 301
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 22c886e58ad36d500800000000000000
+      internalID: 420591408553430050
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_15
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 301
+        width: 10
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 18aa96038afc8cf00800000000000000
+      internalID: 1137387227184736897
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_16
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 300
+        width: 14
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: db587e67bff11def0800000000000000
+      internalID: -85251753051191875
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_17
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 301
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68a163c58d5315a10800000000000000
+      internalID: 1896356121475947142
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_18
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 301
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dae7f905e518f4fd0800000000000000
+      internalID: -2355521838011941203
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_19
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 301
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c972250dcfc28fbc0800000000000000
+      internalID: -3749197225447512164
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_20
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 281
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bfba37c6d50af9ea0800000000000000
+      internalID: -5863791866701173765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_21
+      rect:
+        serializedVersion: 2
+        x: 16
+        y: 281
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 23c360531f194b900800000000000000
+      internalID: 699344307312016434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_22
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 281
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3ebc1d3a67bc5e2e0800000000000000
+      internalID: -2097046341056082973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_23
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 281
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c35f44ec5103d49a0800000000000000
+      internalID: -6247284237879937732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_24
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 281
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e9d6a00451355460800000000000000
+      internalID: 7229739013671148008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_25
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 281
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ead02d7a742ad88a0800000000000000
+      internalID: -6301201874979517010
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_26
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 281
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4e19fcf097e5720f0800000000000000
+      internalID: -1141840106465816092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_27
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 281
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0255df406fa8a060800000000000000
+      internalID: 6965009651919573514
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_28
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 281
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec1210e4272cdc910800000000000000
+      internalID: 1859356017364640206
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_29
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 281
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 41a6398ee723ef460800000000000000
+      internalID: 7277309568526543380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_30
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 281
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 594da9c650078ffd0800000000000000
+      internalID: -2307971640428145515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_31
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 281
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 28fe2a1c135e06e70800000000000000
+      internalID: 9106530448407981954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_32
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 278
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2be01677b3073f50800000000000000
+      internalID: 6860956643816958765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_33
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 281
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d00810b0a08ba1e0800000000000000
+      internalID: -2185511766520758056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_34
+      rect:
+        serializedVersion: 2
+        x: 224
+        y: 261
+        width: 7
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c1942429dc68bf30800000000000000
+      internalID: 4591539499974300098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_35
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 278
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7a4d644d9f04085d0800000000000000
+      internalID: -3062376304859491161
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_36
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 281
+        width: 11
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f995b73c559afe00800000000000000
+      internalID: 1079339284012833273
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_37
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 281
+        width: 8
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aca97cd30d89c0b0800000000000000
+      internalID: -5707876004992013144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_38
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 281
+        width: 13
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 831f0fd3ea4f10290800000000000000
+      internalID: -7925784839994674888
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_39
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 281
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50d818dcdae886040800000000000000
+      internalID: 4641116293133602053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_40
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 261
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 628f9608d69121800800000000000000
+      internalID: 581555259980773414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_41
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 258
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a519d4309d18983c0800000000000000
+      internalID: -4356808395440942758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_42
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 258
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a914570c0fcbaa210800000000000000
+      internalID: 1345095180930597274
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_43
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 261
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ab12cc811dee4ea0800000000000000
+      internalID: -5886507003294901335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_44
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 261
+        width: 10
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 999ca3d97fb207ed0800000000000000
+      internalID: -2418384657403164263
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_45
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 261
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b0cea049ee30eea0800000000000000
+      internalID: -5845603144793407310
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_46
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 261
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 52da47a47a93741e0800000000000000
+      internalID: -2213737301157827291
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_47
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 261
+        width: 12
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b847c84f0f55a770800000000000000
+      internalID: 8621401580920850616
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_48
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 261
+        width: 15
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e17313826195b190800000000000000
+      internalID: -7947286115133459991
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_49
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 261
+        width: 11
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86ed108d49b901e00800000000000000
+      internalID: 1013480979739827816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_50
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 258
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7dbcf3fb8d30a2920800000000000000
+      internalID: 2966187534033341399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_51
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 261
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d7974a3de56ba73e0800000000000000
+      internalID: -2055129761547257475
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_52
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 240
+        width: 6
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f9b0f1e668a24250800000000000000
+      internalID: 5927485219403774449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_53
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 240
+        width: 8
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7271a59dc79e5fd0800000000000000
+      internalID: -2351275046206344581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_54
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 261
+        width: 9
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5376ddcada16cc9d0800000000000000
+      internalID: -2752717873672788171
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_55
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 241
+        width: 9
+        height: 36
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c5fd777e391addc0800000000000000
+      internalID: -3613547994927991352
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_56
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 248
+        width: 9
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d66f205cead5492a0800000000000000
+      internalID: -6731652537801050515
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_57
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 251
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7b05292ac5e8d8b60800000000000000
+      internalID: 7750007062290124983
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_58
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 251
+        width: 15
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9d9f4f31e7f8c7e10800000000000000
+      internalID: 2196788489913432537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_59
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 241
+        width: 12
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e9b7134548eea5310800000000000000
+      internalID: 1394689286740212638
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_60
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 241
+        width: 13
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 32e3e90a6e68077e0800000000000000
+      internalID: -1769766328461279709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_61
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 250
+        width: 12
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a8a18b1c2793db040800000000000000
+      internalID: 4664947954064824970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_62
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 241
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a156ca2a4da9f1940800000000000000
+      internalID: 5269100327099720986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_63
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 250
+        width: 7
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2297704c888f2490800000000000000
+      internalID: -7768840696232439251
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_64
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 221
+        width: 10
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e44b2887154b6dba0800000000000000
+      internalID: -6064461586200611762
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_65
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 221
+        width: 12
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9a414433cf9f375b0800000000000000
+      internalID: -5371675068935695191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_66
+      rect:
+        serializedVersion: 2
+        x: 112
+        y: 243
+        width: 10
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64d7cb736b8463890800000000000000
+      internalID: -7478710183745782458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_67
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 245
+        width: 26
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6924a6f900ecb1a10800000000000000
+      internalID: 1881323771427177110
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_68
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 240
+        width: 6
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 523aa4380bc1168c0800000000000000
+      internalID: -4007890648940502235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_69
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 240
+        width: 7
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb6435a9baf2b2ab0800000000000000
+      internalID: -5031875744581335364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_70
+      rect:
+        serializedVersion: 2
+        x: 241
+        y: 221
+        width: 13
+        height: 37
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2092d1cdaaefc8000800000000000000
+      internalID: 39686506530285826
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_71
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 221
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 48334e3beeb81a630800000000000000
+      internalID: 3936581406635078532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_72
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 221
+        width: 8
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2fb9ec83b31dbd50800000000000000
+      internalID: 6754576678009814829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_73
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 226
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6a940be9c83406f40800000000000000
+      internalID: 5719645797997365670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_74
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 232
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e0c36ce99d3410150800000000000000
+      internalID: 5837021193999629326
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_75
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 221
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ca18b227f0d0afc0800000000000000
+      internalID: -3485556351726773567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_76
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 221
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7ad8920590f46330800000000000000
+      internalID: 3703349316389755516
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_77
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 221
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1604094981b814090800000000000000
+      internalID: -8052001721073778591
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_78
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 221
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e962cfab29da816a0800000000000000
+      internalID: -6478237218258540898
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_79
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 221
+        width: 13
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ad7e2627bd217ccb0800000000000000
+      internalID: -4843882140487456806
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_80
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 221
+        width: 11
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2234dfb6c682bc60800000000000000
+      internalID: 7832470890130715178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_81
+      rect:
+        serializedVersion: 2
+        x: 193
+        y: 221
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ec698e732ff906f0800000000000000
+      internalID: -717762137677009688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_82
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 221
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02f0d64b5fca8a1e0800000000000000
+      internalID: -2186307447794364640
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_83
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 219
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee7b973775abf2170800000000000000
+      internalID: 8155942334953535470
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_84
+      rect:
+        serializedVersion: 2
+        x: 257
+        y: 219
+        width: 11
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4eedbbc87d6b0330800000000000000
+      internalID: 3678153886259867211
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_85
+      rect:
+        serializedVersion: 2
+        x: 273
+        y: 221
+        width: 13
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2abe8ea82628a4fd0800000000000000
+      internalID: -2356928095226106974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_86
+      rect:
+        serializedVersion: 2
+        x: 288
+        y: 221
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1db1482527e31aa70800000000000000
+      internalID: 8836412604609207249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_87
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 221
+        width: 14
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fb19544d2d1b5a20800000000000000
+      internalID: 3052065252731067377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_88
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 201
+        width: 13
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 49f1144ed634e7d70800000000000000
+      internalID: 9042739241066504084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_89
+      rect:
+        serializedVersion: 2
+        x: 17
+        y: 201
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81bd00bfdb233b410800000000000000
+      internalID: 1491591693131111192
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_90
+      rect:
+        serializedVersion: 2
+        x: 33
+        y: 201
+        width: 12
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 98f665a3d32032640800000000000000
+      internalID: 5053885668834832265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_91
+      rect:
+        serializedVersion: 2
+        x: 49
+        y: 199
+        width: 14
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2fbd8fa79a14b6d0800000000000000
+      internalID: -2975724214997369045
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_92
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 201
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e73f319865aac4c0800000000000000
+      internalID: -4266415828448102427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_93
+      rect:
+        serializedVersion: 2
+        x: 81
+        y: 200
+        width: 11
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f13a178c56b93c350800000000000000
+      internalID: 6035838787063489311
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_94
+      rect:
+        serializedVersion: 2
+        x: 97
+        y: 201
+        width: 9
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efd91c8d7f95980e0800000000000000
+      internalID: -2267182016375972354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_95
+      rect:
+        serializedVersion: 2
+        x: 113
+        y: 201
+        width: 11
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b4f5ffea716ec12e0800000000000000
+      internalID: -2153593532395331765
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_96
+      rect:
+        serializedVersion: 2
+        x: 129
+        y: 201
+        width: 12
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5535cac0476846ad0800000000000000
+      internalID: -2709893242783247531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_97
+      rect:
+        serializedVersion: 2
+        x: 145
+        y: 201
+        width: 10
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3c2a69fe6245e0d70800000000000000
+      internalID: 9011232430620058307
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_98
+      rect:
+        serializedVersion: 2
+        x: 161
+        y: 201
+        width: 10
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dd7983ac3b5bf6b70800000000000000
+      internalID: 8894527572876498909
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WildFontOutline_99
+      rect:
+        serializedVersion: 2
+        x: 177
+        y: 201
+        width: 23
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 977d044f40ad84460800000000000000
+      internalID: 7226265316928575353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
