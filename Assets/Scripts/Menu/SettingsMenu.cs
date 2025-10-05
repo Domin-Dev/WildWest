@@ -16,11 +16,11 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private GameObject mainTab;
     [SerializeField] private GameObject videoTab;
 
+
     private void Start()
     {
         WindowsManager.instance.SetNewSelectedButton(videoSettings.gameObject);
-        back.onClick.AddListener(CloseSettings);
-
+        OpenMainTab();
         videoSettings.onClick.AddListener(OpenVideoSettings);
     }
 
@@ -48,6 +48,14 @@ public class SettingsMenu : MonoBehaviour
     {
         CloseTabs();
         videoTab.SetActive(true);
+        back.onClick.RemoveAllListeners();
+        back.onClick.AddListener(OpenMainTab);
     }
-
+    private void OpenMainTab()
+    {
+        CloseTabs();
+        mainTab.SetActive(true);
+        back.onClick.RemoveAllListeners();
+        back.onClick.AddListener(CloseSettings);
+    }
 }

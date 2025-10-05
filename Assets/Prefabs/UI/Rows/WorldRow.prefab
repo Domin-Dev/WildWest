@@ -752,7 +752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1471,10 +1471,14 @@ PrefabInstance:
     - target: {fileID: 6419878560593764679, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 6454688253561595889, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
       propertyPath: m_Name
       value: Play
+      objectReference: {fileID: 0}
+    - target: {fileID: 8437508283739344511, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1483,6 +1487,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6454688253561595889, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
       insertIndex: -1
       addedObject: {fileID: 968126199245054498}
+    - targetCorrespondingSourceObject: {fileID: 6454688253561595889, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4550497113126886523}
   m_SourcePrefab: {fileID: 100100000, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
 --- !u!224 &5323753094999329953 stripped
 RectTransform:
@@ -1571,6 +1578,30 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &4550497113126886523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6073359678818211282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3364f8c9a57fd24aab9207e11b18ab7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeTooltipTrigger
+  content:
+    m_TableReference:
+      m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+    m_TableEntryReference:
+      m_KeyId: 8025379634065408
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &7189476511723350049 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7934610802366470658, guid: f23d97d7a14f9cb45a4b8bef011b0156, type: 3}
@@ -1598,10 +1629,14 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 587935466, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
+    - target: {fileID: 4490319852756700068, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5466031118793477567, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 7999334776497426116, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
       propertyPath: m_Pivot.x
       value: 1
@@ -1692,6 +1727,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 440389625046139302, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8179375543254366394}
+    - targetCorrespondingSourceObject: {fileID: 440389625046139302, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5007281249373630309}
   m_SourcePrefab: {fileID: 100100000, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
 --- !u!1 &697335512591762821 stripped
 GameObject:
@@ -1795,6 +1833,30 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &5007281249373630309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697335512591762821}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3364f8c9a57fd24aab9207e11b18ab7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeTooltipTrigger
+  content:
+    m_TableReference:
+      m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+    m_TableEntryReference:
+      m_KeyId: 8025358222143488
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!224 &6967810154853452519 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7999334776497426116, guid: f8dd3308aec777240bcee0f57ca1cdc7, type: 3}
@@ -1819,6 +1881,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2026340666074359108}
     m_Modifications:
+    - target: {fileID: 810951054120078077, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 1265903249416955783, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
       propertyPath: m_Name
       value: Remove
@@ -1906,7 +1972,7 @@ PrefabInstance:
     - target: {fileID: 5654376407203587430, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1917,6 +1983,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1265903249416955783, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5581362440533996096}
+    - targetCorrespondingSourceObject: {fileID: 1265903249416955783, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3005177148172758261}
   m_SourcePrefab: {fileID: 100100000, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}
 --- !u!224 &1950966405495997215 stripped
 RectTransform:
@@ -2025,6 +2094,30 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!114 &3005177148172758261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5740767073463509102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3364f8c9a57fd24aab9207e11b18ab7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizeTooltipTrigger
+  content:
+    m_TableReference:
+      m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+    m_TableEntryReference:
+      m_KeyId: 8025090365501440
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!114 &6419699923172242221 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 517195296254932164, guid: 982ad51eecad94347a83eb17e6b06ac4, type: 3}

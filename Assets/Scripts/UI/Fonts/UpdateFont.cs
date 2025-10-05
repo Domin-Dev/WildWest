@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(TMP_Text))]
+[DisallowMultipleComponent]
 public class UpdateFont : MonoBehaviour
 {
     private void OnEnable()

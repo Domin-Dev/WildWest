@@ -192,12 +192,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 2
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -214,12 +214,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 122
-        y: 150
+        y: 152
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -236,12 +236,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 272
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -258,12 +258,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 302
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -301,13 +301,13 @@ TextureImporter:
       name: "ItemEQ \u2014 kopia_5"
       rect:
         serializedVersion: 2
-        x: 130
-        y: 0
+        x: 182
+        y: 152
         width: 26
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 4, y: 7, z: 4, w: 4}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -324,12 +324,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 92
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -346,12 +346,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 152
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -368,12 +368,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 212
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -390,12 +390,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 332
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -412,12 +412,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 362
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -456,12 +456,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 1
-        y: 150
+        y: 152
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 6, y: 10, z: 4, w: 5}
+      border: {x: 6, y: 8, z: 4, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -478,12 +478,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 150
+        y: 152
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -500,12 +500,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 62
-        y: 150
+        y: 152
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -522,12 +522,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 92
-        y: 150
+        y: 152
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -544,12 +544,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 152
-        y: 150
+        y: 152
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -566,12 +566,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 242
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -588,12 +588,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 182
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -610,12 +610,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 122
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -632,12 +632,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 32
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -654,12 +654,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 62
-        y: 120
+        y: 122
         width: 26
-        height: 28
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 5, y: 10, z: 5, w: 5}
+      border: {x: 5, y: 8, z: 5, w: 5}
       customData: 
       outline: []
       physicsShape: []
@@ -715,6 +715,50 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_11
+      rect:
+        serializedVersion: 2
+        x: 212
+        y: 152
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 8, z: 5, w: 5}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a52b7847d7157e041b28ea21674146f6
+      internalID: -353293881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_15
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 152
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 5, y: 8, z: 5, w: 5}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90bafc42ebf1fee4a8a7cb50899b67d6
+      internalID: -279984359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -748,6 +792,7 @@ TextureImporter:
       UIBackgrounds_12: 2019817164
       UIBackgrounds_13: -1728049519
       UIBackgrounds_14: 1186568250
+      UIBackgrounds_15: -279984359
       UIBackgrounds_2: 1214819735
       UIBackgrounds_3: -144562309
       UIBackgrounds_4: -387067171

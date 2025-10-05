@@ -126,6 +126,30 @@ MonoBehaviour:
     m_Localized: Worlds
     m_Metadata:
       m_Items: []
+  - m_Id: 7978207676903424
+    m_Localized: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8000111972364288
+    m_Localized: 'Frame Rate Limit:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8001334117052416
+    m_Localized: Font
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8025090365501440
+    m_Localized: Remove World
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8025358222143488
+    m_Localized: Edit World
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8025379634065408
+    m_Localized: Play World
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

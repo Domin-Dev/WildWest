@@ -125,6 +125,34 @@ MonoBehaviour:
     m_Key: Worlds
     m_Metadata:
       m_Items: []
+  - m_Id: 7978207676903424
+    m_Key: Fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8000111972364288
+    m_Key: FrameRateLimit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8001334117052416
+    m_Key: 'FontSettings
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8025090365501440
+    m_Key: RemoveWorldToolTip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8025358222143488
+    m_Key: 'EditWorldToolTip
+
+'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8025379634065408
+    m_Key: PlayWorldToolTip
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
