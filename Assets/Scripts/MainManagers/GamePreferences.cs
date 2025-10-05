@@ -9,7 +9,11 @@ public class GamePreferences : MonoBehaviour
     private int fontIndex = 0;
     public TMP_FontAsset GetCurrentFont()
     {
-        return UIAssetsManager.instance.fonts[fontIndex];
+        return UIAssetsManager.instance.fonts[fontIndex].font;
+    }
+    public int GetCurrentIndexFont()
+    {
+        return fontIndex;
     }
     public void NewFont(int index)
     {

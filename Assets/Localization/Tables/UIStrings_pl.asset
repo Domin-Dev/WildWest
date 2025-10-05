@@ -34,7 +34,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 6309751992320
-    m_Localized: "Rozdzielczo\u015B\u0107"
+    m_Localized: "Rozdzielczo\u015B\u0107:"
     m_Metadata:
       m_Items: []
   - m_Id: 344462253797376
@@ -127,15 +127,16 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7978207676903424
-    m_Localized: "Pe\u0142ny Ekran"
+    m_Localized: "Pe\u0142ny Ekran:"
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 6681689925784961132
   - m_Id: 8000111972364288
-    m_Localized: Limit klatek na sekunde
+    m_Localized: Limit klatek na sekunde:{0}
     m_Metadata:
       m_Items: []
   - m_Id: 8001334117052416
-    m_Localized: Czcionka
+    m_Localized: 'Czcionka:'
     m_Metadata:
       m_Items: []
   - m_Id: 8025090365501440
@@ -150,6 +151,23 @@ MonoBehaviour:
     m_Localized: "Graj na tym \u015Awiecie"
     m_Metadata:
       m_Items: []
+  - m_Id: 8075159928221696
+    m_Localized: "Ogranicza maksymaln\u0105 liczb\u0119 klatek na sekund\u0119 w
+      grze."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8083573207117824
+    m_Localized: bez limitu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8099245706358784
+    m_Localized: Pikselowa czcionka
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8099606798184448
+    m_Localized: "Zwyk\u0142a czcionka"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -159,3 +177,4 @@ MonoBehaviour:
         m_Entries: 
         m_SharedEntries:
         - id: 5411543521341440
+        - id: 7978207676903424

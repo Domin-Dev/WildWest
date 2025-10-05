@@ -4,24 +4,26 @@ using TMPro;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
+using UnityEngine.Localization.Settings;
 using UnityEngine.LowLevel;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Settings: MonoBehaviour 
+public class VideoSettings: MonoBehaviour 
 {
     [SerializeField] private Toggle fullscreen;
     [SerializeField] private TMP_Dropdown resolution;
-
-    [SerializeField] private Button closeSettings;
-    [SerializeField] private Button setDefaultSettings;
     [Space]
     [SerializeField] private Slider fpsLimit;
-    [SerializeField] private TextMeshProUGUI fpsLimitText;
+    [SerializeField] private LocalizeStringEvent fpsText;
+    [SerializeField] private LocalizedString unlimitedString;
+    [SerializeField] private ListSwitch fontSwitch;
 
 
     List<Resolution> selectedResolutions;
-    private void Awake()
+    private void OnEnable()
     {
         Resolution[] resolutions = Screen.resolutions;
         selectedResolutions = new List<Resolution>();
@@ -50,13 +52,8 @@ public class Settings: MonoBehaviour
             Resolution resolution = selectedResolutions[value];
             Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
         });
-
         fullscreen.isOn = Screen.fullScreen;
         fullscreen.onValueChanged.AddListener((fullscreen) => { SetFullscreen(fullscreen); });
-
-        closeSettings.onClick.AddListener(CloseSettings);
-        setDefaultSettings.onClick.AddListener(SetDefaultSettings);
-
         fpsLimit.onValueChanged.AddListener(SetFPSLimit);
 
         if (QualitySettings.vSyncCount == 0 && Application.targetFrameRate == -1)
@@ -78,16 +75,28 @@ public class Settings: MonoBehaviour
             fpsLimit.value = fps;
         }
 
+
+
+        fontSwitch.SetUpSwitch(UIAssetsManager.instance.GetFontNames(),GamePreferences.instance.GetCurrentIndexFont());
+        fontSwitch.OnChangedValue += SetFont;
+
+        LocalizationSettings.SelectedLocaleChanged += RefreshStrings;
+    }
+    private void OnDisable()
+    {
+        LocalizationSettings.SelectedLocaleChanged -= RefreshStrings;
     }
 
-    private void CloseSettings()
+    private void RefreshStrings(Locale obj)
     {
-        WindowsManager.instance.UnloadScene(8);
-        if (GameInfo.instance.lastLoadedScene == -1)
-            WindowsManager.instance.SwitchBackground(false);
-        else 
-            WindowsManager.instance.LoadScene(GameInfo.instance.lastLoadedScene);
+        fontSwitch.RefreshTab(UIAssetsManager.instance.GetFontNames());
     }
+
+    private void SetFont(object sender, int e)
+    {
+        GamePreferences.instance.NewFont(e);
+    }
+
     private void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
@@ -103,15 +112,16 @@ public class Settings: MonoBehaviour
         if (fps == fpsLimit.maxValue)
         {
             Application.targetFrameRate = -1;
-            fpsLimitText.text = "Unlimited";
+            fpsText.StringReference.Arguments = new[]{ $" {unlimitedString.GetLocalizedString()}" };
         }
         else
         {
             Application.targetFrameRate = fps;
-            fpsLimitText.text = fps + " FPS";
+            fpsText.StringReference.Arguments = new[] { $" {fps} FPS" }; 
         }
+        fpsText.RefreshString();
     }
-    private void SetDefaultSettings()
+    public void SetDefaultSettings()
     {    
         resolution.value = selectedResolutions.Count - 1;
         resolution.RefreshShownValue();
@@ -124,5 +134,6 @@ public class Settings: MonoBehaviour
         SetFPSLimit(fps);
         fpsLimit.value = fps;
     }
+
 }
 

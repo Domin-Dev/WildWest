@@ -32,7 +32,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 6309751992320
-    m_Localized: Resolution
+    m_Localized: 'Resolution:'
     m_Metadata:
       m_Items: []
   - m_Id: 344462253797376
@@ -127,15 +127,16 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 7978207676903424
-    m_Localized: Fullscreen
+    m_Localized: 'Fullscreen:'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 6681689925784961141
   - m_Id: 8000111972364288
-    m_Localized: 'Frame Rate Limit:'
+    m_Localized: FPS Limit:{0}
     m_Metadata:
       m_Items: []
   - m_Id: 8001334117052416
-    m_Localized: Font
+    m_Localized: 'Font:'
     m_Metadata:
       m_Items: []
   - m_Id: 8025090365501440
@@ -150,6 +151,22 @@ MonoBehaviour:
     m_Localized: Play World
     m_Metadata:
       m_Items: []
+  - m_Id: 8075159928221696
+    m_Localized: Limits the maximum frames per second in the game.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8083573207117824
+    m_Localized: Unlimited
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8099245706358784
+    m_Localized: Pixel Font
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8099606798184448
+    m_Localized: Normal Font
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -159,3 +176,4 @@ MonoBehaviour:
         m_Entries: 
         m_SharedEntries:
         - id: 5411543521341440
+        - id: 7978207676903424

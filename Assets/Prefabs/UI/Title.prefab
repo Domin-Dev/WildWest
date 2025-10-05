@@ -15,7 +15,7 @@ GameObject:
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -109,6 +109,7 @@ GameObject:
   - component: {fileID: 7359062753346440425}
   - component: {fileID: 3106304516737080805}
   - component: {fileID: 7433496805266489213}
+  - component: {fileID: 3047988521742076456}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -274,3 +275,15 @@ MonoBehaviour:
   references:
     version: 2
     RefIds: []
+--- !u!114 &3047988521742076456
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7319038127280896530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 234afb769d07aa9418ff45a3044aa619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateFont

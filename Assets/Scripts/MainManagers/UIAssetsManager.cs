@@ -5,14 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
+
+
+[System.Serializable]
+public class FontData
+{
+    public LocalizedString name;
+    public TMP_FontAsset font;
+}
 
 
 public class  UIAssetsManager : MonoBehaviour
 {
 
     [Header("Fonts")]
-    [SerializeField] public List<TMP_FontAsset> fonts;
+    [SerializeField] public List<FontData> fonts;
     [Header("Materials")]
     [SerializeField] public Material UIHeadMaterial;
     [Header("Rewards")]
@@ -36,7 +45,15 @@ public class  UIAssetsManager : MonoBehaviour
 
     public static UIAssetsManager instance { private set; get; }
 
-
+    public string[] GetFontNames()
+    {
+        List<string> names = new List<string>();
+        foreach (var item in fonts)
+        {
+            names.Add(item.name.GetLocalizedString());
+        }
+        return names.ToArray();
+    }
     private void Awake()
     {
         if (instance == null)

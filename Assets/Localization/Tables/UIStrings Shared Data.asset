@@ -153,6 +153,22 @@ MonoBehaviour:
     m_Key: PlayWorldToolTip
     m_Metadata:
       m_Items: []
+  - m_Id: 8075159928221696
+    m_Key: FPSLimitTooltip
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8083573207117824
+    m_Key: "UnlimitedFPS\t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8099245706358784
+    m_Key: PixelWildFont
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8099606798184448
+    m_Key: NormalFont
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

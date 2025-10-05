@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -5,23 +6,25 @@ using UnityEngine.UI;
 public class SettingsMenu : MonoBehaviour
 {
     [Header("Buttons")]
-    [SerializeField] private Button videoSettings;
-    [SerializeField] private Button soundsSettings;
-    [SerializeField] private Button controlSettings;
-    [SerializeField] private Button languageSettings;
+    [SerializeField] private Button videoButton;
+    [SerializeField] private Button soundsButton;
+    [SerializeField] private Button controlButton;
+    [SerializeField] private Button languageButton;
     [SerializeField] private Button credits;
 
     [SerializeField] private Button back;
+    [SerializeField] private Button reset;
     [Header("Tabs")]
     [SerializeField] private GameObject mainTab;
     [SerializeField] private GameObject videoTab;
 
+    [SerializeField] private VideoSettings video;
 
     private void Start()
     {
-        WindowsManager.instance.SetNewSelectedButton(videoSettings.gameObject);
+        WindowsManager.instance.SetNewSelectedButton(videoButton.gameObject);
         OpenMainTab();
-        videoSettings.onClick.AddListener(OpenVideoSettings);
+        videoButton.onClick.AddListener(OpenVideoSettings);
     }
 
     private void OnDestroy()
