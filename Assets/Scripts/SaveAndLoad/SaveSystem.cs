@@ -20,6 +20,8 @@ public static class SaveSystem
             return Path.Combine(Application.persistentDataPath, "Saves");
         }
     }
+    public static string settingsPath = Application.persistentDataPath + "/settings.json";
+
 
     public static string GetHeaderPath(string worldFolder)
     {
@@ -45,6 +47,7 @@ public static class SaveSystem
 
 
 
+    #region Saves
 
     public static void Save()
     {
@@ -71,6 +74,18 @@ public static class SaveSystem
         SavePlayers(playersPath,players);
         stream.Close();
     }
+    public static void SaveSettings(SettingsData Data)
+    {
+        string json = JsonUtility.ToJson(Data, true);
+        File.WriteAllText(settingsPath, json);
+    }
+
+    #endregion
+
+
+
+
+
     private static void SaveHeader(string folderPath, PlayerSave playerSave)
     {
         BinaryFormatter formatter = new BinaryFormatter();

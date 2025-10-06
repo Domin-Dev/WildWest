@@ -127,26 +127,26 @@ public class HeroEditor: MonoBehaviour
         hand1.SetPropertyBlock(materialPropertyBlock);
         hand2.SetPropertyBlock(materialPropertyBlock);
 
-        ChangeHair(null, 0);
-        ChangeBeard(null, 0);
-        ChangeFaceDetails(null, 0);
+        ChangeHair(0);
+        ChangeBeard(0);
+        ChangeFaceDetails(0);
         ChangeSkinColor(characterEditorSettings.skinColors[0]);
         ChangeHairColor(characterEditorSettings.hairColors[0]);
         ChangeUnderwearColor(characterEditorSettings.clothesColors[0]);
     } 
-    public void ChangeHair(object sender,int value)
+    public void ChangeHair(int value)
     {
         SetMaterialInt(head, "_HairIndex", value);
     }
-    public void ChangeBeard(object sender, int value)
+    public void ChangeBeard(int value)
     {
         SetMaterialInt(head, "_BeardIndex", value);
     }
-    public void ChangeFaceDetails(object sender, int value)
+    public void ChangeFaceDetails(int value)
     {
         SetMaterialInt(head,"_PaintingsIndex", value);
     }
-    public void ChangeDirection(object sender, int value)
+    public void ChangeDirection(int value)
     {
         SetMaterialInt(head, "_Direction", dirs[value]);
         SetMaterialInt(body, "_Direction", dirs[value]);

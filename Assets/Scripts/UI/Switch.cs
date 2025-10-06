@@ -32,7 +32,7 @@ public class Switch : BaseSwitch
         if (updateText)
         {
             OnChangedValue += ChangSwitchText;
-            ChangSwitchText(null, minValue);
+            ChangSwitchText(minValue);
         }
     }
 
@@ -49,7 +49,7 @@ public class Switch : BaseSwitch
         });
     }
 
-    private void ChangSwitchText(object sender, int e)
+    private void ChangSwitchText(int e)
     {
         text.text = (nameSwitch.Length == 0 ? (nameSwitch + " ") : "") + (printIndex ? e.ToString() : "");
     }

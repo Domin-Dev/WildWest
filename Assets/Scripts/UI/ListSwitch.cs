@@ -15,7 +15,7 @@ public class ListSwitch : BaseSwitch
     {
         this.tab = tab;
         this.value = defaultValue;
-        ChangSwitchText(null, value);
+        ChangSwitchText(value);
         base.SetUpSwitch(0, tab.Length);
     }
 
@@ -23,7 +23,7 @@ public class ListSwitch : BaseSwitch
     {
         this.tab = tab;
         this.value = Math.Clamp(value, 0, this.tab.Length);
-        ChangSwitchText(null, value);
+        ChangSwitchText(value);
     }
 
     private void Start()
@@ -41,7 +41,7 @@ public class ListSwitch : BaseSwitch
         OnChangedValue += ChangSwitchText;
     }
 
-    private void ChangSwitchText(object sender, int e)
+    private void ChangSwitchText(int e)
     {
         Debug.Log("new!!!" + tab[e]);
      

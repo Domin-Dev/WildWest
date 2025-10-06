@@ -82,5 +82,16 @@ public static class LoadSystem
     {
        return LoadPlayerSave(GameInfo.instance.worldName,playerName);
     }
+    public static SettingsData LoadSettings()
+    {
+        SettingsData Data = null;
+        if (File.Exists(SaveSystem.settingsPath))
+        {
+            string json = File.ReadAllText(SaveSystem.settingsPath);
+            Data = JsonUtility.FromJson<SettingsData>(json);
+        }
+        return Data;
+    }
 }
+
 

@@ -8,7 +8,7 @@ public class UpdateFont : MonoBehaviour
 {
     private void OnEnable()
     {
-        ChangeFont(GamePreferences.instance.GetCurrentFont());
+        ChangeFont(GamePreferences.instance?.GetCurrentFont());
         GamePreferences.onNewFont += ChangeFont;
     }
     private void OnDisable()

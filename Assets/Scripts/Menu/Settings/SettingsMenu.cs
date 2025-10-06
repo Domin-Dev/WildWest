@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -5,32 +6,38 @@ using UnityEngine.UI;
 
 public class SettingsMenu : MonoBehaviour
 {
-    [Header("Buttons")]
-    [SerializeField] private Button videoButton;
-    [SerializeField] private Button soundsButton;
-    [SerializeField] private Button controlButton;
-    [SerializeField] private Button languageButton;
-    [SerializeField] private Button credits;
-
     [SerializeField] private Button back;
     [SerializeField] private Button reset;
     [Header("Tabs")]
-    [SerializeField] private GameObject mainTab;
-    [SerializeField] private GameObject videoTab;
+    [SerializeField] private List<SettingsTab> tabs;
+    [SerializeField] private GameObject startSelectedButton;
+    [SerializeField] private SettingsTab startTab;
 
-    [SerializeField] private VideoSettings video;
+    private SettingsTab currentTab;
+    private SettingsData currentSettings;
 
     private void Start()
     {
-        WindowsManager.instance.SetNewSelectedButton(videoButton.gameObject);
-        OpenMainTab();
-        videoButton.onClick.AddListener(OpenVideoSettings);
-    }
+        WindowsManager.instance.SetNewSelectedButton(startSelectedButton.gameObject);
+        foreach (var tab in tabs) 
+            SetUpTab(tab);
+        currentSettings = LoadSystem.LoadSettings();
+        if(currentSettings == null)
+        {
 
+        }
+        OpenTab(startTab);
+    }
     private void OnDestroy()
     {
         MenuManager.instance.SwitchMenuButtons(true);
     }
+    private void SetUpTab(SettingsTab settingsTab)
+    {
+        settingsTab.startButton?.onClick.AddListener(() => OpenTab(settingsTab));
+        settingsTab.gameObject.SetActive(false);
+    }
+
 
     private void CloseSettings()
     {
@@ -41,24 +48,39 @@ public class SettingsMenu : MonoBehaviour
         else
             WindowsManager.instance.LoadScene(GameInfo.instance.lastLoadedScene);
     }
-
     private void CloseTabs()
     {
-        mainTab.SetActive(false);
-        videoTab.SetActive(false);    
+        if (currentTab != null)
+        {
+            currentTab.SaveSettings();
+            currentTab.gameObject.SetActive(false);
+        }
     }
-    private void OpenVideoSettings()
+    private void OpenTab(SettingsTab settingsTab)
     {
         CloseTabs();
-        videoTab.SetActive(true);
+        currentTab = settingsTab;
+        settingsTab.gameObject.SetActive(true);
         back.onClick.RemoveAllListeners();
-        back.onClick.AddListener(OpenMainTab);
+        reset.onClick.RemoveAllListeners();
+
+        if (currentTab == startTab)
+        {
+            back.onClick.AddListener(CloseSettings);
+            reset.onClick.AddListener(ResetAllSettings);
+        }
+        else
+        {
+            reset.onClick.AddListener(currentTab.ResetToDefault);
+            back.onClick.AddListener(() => OpenTab(startTab));
+        }
     }
-    private void OpenMainTab()
+
+    private void ResetAllSettings()
     {
-        CloseTabs();
-        mainTab.SetActive(true);
-        back.onClick.RemoveAllListeners();
-        back.onClick.AddListener(CloseSettings);
+        foreach (var tab in tabs)
+        {
+            tab.ResetToDefault();
+        }
     }
 }

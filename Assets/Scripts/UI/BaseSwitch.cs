@@ -16,7 +16,7 @@ public class BaseSwitch : MonoBehaviour
     [SerializeField] private int maxValue;
 
 
-    public event EventHandler<int> OnChangedValue;
+    public Action<int> OnChangedValue;
 
     private void Start()
     {
@@ -49,7 +49,7 @@ public class BaseSwitch : MonoBehaviour
         {
             value--;
         }
-        OnChangedValue?.Invoke(this, value);
+        OnChangedValue?.Invoke(value);
     }
 
     protected void IncreaseValue()
@@ -62,7 +62,7 @@ public class BaseSwitch : MonoBehaviour
         {
             value++;
         }
-        OnChangedValue?.Invoke(this,value);
+        OnChangedValue?.Invoke(value);
     }
 
     public int GetValue()

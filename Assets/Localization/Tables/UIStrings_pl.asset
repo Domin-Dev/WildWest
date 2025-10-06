@@ -168,6 +168,14 @@ MonoBehaviour:
     m_Localized: "Zwyk\u0142a czcionka"
     m_Metadata:
       m_Items: []
+  - m_Id: 8475594161827840
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 Muzyki:"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8475758138142720
+    m_Localized: "G\u0142o\u015Bno\u015B\u0107 D\u017Awi\u0119k\xF3w:"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

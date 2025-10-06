@@ -37,7 +37,7 @@ public class WorldSetup : MonoBehaviour
 
         difficultylevelSwitch.SetUpSwitch(tab,1);
         
-        difficultylevelSwitch.OnChangedValue += (object s,int x) => 
+        difficultylevelSwitch.OnChangedValue += (int x) => 
         { 
             GameInfo.instance.difficultyLevel = (Difficulty)x;
         };

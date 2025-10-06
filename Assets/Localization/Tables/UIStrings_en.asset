@@ -167,6 +167,14 @@ MonoBehaviour:
     m_Localized: Normal Font
     m_Metadata:
       m_Items: []
+  - m_Id: 8475594161827840
+    m_Localized: 'Music Volume:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8475758138142720
+    m_Localized: 'Sounds Volume:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
