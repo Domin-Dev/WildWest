@@ -30,7 +30,7 @@ public class SettingsMenu : MonoBehaviour
     }
     private void OnDestroy()
     {
-        MenuManager.instance.SwitchMenuButtons(true);
+        MenuManager.instance?.SwitchMenuButtons(true);
     }
     private void SetUpTab(SettingsTab settingsTab)
     {

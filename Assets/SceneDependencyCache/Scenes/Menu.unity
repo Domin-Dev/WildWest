@@ -5632,7 +5632,7 @@ AudioSource:
   m_GameObject: {fileID: 1099870849}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 4067202201032157354, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
@@ -6249,7 +6249,6 @@ GameObject:
   - component: {fileID: 1204180793}
   - component: {fileID: 1204180792}
   - component: {fileID: 1204180794}
-  - component: {fileID: 1204180795}
   - component: {fileID: 1204180796}
   - component: {fileID: 1204180797}
   m_Layer: 0
@@ -6342,22 +6341,12 @@ MonoBehaviour:
   woodenFrameUI: {fileID: 1954819079, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   blackFrameUI: {fileID: -144562309, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   selectedWoodBackgroundUI: {fileID: -107823657, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+  selectedIronBackgroundUI: {fileID: -353293881, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+  goldPressedBackgroundUI: {fileID: 2019817164, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   ironBarsUI: {fileID: 1214819735, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   references:
     version: 2
     RefIds: []
---- !u!114 &1204180795
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204180791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f82838062bbb9f149a05c69c0e900a0f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LocaleManager
 --- !u!114 &1204180796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6383,6 +6372,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50b3f999011488642880ce4b44f64655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainSettingsManager
+  audioMixer: {fileID: 24100000, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
 --- !u!1 &1208198867
 GameObject:
   m_ObjectHideFlags: 0

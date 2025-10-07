@@ -29,7 +29,7 @@ public class AudioTab : SettingsTab
 
     public override void ResetToDefault()
     {
-        MainSettingsManager.instance.videoSettings.SetDefaultSettings();
+        MainSettingsManager.instance.audioSettings.SetDefaultSettings();
         SetSettings(MainSettingsManager.instance.settings);
     }
     public override void SaveSettings()
@@ -38,11 +38,23 @@ public class AudioTab : SettingsTab
     }
     private void SetSettings(SettingsData settings)
     {
-
+        SetMusicVolume(settings);
+        SetSoundsVolume(settings);
     }
 
+    private void SetSoundsVolume(SettingsData settingsData)
+    {
+        soundsVolume.value = settingsData.soundsVolume;
+        soundsVolume.onValueChanged.RemoveAllListeners();
+        soundsVolume.onValueChanged.AddListener(MainSettingsManager.instance.audioSettings.SetSoundsVolume);
+    }
+    private void SetMusicVolume(SettingsData settingsData)
+    {
+        musicVolume.value = settingsData.musicVolume;
+        musicVolume.onValueChanged.RemoveAllListeners();
+        musicVolume.onValueChanged.AddListener(MainSettingsManager.instance.audioSettings.SetMusicVolume);
+    }
 
-   
 }
 
 

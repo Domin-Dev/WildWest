@@ -6,38 +6,24 @@ using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class VideoSettings
-{
-    private SettingsData settingsData;
-    public VideoSettings(SettingsData data,bool defaultSettings)
-    {
-        this.settingsData = data;
-        if(defaultSettings)
-        {
-            SetDefaultSettings();
-        }
-        SetSettings();
-    }
-
-
-
-    private void SetSettings()
+public class VideoSettings : Settings
+{    
+    public override void SetSettings()
     {
         SetResolution(new Resolution() { height =  settingsData.resolutionHeight, width = settingsData.resolutionWidth });
         SetFullScreen(settingsData.fullScreen);
         SetFPSLimit(settingsData.fpsLimit);
-
         SetFont(settingsData.fontIndex);
     }
-
-    #region Set Value
-    public void SetDefaultSettings()
+    public override void SetDefaultSettings()
     {
         SetDefaultResolution();
         SetDefaultFPSLimit();
         SetFont(0);
         SetFullScreen(true);
     }
+
+    #region Set Value
     public void SetResolution(Resolution resolution)
     {
         settingsData.resolutionHeight = resolution.height;
@@ -85,7 +71,5 @@ public class VideoSettings
     }
 
     #endregion
-
-
 }
 

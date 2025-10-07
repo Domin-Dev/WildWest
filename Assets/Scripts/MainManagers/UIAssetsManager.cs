@@ -7,6 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 [System.Serializable]
@@ -36,6 +37,9 @@ public class  UIAssetsManager : MonoBehaviour
     [SerializeField] public Sprite blackFrameUI;
     [Header("Selected")]
     [SerializeField] public Sprite selectedWoodBackgroundUI;
+    [SerializeField] public Sprite selectedIronBackgroundUI;
+    [Header("Pressed")]
+    [SerializeField] public Sprite goldPressedBackgroundUI;
 
 
     [Space]
@@ -66,5 +70,29 @@ public class  UIAssetsManager : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    public void ChangeButtonToIron(Button button)
+    {
+        var states = button.spriteState;
+        states.pressedSprite = goldPressedBackgroundUI;
+
+        states.selectedSprite = selectedIronBackgroundUI;
+        states.highlightedSprite = selectedIronBackgroundUI;
+
+        button.spriteState = states;
+        button.image.sprite = ironBackgroundUI;
+    }
+    public void ChangeButtonToWood(Button button)
+    {
+        var states = button.spriteState;
+        states.pressedSprite = goldPressedBackgroundUI;
+
+        states.selectedSprite = selectedWoodBackgroundUI;
+        states.highlightedSprite = selectedWoodBackgroundUI;
+
+        button.spriteState = states;
+        button.image.sprite = woodBackgroundUI;
+    }
+
 }
 
