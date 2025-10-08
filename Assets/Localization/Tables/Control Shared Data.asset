@@ -10,13 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
-  m_Name: Locales Shared Data
+  m_Name: Control Shared Data
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
-  m_TableCollectionName: Locales
+  m_TableCollectionName: Control
   m_TableCollectionNameGuidString: 513bd6eea5be79942a409a92d49f150e
   m_Entries:
+  - m_Id: 393069896052736
+    m_Key: Equipment
+    m_Metadata:
+      m_Items: []
   - m_Id: 44694941696
-    m_Key: pl
+    m_Key: PlayerMovement
     m_Metadata:
       m_Items: []
   m_Metadata:

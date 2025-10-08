@@ -850,7 +850,33 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      WildFont._0: -361336424261803869
+      WildFont._1: 3834122456250486724
+      WildFont._10: 8720347397466821680
+      WildFont._11: 7740674786330679522
+      WildFont._12: 3043371865322156253
+      WildFont._13: 933212739525076246
+      WildFont._14: -6981853315822319112
+      WildFont._15: -3051580380172837696
+      WildFont._16: -5102701891971878398
+      WildFont._17: 3184249857376931442
+      WildFont._18: -7266733051373348485
+      WildFont._19: -4679273274766609691
+      WildFont._2: 7541901942522138897
+      WildFont._20: -2895800488734678502
+      WildFont._21: -374910948673169788
+      WildFont._22: 1005053548896407013
+      WildFont._23: 4317264310863770732
+      WildFont._24: -1777258785903372386
+      WildFont._25: 695347114544918511
+      WildFont._3: -2867632054555952948
+      WildFont._4: -6704075112591387402
+      WildFont._5: -2580613203676907393
+      WildFont._6: 2488804639212211086
+      WildFont._7: -8372516412698846781
+      WildFont._8: -7714613902904238332
+      WildFont._9: 7753677185228866064
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

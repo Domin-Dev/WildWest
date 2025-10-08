@@ -340,7 +340,7 @@ public class EquipmentManager : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.Alpha0)) ChangeSelectedSlot(9);
 
 
-            if (Input.GetKeyDown(KeyCode.I))
+            if (InputManager.input.Player.Equipment.triggered)
             {
                 equipmentIsOpen = !equipmentIsOpen;
                 BoolArgs args = new BoolArgs(equipmentIsOpen);

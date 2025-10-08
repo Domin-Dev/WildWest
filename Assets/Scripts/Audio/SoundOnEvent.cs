@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class SoundOnEvent : MonoBehaviour, IPointerClickHandler
+public class SoundOnEvent : MonoBehaviour
 {
-    public void OnPointerClick(PointerEventData eventData)
-    {
-         Sounds.instance.Click();
-    }
+    //public void OnPointerClick(PointerEventData eventData)
+    //{
+    //     Sounds.instance.Click();
+    //}
 }

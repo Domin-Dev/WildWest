@@ -23,7 +23,7 @@ MonoBehaviour:
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 70dbe95ff44318a4eba4abd9fe47335c
-    m_Address: Locales_en
+    m_Address: Control_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
