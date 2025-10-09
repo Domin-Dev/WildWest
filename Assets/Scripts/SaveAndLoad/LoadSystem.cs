@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -82,16 +83,27 @@ public static class LoadSystem
     {
        return LoadPlayerSave(GameInfo.instance.worldName,playerName);
     }
-    public static SettingsData LoadSettings()
+    public static T LoadJson<T>(string path) 
     {
-        SettingsData Data = null;
-        if (File.Exists(SaveSystem.settingsPath))
+        T Data = default(T);
+        if (File.Exists(path))
         {
-            string json = File.ReadAllText(SaveSystem.settingsPath);
-            Data = JsonUtility.FromJson<SettingsData>(json);
+            string json = File.ReadAllText(path);
+            Data = JsonUtility.FromJson<T>(json);
         }
         return Data;
     }
+   
+    public static SettingsData LoadSettings(out string controls)
+    {
+        Debug.Log("load!!");
+        controls = LoadJson<string>(SaveSystem.controlsPath);
+        return LoadJson<SettingsData>(SaveSystem.settingsPath);
+
+    }
+
+
+
 }
 
 

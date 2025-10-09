@@ -176,6 +176,14 @@ MonoBehaviour:
     m_Localized: "G\u0142o\u015Bno\u015B\u0107 D\u017Awi\u0119k\xF3w:"
     m_Metadata:
       m_Items: []
+  - m_Id: 9524671951581184
+    m_Localized: Sterowanie (klawiatura)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9525453333639168
+    m_Localized: Sterowanie (kontroler)
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

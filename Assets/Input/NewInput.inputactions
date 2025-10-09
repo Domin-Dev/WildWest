@@ -144,28 +144,6 @@
             ],
             "bindings": [
                 {
-                    "name": "",
-                    "id": "ab531f2b-c05b-469b-b898-3d22ca5d820c",
-                    "path": "<Keyboard>/i",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Equipment",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2a585e40-fde0-4e52-afed-f5ad9284a82a",
-                    "path": "<Gamepad>/buttonSouth",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
-                    "action": "Equipment",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "2D Vector",
                     "id": "c9c064f1-94a3-4fca-a003-39c48af94fc4",
                     "path": "2DVector",
@@ -360,6 +338,28 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Dashboard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cd6aa2aa-1825-493f-b96e-4b57987fd327",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Equipment",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7090f638-68c8-4c72-81a8-acf0646c3640",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Equipment",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

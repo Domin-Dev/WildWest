@@ -8,20 +8,15 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 public static class SaveSystem
 {
 
-    public static string savesPath
-    {
-        get
-        {
-            return Path.Combine(Application.persistentDataPath, "Saves");
-        }
-    }
-    public static string settingsPath = Application.persistentDataPath + "/settings.json";
-
+    public static string savesPath { get { return Path.Combine(Application.persistentDataPath, "Saves"); } }
+    public static string settingsPath = Application.persistentDataPath + "/settings.json"; 
+    public static string controlsPath = Application.persistentDataPath + "/controls.json"; 
 
     public static string GetHeaderPath(string worldFolder)
     {
@@ -74,12 +69,23 @@ public static class SaveSystem
         SavePlayers(playersPath,players);
         stream.Close();
     }
-    public static void SaveSettings(SettingsData Data)
+    public static void SaveSettings(SettingsData Data, InputActionAsset Controls)
     {
-        string json = JsonUtility.ToJson(Data, true);
-        File.WriteAllText(settingsPath, json);
+        Debug.Log(Controls.SaveBindingOverridesAsJson());
+        SaveJson(Data,settingsPath);
+        SaveJson(Controls.SaveBindingOverridesAsJson(), controlsPath);
+        Debug.Log("save!!");
     }
-
+    public static void SaveJson(object data, string path)
+    {
+        string json = JsonUtility.ToJson(data, true);
+        File.WriteAllText(path, json);
+    }
+    public static void SaveJson(string data, string path)
+    {
+        Debug.Log(path);
+        File.WriteAllText(path, data);
+    }
     #endregion
 
 

@@ -14,18 +14,12 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private SettingsTab startTab;
 
     private SettingsTab currentTab;
-    private SettingsData currentSettings;
 
     private void Start()
     {
         WindowsManager.instance.SetNewSelectedButton(startSelectedButton.gameObject);
         foreach (var tab in tabs) 
             SetUpTab(tab);
-        currentSettings = LoadSystem.LoadSettings();
-        if(currentSettings == null)
-        {
-
-        }
         OpenTab(startTab);
     }
     private void OnDestroy()

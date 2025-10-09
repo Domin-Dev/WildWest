@@ -41,17 +41,17 @@ public class WindowsManager : MonoBehaviour
     }
     private void Update()
     {
-       ////if(Input.GetKeyDown(KeyCode.Escape) && !ChatManager.instance.isChatting) 
-       // {
+        if(Input.GetKeyDown(KeyCode.Escape) && !ChatManager.instance.isChatting) 
+        {
 
-       //     if (escScene == -1)
-       //         CloseOpenWindows();
-       //     else
-       //     {
-       //         if (!CloseOpenWindows())
-       //             LoadScene(escScene);
-       //     }
-       // }
+            if (escScene == -1)
+                CloseOpenWindows();
+            else
+            {
+                if (!CloseOpenWindows())
+                    LoadScene(escScene);
+            }
+        }
     }
 
 

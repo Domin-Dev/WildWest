@@ -33,7 +33,7 @@ public class LanguageTab : SettingsTab
     }
     public override void SaveSettings()
     {
-        MainSettingsManager.instance.Save();
+
     }
 
     

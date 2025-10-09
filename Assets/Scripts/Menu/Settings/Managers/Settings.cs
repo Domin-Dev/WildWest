@@ -17,7 +17,7 @@ public abstract class Settings
         else
             SetSettings();
     }
-    public abstract void SetDefaultSettings();
-    public abstract void SetSettings();
+    public virtual void SetDefaultSettings() { }
+    public virtual void SetSettings() { }
 }
 

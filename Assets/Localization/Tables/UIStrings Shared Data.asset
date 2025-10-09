@@ -177,6 +177,14 @@ MonoBehaviour:
     m_Key: SoundsVolume
     m_Metadata:
       m_Items: []
+  - m_Id: 9524671951581184
+    m_Key: KeyboardControls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 9525453333639168
+    m_Key: GamepadControls
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

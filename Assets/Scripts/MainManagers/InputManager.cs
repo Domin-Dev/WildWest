@@ -4,11 +4,14 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     public static NewInput input;
-    public static InputManager i;
+    public static InputManager i { private set; get; }
 
-    public InputActionAsset action;
+    private InputActionAsset action;
 
     private InputAction equipment;
+    private InputAction move;
+
+
     private void Awake()
     {
         if (i == null)
@@ -19,11 +22,19 @@ public class InputManager : MonoBehaviour
         }
         else
             Destroy(gameObject);
+    }
+    public void SetUp(InputActionAsset inputAsset)
+    {
+        action = inputAsset;
 
         equipment = action.FindActionMap("Player").FindAction("Equipment");
+        move = action.FindActionMap("Player").FindAction("Move");
         equipment.performed += Equipment_performed;
-
-
+        move.performed += Move_performed;
+    }
+    private void Move_performed(InputAction.CallbackContext obj)
+    {
+        Debug.Log("Move!!");
     }
 
     private void Equipment_performed(InputAction.CallbackContext obj)

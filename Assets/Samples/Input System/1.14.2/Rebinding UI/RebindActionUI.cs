@@ -15,6 +15,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
     /// </summary>
     public class RebindActionUI : MonoBehaviour
     {
+        
+
         /// <summary>
         /// Reference to the action that is to be rebound.
         /// </summary>
@@ -257,7 +259,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             // the action map containing the target action.
             action.actionMap.Disable();
             m_UIInputActionMap?.Disable();
+            string previousPath = action.bindings[bindingIndex].effectivePath;
 
+            //  string previousPath = action.bindings[bindingIndex].effectivePath;
             // Configure the rebind.
             m_RebindOperation = action.PerformInteractiveRebinding(bindingIndex)
                 .WithCancelingThrough("<Keyboard>/escape")
@@ -276,11 +280,13 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                         if (m_RebindOverlay != null)
                             m_RebindOverlay.SetActive(false);
                         m_RebindStopEvent?.Invoke(this, operation);
+                        
 
-
-                        if(CheckDuplicateBindings(action,bindingIndex,allCompositeParts))
+                        if (CheckDuplicateBindings(action,bindingIndex,allCompositeParts))
                         {
                             action.RemoveBindingOverride(bindingIndex);
+                            action.ApplyBindingOverride(bindingIndex, previousPath);
+
                             CleanUp();
                             PerformInteractiveRebind(action,bindingIndex,allCompositeParts);
                             return;
@@ -291,7 +297,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                         UpdateBindingDisplay();
                         CleanUp();
 
-
+                        
                         // If there's more composite parts we should bind, initiate a rebind
                         // for the next part.
                         if (allCompositeParts)
@@ -446,6 +452,9 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 InputSystem.onActionChange += OnActionChange;
             if (m_DefaultInputActions != null && m_UIInputActionMap == null)
                 m_UIInputActionMap = m_DefaultInputActions.FindActionMap("UI");
+
+            UpdateBindingDisplay();
+            Debug.Log("new");
         }
 
         protected void OnDisable()

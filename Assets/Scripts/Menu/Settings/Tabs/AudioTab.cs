@@ -34,7 +34,7 @@ public class AudioTab : SettingsTab
     }
     public override void SaveSettings()
     {
-        MainSettingsManager.instance.Save();
+
     }
     private void SetSettings(SettingsData settings)
     {

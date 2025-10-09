@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 
@@ -12,12 +13,13 @@ public class MainSettingsManager : MonoBehaviour
     public static MainSettingsManager instance { private set; get; }
 
     [SerializeField] private AudioMixer audioMixer;
-
+    [SerializeField] private InputActionAsset inputActions;
 
     public VideoSettings videoSettings { private set; get; }
     public AudioSettings audioSettings { private set; get; }
     public LanguageSettings languageSettings { private set; get; }
     public SettingsData settings { private set; get; }
+    public ControlsSettings controlsSettings { private set; get; }
 
     private LocaleManager localeManager;
 
@@ -33,9 +35,20 @@ public class MainSettingsManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        settings = LoadSystem.LoadSettings();
         SetSettings();
-    }    
+    }
+
+
+    private void OnEnable()
+    {
+        
+    }
+    private void OnDestroy()
+    {
+        
+        Save();
+    }
+
     private void SetSettings()
     {
         bool settingsEmpty = settings == null;
@@ -50,9 +63,22 @@ public class MainSettingsManager : MonoBehaviour
         audioSettings.SetUp(audioMixer,settings,settingsEmpty);
         languageSettings = new LanguageSettings();
         languageSettings.SetUp(localeManager, settings, settingsEmpty);
+
+        Load();
+        controlsSettings = new ControlsSettings();
+        controlsSettings.SetUp(inputActions, settings, settingsEmpty);
+        var input = this.AddComponent<InputManager>();
+        input.SetUp(inputActions);
     }
-    public void Save()
+
+    private void Load()
     {
-        SaveSystem.SaveSettings(settings);
+        settings = LoadSystem.LoadSettings(out string controlJson);
+        inputActions.LoadBindingOverridesFromJson(controlJson);
+    }
+
+    private void Save()
+    {
+        SaveSystem.SaveSettings(settings,inputActions);
     }
 }
