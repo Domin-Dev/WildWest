@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine.Events;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
-
 ////TODO: localization support
 
 ////TODO: deal with composites that have parts bound in different control schemes
@@ -311,16 +310,36 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             // If it's a part binding, show the name of the part in the UI.
             var partName = default(string);
             if (action.bindings[bindingIndex].isPartOfComposite)
-                partName = $"Binding '{action.bindings[bindingIndex].name}'. ";
+            {
+                string partKey = "Rebind_BindingPart";
+                string bindingName = action.bindings[bindingIndex].name;
+                var text = LocalizationSettings.StringDatabase.GetLocalizedString("Controls", "Rebind_" + bindingName, fallbackBehavior: FallbackBehavior.UseFallback);
+                partName = LocalizationSettings.StringDatabase.GetLocalizedString("Controls", partKey, arguments: new object[] { text }, fallbackBehavior: FallbackBehavior.UseFallback);
+            }
 
-            // Bring up rebind overlay, if we have one.
+            // Pokazujemy overlay
             m_RebindOverlay?.SetActive(true);
+
             if (m_RebindText != null)
             {
-                var text = !string.IsNullOrEmpty(m_RebindOperation.expectedControlType)
-                    ? $"{partName}Waiting for {m_RebindOperation.expectedControlType} input..."
-                    : $"{partName}Waiting for input...";
-                m_RebindText.text = text;
+                string key;
+                object[] args;
+
+                if (!string.IsNullOrEmpty(m_RebindOperation.expectedControlType))
+                {
+                    key = "Rebind_WaitingForControlType";
+                    var text = LocalizationSettings.StringDatabase.GetLocalizedString("Controls", "Rebind_" + m_RebindOperation.expectedControlType, fallbackBehavior: FallbackBehavior.UseProjectSettings);
+                    args = new object[] { text };
+                }
+                else
+                {
+                    key = "Rebind_WaitingForInput";
+                    args = null;
+                }
+
+                string localized = LocalizationSettings.StringDatabase.GetLocalizedString("Controls", key, arguments: args,fallbackBehavior: FallbackBehavior.UseFallback);
+
+                m_RebindText.text = $"{partName}{localized}";
             }
 
             // If we have no rebind overlay and no callback but we have a binding text label,
@@ -453,6 +472,7 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             if (m_DefaultInputActions != null && m_UIInputActionMap == null)
                 m_UIInputActionMap = m_DefaultInputActions.FindActionMap("UI");
 
+            
             UpdateBindingDisplay();
             Debug.Log("new");
         }

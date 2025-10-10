@@ -25,7 +25,7 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "RightAction",
+                    "name": "SideAction",
                     "type": "Button",
                     "id": "64b3e75e-5e51-492c-87bd-3f0402d27295",
                     "expectedControlType": "",
@@ -34,7 +34,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "LeftAction",
+                    "name": "MainAction",
                     "type": "Button",
                     "id": "6f587227-b65f-4104-9873-08d5ae31aa76",
                     "expectedControlType": "",
@@ -133,9 +133,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dashboard",
+                    "name": "PlayerList",
                     "type": "Button",
                     "id": "87907713-5986-4f4e-887f-086b27fab0c4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Chat",
+                    "type": "Button",
+                    "id": "a379ae70-a0f6-4675-a6b3-1cd4083a8021",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -205,7 +214,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "RightAction",
+                    "action": "SideAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -216,7 +225,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "LeftAction",
+                    "action": "MainAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -311,7 +320,7 @@
                 {
                     "name": "",
                     "id": "7cbc215d-3114-4e0e-ba4f-300448780ec7",
-                    "path": "<keyboard>/8",
+                    "path": "<Keyboard>/y",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
@@ -337,7 +346,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
-                    "action": "Dashboard",
+                    "action": "PlayerList",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -360,6 +369,17 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "Equipment",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e3ee3d1f-f016-4222-a3a7-88efb05fc140",
+                    "path": "<Keyboard>/t",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Chat",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

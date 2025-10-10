@@ -113,7 +113,7 @@ namespace UnityEngine.InputSystem
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""RightAction"",
+                    ""name"": ""SideAction"",
                     ""type"": ""Button"",
                     ""id"": ""64b3e75e-5e51-492c-87bd-3f0402d27295"",
                     ""expectedControlType"": """",
@@ -122,7 +122,7 @@ namespace UnityEngine.InputSystem
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""LeftAction"",
+                    ""name"": ""MainAction"",
                     ""type"": ""Button"",
                     ""id"": ""6f587227-b65f-4104-9873-08d5ae31aa76"",
                     ""expectedControlType"": """",
@@ -221,9 +221,18 @@ namespace UnityEngine.InputSystem
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Dashboard"",
+                    ""name"": ""PlayerList"",
                     ""type"": ""Button"",
                     ""id"": ""87907713-5986-4f4e-887f-086b27fab0c4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Chat"",
+                    ""type"": ""Button"",
+                    ""id"": ""a379ae70-a0f6-4675-a6b3-1cd4083a8021"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -293,7 +302,7 @@ namespace UnityEngine.InputSystem
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""RightAction"",
+                    ""action"": ""SideAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -304,7 +313,7 @@ namespace UnityEngine.InputSystem
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""LeftAction"",
+                    ""action"": ""MainAction"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -399,7 +408,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""7cbc215d-3114-4e0e-ba4f-300448780ec7"",
-                    ""path"": ""<keyboard>/8"",
+                    ""path"": ""<Keyboard>/y"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -425,7 +434,7 @@ namespace UnityEngine.InputSystem
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
-                    ""action"": ""Dashboard"",
+                    ""action"": ""PlayerList"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -448,6 +457,17 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Equipment"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e3ee3d1f-f016-4222-a3a7-88efb05fc140"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Chat"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1044,8 +1064,8 @@ namespace UnityEngine.InputSystem
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Equipment = m_Player.FindAction("Equipment", throwIfNotFound: true);
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
-            m_Player_RightAction = m_Player.FindAction("RightAction", throwIfNotFound: true);
-            m_Player_LeftAction = m_Player.FindAction("LeftAction", throwIfNotFound: true);
+            m_Player_SideAction = m_Player.FindAction("SideAction", throwIfNotFound: true);
+            m_Player_MainAction = m_Player.FindAction("MainAction", throwIfNotFound: true);
             m_Player_Slot0 = m_Player.FindAction("Slot0", throwIfNotFound: true);
             m_Player_Slot1 = m_Player.FindAction("Slot1", throwIfNotFound: true);
             m_Player_Slot2 = m_Player.FindAction("Slot2", throwIfNotFound: true);
@@ -1056,7 +1076,8 @@ namespace UnityEngine.InputSystem
             m_Player_Slot7 = m_Player.FindAction("Slot7", throwIfNotFound: true);
             m_Player_Slot8 = m_Player.FindAction("Slot8", throwIfNotFound: true);
             m_Player_Slot9 = m_Player.FindAction("Slot9", throwIfNotFound: true);
-            m_Player_Dashboard = m_Player.FindAction("Dashboard", throwIfNotFound: true);
+            m_Player_PlayerList = m_Player.FindAction("PlayerList", throwIfNotFound: true);
+            m_Player_Chat = m_Player.FindAction("Chat", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1154,8 +1175,8 @@ namespace UnityEngine.InputSystem
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Equipment;
         private readonly InputAction m_Player_Move;
-        private readonly InputAction m_Player_RightAction;
-        private readonly InputAction m_Player_LeftAction;
+        private readonly InputAction m_Player_SideAction;
+        private readonly InputAction m_Player_MainAction;
         private readonly InputAction m_Player_Slot0;
         private readonly InputAction m_Player_Slot1;
         private readonly InputAction m_Player_Slot2;
@@ -1166,7 +1187,8 @@ namespace UnityEngine.InputSystem
         private readonly InputAction m_Player_Slot7;
         private readonly InputAction m_Player_Slot8;
         private readonly InputAction m_Player_Slot9;
-        private readonly InputAction m_Player_Dashboard;
+        private readonly InputAction m_Player_PlayerList;
+        private readonly InputAction m_Player_Chat;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -1187,13 +1209,13 @@ namespace UnityEngine.InputSystem
             /// </summary>
             public InputAction @Move => m_Wrapper.m_Player_Move;
             /// <summary>
-            /// Provides access to the underlying input action "Player/RightAction".
+            /// Provides access to the underlying input action "Player/SideAction".
             /// </summary>
-            public InputAction @RightAction => m_Wrapper.m_Player_RightAction;
+            public InputAction @SideAction => m_Wrapper.m_Player_SideAction;
             /// <summary>
-            /// Provides access to the underlying input action "Player/LeftAction".
+            /// Provides access to the underlying input action "Player/MainAction".
             /// </summary>
-            public InputAction @LeftAction => m_Wrapper.m_Player_LeftAction;
+            public InputAction @MainAction => m_Wrapper.m_Player_MainAction;
             /// <summary>
             /// Provides access to the underlying input action "Player/Slot0".
             /// </summary>
@@ -1235,9 +1257,13 @@ namespace UnityEngine.InputSystem
             /// </summary>
             public InputAction @Slot9 => m_Wrapper.m_Player_Slot9;
             /// <summary>
-            /// Provides access to the underlying input action "Player/Dashboard".
+            /// Provides access to the underlying input action "Player/PlayerList".
             /// </summary>
-            public InputAction @Dashboard => m_Wrapper.m_Player_Dashboard;
+            public InputAction @PlayerList => m_Wrapper.m_Player_PlayerList;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/Chat".
+            /// </summary>
+            public InputAction @Chat => m_Wrapper.m_Player_Chat;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1270,12 +1296,12 @@ namespace UnityEngine.InputSystem
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
-                @RightAction.started += instance.OnRightAction;
-                @RightAction.performed += instance.OnRightAction;
-                @RightAction.canceled += instance.OnRightAction;
-                @LeftAction.started += instance.OnLeftAction;
-                @LeftAction.performed += instance.OnLeftAction;
-                @LeftAction.canceled += instance.OnLeftAction;
+                @SideAction.started += instance.OnSideAction;
+                @SideAction.performed += instance.OnSideAction;
+                @SideAction.canceled += instance.OnSideAction;
+                @MainAction.started += instance.OnMainAction;
+                @MainAction.performed += instance.OnMainAction;
+                @MainAction.canceled += instance.OnMainAction;
                 @Slot0.started += instance.OnSlot0;
                 @Slot0.performed += instance.OnSlot0;
                 @Slot0.canceled += instance.OnSlot0;
@@ -1306,9 +1332,12 @@ namespace UnityEngine.InputSystem
                 @Slot9.started += instance.OnSlot9;
                 @Slot9.performed += instance.OnSlot9;
                 @Slot9.canceled += instance.OnSlot9;
-                @Dashboard.started += instance.OnDashboard;
-                @Dashboard.performed += instance.OnDashboard;
-                @Dashboard.canceled += instance.OnDashboard;
+                @PlayerList.started += instance.OnPlayerList;
+                @PlayerList.performed += instance.OnPlayerList;
+                @PlayerList.canceled += instance.OnPlayerList;
+                @Chat.started += instance.OnChat;
+                @Chat.performed += instance.OnChat;
+                @Chat.canceled += instance.OnChat;
             }
 
             /// <summary>
@@ -1326,12 +1355,12 @@ namespace UnityEngine.InputSystem
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
-                @RightAction.started -= instance.OnRightAction;
-                @RightAction.performed -= instance.OnRightAction;
-                @RightAction.canceled -= instance.OnRightAction;
-                @LeftAction.started -= instance.OnLeftAction;
-                @LeftAction.performed -= instance.OnLeftAction;
-                @LeftAction.canceled -= instance.OnLeftAction;
+                @SideAction.started -= instance.OnSideAction;
+                @SideAction.performed -= instance.OnSideAction;
+                @SideAction.canceled -= instance.OnSideAction;
+                @MainAction.started -= instance.OnMainAction;
+                @MainAction.performed -= instance.OnMainAction;
+                @MainAction.canceled -= instance.OnMainAction;
                 @Slot0.started -= instance.OnSlot0;
                 @Slot0.performed -= instance.OnSlot0;
                 @Slot0.canceled -= instance.OnSlot0;
@@ -1362,9 +1391,12 @@ namespace UnityEngine.InputSystem
                 @Slot9.started -= instance.OnSlot9;
                 @Slot9.performed -= instance.OnSlot9;
                 @Slot9.canceled -= instance.OnSlot9;
-                @Dashboard.started -= instance.OnDashboard;
-                @Dashboard.performed -= instance.OnDashboard;
-                @Dashboard.canceled -= instance.OnDashboard;
+                @PlayerList.started -= instance.OnPlayerList;
+                @PlayerList.performed -= instance.OnPlayerList;
+                @PlayerList.canceled -= instance.OnPlayerList;
+                @Chat.started -= instance.OnChat;
+                @Chat.performed -= instance.OnChat;
+                @Chat.canceled -= instance.OnChat;
             }
 
             /// <summary>
@@ -1702,19 +1734,19 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnMove(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "RightAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "SideAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnRightAction(InputAction.CallbackContext context);
+            void OnSideAction(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "LeftAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "MainAction" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnLeftAction(InputAction.CallbackContext context);
+            void OnMainAction(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Slot0" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
@@ -1786,12 +1818,19 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSlot9(InputAction.CallbackContext context);
             /// <summary>
-            /// Method invoked when associated input action "Dashboard" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// Method invoked when associated input action "PlayerList" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
             /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-            void OnDashboard(InputAction.CallbackContext context);
+            void OnPlayerList(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Chat" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnChat(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

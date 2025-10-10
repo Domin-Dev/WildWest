@@ -74,7 +74,10 @@ public class MainSettingsManager : MonoBehaviour
     private void Load()
     {
         settings = LoadSystem.LoadSettings(out string controlJson);
+        Debug.Log(controlJson);
+        inputActions.Disable();
         inputActions.LoadBindingOverridesFromJson(controlJson);
+        inputActions.Enable();
     }
 
     private void Save()

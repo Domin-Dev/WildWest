@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: Control_es
+  m_Name: Controls_es
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
   m_LocaleId:
     m_Code: es
   m_SharedData: {fileID: 11400000, guid: 513bd6eea5be79942a409a92d49f150e, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 8871383422762483848
   m_TableData:
   - m_Id: 44694941696
     m_Localized: --
@@ -26,6 +27,17 @@ MonoBehaviour:
     m_Localized: --
     m_Metadata:
       m_Items: []
+  - m_Id: 1103387190276096
+    m_Localized: 
+    m_Metadata:
+      m_Items:
+      - rid: 8871383422762483848
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8871383422762483848
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 1103387190276096

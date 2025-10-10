@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 
 
 public static class LoadSystem
@@ -97,9 +98,8 @@ public static class LoadSystem
     public static SettingsData LoadSettings(out string controls)
     {
         Debug.Log("load!!");
-        controls = LoadJson<string>(SaveSystem.controlsPath);
+        controls = File.ReadAllText(SaveSystem.controlsPath);
         return LoadJson<SettingsData>(SaveSystem.settingsPath);
-
     }
 
 
