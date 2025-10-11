@@ -24,7 +24,6 @@ public class ControlsSettings : Settings
 
     public void SetDefaultSettings(string inputScheme)
     {
-        Debug.Log("resetowaniea!!!");
         foreach(InputActionMap map in inputActions.actionMaps)
         {
             foreach (InputAction action in map.actions)

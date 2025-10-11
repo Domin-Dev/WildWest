@@ -33,7 +33,7 @@ public class WorldNameInput : MonoBehaviour
     public string GetWorldName()
     {
         if (CheckWorldName())
-            return inputField.text.Trim().ToLower();
+            return inputField.text.Trim();
         else
             return string.Empty;
     }
@@ -53,7 +53,7 @@ public class WorldNameInput : MonoBehaviour
     private bool CheckWorldName()
     {
         string name = inputField.text.Trim();
-        return name.Length > 0 && (!WorldManager.WorldExist(name.ToLower()) || (setValue != string.Empty && setValue == name));
+        return name.Length > 0 && (!WorldManager.WorldExist(name) || (setValue != string.Empty && setValue == name));
     }
     private void ValidateInput(string input)
     {
@@ -65,7 +65,7 @@ public class WorldNameInput : MonoBehaviour
     }
     private void CheckErrors(string name)
     {
-        name = name.Trim().ToLower();
+        name = name.Trim();
         if (name.Length == 0)
         {
             errorMessage.text = "The world name cannot be empty.";

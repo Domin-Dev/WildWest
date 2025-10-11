@@ -237,6 +237,33 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PreviousSlot"",
+                    ""type"": ""Value"",
+                    ""id"": ""86bad7a5-dc6e-4ddc-a530-1ea53db6b69c"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""NextSlot"",
+                    ""type"": ""Value"",
+                    ""id"": ""99959f28-7985-4e36-8a4b-eed6290b066a"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""DebugStats"",
+                    ""type"": ""Button"",
+                    ""id"": ""1cafd080-2df3-4868-892f-842322489ace"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -364,7 +391,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""b03120ac-d290-41d3-911f-051c715b963f"",
-                    ""path"": ""<keyboard>/4"",
+                    ""path"": ""<Keyboard>/4"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -375,7 +402,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""78be1f6a-8fac-44b1-9e43-d17935709f8e"",
-                    ""path"": ""<keyboard>/5"",
+                    ""path"": ""<Keyboard>/5"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -386,7 +413,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""9cbadb65-79df-4735-b643-3e22c35f1afa"",
-                    ""path"": ""<keyboard>/6"",
+                    ""path"": ""<Keyboard>/6"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -397,7 +424,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""8e2609a8-f7c1-45f3-8502-bcee976b068e"",
-                    ""path"": ""<keyboard>/7"",
+                    ""path"": ""<Keyboard>/7"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -408,7 +435,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""7cbc215d-3114-4e0e-ba4f-300448780ec7"",
-                    ""path"": ""<Keyboard>/y"",
+                    ""path"": ""<Keyboard>/8"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -419,7 +446,7 @@ namespace UnityEngine.InputSystem
                 {
                     ""name"": """",
                     ""id"": ""deb56dca-b555-4a0a-ac8d-002ddca5928f"",
-                    ""path"": ""<keyboard>/9"",
+                    ""path"": ""<Keyboard>/9"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
@@ -468,6 +495,61 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Chat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9915f492-4a49-48c1-99d0-6c7be90f5200"",
+                    ""path"": ""<Keyboard>/comma"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PreviousSlot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""44f926be-db6b-4099-893f-3fbb5bbd8fbf"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PreviousSlot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f981a079-acda-4dbe-81ab-48e9f30fdec5"",
+                    ""path"": ""<Keyboard>/period"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""NextSlot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b91d4ac6-979b-4e31-82c1-cd3d44d058b0"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""NextSlot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cf79b2d9-03ce-4123-8e51-64638b86c29c"",
+                    ""path"": ""<Keyboard>/f1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""DebugStats"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1078,6 +1160,9 @@ namespace UnityEngine.InputSystem
             m_Player_Slot9 = m_Player.FindAction("Slot9", throwIfNotFound: true);
             m_Player_PlayerList = m_Player.FindAction("PlayerList", throwIfNotFound: true);
             m_Player_Chat = m_Player.FindAction("Chat", throwIfNotFound: true);
+            m_Player_PreviousSlot = m_Player.FindAction("PreviousSlot", throwIfNotFound: true);
+            m_Player_NextSlot = m_Player.FindAction("NextSlot", throwIfNotFound: true);
+            m_Player_DebugStats = m_Player.FindAction("DebugStats", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1189,6 +1274,9 @@ namespace UnityEngine.InputSystem
         private readonly InputAction m_Player_Slot9;
         private readonly InputAction m_Player_PlayerList;
         private readonly InputAction m_Player_Chat;
+        private readonly InputAction m_Player_PreviousSlot;
+        private readonly InputAction m_Player_NextSlot;
+        private readonly InputAction m_Player_DebugStats;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -1265,6 +1353,18 @@ namespace UnityEngine.InputSystem
             /// </summary>
             public InputAction @Chat => m_Wrapper.m_Player_Chat;
             /// <summary>
+            /// Provides access to the underlying input action "Player/PreviousSlot".
+            /// </summary>
+            public InputAction @PreviousSlot => m_Wrapper.m_Player_PreviousSlot;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/NextSlot".
+            /// </summary>
+            public InputAction @NextSlot => m_Wrapper.m_Player_NextSlot;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/DebugStats".
+            /// </summary>
+            public InputAction @DebugStats => m_Wrapper.m_Player_DebugStats;
+            /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
             public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1338,6 +1438,15 @@ namespace UnityEngine.InputSystem
                 @Chat.started += instance.OnChat;
                 @Chat.performed += instance.OnChat;
                 @Chat.canceled += instance.OnChat;
+                @PreviousSlot.started += instance.OnPreviousSlot;
+                @PreviousSlot.performed += instance.OnPreviousSlot;
+                @PreviousSlot.canceled += instance.OnPreviousSlot;
+                @NextSlot.started += instance.OnNextSlot;
+                @NextSlot.performed += instance.OnNextSlot;
+                @NextSlot.canceled += instance.OnNextSlot;
+                @DebugStats.started += instance.OnDebugStats;
+                @DebugStats.performed += instance.OnDebugStats;
+                @DebugStats.canceled += instance.OnDebugStats;
             }
 
             /// <summary>
@@ -1397,6 +1506,15 @@ namespace UnityEngine.InputSystem
                 @Chat.started -= instance.OnChat;
                 @Chat.performed -= instance.OnChat;
                 @Chat.canceled -= instance.OnChat;
+                @PreviousSlot.started -= instance.OnPreviousSlot;
+                @PreviousSlot.performed -= instance.OnPreviousSlot;
+                @PreviousSlot.canceled -= instance.OnPreviousSlot;
+                @NextSlot.started -= instance.OnNextSlot;
+                @NextSlot.performed -= instance.OnNextSlot;
+                @NextSlot.canceled -= instance.OnNextSlot;
+                @DebugStats.started -= instance.OnDebugStats;
+                @DebugStats.performed -= instance.OnDebugStats;
+                @DebugStats.canceled -= instance.OnDebugStats;
             }
 
             /// <summary>
@@ -1831,6 +1949,27 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnChat(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "PreviousSlot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPreviousSlot(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "NextSlot" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnNextSlot(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "DebugStats" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnDebugStats(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

@@ -90,7 +90,7 @@ public class VideoTab : SettingsTab
     private void SetUpFont(SettingsData settingsData)
     {
         fontSwitch.SetUpSwitch(UIAssetsManager.instance.GetFontNames(), settingsData.fontIndex);
-        fontSwitch.OnChangedValue = null;
+        fontSwitch.OnChangedValue -= MainSettingsManager.instance.videoSettings.SetFont;
         fontSwitch.OnChangedValue += MainSettingsManager.instance.videoSettings.SetFont;
     }
     private void RefreshStrings(Locale obj)

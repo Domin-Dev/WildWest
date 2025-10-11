@@ -88,6 +88,18 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 8871383422762483846
+  - m_Id: 1461576029089792
+    m_Localized: Previous Slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1461665212575744
+    m_Localized: Next Slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1464382479839232
+    m_Localized: Debug Stats
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -109,7 +109,7 @@ public class MenuManager : MonoBehaviour
         buttonSettings.onClick.AddListener(() =>
         {
             GameInfo.instance.lastLoadedScene = -1;
-            WindowsManager.instance.LoadScene(12);
+            WindowsManager.instance.LoadScene(8);
             SwitchMenuButtons(false);
         });
         buttonQuit.onClick.AddListener(Quit);

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,9 +9,20 @@ public class InputManager : MonoBehaviour
 
     private InputActionAsset action;
 
-    private InputAction equipment;
-    private InputAction move;
 
+    public InputAction playerList { private set; get; }
+    public InputAction chat { private set; get; }
+    public InputAction equipment { private set; get; }
+    public InputAction move { private set; get; }
+    public InputAction previousSlot { private set; get; }
+    public InputAction nextSlot { private set; get; }
+    public List<InputAction> slots { private set; get; }
+
+
+    public InputAction debugStats { private set; get; }
+
+
+    public bool playerTab;
 
     private void Awake()
     {
@@ -27,14 +39,49 @@ public class InputManager : MonoBehaviour
     {
         action = inputAsset;
 
-        equipment = action.FindActionMap("Player").FindAction("Equipment");
-        move = action.FindActionMap("Player").FindAction("Move");
-        equipment.performed += Equipment_performed;
+        playerList = action.FindAction("PlayerList");
+        chat = action.FindAction("Chat");
+        equipment = action.FindAction("Equipment");
+        move = action.FindAction("Move");
+        previousSlot = action.FindAction("PreviousSlot");
+        nextSlot = action.FindAction("NextSlot");
+        for (int i = 0; i < 10; i++)
+        {
+            slots.Add(action.FindAction($"Slot{i}"));
+        }
+        debugStats = action.FindAction("DebugStats");
+
+
+
+
+
+        previousSlot.performed += PreviousSlot_performed;
+        playerList.performed += PlayerList_performed;
+        playerList.canceled += PlayerList_performed;
+        equipment.performed += UP;
         move.performed += Move_performed;
     }
+
+    private void PreviousSlot_performed(InputAction.CallbackContext obj)
+    {
+        Debug.Log("input!!");
+
+        Debug.Log(previousSlot.ReadValueAsObject());
+    }
+
+    private void PlayerList_performed(InputAction.CallbackContext obj)
+    {
+        Debug.Log("input!!");
+        playerTab = true;
+    }
+    private void UP(InputAction.CallbackContext obj)
+    {
+        playerTab = false;
+    }
+
     private void Move_performed(InputAction.CallbackContext obj)
     {
-        Debug.Log("Move!!");
+
     }
 
     private void Equipment_performed(InputAction.CallbackContext obj)

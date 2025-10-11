@@ -76,7 +76,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1102934184472576
-    m_Localized: Lista graczy
+    m_Localized: Lista Graczy
     m_Metadata:
       m_Items: []
   - m_Id: 1103178917916672
@@ -88,6 +88,18 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 8871383422762483847
+  - m_Id: 1461576029089792
+    m_Localized: Poprzedni Slot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1461665212575744
+    m_Localized: "Nast\u0119pny Slot"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1464382479839232
+    m_Localized: Statystyki Debugowania
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

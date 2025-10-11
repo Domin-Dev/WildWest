@@ -185,6 +185,26 @@ MonoBehaviour:
     m_Key: GamepadControls
     m_Metadata:
       m_Items: []
+  - m_Id: 10224828087185408
+    m_Key: GameMenu_Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225149161156608
+    m_Key: GameMenu_Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225216597176320
+    m_Key: GameMenu_HostSettings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225338315878400
+    m_Key: GameMenu_ExitAndSave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10226481930612736
+    m_Key: GameMenu_Title
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

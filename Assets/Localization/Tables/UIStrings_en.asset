@@ -183,6 +183,26 @@ MonoBehaviour:
     m_Localized: Gamepad Controls
     m_Metadata:
       m_Items: []
+  - m_Id: 10224828087185408
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225149161156608
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225216597176320
+    m_Localized: Host Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225338315878400
+    m_Localized: Exit and Save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10226481930612736
+    m_Localized: Game Menu
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

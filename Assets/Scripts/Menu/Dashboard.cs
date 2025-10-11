@@ -77,13 +77,11 @@ public class Dashboard : MonoBehaviour
     Material mat;
     private void BuildDashboard()
     {
-        Debug.Log("Dashboard!!!");
         players.Sort((a, b) => a.playerID.CompareTo(b.playerID));
         GameObject rowPrefab = rowClient;
 
         if (ClientServerBootstrap.HasServerWorld)
             rowPrefab = rowAdmin;
-
 
         foreach (PlayerData playerData in players)
         {

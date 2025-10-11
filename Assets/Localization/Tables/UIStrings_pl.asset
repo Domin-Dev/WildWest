@@ -184,6 +184,26 @@ MonoBehaviour:
     m_Localized: Sterowanie (kontroler)
     m_Metadata:
       m_Items: []
+  - m_Id: 10224828087185408
+    m_Localized: "Wznowi\u0107 Gr\u0119"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225149161156608
+    m_Localized: Ustawienia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225216597176320
+    m_Localized: Ustawienia hosta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10225338315878400
+    m_Localized: "Wyjd\u017A i Zapisz"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 10226481930612736
+    m_Localized: Menu gry
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

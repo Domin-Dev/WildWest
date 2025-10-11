@@ -149,6 +149,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234afb769d07aa9418ff45a3044aa619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpdateFont
+  textType: 0
 --- !u!1 &2099237748289314183
 GameObject:
   m_ObjectHideFlags: 0
@@ -184,7 +185,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_SizeDelta: {x: 0, y: 23.0338}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5501446825108320404
 MonoBehaviour:
@@ -323,7 +324,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 42}
+  m_SizeDelta: {x: 0, y: 52.0316}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1352274085817373387
 MonoBehaviour:
@@ -385,7 +386,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 45.8674}
+  m_SizeDelta: {x: 0, y: 41.818}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &2271752512389630621
 CanvasRenderer:
@@ -415,7 +416,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: KOKOKOK
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e8f6b37156d7f074c89de35971b07ae7, type: 2}
   m_sharedMaterial: {fileID: -7721429128836851817, guid: e8f6b37156d7f074c89de35971b07ae7, type: 2}
@@ -498,6 +499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234afb769d07aa9418ff45a3044aa619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpdateFont
+  textType: 0
 --- !u!1 &3336828970554491921
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,6 +511,7 @@ GameObject:
   - component: {fileID: 1781352506862801983}
   - component: {fileID: 7474782954855809300}
   - component: {fileID: 5810505425149892385}
+  - component: {fileID: 3650412943670557129}
   m_Layer: 5
   m_Name: PlayTime
   m_TagString: Untagged
@@ -556,7 +559,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -574,6 +577,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3650412943670557129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3336828970554491921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1ddb15fefbe754ab68a2e45bd4c6b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateShadow
 --- !u!1 &3356174159307549114
 GameObject:
   m_ObjectHideFlags: 0
@@ -723,6 +738,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234afb769d07aa9418ff45a3044aa619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpdateFont
+  textType: 0
 --- !u!1 &3921594044452458896
 GameObject:
   m_ObjectHideFlags: 0
@@ -1030,6 +1046,7 @@ GameObject:
   - component: {fileID: 2870175079940593045}
   - component: {fileID: 8065478304703988179}
   - component: {fileID: 1124789355004986542}
+  - component: {fileID: 3576549054789157767}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -1079,7 +1096,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1117,6 +1134,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!114 &3576549054789157767
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6252031665203612073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1ddb15fefbe754ab68a2e45bd4c6b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateShadow
 --- !u!1 &6277331135169793104
 GameObject:
   m_ObjectHideFlags: 0
@@ -1266,6 +1295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 234afb769d07aa9418ff45a3044aa619, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpdateFont
+  textType: 0
 --- !u!1 &7060641607105466342
 GameObject:
   m_ObjectHideFlags: 0
@@ -1367,6 +1397,7 @@ GameObject:
   - component: {fileID: 4420525538796395818}
   - component: {fileID: 5963189715019003912}
   - component: {fileID: 7547886006367163237}
+  - component: {fileID: 1330665461359048248}
   m_Layer: 5
   m_Name: Image (1)
   m_TagString: Untagged
@@ -1414,7 +1445,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 5a74ed148260f4545b4e7f2726a35d34, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -1432,6 +1463,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1330665461359048248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7658534948137425848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1ddb15fefbe754ab68a2e45bd4c6b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateShadow
 --- !u!1001 &998462899268563491
 PrefabInstance:
   m_ObjectHideFlags: 0

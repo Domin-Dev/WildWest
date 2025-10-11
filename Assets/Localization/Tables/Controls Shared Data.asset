@@ -83,6 +83,18 @@ MonoBehaviour:
     m_Key: Rebind_Slot
     m_Metadata:
       m_Items: []
+  - m_Id: 1461576029089792
+    m_Key: Rebind_PreviousSlot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1461665212575744
+    m_Key: Rebind_NextSlot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1464382479839232
+    m_Key: Rebind_DebugStats
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

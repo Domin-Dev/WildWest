@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class ListSwitch : BaseSwitch
 {
     [SerializeField] private TextMeshProUGUI text;
-    string[] tab;
+    public string[] tab;
     public void SetUpSwitch(string[] tab, int defaultValue)
     {
         this.tab = tab;

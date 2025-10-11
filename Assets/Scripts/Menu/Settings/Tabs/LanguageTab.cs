@@ -35,8 +35,6 @@ public class LanguageTab : SettingsTab
     {
 
     }
-
-    
     private void SetUp()
     {
         if (languages.Count > 0) return;
@@ -57,6 +55,7 @@ public class LanguageTab : SettingsTab
     }
     private void SetLanguage(string code)
     {
+        Debug.Log("new !!!!!!!!!!!!!! " + code);
         SetUp();
         if (!string.IsNullOrEmpty(selected))
         {

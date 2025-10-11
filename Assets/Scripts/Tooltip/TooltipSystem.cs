@@ -10,7 +10,13 @@ public class TooltipSystem : MonoBehaviour
 
     private void Awake()
     {
-        current = this;
+        if(current == null)
+        {
+            current = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+            Destroy(gameObject);
     }
     public static void Show(string content,string header = "")
     {
