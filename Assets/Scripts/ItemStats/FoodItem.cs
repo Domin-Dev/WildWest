@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-public class FoodItem : ItemStats, IBarValue , IStackingBarValues
+public class FoodItem : ItemSlot, IBarValue , IStackingBarValues
 {
     public float maxShelfLife { private set; get; }
     public float currentShelfLife { private set; get; }
@@ -22,7 +22,7 @@ public class FoodItem : ItemStats, IBarValue , IStackingBarValues
     }
 
 
-    public override ItemStats Clon()
+    public override ItemSlot Clon()
     {
         return new FoodItem(this);
     }
@@ -43,8 +43,8 @@ public class FoodItem : ItemStats, IBarValue , IStackingBarValues
 
     public void Stacking(int number, float value)
     {
-        float newShelfLife = itemCount * currentShelfLife;
+        float newShelfLife = quantity * currentShelfLife;
         newShelfLife += number * value;
-        SetCurrentValue(newShelfLife/(number + itemCount));
+        SetCurrentValue(newShelfLife/(number + quantity));
     }
 }

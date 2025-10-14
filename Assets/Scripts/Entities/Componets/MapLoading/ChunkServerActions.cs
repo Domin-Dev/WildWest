@@ -20,11 +20,16 @@ public struct ChunkServerActions : IBufferElementData
 
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
-public struct ChunkEvents : IBufferElementData
+public struct ChunkEvents : IBufferElementData ,IIndexed
 {
     [GhostField] public int2 value;
     [GhostField] public byte flags;
     [GhostField] public uint index;
+
+    public uint GetIndex()
+    {
+        return index;
+    }
     // byte
     // 0 null
     // 1 readChunk Value.x = chunk index
@@ -35,7 +40,8 @@ public struct ChunkEventCounter : IInputComponentData
 {
     [GhostField(Quantization = 0)] public uint index;
 }
-public struct ServerChunkEventCounter : IComponentData
+public struct ServerChunkEventCounter : IComponentData,IIndexed
 {
     public uint index;
+    public uint GetIndex() { return index; }
 }

@@ -82,7 +82,7 @@ public class Actions : MonoBehaviour
     {
         EquipmentManager.instance.LoadChest(gridContainer);
     } 
-    public void Action(ItemStats itemStats)
+    public void Action(ItemSlot itemStats)
     {
         Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
         GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(pos);
@@ -186,7 +186,7 @@ public class Actions : MonoBehaviour
                 break;
         }
     }
-    public void SideAction(ItemStats itemStats)
+    public void SideAction(ItemSlot itemStats)
     {
 
         Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());

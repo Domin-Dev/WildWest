@@ -31,23 +31,32 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            var scene = SceneManager.GetSceneByBuildIndex(DebugUIIndex);
-            if(!scene.isLoaded)
-            {
-                SceneManager.LoadSceneAsync(DebugUIIndex, LoadSceneMode.Additive);
-            }
-            else
-            {
-                SceneManager.UnloadSceneAsync(DebugUIIndex);
-            }
-        }
+        Debug.Log("need key!");
+        if(InputManager.i != null)  InputManager.i.debugStats.performed += OpenDebugStats;
     }
+
+
+
+    private void OnDisable()
+    {
+        if (InputManager.i != null) InputManager.i.debugStats.performed -= OpenDebugStats;
+    }
+
+
+    private void OpenDebugStats(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        var scene = SceneManager.GetSceneByBuildIndex(DebugUIIndex);
+        if (!scene.isLoaded)
+            SceneManager.LoadSceneAsync(DebugUIIndex, LoadSceneMode.Additive);
+        else
+            SceneManager.UnloadSceneAsync(DebugUIIndex);
+    }
+
     private void OnValue(object s, EventArgs e)
     {
         Debug.Log("dziala");

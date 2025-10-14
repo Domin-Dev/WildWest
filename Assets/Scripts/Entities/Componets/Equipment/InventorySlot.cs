@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.NetCode;
 
-[GhostComponent(OwnerSendType = SendToOwnerType.All)] 
+[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
 public struct InventorySlot : IBufferElementData
 {
-    [GhostField] public SlotPosition position;
+    [GhostField] public int slot;
     [GhostField] public int ItemId;    
     [GhostField] public int quantity; 
 }
 
-[GhostComponent(OwnerSendType = SendToOwnerType.All)]
+[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
 public struct ContainerComponent : IComponentData
 {
     [GhostField] public byte containerIndex;
@@ -24,14 +24,6 @@ public struct ContainerComponent : IComponentData
     [GhostField] public int mandatoryData;
 }
 
-[GhostComponent(OwnerSendType = SendToOwnerType.All)]
-public struct Equipment : IBufferElementData
-{
-}
-
-public struct ContainerLoaded : IComponentData
-{
-}
 
 
 public enum MandatoryProperties : byte
@@ -39,4 +31,7 @@ public enum MandatoryProperties : byte
     none = 0,
     tag = 1,
     item = 2,
+}
+public struct ContainerLoaded : IComponentData
+{
 }

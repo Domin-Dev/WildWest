@@ -4,8 +4,7 @@ using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
 
 public static class RPCHelper
-{
-    
+{  
     public static void SendRpc<T>(ref EntityCommandBuffer ecb, Entity connectionEntity, in T rpcCommand)
         where T : unmanaged, IRpcCommand
     {
@@ -13,7 +12,6 @@ public static class RPCHelper
         ecb.AddComponent(rpcEntity, rpcCommand);
         ecb.AddComponent(rpcEntity, new SendRpcCommandRequest { TargetConnection = connectionEntity });
     }
-
     public static void SendApprovalRpc<T>(ref EntityCommandBuffer ecb, Entity connectionEntity, in T rpcCommand)
       where T : unmanaged, IApprovalRpcCommand
     {
@@ -28,18 +26,11 @@ public static class RPCHelper
         ecb.AddComponent(rpcEntity, rpcCommand);
         ecb.AddComponent(rpcEntity, new SendRpcCommandRequest());
     }
-
     public static void SendRpc<T>(ref EntityCommandBuffer ecb)
       where T : unmanaged, IRpcCommand
     {
-        Entity rpcEntity = ecb.CreateEntity();
-        ecb.AddComponent(rpcEntity, new  T());
-        ecb.AddComponent(rpcEntity, new SendRpcCommandRequest());
+        SendRpc(ref ecb, new T());
     }
-
-
-
-
     public static void SendMessageToClients(ref EntityCommandBuffer ecb, string serverMessage)
     {
         var rpc = new NewMessageServerRPC()
@@ -51,7 +42,6 @@ public static class RPCHelper
         };
         SendRpc(ref ecb, rpc);
     }
-
     public static void SendMessageToClient(ref EntityCommandBuffer ecb, string serverMessage, Entity client)
     {
         var rpc = new NewMessageServerRPC()
@@ -63,23 +53,17 @@ public static class RPCHelper
         };
         SendRpc(ref ecb, client, rpc);
     }
-
     private static void DisconnectAllClients(World serverWorld)
     {
         var em = serverWorld.EntityManager;
         var connections = em.CreateEntityQuery(typeof(NetworkStreamConnection))
                             .ToEntityArray(Unity.Collections.Allocator.Temp);
-
         foreach (var conn in connections)
         {
             em.AddComponent<NetworkStreamRequestDisconnect>(conn);
         }
-
-
-
         connections.Dispose();
     }
-
     public static void StopServer(World serverWorld)
     {
         DisconnectAllClients(serverWorld);  

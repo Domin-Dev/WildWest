@@ -18,12 +18,16 @@ partial struct ContainerClientSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ContainerComponent> containerComponent, Entity entity) in SystemAPI.Query<RefRO<ContainerComponent>>().WithNone<ContainerLoaded>().WithEntityAccess())
         {
-            EquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
+            NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
             entityCommandBuffer.AddComponent<ContainerLoaded>(entity);
         }
+        
+        
+        
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }

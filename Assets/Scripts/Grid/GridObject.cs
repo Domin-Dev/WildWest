@@ -8,10 +8,10 @@ using UnityEngine.UIElements;
 
 public class GridContainer : GridObject
 {
-    public ItemStats[] items;
+    public ItemSlot[] items;
     public GridContainer(int ID, int indexVariant, Transform obj, int size,Vector2 mainPosition) : base(ID, indexVariant, obj, mainPosition)
     {
-        items = new ItemStats[size];
+        items = new ItemSlot[size];
     }
 }
 public class GridDoor : GridObject

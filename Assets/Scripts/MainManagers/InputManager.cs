@@ -45,6 +45,7 @@ public class InputManager : MonoBehaviour
         move = action.FindAction("Move");
         previousSlot = action.FindAction("PreviousSlot");
         nextSlot = action.FindAction("NextSlot");
+        slots = new List<InputAction>();
         for (int i = 0; i < 10; i++)
         {
             slots.Add(action.FindAction($"Slot{i}"));
@@ -64,9 +65,7 @@ public class InputManager : MonoBehaviour
 
     private void PreviousSlot_performed(InputAction.CallbackContext obj)
     {
-        Debug.Log("input!!");
 
-        Debug.Log(previousSlot.ReadValueAsObject());
     }
 
     private void PlayerList_performed(InputAction.CallbackContext obj)

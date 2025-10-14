@@ -44,7 +44,7 @@ partial struct PlayerInputSystem : ISystem
         //        WindowsManager.instance.LoadScene(11);
         //}
 
-        if (InputManager.i.playerList.WasPerformedThisFrame() && !ChatManager.instance.isChatting)
+        if (InputManager.i.playerList.triggered && !ChatManager.instance.isChatting)
         {
             Debug.Log("new tab!");
             WindowsManager.instance.LoadScene(9);

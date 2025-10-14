@@ -8,7 +8,7 @@ public class LiquidContainer : Item
 {
     public int capacity;
 
-    public override ItemStats GetItemStats()
+    public override ItemSlot GetItemStats()
     {
         return new LiquidContainerItem(ID,capacity);
     }

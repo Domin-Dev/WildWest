@@ -21,6 +21,7 @@ public class UpdateTextSettings : MonoBehaviour
     }
     private void ChangeFont(TMP_FontAsset font)
     {
+        if(font == null) return;
         var textPro = GetComponent<TMP_Text>();
         textPro.font = font;
 

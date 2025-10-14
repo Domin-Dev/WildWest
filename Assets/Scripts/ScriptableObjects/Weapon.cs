@@ -15,7 +15,7 @@ public class Weapon : Destroyable
     public int damage = 5;
     public int cooldown;
 
-    public override ItemStats GetItemStats()
+    public override ItemSlot GetItemStats()
     {
         return base.GetItemStats();
     }

@@ -3,7 +3,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public class LiquidContainerItem : ItemStats, IBarValue
+public class LiquidContainerItem : ItemSlot, IBarValue
 {
     public float maxCapacity { private set; get; }
     public float currentFill { private set; get; }
@@ -19,7 +19,7 @@ public class LiquidContainerItem : ItemStats, IBarValue
         this.currentFill = item.currentFill;
     }
 
-    public override ItemStats Clon()
+    public override ItemSlot Clon()
     {
         return new LiquidContainerItem(this);
     }

@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-public class DestroyableItem : ItemStats, IBarValue
+public class DestroyableItem : ItemSlot, IBarValue
 {
     public float maxLifePonits { private set; get; }
     public float currentLifePoints { private set; get; }
@@ -25,7 +25,7 @@ public class DestroyableItem : ItemStats, IBarValue
         return currentLifePoints / (float)maxLifePonits;
     }
 
-    public override ItemStats Clon()
+    public override ItemSlot Clon()
     {
         return new DestroyableItem(this);
     }

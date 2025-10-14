@@ -831,7 +831,7 @@ public class GridVisualization : MonoBehaviour
         }
         UpdateSprite(positionXY);
     }
-    public void CreateWorldItem(ItemStats item,Vector2 pos,Vector2 target)
+    public void CreateWorldItem(ItemSlot item,Vector2 pos,Vector2 target)
     {
         int chunkIndex = GetChunkIndexByWorldPosition(new Vector2(target.x, target.y));
         Transform itemTransform = Instantiate(worldItem, pos, Quaternion.identity,transform).transform;
@@ -843,7 +843,7 @@ public class GridVisualization : MonoBehaviour
 
         witem.SetItem(item, target, itemChunkIndex,chunkIndex);
 
-        if (item.itemCount < ItemsAsset.instance.GetStackMax(item.itemID))
+        if (item.quantity < ItemsAsset.instance.GetStackMax(item.itemID))
         {
             ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, itemChunkIndex, item.itemID);
             if (chunkItem != null) witem.AddStacks(chunkItem, newItem,false);
@@ -855,7 +855,7 @@ public class GridVisualization : MonoBehaviour
         Vector2 vector2 = GetGridPosition(worldPosition);
         ChunkItem oldchunkItem = map.chunks[chunkIndex].items[worldItem.itemChunkIndex];
 
-        if (worldItem.itemStats.itemCount < ItemsAsset.instance.GetStackMax(worldItem.itemStats.itemID))
+        if (worldItem.itemStats.quantity < ItemsAsset.instance.GetStackMax(worldItem.itemStats.itemID))
         {
             ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, worldItem.itemChunkIndex, worldItem.itemStats.itemID);
             if (chunkItem != null)
@@ -864,18 +864,18 @@ public class GridVisualization : MonoBehaviour
             }
         }
     }
-    public bool AddStacks(ChunkItem chunkItem,ItemStats itemStats)
+    public bool AddStacks(ChunkItem chunkItem,ItemSlot itemStats)
     {
-        int free = ItemsAsset.instance.GetStackMax(chunkItem.item.itemID) - chunkItem.item.itemCount;
-        if(itemStats.itemCount - free > 0)
+        int free = ItemsAsset.instance.GetStackMax(chunkItem.item.itemID) - chunkItem.item.quantity;
+        if(itemStats.quantity - free > 0)
         {
-            chunkItem.item.itemCount += free;
-            itemStats.itemCount -= free;
+            chunkItem.item.quantity += free;
+            itemStats.quantity -= free;
             return false;
         }
         else
         {
-            chunkItem.item.itemCount += itemStats.itemCount;
+            chunkItem.item.quantity += itemStats.quantity;
             return true;
         }
     }
@@ -962,7 +962,7 @@ public class GridVisualization : MonoBehaviour
         }
 
     }
-    public void CreateWorldItem(ItemStats item,Vector2 posXY)
+    public void CreateWorldItem(ItemSlot item,Vector2 posXY)
     {
         Vector2 target = GetWorldPosition(posXY + new Vector2(UnityEngine.Random.Range(-0.5f, 0.5f), UnityEngine.Random.Range(0f, 0.5f)));
         CreateWorldItem(item, GetWorldPosition(posXY + new Vector2(0, 0.5f)), target);

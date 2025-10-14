@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using TMPro;
+using TMPro.Examples;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -141,7 +142,6 @@ public class UIManager : MonoBehaviour
     { 
         eqManager.UpdateSelectedSlotInBar += UpdateSelectedSlot;
 
-        eqManager.OpenEquipmentUI += OpenEquipment;
 
         eqManager.CreateItemUI += CreateItemUI;
         eqManager.MoveItemUI += MoveItemUI;
@@ -159,7 +159,7 @@ public class UIManager : MonoBehaviour
         LoadClothesSlots(clothesGrid);
     }
 
-    public void LoadSlotsContainer(ItemStats[] items)
+    public void LoadSlotsContainer(ItemSlot[] items)
     {
         containerGrid.gridTransform.gameObject.SetActive(true);
         if (containerGrid.gridTransform.childCount >= items.Length)
@@ -196,7 +196,7 @@ public class UIManager : MonoBehaviour
                 
             }
         }
-        OpenEquipment(this, new BoolArgs(true)); ;
+        OpenEquipment(true); 
         LayoutRebuilder.ForceRebuildLayoutImmediate(containerGrid.gridTransform.GetComponent<RectTransform>());
     }
 
@@ -215,7 +215,7 @@ public class UIManager : MonoBehaviour
         else tileInfo.text = tile.GetTileInfo();
     }
 
-    public void LoadSlotsDedicatedContainer(ItemStats[] items,Sprite icon)
+    public void LoadSlotsDedicatedContainer(ItemSlot[] items,Sprite icon)
     {
         LoadSlotsContainer(items);
         for (int i = 0; i < items.Length; i++)
@@ -355,7 +355,7 @@ public class UIManager : MonoBehaviour
         }
         else if (e.to.containerIndex == 0)
         {
-            ItemStats item = EquipmentManager.instance.GetItemStatsValue(e.to);
+            ItemSlot item = EquipmentManager.instance.GetItemStatsValue(e.to);
             NewItemUI(mainItemBar, new CreateItemArgs(item,e.to,false));
         }   
     }
@@ -433,8 +433,6 @@ public class UIManager : MonoBehaviour
         }
         return null;
     }
-
-
     private void MoveItemUI(object sender, MoveItemUIArgs e)
     {
         Transform gridFrom = GetGrid(e.from.containerIndex);
@@ -470,7 +468,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void SetBarColor(Transform bar,ItemStats itemStats)
+    private void SetBarColor(Transform bar,ItemSlot itemStats)
     {
         Image image = bar.GetComponent<Image>();
         switch (itemStats)
@@ -502,13 +500,13 @@ public class UIManager : MonoBehaviour
         transform.anchoredPosition = Vector2.zero;
 
         transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(e.itemStats.itemID);
-        if (e.itemStats.itemCount != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = e.itemStats.itemCount.ToString();
+        if (e.itemStats.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = e.itemStats.quantity.ToString();
         else transform.GetComponentInChildren<TextMeshProUGUI>().text = "";
 
         if (gridUI != mainItemBar)
         {
             transform.GetComponent<DragDrop>().SetCanvas(mainCanvas);
-            transform.GetComponent<DragDrop>().IsInSlot();
+          //  transform.GetComponent<DragDrop>().IsInSlot();
         }
         else
         {
@@ -516,11 +514,10 @@ public class UIManager : MonoBehaviour
         }
 
     }
-    private void NewItemUI(Transform gridUI, InventorySlot slot)
+    private void NewItemUI(Transform gridUI, ItemSlot itemSlot, int slotIndex)
     {
-        Debug.Log(slot.position.slotIndex +  "  ----");
         Debug.Log(gridUI.childCount);
-        RectTransform transform = Instantiate(item, gridUI.GetChild(slot.position.slotIndex)).GetComponent<RectTransform>();
+        RectTransform transform = Instantiate(item, gridUI.GetChild(slotIndex)).GetComponent<RectTransform>();
         transform.SetAsFirstSibling();
 
         //if (e.itemStats as IBarValue != null)
@@ -531,9 +528,8 @@ public class UIManager : MonoBehaviour
         //}
 
         transform.anchoredPosition = Vector2.zero;
-
-        transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(slot.ItemId);
-        if (slot.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity.ToString();
+        transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(itemSlot.itemID);
+        if (itemSlot.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = itemSlot.quantity.ToString();
         else transform.GetComponentInChildren<TextMeshProUGUI>().text = "";
 
         if (gridUI != mainItemBar)
@@ -551,13 +547,13 @@ public class UIManager : MonoBehaviour
         background.gameObject.SetActive(value);
     }
 
-    private void OpenEquipment(object sender, BoolArgs e)
+    public void OpenEquipment(bool value)
     {
         CloseWindows();
-        background.gameObject.SetActive(e.value);
-        equipment.gameObject.SetActive(e.value);
+        background.gameObject.SetActive(value);
+        equipment.gameObject.SetActive(value);
 
-        if (!e.value)
+        if (!value)
         {
             TooltipSystem.Hide();
             openWindows.Remove(equipment);
@@ -633,9 +629,38 @@ public class UIManager : MonoBehaviour
             grid.gridTransform.GetChild(i).GetComponent<DropSlot>().SetSlotPosition(i, grid.gridIndex);
         }
     }
+
+
+    public void UpdateItemSlot(Container container,ItemSlot slot, int slotIndex)
+    {
+        Transform slotObj = container.gridTransform.GetChild(slotIndex);
+
+        if (slot == null)
+        {
+            if (slotObj.childCount > 0 && slotObj.GetComponentInChildren<DragDrop>() != null)
+            {
+                Destroy(slotObj.GetChild(0).gameObject);
+                Debug.Log("destroy! " + slotIndex);
+            }
+        }
+        else
+        {
+            if (slotObj.childCount > 0 && slotObj.GetComponentInChildren<DragDrop>() != null)
+            {
+                slotObj.GetChild(0).GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(slot.itemID);
+                slotObj.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity > 1 ? slot.quantity.ToString() : "";
+                Debug.Log("update! " + slotIndex);
+            }
+            else
+            {
+                NewItemUI(container.gridTransform, slot, slotIndex);
+                Debug.Log("create! " + slotIndex);
+            }
+        }
+    }
     public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity,ContainerComponent containerComponent,bool numbering)
     {
-        OpenEquipment(this, new BoolArgs(true));
+        OpenEquipment(true);
         bool isMainBar = equipmentGrid.gridIndex == 0;
         Sprite icon = null;
         if (containerComponent.mandatoryProperties == MandatoryProperties.tag)
@@ -651,8 +676,7 @@ public class UIManager : MonoBehaviour
             {
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
-                if (!isMainBar)
-                    slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
                 slot.SetAsFirstSibling();
                 Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
             }
@@ -671,18 +695,16 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        Debug.Log(equipmentGrid.gridTransform.childCount);
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
         foreach (InventorySlot slot in slots)
         {
-            if (icon != null) equipmentGrid.gridTransform.GetChild(slot.position.slotIndex).GetChild(0).gameObject.SetActive(false);
-            NewItemUI(equipmentGrid.gridTransform,slot);
+            if (icon != null) equipmentGrid.gridTransform.GetChild(slot.slot).GetChild(0).gameObject.SetActive(false);
+            NewItemUI(equipmentGrid.gridTransform,new ItemSlot(slot),slot.slot);
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.GetComponent<RectTransform>());
-        OpenEquipment(this, new BoolArgs(false));
+        OpenEquipment(false);
     }
-  
     public EquipmentGrid LoadBarSlots(ContainerComponent containerComponent, Entity entity)
     {
         EquipmentGrid equipmentGrid = new EquipmentGrid(mainItemBar, 0);

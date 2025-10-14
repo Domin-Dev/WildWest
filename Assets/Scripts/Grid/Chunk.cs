@@ -4,11 +4,11 @@ using UnityEngine.UIElements;
 
 public class ChunkItem
 {
-    public ItemStats item;
+    public ItemSlot item;
     public Vector2 position;
     public Transform worldItem;
 
-    public ChunkItem(ItemStats item,Vector2 position, Transform worldItem)
+    public ChunkItem(ItemSlot item,Vector2 position, Transform worldItem)
     {
         this.item = item;
         this.position = position;
@@ -80,7 +80,7 @@ public class Chunk
             ChunkItem chunkItem = items[i];
             if (chunkItem != null && chunkItem.position == position && chunkItem.item.itemID == id)
             {
-                if (chunkItem.item.itemCount < ItemsAsset.instance.GetStackMax(id)) 
+                if (chunkItem.item.quantity < ItemsAsset.instance.GetStackMax(id)) 
                     return items[i];
             }
         }

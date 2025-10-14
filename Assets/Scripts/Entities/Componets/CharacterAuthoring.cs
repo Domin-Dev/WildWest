@@ -31,7 +31,6 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
 
-            AddBuffer<InventorySlot>(entity);
   
             AddBuffer<CooldownTargetTick>(entity);
         }

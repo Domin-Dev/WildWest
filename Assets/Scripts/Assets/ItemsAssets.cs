@@ -200,10 +200,10 @@ public class ItemsAsset : MonoBehaviour
     {
         return new TooltipInfo(item.description, item.name);
     }
-    public ItemStats GetItemStats(int itemID, int itemCount = 1)
+    public ItemSlot GetItemStats(int itemID, int itemCount = 1)
     {
-        ItemStats item = GetItem(itemID).GetItemStats();
-        item.itemCount = itemCount;
+        ItemSlot item = GetItem(itemID).GetItemStats();
+        item.quantity = itemCount;
         return item;
     }
     public ToolType GetToolType(int ID)

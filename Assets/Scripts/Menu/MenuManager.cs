@@ -197,7 +197,7 @@ public class MenuManager : MonoBehaviour
 
     public void SetSelectedButton()
     {
-        WindowsManager.instance.SetNewSelectedButton(buttonSingleplayer.gameObject);
+       WindowsManager.instance.SetNewSelectedButton(buttonSingleplayer?.gameObject);
     }
     public void SwitchMenuButtons(bool turnON)
     {

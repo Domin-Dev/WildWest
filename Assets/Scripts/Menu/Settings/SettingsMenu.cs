@@ -36,7 +36,6 @@ public class SettingsMenu : MonoBehaviour
     private void CloseSettings()
     {
         WindowsManager.instance.UnloadScene(8);
-        MenuManager.instance?.SetSelectedButton();
         if (GameInfo.instance.lastLoadedScene == -1)
             WindowsManager.instance.SwitchBackground(false);
         else
