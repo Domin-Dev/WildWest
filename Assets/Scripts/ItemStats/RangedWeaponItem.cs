@@ -57,7 +57,7 @@ public class RangedWeaponItem : DestroyableItem
     {
         return magazineCapacity - currentAmmoCount;
     }
-    public override ItemSlot Clon()
+    public override ItemStats Clon()
     {
         return new RangedWeaponItem(this);
     }

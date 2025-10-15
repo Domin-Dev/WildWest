@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public class ItemSlot
+public class ItemStats
 {
     public int itemID { private set; get; } = -1;
     private int _quantity;
@@ -19,18 +19,18 @@ public class ItemSlot
         }
     }
 
-    public ItemSlot(ItemSlot itemStats)
+    public ItemStats(ItemStats itemStats)
     {
         this.itemID = itemStats.itemID;
         this.quantity = itemStats.quantity;
     }
-    public ItemSlot(int itemID, int itemCount = 1)
+    public ItemStats(int itemID, int itemCount = 1)
     {
         this.itemID = itemID;
         this.quantity = itemCount;
     }
 
-    public ItemSlot(InventorySlot inventorySlot)
+    public ItemStats(InventorySlot inventorySlot)
     {
         itemID = inventorySlot.ItemId;
         quantity = inventorySlot.quantity;
@@ -47,9 +47,9 @@ public class ItemSlot
     }
 
 
-    public virtual ItemSlot Clon()
+    public virtual ItemStats Clon()
     {
-        return new ItemSlot(this);
+        return new ItemStats(this);
     }
 
     public override string ToString()

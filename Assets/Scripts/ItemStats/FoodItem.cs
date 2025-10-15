@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-public class FoodItem : ItemSlot, IBarValue , IStackingBarValues
+public class FoodItem : ItemStats, IBarValue , IStackingBarValues
 {
     public float maxShelfLife { private set; get; }
     public float currentShelfLife { private set; get; }
@@ -22,7 +22,7 @@ public class FoodItem : ItemSlot, IBarValue , IStackingBarValues
     }
 
 
-    public override ItemSlot Clon()
+    public override ItemStats Clon()
     {
         return new FoodItem(this);
     }

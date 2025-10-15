@@ -7,7 +7,7 @@ public class Food : Item
     public int saturation;
     public int shelfLife;
 
-    public override ItemSlot GetItemStats()
+    public override ItemStats GetItemStats()
     {
         return new FoodItem(ID, shelfLife);
     }

@@ -11,7 +11,7 @@ public class RangedWeapon : Weapon
     public AmmoType ammoType;
 
 
-    public override ItemSlot GetItemStats()
+    public override ItemStats GetItemStats()
     {
         return new RangedWeaponItem(ID,durability, magazineCapacity);
     }

@@ -1,26 +1,21 @@
 
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragDrop : MonoBehaviour, IPointerClickHandler
+public class DragItem : MonoBehaviour, IPointerClickHandler
 {
     private RectTransform rectTransform;
     public Transform parent;
     private CanvasGroup canvasGroup;
 
     public bool isInSlot;
-    private Canvas canvas;
 
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
     }
-    public void SetCanvas(Canvas canvas)
-    {
-        this.canvas = canvas;
-    }
-
     public SlotPosition GetSlotPostion()
     {
         return parent.GetComponent<DropSlot>().GetSlotPosition();
@@ -33,17 +28,29 @@ public class DragDrop : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        ClickItem(); 
+        ClickItem(eventData);
     }
 
-    private void ClickItem()
+    private void ClickItem(PointerEventData eventData)
     {
-        parent.GetComponent<DropSlot>().slotClick -= ClickItem;
-        canvasGroup.alpha = 0.7f;
-        canvasGroup.blocksRaycasts = false;
-        rectTransform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-        transform.SetParent(UIManager.instance.itemParent);
-        DragManager.instance.ItemSelected(this);
+        SelectionMode mode = SelectionMode.TakeN;
+        int n = 1;
+        if (eventData.button == PointerEventData.InputButton.Left)
+            mode = SelectionMode.TakeAll;
+        else if (eventData.button == PointerEventData.InputButton.Right)
+            mode =SelectionMode.TakeHalf;
+
+
+        DropSlot dropSlot = parent.GetComponent<DropSlot>();
+        if (DragManager.instance.ItemSelected(this, dropSlot,mode,n))
+        {
+            dropSlot.slotClick -= ClickItem;
+            canvasGroup.alpha = 0.7f;
+            canvasGroup.blocksRaycasts = false;
+            rectTransform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+            transform.SetParent(UIManager.instance.itemParent);
+            NewEquipmentManager.instance.LocalUpdateSlotIndex(dropSlot.GetSlotPosition());
+        }
     }
     public void SetSlot(RectTransform newSlot)
     {
@@ -58,8 +65,6 @@ public class DragDrop : MonoBehaviour, IPointerClickHandler
 
         rectTransform.anchoredPosition = Vector2.zero;
     }
-
-
     public void IsInSlot()
     {
         isInSlot = true;

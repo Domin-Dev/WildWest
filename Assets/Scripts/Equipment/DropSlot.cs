@@ -7,7 +7,7 @@ using System;
 public class DropSlot : MonoBehaviour,IPointerClickHandler
 {
     private SlotPosition slotPosition;
-    public event Action slotClick;
+    public event Action<PointerEventData> slotClick;
     public void SetSlotPosition(int slotIndex, int gridIndex)
     {
         slotPosition = new SlotPosition(gridIndex, slotIndex);
@@ -20,7 +20,7 @@ public class DropSlot : MonoBehaviour,IPointerClickHandler
     {
         if (!DragManager.instance.SlotSelected(this))
         {
-            slotClick?.Invoke();
+            slotClick?.Invoke(eventData);
         }
     }
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class WorldItem : MonoBehaviour
 {
-    public ItemSlot itemStats;
+    public ItemStats itemStats;
     Timer timer;
     Timer timerTransform;
     Timer timerFollow;
@@ -69,7 +69,7 @@ public class WorldItem : MonoBehaviour
         else
             this.GetComponent<Collider2D>().enabled = true;
     }
-    public void SetItem(ItemSlot itemStats,Vector2 target,int itemChunkIndex,int chunkIndex)
+    public void SetItem(ItemStats itemStats,Vector2 target,int itemChunkIndex,int chunkIndex)
     {
         this.itemStats = itemStats;
         this.itemChunkIndex = itemChunkIndex;

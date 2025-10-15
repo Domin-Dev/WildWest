@@ -62,7 +62,7 @@ public class HandsController : MonoBehaviour
     [SerializeField] private Transform fliper;
     #endregion
     private Vector3 secondHandStartPosition;
-    public ItemSlot selectedItem;
+    public ItemStats selectedItem;
     private ToolType toolType;
     private Sprite ammoSprite;
 
@@ -178,7 +178,7 @@ public class HandsController : MonoBehaviour
             characterController.heroStateMachine.ChangeState(characterController.buildingState);
         }
     }
-    private void ItemIsWepon(Item item, ItemSlot itemStats)
+    private void ItemIsWepon(Item item, ItemStats itemStats)
     {
         Weapon weapon = (Weapon)item;
         itemInHand.sprite = weapon.weaponImage;

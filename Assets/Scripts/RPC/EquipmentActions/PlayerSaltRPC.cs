@@ -7,4 +7,5 @@ public struct EQMoveItem : IRpcCommand
 {
     public SlotPosition from;
     public SlotPosition to;
+    public int value;
 }

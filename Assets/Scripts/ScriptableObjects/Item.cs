@@ -20,9 +20,9 @@ public class Item : ScriptableObject
     public Ingredient[] crafingIngredients;
     public int[] craftTables;
     public int numberItem = 1;
-    public virtual ItemSlot GetItemStats()
+    public virtual ItemStats GetItemStats()
     {
-        return new ItemSlot(ID);
+        return new ItemStats(ID);
     }
 
     private void OnValidate()
@@ -68,7 +68,7 @@ public class Destroyable : Item
 {
     [Header("Destroyable")]
     public int durability;
-    public override ItemSlot GetItemStats()
+    public override ItemStats GetItemStats()
     {
         return new DestroyableItem(ID,durability);
     }

@@ -14,20 +14,20 @@ public class Container
     public Entity entity;
     public int gridIndex;
     public Transform gridTransform;
-    public ItemSlot[] itemSlots;
+    public ItemStats[] itemSlots;
+}
+
+public enum SelectionMode
+{
+    TakeN,
+    TakeAll,
+    TakeHalf,
 }
 
 public class NewEquipmentManager : MonoBehaviour
 {
-
+    #region Variables
     public static NewEquipmentManager instance {  get; private set; }
-    private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-        else
-            Destroy(gameObject);
-    }
 
     [SerializeField] private GameObject containerPrefab;
     [SerializeField] private Transform containerParent;
@@ -35,6 +35,19 @@ public class NewEquipmentManager : MonoBehaviour
     private Dictionary<int, Container> containers = new Dictionary<int, Container>();
     private bool open = false;
 
+    private ItemStats selectedItem;
+    private SlotPosition selectedSlot;
+
+    #endregion
+
+    #region Monobehaviour Functions
+    private void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
     private void Update()
     {
         if (!ChatManager.instance.isChatting)
@@ -46,46 +59,57 @@ public class NewEquipmentManager : MonoBehaviour
             }
         }
     }
-    public void LoadContainer(ContainerComponent containerComponent, Entity entity)
+
+    #endregion
+
+    #region Slot Management
+    #region Selected Slot Management
+    
+    public ItemStats SelectItem(SlotPosition slotPosition, SelectionMode selectionMode, int n = 1)
     {
-        Container container = new Container();
-
-        container.gridTransform = Instantiate(containerPrefab, containerParent).transform;
-        container.entity = entity;
-        container.gridIndex = containerComponent.containerIndex;
-        container.itemSlots = new ItemSlot[containerComponent.capacity];
-
-        var v = new EquipmentGrid(container.gridTransform, containerComponent.containerIndex);
-        containers.Add(containerComponent.containerIndex, container);
-
-        var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
-        foreach (InventorySlot slot in slots)
+        ItemStats item = GetItemSlot(slotPosition);
+        int number = n;
+        switch (selectionMode)
         {
-            container.itemSlots[slot.slot] = new ItemSlot(slot);
+            case SelectionMode.TakeHalf:
+                number = item.quantity/2;
+                break;
+            case SelectionMode.TakeAll:
+                number = item.quantity;
+                break;
         }
-
-
-        UIManager.instance.LoadSlots(v, entity, containerComponent, v.gridIndex == 0);
-        if (containerComponent.containerIndex == 0)
-        {
-            UIManager.instance.LoadBarSlots(containerComponent, entity);
-           // ChangeSelectedSlot(0);
-        }
+        selectedItem = TakeItems(slotPosition, number);
+        selectedSlot = slotPosition;
+        return selectedItem;
     }
 
+    #endregion
+    private ItemStats TakeItems(SlotPosition slotPosition,int number)
+    {
+        ItemStats itemSlot = GetItemSlot(slotPosition);
+        int n = itemSlot.quantity - number;
+        if(n > 0)
+        { 
+            itemSlot.quantity = n;
+            return new ItemStats(itemSlot.itemID,number);
+        }
+        else
+        {
+            SetItemSlot(slotPosition, null);
+            return itemSlot;
+        }
+    }
     public bool SlotIsEmpty(SlotPosition slotPosition)
     {
         return GetItemSlot(slotPosition) == null;
     }
-    public void MoveItemData(SlotPosition from, SlotPosition to)
+    public void MoveItemData(SlotPosition to)
     {
-        if(SlotIsEmpty(to))
+        if (SlotIsEmpty(to))
         {
-            ItemSlot fromData = GetItemSlot(from);
-            ClearSlot(from);
-            SetItemSlot(to, fromData);
+            SetItemSlot(to,selectedItem);
             EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() { from = from, to = to });
+            RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() { from = selectedSlot, to = to , value = selectedItem.quantity});
             entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
             entityCommandBuffer.Dispose();
         }
@@ -97,25 +121,7 @@ public class NewEquipmentManager : MonoBehaviour
 
 
 
-
-
-
-
-    public void UpdateSlotIndex(SlotPosition slotPosition)
-    {
-        if(containers.TryGetValue(slotPosition.containerIndex,out Container container))
-        {
-            Debug.Log(slotPosition.containerIndex);
-            ItemSlot itemSlot = LoadItemFromEntities(slotPosition);
-            Debug.Log(itemSlot?.ToString() + ' ' + slotPosition);
-            UIManager.instance.UpdateItemSlot(container, itemSlot,slotPosition.slotIndex);
-        }
-    }
-
-
-
-
-    private ItemSlot GetItemSlot(SlotPosition slotPosition)
+    private ItemStats GetItemSlot(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
         {
@@ -123,7 +129,7 @@ public class NewEquipmentManager : MonoBehaviour
         }
         return null;
     }
-    private void SetItemSlot(SlotPosition slotPosition, ItemSlot itemSlot)
+    private void SetItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
         {
@@ -137,9 +143,36 @@ public class NewEquipmentManager : MonoBehaviour
             container.itemSlots[slotPosition.slotIndex] = null;
         }
     }
+    #endregion
 
-  
-    private ItemSlot LoadItemFromEntities(SlotPosition slotPosition)
+    #region Slot Synchronization
+    public void LoadContainer(ContainerComponent containerComponent, Entity entity)
+    {
+        Container container = new Container();
+
+        container.gridTransform = Instantiate(containerPrefab, containerParent).transform;
+        container.entity = entity;
+        container.gridIndex = containerComponent.containerIndex;
+        container.itemSlots = new ItemStats[containerComponent.capacity];
+
+        var v = new EquipmentGrid(container.gridTransform, containerComponent.containerIndex);
+        containers.Add(containerComponent.containerIndex, container);
+
+        var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
+        foreach (InventorySlot slot in slots)
+        {
+            container.itemSlots[slot.slot] = new ItemStats(slot);
+        }
+
+
+        UIManager.instance.LoadSlots(v, entity, containerComponent, v.gridIndex == 0);
+        if (containerComponent.containerIndex == 0)
+        {
+            UIManager.instance.LoadBarSlots(containerComponent, entity);
+            // ChangeSelectedSlot(0);
+        }
+    }
+    private ItemStats LoadItemFromEntities(SlotPosition slotPosition)
     {
         Container container = containers[slotPosition.containerIndex];
         Debug.Log(ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(container.entity).containerIndex);
@@ -149,7 +182,7 @@ public class NewEquipmentManager : MonoBehaviour
             Debug.Log(item.ItemId + " " + item.slot);
             if (item.slot == slotPosition.slotIndex)
             {
-                ItemSlot slot = new ItemSlot(item);
+                ItemStats slot = new ItemStats(item);
                 container.itemSlots[slotPosition.slotIndex] = slot;
                 return slot;
             }
@@ -158,4 +191,23 @@ public class NewEquipmentManager : MonoBehaviour
         container.itemSlots[slotPosition.slotIndex] = null;
         return null;
     }
+    public void UpdateSlotIndex(SlotPosition slotPosition)
+    {
+        if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
+        {
+            Debug.Log(slotPosition.containerIndex);
+            ItemStats itemSlot = LoadItemFromEntities(slotPosition);
+            Debug.Log(itemSlot?.ToString() + ' ' + slotPosition);
+            UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
+        }
+    }
+
+    public void LocalUpdateSlotIndex(SlotPosition slotPosition)
+    {
+        if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
+        {
+            UIManager.instance.UpdateItemSlot(container, GetItemSlot(slotPosition), slotPosition.slotIndex);
+        }
+    }
+    #endregion
 }

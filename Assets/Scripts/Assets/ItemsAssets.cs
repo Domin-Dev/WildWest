@@ -200,9 +200,9 @@ public class ItemsAsset : MonoBehaviour
     {
         return new TooltipInfo(item.description, item.name);
     }
-    public ItemSlot GetItemStats(int itemID, int itemCount = 1)
+    public ItemStats GetItemStats(int itemID, int itemCount = 1)
     {
-        ItemSlot item = GetItem(itemID).GetItemStats();
+        ItemStats item = GetItem(itemID).GetItemStats();
         item.quantity = itemCount;
         return item;
     }

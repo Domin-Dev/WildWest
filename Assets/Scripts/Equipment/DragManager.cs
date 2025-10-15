@@ -13,6 +13,7 @@ public class DragManager : MonoBehaviour
     public static DragManager instance {  get; private set; }
 
     private RectTransform dragItem;
+    private SlotPosition dragItemSlot;
 
 
     [SerializeField] Canvas canvas;
@@ -32,19 +33,30 @@ public class DragManager : MonoBehaviour
     {
         instance = this;
     }
-    public void ItemSelected(DragDrop dragDrop)
+    public bool ItemSelected(DragItem dragDrop, DropSlot dropSlot, SelectionMode selectionMode,int n = 1)
     {
-        dragItem = dragDrop.GetComponent<RectTransform>();
+        if (dragItem == null)
+        {
+            dragItem = dragDrop.GetComponent<RectTransform>();
+            dragItemSlot = dragDrop.GetSlotPostion();
+            ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, selectionMode, n);
+            UIManager.instance.UpdateDragItem(dragDrop, itemStats);
+            return true;
+        }
+        else
+        {
+
+        }
+        return false;
     }
     public bool SlotSelected(DropSlot slot)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
 
-        if (dragItem != null && NewEquipmentManager.instance.SlotIsEmpty(slotPosition))
+        if (dragItem != null)
         {    
-            DragDrop item = dragItem.GetComponent<DragDrop>();
-            SlotPosition itemPostion = item.GetSlotPostion();
-            NewEquipmentManager.instance.MoveItemData(itemPostion, slotPosition);
+            DragItem item = dragItem.GetComponent<DragItem>();
+            NewEquipmentManager.instance.MoveItemData(slotPosition);
             item.SetSlot(slot.transform as RectTransform);
             dragItem = null;
             return true;

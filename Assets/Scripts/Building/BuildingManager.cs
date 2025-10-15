@@ -338,7 +338,7 @@ public class BuildingManager : MonoBehaviour
             else if(gridTile.tileID != -1)
             {
                 if (gridTile.secondLayerID != -1)
-                    GridVisualization.instance.CreateWorldItem(new ItemSlot(gridTile.tileID), posXY);
+                    GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
                 else
                     gridTile.SetSecondLayerID(gridTile.tileID); 
             }

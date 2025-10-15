@@ -4,11 +4,11 @@ using UnityEngine.UIElements;
 
 public class ChunkItem
 {
-    public ItemSlot item;
+    public ItemStats item;
     public Vector2 position;
     public Transform worldItem;
 
-    public ChunkItem(ItemSlot item,Vector2 position, Transform worldItem)
+    public ChunkItem(ItemStats item,Vector2 position, Transform worldItem)
     {
         this.item = item;
         this.position = position;
