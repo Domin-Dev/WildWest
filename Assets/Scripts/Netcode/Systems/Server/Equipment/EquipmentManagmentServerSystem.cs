@@ -15,30 +15,30 @@ partial struct EquipmentManagmentServerSystem : ISystem
 
 
     private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<PlayerContainers> playerContainersLookup;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<EQMoveItem>().WithAll<ReceiveRpcCommandRequest>();
+            .WithAny<EQMoveItem,EQSelectItem>().WithAll<ReceiveRpcCommandRequest>();
+
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
+        playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
     }
     public void OnUpdate(ref SystemState state)
     {
         UpdateLookups(ref state);
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-
-        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, EQMoveItem command, Entity entity) in
-        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, EQMoveItem>().WithEntityAccess())
+        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveItem> command, Entity entity) in
+        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQMoveItem>>().WithEntityAccess())
         {
 
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
-            var containers = SystemAPI.GetBuffer<PlayerContainers>(player);
-
-            EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, ref containers, command);
+            EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, command.ValueRO, player);
            
             
             if (events != null)
@@ -51,6 +51,24 @@ partial struct EquipmentManagmentServerSystem : ISystem
             }
             entityCommandBuffer.DestroyEntity(entity);
         }
+
+        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQSelectItem> command, Entity entity) in
+        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQSelectItem>>().WithEntityAccess())
+        {
+            Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
+            int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
+            if (command.ValueRO.value > 0)
+            {
+                SelectItem(ref state,player, command.ValueRO);
+            }
+            entityCommandBuffer.DestroyEntity(entity);
+        }
+
+
+
+
+
+
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
@@ -58,20 +76,16 @@ partial struct EquipmentManagmentServerSystem : ISystem
     private void UpdateLookups( ref SystemState state)
     {
         slotsLookup.Update(ref state);
+        playerContainersLookup.Update(ref state);
     }
-    private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer,ref DynamicBuffer<PlayerContainers> containers,EQMoveItem moveItem)
+    private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer,EQMoveItem moveItem, Entity player)
     {
-        PlayerContainers container = containers[0];
-        foreach (var item in containers)
-        {
-            if (item.index == moveItem.from.containerIndex)
-            {
-                container = item;
-            }
-        }
+        var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
+        var container = GetPlayerContainer(player, selectedSlot.ValueRO.Position.containerIndex);
+        if(!container.HasValue) return null;
 
-        if (moveItem.from.containerIndex == moveItem.to.containerIndex)
-            return MoveInContainer(ref state, ref entityCommandBuffer,container, moveItem);
+        if (selectedSlot.ValueRO.Position.containerIndex == moveItem.to.containerIndex)
+            return MoveInContainer(ref state, ref entityCommandBuffer,container.Value, moveItem, selectedSlot.ValueRO);
         else
         {
 
@@ -79,13 +93,12 @@ partial struct EquipmentManagmentServerSystem : ISystem
 
         return null;
     }
-    private EquipmentEvent[] MoveInContainer(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, PlayerContainers container, EQMoveItem moveItem)
+    private EquipmentEvent[] MoveInContainer(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, PlayerContainers container, EQMoveItem moveItem,SelectedSlot selectedSlot)
     {
         var slots = slotsLookup[container.entity];
         int number;
-        int fromIndex = TryGetSlot(moveItem.from.slotIndex, container.entity, out int itemIDFrom);
-        int toIndex = TryGetSlot(moveItem.to.slotIndex, container.entity,out int itemIDTo);
-
+        TryGetBufferIndex(-selectedSlot.Position.slotIndex, container.entity, out int itemIDFrom, out int fromIndex);
+        TryGetBufferIndex(moveItem.to.slotIndex, container.entity,out int itemIDTo, out int toIndex);
 
         if(fromIndex >= 0 && (itemIDFrom == itemIDTo || itemIDTo == -1))
         {
@@ -99,26 +112,30 @@ partial struct EquipmentManagmentServerSystem : ISystem
                 to = moveItem.value;
             }
             else
-            {
                 to = from.quantity;
-                slotsLookup[container.entity].RemoveAtSwapBack(fromIndex);
-            }
+
 
             if (toIndex >= 0)
-                slotsLookup[container.entity].ElementAt(fromIndex).quantity += to;
+            {
+                Debug.Log("adding " + to);
+                slotsLookup[container.entity].ElementAt(toIndex).quantity += to;
+            }
             else
-                slotsLookup[container.entity].Add(new InventorySlot() { 
-                    slot=moveItem.to.slotIndex,
-                    ItemId=itemIDFrom,
-                    quantity=to,
+                slotsLookup[container.entity].Add(new InventorySlot()
+                {
+                    slot = moveItem.to.slotIndex,
+                    ItemId = itemIDFrom,
+                    quantity = to,
                 });
 
+            if(number <= 0)
+                slotsLookup[container.entity].RemoveAtSwapBack(fromIndex);
         }
 
         return new EquipmentEvent[]
         {
             new EquipmentEvent(new EquipmentEventData(moveItem.to.slotIndex, 1),container.index),
-            new EquipmentEvent(new EquipmentEventData(moveItem.from.slotIndex, 1),container.index),
+           // new EquipmentEvent(new EquipmentEventData(selectedSlot.Position.slotIndex, 1),container.index),
         };
     }
     private bool SlotIsEmpty(Entity container, int slotIndex)
@@ -132,9 +149,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
         }
         return true;
     } 
-
-
-    public int TryGetSlot(int slotIndex, Entity container, out int itemID)
+    public bool TryGetBufferIndex(int slotIndex, Entity container, out int itemID, out int bufferIndex)
     {
         var slots = slotsLookup[container];
         for (int j = 0; j < slots.Length; j++)
@@ -143,12 +158,57 @@ partial struct EquipmentManagmentServerSystem : ISystem
             if (slot.slot == slotIndex)
             {
                 itemID = slot.ItemId;
-                return j;
+                bufferIndex = j;
+                return true;
             }
         }
         itemID = -1;
-        return -1;
+        bufferIndex = - 1;
+        return false;
     }
 
 
+    private void SelectItem(ref SystemState state,Entity player,EQSelectItem selectItem)
+    {
+        var container = GetPlayerContainer(player, selectItem.position.containerIndex);
+        if (!container.HasValue) return;
+        if (TryGetBufferIndex(selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
+        {
+            ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
+            if (selectItem.value >= element.quantity)
+            {
+                element.slot = -element.slot;
+            }
+            else
+            {
+                int dif = element.quantity - selectItem.value;
+                element.quantity = dif;
+                slotsLookup[container.Value.entity].Add(new InventorySlot() {
+                    ItemId = element.ItemId,
+                    slot = -element.slot,
+                    quantity = selectItem.value
+                });
+            }
+        }
+        var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
+        selectItem.position.slotIndex = -selectItem.position.slotIndex;
+        selectedSlot.ValueRW.Position = selectItem.position;
+    }
+
+    private PlayerContainers? GetPlayerContainer(Entity player, int containerIndex)
+    {
+        if (!playerContainersLookup.TryGetBuffer(player, out var containers))
+            return null;
+
+        PlayerContainers? container = null;
+        foreach (var item in containers)
+        {
+            if (item.index == containerIndex)
+            {
+                container = item;
+                break;
+            }
+        }
+        return container;
+    }
 }

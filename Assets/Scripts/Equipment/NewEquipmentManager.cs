@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 
+[System.Serializable]
 public class Container
 {
     public Entity entity;
@@ -32,7 +34,7 @@ public class NewEquipmentManager : MonoBehaviour
     [SerializeField] private GameObject containerPrefab;
     [SerializeField] private Transform containerParent;
 
-    private Dictionary<int, Container> containers = new Dictionary<int, Container>();
+    public Dictionary<int, Container> containers = new Dictionary<int, Container>();
     private bool open = false;
 
     private ItemStats selectedItem;
@@ -68,19 +70,24 @@ public class NewEquipmentManager : MonoBehaviour
     public ItemStats SelectItem(SlotPosition slotPosition, SelectionMode selectionMode, int n = 1)
     {
         ItemStats item = GetItemSlot(slotPosition);
-        int number = n;
         switch (selectionMode)
         {
             case SelectionMode.TakeHalf:
-                number = item.quantity/2;
+                n = (int)Math.Ceiling(item.quantity/2f);
                 break;
             case SelectionMode.TakeAll:
-                number = item.quantity;
+                n = item.quantity;
                 break;
         }
-        selectedItem = TakeItems(slotPosition, number);
+        selectedItem = TakeItems(slotPosition, n);
         selectedSlot = slotPosition;
+        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
         return selectedItem;
+    }
+    public void DeselectItem()
+    {
+        selectedItem = null;
+        selectedSlot = SlotPosition.NullSlot;
     }
 
     #endregion
@@ -103,22 +110,32 @@ public class NewEquipmentManager : MonoBehaviour
     {
         return GetItemSlot(slotPosition) == null;
     }
-    public void MoveItemData(SlotPosition to)
+    public bool MoveItemData(SlotPosition to)
     {
-        if (SlotIsEmpty(to))
+        if (to.Compare(selectedSlot))
         {
-            SetItemSlot(to,selectedItem);
-            EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-            RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() { from = selectedSlot, to = to , value = selectedItem.quantity});
-            entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
-            entityCommandBuffer.Dispose();
+            SetOrAddItemSlot(to, selectedItem);
+            LocalUpdateSlotIndex(to);
+            DeselectItem();
+            return true;
         }
-        else
-        {
 
+        if (SlotIsEmpty(to) || selectedItem.itemID == GetItemSlot(to).itemID)
+        {
+            bool itemExist = SetOrAddItemSlot(to, selectedItem);
+
+            if (!selectedSlot.Compare(to))
+            {
+                SendMoveItem(to);
+            }
+            LocalUpdateSlotIndex(to);
+            DeselectItem();
+            return itemExist;
         }
+
+
+        return false;
     }
-
 
 
     private ItemStats GetItemSlot(SlotPosition slotPosition)
@@ -136,6 +153,27 @@ public class NewEquipmentManager : MonoBehaviour
             container.itemSlots[slotPosition.slotIndex] = itemSlot;
         }
     }
+    private void AddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
+    {
+        if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
+        {
+            container.itemSlots[slotPosition.slotIndex].quantity += itemSlot.quantity;
+        }
+    }
+
+
+    // Return true if exist itemslot
+    private bool SetOrAddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
+    {
+        if (GetItemSlot(slotPosition) != null)
+        {
+            AddItemSlot(slotPosition, itemSlot);
+            return true;
+        }
+        SetItemSlot(slotPosition, itemSlot);
+        return false;
+    }
+
     private void ClearSlot(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
@@ -148,6 +186,7 @@ public class NewEquipmentManager : MonoBehaviour
     #region Slot Synchronization
     public void LoadContainer(ContainerComponent containerComponent, Entity entity)
     {
+        if (containers.ContainsKey(containerComponent.containerIndex)) return;
         Container container = new Container();
 
         container.gridTransform = Instantiate(containerPrefab, containerParent).transform;
@@ -175,15 +214,37 @@ public class NewEquipmentManager : MonoBehaviour
     private ItemStats LoadItemFromEntities(SlotPosition slotPosition)
     {
         Container container = containers[slotPosition.containerIndex];
-        Debug.Log(ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(container.entity).containerIndex);
         var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
         foreach (var item in buffer)
         {
-            Debug.Log(item.ItemId + " " + item.slot);
             if (item.slot == slotPosition.slotIndex)
             {
                 ItemStats slot = new ItemStats(item);
-                container.itemSlots[slotPosition.slotIndex] = slot;
+                ItemStats current = container.itemSlots[slotPosition.slotIndex];
+
+                Debug.Log("<Color=red> " + slot.quantity);
+                if(!slotPosition.Compare(selectedSlot))
+                    container.itemSlots[slotPosition.slotIndex] = slot;
+                else if(selectedItem.itemID == slot.itemID)
+                {
+                    if (slot.quantity >= current?.quantity + selectedItem.quantity)
+                    {
+                        slot.quantity -= selectedItem.quantity;
+                        if(slot.quantity >= 0)
+                            container.itemSlots[slotPosition.slotIndex] = slot;
+                    }
+                    else if (slot.quantity < selectedItem.quantity)
+                    {
+                        selectedItem.quantity = slot.quantity;
+                        DragManager.instance.UpdateSelected(slot);
+                    }
+                    else
+                    {
+                        slot.quantity -= selectedItem.quantity;
+                        container.itemSlots[slotPosition.slotIndex] = slot;
+                    }
+                }
+
                 return slot;
             }
         }
@@ -195,13 +256,10 @@ public class NewEquipmentManager : MonoBehaviour
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
-            Debug.Log(slotPosition.containerIndex);
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
-            Debug.Log(itemSlot?.ToString() + ' ' + slotPosition);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
         }
     }
-
     public void LocalUpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
@@ -209,5 +267,13 @@ public class NewEquipmentManager : MonoBehaviour
             UIManager.instance.UpdateItemSlot(container, GetItemSlot(slotPosition), slotPosition.slotIndex);
         }
     }
+    private void SendMoveItem(SlotPosition to)
+    {
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() { to = to, value = selectedItem.quantity });
+        entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+        entityCommandBuffer.Dispose();
+    }
+
     #endregion
 }

@@ -10,7 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
 
-
+[System.Serializable]
 public struct SlotPosition
 {
     public int containerIndex;

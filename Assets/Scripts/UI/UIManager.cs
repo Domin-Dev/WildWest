@@ -516,7 +516,6 @@ public class UIManager : MonoBehaviour
     }
     private void NewItemUI(Transform gridUI, ItemStats itemSlot, int slotIndex)
     {
-        Debug.Log(gridUI.childCount);
         RectTransform transform = Instantiate(item, gridUI.GetChild(slotIndex)).GetComponent<RectTransform>();
         transform.SetAsFirstSibling();
 
@@ -563,7 +562,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            windowOpen(this,null);
+           // windowOpen(this,null);
             openWindows.Add(equipment);
             SelectItem(-1);
             CheckRecipes();
@@ -630,7 +629,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void UpdateDragItem(DragItem dragDrop,ItemStats stats)
+    public void UpdateDragItem(Transform dragDrop,ItemStats stats)
     {
         dragDrop.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(stats.itemID);
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
@@ -639,12 +638,11 @@ public class UIManager : MonoBehaviour
     {
         Transform slotObj = container.gridTransform.GetChild(slotIndex);
 
-        if (slot == null)
+        if (slot == null || slot.quantity == 0)
         {
             if (slotObj.childCount > 0 && slotObj.GetComponentInChildren<DragItem>() != null)
             {
                 Destroy(slotObj.GetChild(0).gameObject);
-                Debug.Log("destroy! " + slotIndex);
             }
         }
         else
@@ -653,12 +651,10 @@ public class UIManager : MonoBehaviour
             {
                 slotObj.GetChild(0).GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(slot.itemID);
                 slotObj.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity > 1 ? slot.quantity.ToString() : "";
-                Debug.Log("update! " + slotIndex);
             }
             else
             {
                 NewItemUI(container.gridTransform, slot, slotIndex);
-                Debug.Log("create! " + slotIndex);
             }
         }
     }

@@ -4,7 +4,7 @@ using UnityEngine.UIElements;
 using System.Security.Cryptography;
 using System;
 
-public class DropSlot : MonoBehaviour,IPointerClickHandler
+public class DropSlot : MonoBehaviour, IPointerDownHandler
 {
     private SlotPosition slotPosition;
     public event Action<PointerEventData> slotClick;
@@ -16,7 +16,7 @@ public class DropSlot : MonoBehaviour,IPointerClickHandler
     {
         return slotPosition;
     }
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
         if (!DragManager.instance.SlotSelected(this))
         {

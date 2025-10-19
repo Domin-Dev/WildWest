@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragItem : MonoBehaviour, IPointerClickHandler
+public class DragItem : MonoBehaviour, IPointerDownHandler
 {
     private RectTransform rectTransform;
     public Transform parent;
@@ -26,7 +26,7 @@ public class DragItem : MonoBehaviour, IPointerClickHandler
         parent.GetComponent<DropSlot>().slotClick -= ClickItem;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
         ClickItem(eventData);
     }
@@ -119,6 +119,7 @@ public class DragItem : MonoBehaviour, IPointerClickHandler
         //}
         //rectTransform.anchoredPosition = Vector2.zero;
     }
+
 
     //public void OnEndDrag(PointerEventData eventData)
     //{

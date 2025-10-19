@@ -3,9 +3,8 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-public struct EQMoveItem : IRpcCommand
+public struct EQSelectItem : IRpcCommand
 {
-    public SlotPosition from;
-    public SlotPosition to;
+    public SlotPosition position;
     public int value;
 }

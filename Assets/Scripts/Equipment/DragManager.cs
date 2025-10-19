@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Progress;
 
 
 public class DragManager : MonoBehaviour
@@ -40,29 +41,36 @@ public class DragManager : MonoBehaviour
             dragItem = dragDrop.GetComponent<RectTransform>();
             dragItemSlot = dragDrop.GetSlotPostion();
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, selectionMode, n);
-            UIManager.instance.UpdateDragItem(dragDrop, itemStats);
+            UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
         }
-        else
-        {
-
-        }
+        else if (!SlotSelected(dropSlot))
+            return ItemSelected(dragDrop, dropSlot, selectionMode, n);
         return false;
     }
     public bool SlotSelected(DropSlot slot)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
-
         if (dragItem != null)
-        {    
-            DragItem item = dragItem.GetComponent<DragItem>();
+        {
             NewEquipmentManager.instance.MoveItemData(slotPosition);
-            item.SetSlot(slot.transform as RectTransform);
+            Destroy(dragItem.gameObject);
             dragItem = null;
             return true;
         }
         Debug.Log("NIE UDALO SIE!!");
         return false;
+    }
+
+    public void UpdateSelected(ItemStats stats)
+    {
+        if (stats.quantity >= 1)
+            UIManager.instance.UpdateDragItem(dragItem, stats);
+        else
+        {
+            Destroy(dragItem.gameObject);
+            dragItem = null;
+        }
     }
 
     private void Update()

@@ -26,6 +26,13 @@ public static class RPCHelper
         ecb.AddComponent(rpcEntity, rpcCommand);
         ecb.AddComponent(rpcEntity, new SendRpcCommandRequest());
     }
+
+    public static void SendRpc<T>(EntityManager em, in T rpcCommand) where T : unmanaged, IRpcCommand
+    {
+        Entity rpcEntity = em.CreateEntity();
+        em.AddComponentData(rpcEntity, rpcCommand);
+        em.AddComponentData(rpcEntity, new SendRpcCommandRequest());
+    }
     public static void SendRpc<T>(ref EntityCommandBuffer ecb)
       where T : unmanaged, IRpcCommand
     {
