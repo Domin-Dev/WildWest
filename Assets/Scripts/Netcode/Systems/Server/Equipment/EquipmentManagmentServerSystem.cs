@@ -45,6 +45,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
             {
                 foreach (EquipmentEvent eventData in events)
                 {
+                    Debug.Log("<color=green> " + command.ValueRO.value);
                     eventData.SetNetworkID(networkID);
                     EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer,eventData);
                 }
@@ -60,6 +61,8 @@ partial struct EquipmentManagmentServerSystem : ISystem
             if (command.ValueRO.value > 0)
             {
                 SelectItem(ref state,player, command.ValueRO);
+                EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
+                    (new EquipmentEventData(command.ValueRO.position.slotIndex,1), command.ValueRO.position.containerIndex,networkID));
             }
             entityCommandBuffer.DestroyEntity(entity);
         }
@@ -93,11 +96,17 @@ partial struct EquipmentManagmentServerSystem : ISystem
 
         return null;
     }
+
+    private EquipmentEvent[] MoveBetweenContainers(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, PlayerContainers containersFrom, PlayerContainers containersTo,EQMoveItem moveItem,SelectedSlot selected)
+    {
+
+
+    }
     private EquipmentEvent[] MoveInContainer(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, PlayerContainers container, EQMoveItem moveItem,SelectedSlot selectedSlot)
     {
         var slots = slotsLookup[container.entity];
         int number;
-        TryGetBufferIndex(-selectedSlot.Position.slotIndex, container.entity, out int itemIDFrom, out int fromIndex);
+        TryGetBufferIndex(selectedSlot.Position.slotIndex, container.entity, out int itemIDFrom, out int fromIndex);
         TryGetBufferIndex(moveItem.to.slotIndex, container.entity,out int itemIDTo, out int toIndex);
 
         if(fromIndex >= 0 && (itemIDFrom == itemIDTo || itemIDTo == -1))
@@ -113,7 +122,6 @@ partial struct EquipmentManagmentServerSystem : ISystem
             }
             else
                 to = from.quantity;
-
 
             if (toIndex >= 0)
             {
@@ -135,9 +143,12 @@ partial struct EquipmentManagmentServerSystem : ISystem
         return new EquipmentEvent[]
         {
             new EquipmentEvent(new EquipmentEventData(moveItem.to.slotIndex, 1),container.index),
-           // new EquipmentEvent(new EquipmentEventData(selectedSlot.Position.slotIndex, 1),container.index),
         };
     }
+   
+    
+    
+    
     private bool SlotIsEmpty(Entity container, int slotIndex)
     {
         var slots = slotsLookup[container];
@@ -177,7 +188,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
             if (selectItem.value >= element.quantity)
             {
-                element.slot = -element.slot;
+                element.slot = ConvetSlotIndexToSelectedSlotIndex(element.slot);
             }
             else
             {
@@ -185,13 +196,13 @@ partial struct EquipmentManagmentServerSystem : ISystem
                 element.quantity = dif;
                 slotsLookup[container.Value.entity].Add(new InventorySlot() {
                     ItemId = element.ItemId,
-                    slot = -element.slot,
+                    slot = ConvetSlotIndexToSelectedSlotIndex(element.slot),
                     quantity = selectItem.value
                 });
             }
         }
         var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
-        selectItem.position.slotIndex = -selectItem.position.slotIndex;
+        selectItem.position.slotIndex = ConvetSlotIndexToSelectedSlotIndex(selectItem.position.slotIndex);
         selectedSlot.ValueRW.Position = selectItem.position;
     }
 
@@ -210,5 +221,10 @@ partial struct EquipmentManagmentServerSystem : ISystem
             }
         }
         return container;
+    }
+
+    private int ConvetSlotIndexToSelectedSlotIndex(int slotIndex)
+    {
+        return -(slotIndex + 1);
     }
 }

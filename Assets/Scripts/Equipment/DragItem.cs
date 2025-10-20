@@ -33,16 +33,8 @@ public class DragItem : MonoBehaviour, IPointerDownHandler
 
     private void ClickItem(PointerEventData eventData)
     {
-        SelectionMode mode = SelectionMode.TakeN;
-        int n = 1;
-        if (eventData.button == PointerEventData.InputButton.Left)
-            mode = SelectionMode.TakeAll;
-        else if (eventData.button == PointerEventData.InputButton.Right)
-            mode =SelectionMode.TakeHalf;
-
-
         DropSlot dropSlot = parent.GetComponent<DropSlot>();
-        if (DragManager.instance.ItemSelected(this, dropSlot,mode,n))
+        if (DragManager.instance.ItemSelected(this, dropSlot,eventData))
         {
             dropSlot.slotClick -= ClickItem;
             canvasGroup.alpha = 0.7f;

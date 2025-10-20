@@ -16,9 +16,14 @@ public class DropSlot : MonoBehaviour, IPointerDownHandler
     {
         return slotPosition;
     }
+    private void OnDestroy()
+    {
+        slotClick = null;
+    }
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!DragManager.instance.SlotSelected(this))
+
+        if (!DragManager.instance.SlotSelected(this,eventData))
         {
             slotClick?.Invoke(eventData);
         }

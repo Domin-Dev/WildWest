@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using static UnityEditor.Progress;
 
@@ -34,28 +35,28 @@ public class DragManager : MonoBehaviour
     {
         instance = this;
     }
-    public bool ItemSelected(DragItem dragDrop, DropSlot dropSlot, SelectionMode selectionMode,int n = 1)
+    public bool ItemSelected(DragItem dragDrop, DropSlot dropSlot, PointerEventData eventData)
     {
         if (dragItem == null)
         {
             dragItem = dragDrop.GetComponent<RectTransform>();
             dragItemSlot = dragDrop.GetSlotPostion();
-            ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, selectionMode, n);
+            SelectionMode mode = GetSelectionModeForSelectItem(eventData,out int n);
+            ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
         }
-        else if (!SlotSelected(dropSlot))
-            return ItemSelected(dragDrop, dropSlot, selectionMode, n);
+        else if (!SlotSelected(dropSlot,eventData))
+            return ItemSelected(dragDrop, dropSlot, eventData);
         return false;
     }
-    public bool SlotSelected(DropSlot slot)
+    public bool SlotSelected(DropSlot slot, PointerEventData eventData)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
         if (dragItem != null)
         {
-            NewEquipmentManager.instance.MoveItemData(slotPosition);
-            Destroy(dragItem.gameObject);
-            dragItem = null;
+            SelectionMode mode = GetSelectionModeForSelectSlot(eventData,out int n);
+            NewEquipmentManager.instance.MoveItemData(slotPosition,mode,n);
             return true;
         }
         Debug.Log("NIE UDALO SIE!!");
@@ -64,7 +65,8 @@ public class DragManager : MonoBehaviour
 
     public void UpdateSelected(ItemStats stats)
     {
-        if (stats.quantity >= 1)
+        Debug.Log("stats! " + stats.ToString());
+        if (stats != null && stats.quantity >= 1)
             UIManager.instance.UpdateDragItem(dragItem, stats);
         else
         {
@@ -73,6 +75,25 @@ public class DragManager : MonoBehaviour
         }
     }
 
+    private SelectionMode GetSelectionModeForSelectItem(PointerEventData pointerEventData,out int n)
+    {
+        SelectionMode mode = SelectionMode.N;
+        n = 1;
+        if (pointerEventData.button == PointerEventData.InputButton.Left)
+            mode = SelectionMode.All;
+        else if (pointerEventData.button == PointerEventData.InputButton.Right)
+            mode = SelectionMode.Half;
+        return mode;
+    }
+
+    private SelectionMode GetSelectionModeForSelectSlot(PointerEventData pointerEventData, out int n)
+    {
+        SelectionMode mode = SelectionMode.N;
+        n = 1;
+        if (pointerEventData.button == PointerEventData.InputButton.Left)
+            mode = SelectionMode.All;
+        return mode;
+    }
     private void Update()
     {
         if (dragItem != null)
