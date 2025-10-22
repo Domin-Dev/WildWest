@@ -15,8 +15,9 @@ MonoBehaviour:
   name: Dolar
   description: 
   ID: 30
-  stackMax: 500
+  stackMax: 50
   icon: {fileID: -788020699, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags: []
   crafingIngredients: []
   craftTables: ffffffff
   numberItem: 1

@@ -76,6 +76,11 @@ public class NewEquipmentManager : MonoBehaviour
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
         return selectedItem;
     }
+
+    public void CombineAllItems(SlotPosition slotPosition)
+    {
+        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
+    }
     public void DeselectItem()
     {
         selectedItem = null;
@@ -137,9 +142,6 @@ public class NewEquipmentManager : MonoBehaviour
         n = SelectN(selectedItem.quantity, selectionMode, n);
         MoveItemData(to, n);
     }
-
-
-
 
     private ItemStats GetItemSlot(SlotPosition slotPosition)
     {

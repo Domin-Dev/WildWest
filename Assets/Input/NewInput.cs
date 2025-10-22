@@ -1077,6 +1077,54 @@ namespace UnityEngine.InputSystem
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Eqipment"",
+            ""id"": ""4f1949fd-22de-4892-9ab2-bae4055fb4db"",
+            ""actions"": [
+                {
+                    ""name"": ""MoveAllTheItems"",
+                    ""type"": ""Button"",
+                    ""id"": ""619b7199-c999-4188-b032-405500551bed"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MoveTheItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""cb40736b-b558-4f36-8bc2-267e2863d5b1"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""61d1728a-79cb-4184-8024-2f37dd89b298"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""MoveAllTheItems"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""178d23c1-fa21-419a-8a16-351e9b4161b9"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""MoveTheItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1177,12 +1225,17 @@ namespace UnityEngine.InputSystem
             m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
             m_UI_FuncButtonLeft = m_UI.FindAction("FuncButtonLeft", throwIfNotFound: true);
             m_UI_FuncButtonRight = m_UI.FindAction("FuncButtonRight", throwIfNotFound: true);
+            // Eqipment
+            m_Eqipment = asset.FindActionMap("Eqipment", throwIfNotFound: true);
+            m_Eqipment_MoveAllTheItems = m_Eqipment.FindAction("MoveAllTheItems", throwIfNotFound: true);
+            m_Eqipment_MoveTheItem = m_Eqipment.FindAction("MoveTheItem", throwIfNotFound: true);
         }
 
         ~@NewInput()
         {
             UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, NewInput.Player.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, NewInput.UI.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Eqipment.enabled, "This will cause a leak and performance issues, NewInput.Eqipment.Disable() has not been called.");
         }
 
         /// <summary>
@@ -1765,6 +1818,113 @@ namespace UnityEngine.InputSystem
         /// Provides a new <see cref="UIActions" /> instance referencing this action map.
         /// </summary>
         public UIActions @UI => new UIActions(this);
+
+        // Eqipment
+        private readonly InputActionMap m_Eqipment;
+        private List<IEqipmentActions> m_EqipmentActionsCallbackInterfaces = new List<IEqipmentActions>();
+        private readonly InputAction m_Eqipment_MoveAllTheItems;
+        private readonly InputAction m_Eqipment_MoveTheItem;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "Eqipment".
+        /// </summary>
+        public struct EqipmentActions
+        {
+            private @NewInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public EqipmentActions(@NewInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "Eqipment/MoveAllTheItems".
+            /// </summary>
+            public InputAction @MoveAllTheItems => m_Wrapper.m_Eqipment_MoveAllTheItems;
+            /// <summary>
+            /// Provides access to the underlying input action "Eqipment/MoveTheItem".
+            /// </summary>
+            public InputAction @MoveTheItem => m_Wrapper.m_Eqipment_MoveTheItem;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_Eqipment; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="EqipmentActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(EqipmentActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="EqipmentActions" />
+            public void AddCallbacks(IEqipmentActions instance)
+            {
+                if (instance == null || m_Wrapper.m_EqipmentActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_EqipmentActionsCallbackInterfaces.Add(instance);
+                @MoveAllTheItems.started += instance.OnMoveAllTheItems;
+                @MoveAllTheItems.performed += instance.OnMoveAllTheItems;
+                @MoveAllTheItems.canceled += instance.OnMoveAllTheItems;
+                @MoveTheItem.started += instance.OnMoveTheItem;
+                @MoveTheItem.performed += instance.OnMoveTheItem;
+                @MoveTheItem.canceled += instance.OnMoveTheItem;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="EqipmentActions" />
+            private void UnregisterCallbacks(IEqipmentActions instance)
+            {
+                @MoveAllTheItems.started -= instance.OnMoveAllTheItems;
+                @MoveAllTheItems.performed -= instance.OnMoveAllTheItems;
+                @MoveAllTheItems.canceled -= instance.OnMoveAllTheItems;
+                @MoveTheItem.started -= instance.OnMoveTheItem;
+                @MoveTheItem.performed -= instance.OnMoveTheItem;
+                @MoveTheItem.canceled -= instance.OnMoveTheItem;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="EqipmentActions.UnregisterCallbacks(IEqipmentActions)" />.
+            /// </summary>
+            /// <seealso cref="EqipmentActions.UnregisterCallbacks(IEqipmentActions)" />
+            public void RemoveCallbacks(IEqipmentActions instance)
+            {
+                if (m_Wrapper.m_EqipmentActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="EqipmentActions.AddCallbacks(IEqipmentActions)" />
+            /// <seealso cref="EqipmentActions.RemoveCallbacks(IEqipmentActions)" />
+            /// <seealso cref="EqipmentActions.UnregisterCallbacks(IEqipmentActions)" />
+            public void SetCallbacks(IEqipmentActions instance)
+            {
+                foreach (var item in m_Wrapper.m_EqipmentActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_EqipmentActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="EqipmentActions" /> instance referencing this action map.
+        /// </summary>
+        public EqipmentActions @Eqipment => new EqipmentActions(this);
         private int m_KeyboardMouseSchemeIndex = -1;
         /// <summary>
         /// Provides access to the input control scheme.
@@ -2062,6 +2222,28 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnFuncButtonRight(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Eqipment" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="EqipmentActions.AddCallbacks(IEqipmentActions)" />
+        /// <seealso cref="EqipmentActions.RemoveCallbacks(IEqipmentActions)" />
+        public interface IEqipmentActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "MoveAllTheItems" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMoveAllTheItems(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "MoveTheItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnMoveTheItem(InputAction.CallbackContext context);
         }
     }
 }

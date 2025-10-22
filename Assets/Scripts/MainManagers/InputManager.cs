@@ -10,6 +10,11 @@ public class InputManager : MonoBehaviour
     private InputActionAsset action;
 
 
+
+    public InputAction moveAllTheItems { private set; get; }
+    public InputAction moveTheItem { private set; get; }
+
+
     public InputAction playerList { private set; get; }
     public InputAction chat { private set; get; }
     public InputAction equipment { private set; get; }
@@ -39,6 +44,9 @@ public class InputManager : MonoBehaviour
     {
         action = inputAsset;
 
+        moveAllTheItems = action.FindAction("MoveAllTheItems");
+        moveTheItem = action.FindAction("MoveTheItem");  
+
         playerList = action.FindAction("PlayerList");
         chat = action.FindAction("Chat");
         equipment = action.FindAction("Equipment");
@@ -57,9 +65,8 @@ public class InputManager : MonoBehaviour
 
 
         previousSlot.performed += PreviousSlot_performed;
-        playerList.performed += PlayerList_performed;
-        playerList.canceled += PlayerList_performed;
-        equipment.performed += UP;
+        moveTheItem.performed += PlayerList_performed;
+
         move.performed += Move_performed;
     }
 
@@ -73,10 +80,7 @@ public class InputManager : MonoBehaviour
         Debug.Log("input!!");
         playerTab = true;
     }
-    private void UP(InputAction.CallbackContext obj)
-    {
-        playerTab = false;
-    }
+
 
     private void Move_performed(InputAction.CallbackContext obj)
     {

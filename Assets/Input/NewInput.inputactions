@@ -989,6 +989,54 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Eqipment",
+            "id": "4f1949fd-22de-4892-9ab2-bae4055fb4db",
+            "actions": [
+                {
+                    "name": "MoveAllTheItems",
+                    "type": "Button",
+                    "id": "619b7199-c999-4188-b032-405500551bed",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "MoveTheItem",
+                    "type": "Button",
+                    "id": "cb40736b-b558-4f36-8bc2-267e2863d5b1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "61d1728a-79cb-4184-8024-2f37dd89b298",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "MoveAllTheItems",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "178d23c1-fa21-419a-8a16-351e9b4161b9",
+                    "path": "<Keyboard>/leftCtrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "MoveTheItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

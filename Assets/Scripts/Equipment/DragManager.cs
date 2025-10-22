@@ -17,6 +17,10 @@ public class DragManager : MonoBehaviour
     private RectTransform dragItem;
     private SlotPosition dragItemSlot;
 
+    private SlotPosition lastSlotPostion;
+    private float lastSelectionTime = 0f;
+    private float doubleClickThreshold = 0.4f;
+
 
     [SerializeField] Canvas canvas;
 
@@ -38,9 +42,18 @@ public class DragManager : MonoBehaviour
     public bool ItemSelected(DragItem dragDrop, DropSlot dropSlot, PointerEventData eventData)
     {
         if (dragItem == null)
-        {
-            dragItem = dragDrop.GetComponent<RectTransform>();
+        {           
             dragItemSlot = dragDrop.GetSlotPostion();
+            if(lastSlotPostion.Compare(dragItemSlot) && Time.time - lastSelectionTime < doubleClickThreshold)
+            {
+                Debug.Log("dzial!!!!!");
+                NewEquipmentManager.instance.CombineAllItems(dragItemSlot);
+                return false;
+            }
+
+            lastSlotPostion = dragItemSlot; 
+            lastSelectionTime = Time.time;
+            dragItem = dragDrop.GetComponent<RectTransform>();
             SelectionMode mode = GetSelectionModeForSelectItem(eventData,out int n);
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
@@ -79,6 +92,7 @@ public class DragManager : MonoBehaviour
     {
         SelectionMode mode = SelectionMode.N;
         n = 1;
+
         if (pointerEventData.button == PointerEventData.InputButton.Left)
             mode = SelectionMode.All;
         else if (pointerEventData.button == PointerEventData.InputButton.Right)
@@ -91,7 +105,16 @@ public class DragManager : MonoBehaviour
         SelectionMode mode = SelectionMode.N;
         n = 1;
         if (pointerEventData.button == PointerEventData.InputButton.Left)
-            mode = SelectionMode.All;
+        {
+            if (InputManager.i.moveTheItem.inProgress)
+                n = 5;
+            else if (InputManager.i.moveAllTheItems.inProgress)
+                n = 10;
+            else
+                mode = SelectionMode.All;
+        }
+        Debug.Log(InputManager.i.moveTheItem.inProgress);
+
         return mode;
     }
     private void Update()
