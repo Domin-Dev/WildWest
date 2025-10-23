@@ -46,10 +46,11 @@ public class DragManager : MonoBehaviour
             dragItemSlot = dragDrop.GetSlotPostion();
             if(lastSlotPostion.Compare(dragItemSlot) && Time.time - lastSelectionTime < doubleClickThreshold)
             {
-                Debug.Log("dzial!!!!!");
                 NewEquipmentManager.instance.CombineAllItems(dragItemSlot);
                 return false;
             }
+
+
 
             lastSlotPostion = dragItemSlot; 
             lastSelectionTime = Time.time;
@@ -78,7 +79,6 @@ public class DragManager : MonoBehaviour
 
     public void UpdateSelected(ItemStats stats)
     {
-        Debug.Log("stats! " + stats.ToString());
         if (stats != null && stats.quantity >= 1)
             UIManager.instance.UpdateDragItem(dragItem, stats);
         else

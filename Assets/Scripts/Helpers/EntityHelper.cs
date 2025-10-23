@@ -56,6 +56,8 @@ public static class EntityHelper
         TryGetBufferIndex(slotsLookup, slotFrom, containersFrom.entity, out int itemIDFrom, out int fromIndex);
         TryGetBufferIndex(slotsLookup, slotTo, containersTo.entity, out int itemIDTo, out int toIndex);
         int number;
+        int stackMax = ItemsAsset.instance.GetStackMax(itemIDFrom);
+
 
         if (fromIndex >= 0 && (itemIDFrom == itemIDTo || itemIDTo == -1))
         {
@@ -64,6 +66,8 @@ public static class EntityHelper
 
             ref InventorySlot from = ref fromBuffer.ElementAt(fromIndex);
             int to;
+
+            value = Math.Clamp(value, 0, stackMax - (toIndex >= 0 ? toBuffer.ElementAt(toIndex).quantity : 0));
 
             number = from.quantity - value;
             if (number > 0)

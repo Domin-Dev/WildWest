@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEditor.Rendering;
@@ -17,15 +18,15 @@ public class Container
     public int gridIndex;
     public Transform gridTransform;
     public ItemStats[] itemSlots;
+    public MandatoryProperties mandatoryProperties;
+    public int mandatoryData;
 }
-
 public enum SelectionMode
 {
     N,
     All,
     Half,
 }
-
 public class NewEquipmentManager : MonoBehaviour
 {
     #region Variables
@@ -64,19 +65,22 @@ public class NewEquipmentManager : MonoBehaviour
 
     #endregion
 
-    #region Slot Management
     #region Selected Slot Management
     
     public ItemStats SelectItem(SlotPosition slotPosition, SelectionMode selectionMode, int n = 1)
     {
-        ItemStats item = GetItemSlot(slotPosition);
+        ItemStats item = GetItemStats(slotPosition);
         n = SelectN(item.quantity, selectionMode, n);
         selectedItem = TakeItems(slotPosition, n);
         selectedSlot = slotPosition;
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
+
+
+        Debug.Log(SlotIsEmpty(slotPosition) + "   " + slotPosition.ToString());
+        if (SlotIsEmpty(slotPosition))
+            UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
         return selectedItem;
     }
-
     public void CombineAllItems(SlotPosition slotPosition)
     {
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
@@ -86,7 +90,6 @@ public class NewEquipmentManager : MonoBehaviour
         selectedItem = null;
         selectedSlot = SlotPosition.NullSlot;
     }
-
     private int SelectN(int itemQuantity, SelectionMode selectionMode, int n = 1)
     {
         switch (selectionMode)
@@ -101,9 +104,11 @@ public class NewEquipmentManager : MonoBehaviour
         return n;
     }
     #endregion
+
+    #region Slot Management
     private ItemStats TakeItems(SlotPosition slotPosition,int number)
     {
-        ItemStats itemSlot = GetItemSlot(slotPosition);
+        ItemStats itemSlot = GetItemStats(slotPosition);
         int n = itemSlot.quantity - number;
         if(n > 0)
         { 
@@ -118,32 +123,37 @@ public class NewEquipmentManager : MonoBehaviour
     }
     public bool SlotIsEmpty(SlotPosition slotPosition)
     {
-        return GetItemSlot(slotPosition) == null;
+        return GetItemStats(slotPosition) == null;
     }
     public void MoveItemData(SlotPosition to, int quantity)
     {
-        if (SlotIsEmpty(to) || selectedItem.itemID == GetItemSlot(to).itemID)
-        {
-            quantity = Math.Clamp(quantity, 0, selectedItem.quantity);
-            bool itemExist = SetOrAddItemSlot(to, new ItemStats(selectedItem.itemID, quantity));
+        int maxStack = ItemsAsset.instance.GetStackMax(selectedItem.itemID);
+        ItemStats stats = GetItemStats(to);
+        if (stats != null && (stats.itemID != selectedItem.itemID || stats.quantity >= maxStack))
+            return;
 
-            selectedItem.quantity -= quantity;
-            SendMoveItem(to, quantity);
-            LocalUpdateSlotIndex(to);
+        quantity = Math.Clamp(quantity, 0, selectedItem.quantity);
+        //if (stats != null && quantity + stats.quantity > maxStack)
+        //    quantity = maxStack - stats.quantity;
+        
 
-            Debug.Log("<color=blue> " + selectedItem.quantity);
-            DragManager.instance.UpdateSelected(selectedItem);
-            if (selectedItem.quantity == 0)
-                DeselectItem();
-        }
+        bool itemExist = SetOrAddItemSlot(to, new ItemStats(selectedItem.itemID, quantity));
+
+        selectedItem.quantity -= quantity;
+        SendMoveItem(to, quantity);
+        LocalUpdateSlotIndex(to);
+
+        Debug.Log("<color=blue> " + selectedItem.quantity);
+        DragManager.instance.UpdateSelected(selectedItem);
+        if (selectedItem.quantity == 0)
+            DeselectItem();
     }
     public void MoveItemData(SlotPosition to, SelectionMode selectionMode, int n = 1)
     {
         n = SelectN(selectedItem.quantity, selectionMode, n);
         MoveItemData(to, n);
     }
-
-    private ItemStats GetItemSlot(SlotPosition slotPosition)
+    private ItemStats GetItemStats(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
         {
@@ -166,11 +176,10 @@ public class NewEquipmentManager : MonoBehaviour
         }
     }
 
-
     // Return true if exist itemslot
     private bool SetOrAddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {
-        if (GetItemSlot(slotPosition) != null)
+        if (GetItemStats(slotPosition) != null)
         {
             AddItemSlot(slotPosition, itemSlot);
             return true;
@@ -178,7 +187,6 @@ public class NewEquipmentManager : MonoBehaviour
         SetItemSlot(slotPosition, itemSlot);
         return false;
     }
-
     private void ClearSlot(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
@@ -198,6 +206,8 @@ public class NewEquipmentManager : MonoBehaviour
         container.entity = entity;
         container.gridIndex = containerComponent.containerIndex;
         container.itemSlots = new ItemStats[containerComponent.capacity];
+        container.mandatoryProperties = containerComponent.mandatoryProperties;
+        container.mandatoryData = containerComponent.mandatoryData;
 
         var v = new EquipmentGrid(container.gridTransform, containerComponent.containerIndex);
         containers.Add(containerComponent.containerIndex, container);
@@ -247,7 +257,7 @@ public class NewEquipmentManager : MonoBehaviour
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
-            UIManager.instance.UpdateItemSlot(container, GetItemSlot(slotPosition), slotPosition.slotIndex);
+            UIManager.instance.UpdateItemSlot(container, GetItemStats(slotPosition), slotPosition.slotIndex);
         }
     }
     private void SendMoveItem(SlotPosition to, int quantity)

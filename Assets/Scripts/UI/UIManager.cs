@@ -643,6 +643,8 @@ public class UIManager : MonoBehaviour
             if (slotObj.childCount > 0 && slotObj.GetComponentInChildren<DragItem>() != null)
             {
                 Destroy(slotObj.GetChild(0).gameObject);
+                if (container.mandatoryProperties != MandatoryProperties.none)
+                    slotObj.GetComponentInChildren<EQPlaceholder>(true)?.gameObject.SetActive(true);
             }
         }
         else
@@ -655,19 +657,41 @@ public class UIManager : MonoBehaviour
             else
             {
                 NewItemUI(container.gridTransform, slot, slotIndex);
+                if (container.mandatoryProperties != MandatoryProperties.none)
+                    slotObj.GetComponentInChildren<EQPlaceholder>(true)?.gameObject.SetActive(false);
             }
         }
     }
+
+    public void TurnOnItemPlaceholder(Container container,int slotIndex)
+    {
+        Transform slotObj = container.gridTransform.GetChild(slotIndex);
+
+        if (container.mandatoryProperties != MandatoryProperties.none)
+            slotObj.GetComponentInChildren<EQPlaceholder>(true).gameObject.SetActive(true);
+    }
+
+
+
+    private Sprite LoadPlaceholder(MandatoryProperties mandatoryProperties, int mandatoryData)
+    {
+        Sprite icon = null;
+        if (mandatoryProperties == MandatoryProperties.tag)
+            icon = ItemsAsset.instance.GetTagIcon(mandatoryData);
+        else if (mandatoryProperties == MandatoryProperties.item)
+            icon = ItemsAsset.instance.GetIcon(mandatoryData);
+        return icon;
+    }
+    private Sprite LoadPlaceholder(Container container)
+    {
+        return LoadPlaceholder(container.mandatoryProperties, container.mandatoryData);
+    }
+
     public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity,ContainerComponent containerComponent,bool numbering)
     {
         OpenEquipment(true);
         bool isMainBar = equipmentGrid.gridIndex == 0;
-        Sprite icon = null;
-        if (containerComponent.mandatoryProperties == MandatoryProperties.tag)
-            icon = ItemsAsset.instance.GetTagIcon(containerComponent.mandatoryData);
-        else if (containerComponent.mandatoryProperties == MandatoryProperties.item)
-            icon = ItemsAsset.instance.GetIcon(containerComponent.mandatoryData);
-
+        Sprite icon = LoadPlaceholder(containerComponent.mandatoryProperties, containerComponent.mandatoryData);
 
         if (numbering)
         {
