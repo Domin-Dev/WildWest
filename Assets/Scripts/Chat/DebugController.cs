@@ -68,7 +68,7 @@ public static class DebugController
             }
             return null;
         }));
-        commandList.Add(new DebugCommand("players", "Prints a list of players and their roles", null, (ref EntityCommandBuffer ecb,Entity e) =>
+        commandList.Add(new DebugCommand("players", "Prints a list of players and their roles", null, (ref EntityCommandBuffer ecb, Entity e) =>
         {
             if (ClientServerBootstrap.HasServerWorld)
             {
@@ -95,6 +95,58 @@ public static class DebugController
             }
             return null;
         }));
+        commandList.Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "[Item ID] [Quantity] [player name]", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                if (ItemsAsset.instance.GetItem(id) == null) return null;
+                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                var query = entityManager.CreateEntityQuery(typeof(PlayerName),typeof(NetworkId));
+                var names = query.ToComponentDataArray<PlayerName>(Allocator.TempJob);
+                var players = query.ToEntityArray(Allocator.TempJob);
+                Entity networkPlayer = Entity.Null;
+                
+                for (int i = 0; i < names.Length; i++)
+                {
+                    if (names[i].name == player)
+                    {
+                        networkPlayer = players[i];
+                        break;
+                    }
+                }
+                players.Dispose();
+                names.Dispose();
+                query.Dispose();
+                if (networkPlayer == Entity.Null)
+                    return "No player found with that name";
+                else
+                {
+                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                    {
+                        itemID = id,
+                        quantity = quantity,
+                        networkEntity = networkPlayer
+                    });
+                }
+            }
+            return null;
+        }));
+        commandList.Add(new DebugCommand<int, int>("give", "Gives you the specified item", "[Item ID] [Quantity] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                if (ItemsAsset.instance.GetItem(id) == null) return null;
+
+                EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                {
+                    itemID = id,
+                    quantity = quantity,
+                    networkEntity = e
+                });
+            }
+            return null;
+        }));
+
 
 
         commandList.Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>

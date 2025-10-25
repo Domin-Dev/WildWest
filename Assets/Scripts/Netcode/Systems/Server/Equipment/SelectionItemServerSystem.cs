@@ -13,7 +13,6 @@ using UnityEngine.InputSystem.Processors;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct SelectionItemServerSystem : ISystem
 {
-
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     public void OnCreate(ref SystemState state)
@@ -55,10 +54,10 @@ partial struct SelectionItemServerSystem : ISystem
     }
     private void SelectItem(ref SystemState state, Entity player, EQSelectItem selectItem)
     {
-        var container = EntityHelper.GetPlayerContainer(playerContainersLookup,player, selectItem.position.containerIndex);
+        var container = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectItem.position.containerIndex);
 
         if (!container.HasValue) return;
-        if (EntityHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
+        if (EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
         {
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
             if (selectItem.value >= element.quantity)
@@ -81,7 +80,6 @@ partial struct SelectionItemServerSystem : ISystem
         selectItem.position.slotIndex = ConvetSlotIndexToSelectedSlotIndex(selectItem.position.slotIndex);
         selectedSlot.ValueRW.Position = selectItem.position;
     }
-
     private int ConvetSlotIndexToSelectedSlotIndex(int slotIndex)
     {
         return -(slotIndex + 1);

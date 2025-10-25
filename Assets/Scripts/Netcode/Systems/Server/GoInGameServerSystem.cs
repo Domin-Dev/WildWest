@@ -113,7 +113,7 @@ partial struct GoInGameServerSystem : ISystem
 
         CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,10,0);
         CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,30,1);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 20, 2, MandatoryProperties.item, 136);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 20, 2, MandatoryProperties.item, 30);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 8, 3, MandatoryProperties.tag, 1);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 10, 4, MandatoryProperties.tag, 2);
     }

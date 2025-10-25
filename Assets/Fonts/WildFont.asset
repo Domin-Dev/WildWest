@@ -70,7 +70,7 @@ MonoBehaviour:
     m_PointSize: 18
     m_Scale: 1
     m_UnitsPerEM: 1728
-    m_LineHeight: 17.666666
+    m_LineHeight: 19.8
     m_AscentLine: 13
     m_CapLine: 13
     m_MeanLine: 8
@@ -2931,7 +2931,7 @@ MonoBehaviour:
     italicTypeface: {fileID: 0}
   fontWeights: []
   normalStyle: 0
-  normalSpacingOffset: 0
+  normalSpacingOffset: -6.01
   boldStyle: 0.75
   boldSpacing: 7
   italicStyle: 35

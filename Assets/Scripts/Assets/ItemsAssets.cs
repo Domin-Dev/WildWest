@@ -294,4 +294,15 @@ public class ItemsAsset : MonoBehaviour
             return tags[tagID].icon;
         return null;
     }
+
+    public bool ItemHasTheTag(int itemID, int tagID)
+    {
+        var tags = GetItem(itemID).tags;
+        foreach (var tag in tags)
+        {
+            if (tag.tagID == tagID)
+                return true;
+        }
+        return false;
+    }
 }

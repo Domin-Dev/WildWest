@@ -46,10 +46,6 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
         buildingState = new BuildingState(this, heroStateMachine);
     }
 
-    private void SetUpUI()
-    {
-        UIManager.instance.windowOpen += WindowOpen;
-    }
 
     private void WindowOpen(object sender, EventArgs e)
     {
@@ -69,7 +65,6 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
         animator = GetComponent<Animator>();   
         sortingGroup = GetComponent<SortingGroup>();
         handsController.SetController(this,"Enemy");
-        SetUpUI();
         SetStateMachine();
     }
     private void Start()
@@ -171,13 +166,6 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
         isRepulsed = false;
     }
 
-    public void Riding(Horse horse)
-    {
-        horse.sortingGroup.sortingOrder = -10;
-        transform.position = horse.riderPoint.position;
-        horse.transform.parent = transform;
-        speed = horse.speed;
-    }
     #endregion
 }
 

@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 
@@ -133,12 +131,9 @@ public class NewEquipmentManager : MonoBehaviour
             return;
 
         quantity = Math.Clamp(quantity, 0, selectedItem.quantity);
-        //if (stats != null && quantity + stats.quantity > maxStack)
-        //    quantity = maxStack - stats.quantity;
-        
-
+        if (stats != null && quantity + stats.quantity > maxStack)
+            quantity = maxStack - stats.quantity;      
         bool itemExist = SetOrAddItemSlot(to, new ItemStats(selectedItem.itemID, quantity));
-
         selectedItem.quantity -= quantity;
         SendMoveItem(to, quantity);
         LocalUpdateSlotIndex(to);

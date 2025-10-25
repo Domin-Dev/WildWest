@@ -16,7 +16,6 @@ using UnityEngine.InputSystem.Processors;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CombineItemsServerSystem : ISystem
 {
-
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     public void OnCreate(ref SystemState state)
@@ -43,20 +42,19 @@ partial struct CombineItemsServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var events = CombineItems(ref state, ref entityCommandBuffer, player, command.ValueRO);
-            EntityHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
+            EQHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
             entityCommandBuffer.DestroyEntity(entity);
         }
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-
     EquipmentEvent[] CombineItems(ref SystemState state,ref EntityCommandBuffer ecb,Entity player,EQCombineAllItems command)
     {
-        var container = EntityHelper.GetPlayerContainer(playerContainersLookup, player, command.position.containerIndex);
+        var container = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.position.containerIndex);
         if (!container.HasValue) return null; 
 
-        if(EntityHelper.TryGetBufferIndex(slotsLookup, command.position.slotIndex,container.Value.entity, out int itemID, out int bufferIndex))
+        if(EQHelper.TryGetBufferIndex(slotsLookup, command.position.slotIndex,container.Value.entity, out int itemID, out int bufferIndex))
         {
             var slots = slotsLookup[container.Value.entity];
             var element = slots.ElementAt(bufferIndex);
@@ -105,11 +103,10 @@ partial struct CombineItemsServerSystem : ISystem
                 moves.Add(new(foundMaxSlotPos, command.position.slotIndex, gap));
 
             foreach (var item in moves)
-                list.AddRange(EntityHelper.MoveBetweenContainers(slotsLookup, container.Value, container.Value, item.to, item.from, item.amount, true));
+                list.AddRange(EQHelper.MoveBetweenContainers(slotsLookup, container.Value, container.Value, item.to, item.from, item.amount, true));
 
             return list.ToArray();
         }
         return null;
     }
-
 }

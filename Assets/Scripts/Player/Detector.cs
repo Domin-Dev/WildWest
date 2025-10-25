@@ -21,7 +21,7 @@ public class Detector : MonoBehaviour
     {
         if (collision.tag == "Horse" && Input.GetKeyDown(KeyCode.E))
         {
-            controller.Riding(collision.GetComponentInParent<Horse>());
+          //  controller.Riding(collision.GetComponentInParent<Horse>());
         }
     }
     private void OnTriggerExit2D(Collider2D collision)

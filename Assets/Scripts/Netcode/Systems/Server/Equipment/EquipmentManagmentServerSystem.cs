@@ -13,8 +13,6 @@ using UnityEngine.InputSystem.Processors;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct EquipmentManagmentServerSystem : ISystem
 {
-
-
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     public void OnCreate(ref SystemState state)
@@ -40,13 +38,12 @@ partial struct EquipmentManagmentServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, command.ValueRO, player);
-            EntityHelper.SendEvents(ref entityCommandBuffer,events,networkID);
+            EQHelper.SendEvents(ref entityCommandBuffer,events,networkID);
             entityCommandBuffer.DestroyEntity(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-
     private void UpdateLookups(ref SystemState state)
     {
         slotsLookup.Update(ref state);
@@ -55,14 +52,12 @@ partial struct EquipmentManagmentServerSystem : ISystem
     private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, EQMoveItem moveItem, Entity player)
     {
         var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
-        var containerFrom = EntityHelper.GetPlayerContainer(playerContainersLookup,player, selectedSlot.ValueRO.Position.containerIndex);
-        var containerTo = EntityHelper.GetPlayerContainer(playerContainersLookup, player, moveItem.to.containerIndex);
+        var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectedSlot.ValueRO.Position.containerIndex);
+        var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, moveItem.to.containerIndex);
 
         if (!containerFrom.HasValue || !containerTo.HasValue) return null;
-        return EntityHelper.MoveBetweenContainers(slotsLookup , containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
-    }
- 
-    
+        return EQHelper.MoveBetweenContainers(slotsLookup , containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
+    }   
     private bool SlotIsEmpty(Entity container, int slotIndex)
     {
         var slots = slotsLookup[container];
@@ -74,5 +69,4 @@ partial struct EquipmentManagmentServerSystem : ISystem
         }
         return true;
     } 
-
 }
