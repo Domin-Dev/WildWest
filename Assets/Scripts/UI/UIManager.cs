@@ -634,9 +634,23 @@ public class UIManager : MonoBehaviour
         dragDrop.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(stats.itemID);
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
     }
-    public void UpdateItemSlot(Container container,ItemStats slot, int slotIndex)
+    public void UpdateItemSlot(Container container,ItemStats slot, int slotIndex, bool mainBar = false)
     {
-        Transform slotObj = container.gridTransform.GetChild(slotIndex);
+        Transform slotObj;
+        Transform parent = container.gridTransform;
+
+        if (mainBar)
+        {
+            Debug.Log(slotIndex + " pdate!" + " " + slot?.ToString());
+            slotObj = mainItemBar.GetChild(slotIndex);
+            parent = mainItemBar;
+        }
+        else
+        {
+            slotObj = container.gridTransform.GetChild(slotIndex);
+            if (container.gridIndex == 0) UpdateItemSlot(container, slot, slotIndex, true);
+        }
+           
 
         if (slot == null || slot.quantity == 0)
         {
@@ -656,7 +670,7 @@ public class UIManager : MonoBehaviour
             }
             else
             {
-                NewItemUI(container.gridTransform, slot, slotIndex);
+                NewItemUI(parent, slot, slotIndex);
                 if (container.mandatoryProperties != MandatoryProperties.none)
                     slotObj.GetComponentInChildren<EQPlaceholder>(true)?.gameObject.SetActive(false);
             }
@@ -700,7 +714,7 @@ public class UIManager : MonoBehaviour
             {
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
-                slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                if(equipmentGrid.gridTransform != mainItemBar) slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
                 slot.SetAsFirstSibling();
                 Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
             }

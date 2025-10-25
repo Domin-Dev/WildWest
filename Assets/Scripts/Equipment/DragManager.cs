@@ -10,19 +10,17 @@ using UnityEngine.InputSystem;
 
 
 public class DragManager : MonoBehaviour
-{ 
+{   
     public static DragManager instance {  get; private set; }
 
     private RectTransform dragItem;
     private SlotPosition dragItemSlot;
-
     private SlotPosition lastSlotPostion;
+
     private float lastSelectionTime = 0f;
     private float doubleClickThreshold = 0.4f;
 
-
     [SerializeField] Canvas canvas;
-
 
     private void Awake()
     {
@@ -33,7 +31,6 @@ public class DragManager : MonoBehaviour
         else
             Destroy(gameObject);
     }
-
     private void SetUp()
     {
         instance = this;
@@ -41,26 +38,27 @@ public class DragManager : MonoBehaviour
     public bool ItemSelected(DragItem dragDrop, DropSlot dropSlot, PointerEventData eventData)
     {
         if (dragItem == null)
-        {           
+        {
             dragItemSlot = dragDrop.GetSlotPostion();
-            if(lastSlotPostion.Compare(dragItemSlot) && Time.time - lastSelectionTime < doubleClickThreshold)
+            if (lastSlotPostion.Compare(dragItemSlot) && Time.time - lastSelectionTime < doubleClickThreshold)
             {
                 NewEquipmentManager.instance.CombineAllItems(dragItemSlot);
                 return false;
             }
 
-
-
-            lastSlotPostion = dragItemSlot; 
+            lastSlotPostion = dragItemSlot;
             lastSelectionTime = Time.time;
             dragItem = dragDrop.GetComponent<RectTransform>();
-            SelectionMode mode = GetSelectionModeForSelectItem(eventData,out int n);
+            SelectionMode mode = GetSelectionModeForSelectItem(eventData, out int n);
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
         }
-        else if (!SlotSelected(dropSlot,eventData))
+        else
+        {
+            SlotSelected(dropSlot, eventData);
             return ItemSelected(dragDrop, dropSlot, eventData);
+        }
         return false;
     }
     public bool SlotSelected(DropSlot slot, PointerEventData eventData)
@@ -75,7 +73,6 @@ public class DragManager : MonoBehaviour
         Debug.Log("NIE UDALO SIE!!");
         return false;
     }
-
     public void UpdateSelected(ItemStats stats)
     {
         if (stats != null && stats.quantity >= 1)
@@ -86,7 +83,6 @@ public class DragManager : MonoBehaviour
             dragItem = null;
         }
     }
-
     private SelectionMode GetSelectionModeForSelectItem(PointerEventData pointerEventData,out int n)
     {
         SelectionMode mode = SelectionMode.N;
@@ -98,7 +94,6 @@ public class DragManager : MonoBehaviour
             mode = SelectionMode.Half;
         return mode;
     }
-
     private SelectionMode GetSelectionModeForSelectSlot(PointerEventData pointerEventData, out int n)
     {
         SelectionMode mode = SelectionMode.N;

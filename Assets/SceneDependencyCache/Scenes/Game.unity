@@ -7938,9 +7938,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93b647ca203d9f64d869a1df2f558e6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1.8
-  riderPoint: {fileID: 438817424}
-  sortingGroup: {fileID: 0}
 --- !u!95 &361741419
 Animator:
   serializedVersion: 7
@@ -29463,7 +29460,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1017828614}
   m_HandleRect: {fileID: 1017828613}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -40125,9 +40122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93b647ca203d9f64d869a1df2f558e6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 1.8
-  riderPoint: {fileID: 187993766}
-  sortingGroup: {fileID: 1871782859}
 --- !u!210 &1871782859
 SortingGroup:
   m_ObjectHideFlags: 0

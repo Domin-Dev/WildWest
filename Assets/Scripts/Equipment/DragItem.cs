@@ -23,7 +23,8 @@ public class DragItem : MonoBehaviour, IPointerDownHandler
 
     private void OnDestroy()
     {
-        parent.GetComponent<DropSlot>().slotClick -= ClickItem;
+        if(parent != null)
+            parent.GetComponent<DropSlot>().slotClick -= ClickItem;
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -41,6 +42,7 @@ public class DragItem : MonoBehaviour, IPointerDownHandler
             canvasGroup.blocksRaycasts = false;
             rectTransform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             transform.SetParent(UIManager.instance.itemParent);
+            Debug.Log("dziala!!!!!!!!!!!!!!!!!!!");
             NewEquipmentManager.instance.LocalUpdateSlotIndex(dropSlot.GetSlotPosition());
         }
     }
