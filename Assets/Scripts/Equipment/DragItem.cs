@@ -42,7 +42,6 @@ public class DragItem : MonoBehaviour, IPointerDownHandler
             canvasGroup.blocksRaycasts = false;
             rectTransform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             transform.SetParent(UIManager.instance.itemParent);
-            Debug.Log("dziala!!!!!!!!!!!!!!!!!!!");
             NewEquipmentManager.instance.LocalUpdateSlotIndex(dropSlot.GetSlotPosition());
         }
     }

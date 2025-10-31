@@ -34,10 +34,9 @@ partial struct EquipmentManagmentServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQMoveItem>>().WithEntityAccess())
         {
-
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
-            EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, command.ValueRO, player);
+            EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, command.ValueRO, player, rpcCommandRequest.ValueRO.SourceConnection);
             EQHelper.SendEvents(ref entityCommandBuffer,events,networkID);
             entityCommandBuffer.DestroyEntity(entity);
         }
@@ -49,14 +48,14 @@ partial struct EquipmentManagmentServerSystem : ISystem
         slotsLookup.Update(ref state);
         playerContainersLookup.Update(ref state);
     }
-    private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, EQMoveItem moveItem, Entity player)
+    private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, EQMoveItem moveItem, Entity player, Entity connection)
     {
         var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
         var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectedSlot.ValueRO.Position.containerIndex);
         var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, moveItem.to.containerIndex);
 
         if (!containerFrom.HasValue || !containerTo.HasValue) return null;
-        return EQHelper.MoveBetweenContainers(slotsLookup , containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
+        return EQHelper.MoveBetweenContainers(ref entityCommandBuffer, slotsLookup, connection, containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
     }   
     private bool SlotIsEmpty(Entity container, int slotIndex)
     {

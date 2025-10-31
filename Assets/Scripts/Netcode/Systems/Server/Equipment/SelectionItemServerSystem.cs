@@ -36,14 +36,25 @@ partial struct SelectionItemServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQSelectItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQSelectItem>>().WithEntityAccess())
         {
+
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
+            
             if (command.ValueRO.value > 0)
             {
-                SelectItem(ref state, player, command.ValueRO);
-                EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
-                    (new EquipmentEventData(command.ValueRO.position.slotIndex, 1), command.ValueRO.position.containerIndex, networkID));
-            
+                Debug.Log("Select : " + command.ValueRO.position + " " + command.ValueRO.value);
+
+                var selectedSlot = SystemAPI.GetComponentRO<SelectedSlot>(player);
+
+                if (!selectedSlot.ValueRO.Position.Compare(command.ValueRO.position))
+                {
+                    SelectItem(ref state, player, command.ValueRO);
+                    if (command.ValueRO.position.slotIndex >= 0)
+                    {
+                        EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
+                            (new EquipmentEventData(command.ValueRO.position.slotIndex, 1), command.ValueRO.position.containerIndex, networkID));
+                    }
+                }
             }
             entityCommandBuffer.DestroyEntity(entity);
         }
@@ -57,12 +68,12 @@ partial struct SelectionItemServerSystem : ISystem
         var container = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectItem.position.containerIndex);
 
         if (!container.HasValue) return;
-        if (EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
+        if (selectItem.position.slotIndex >= 0 && EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
         {
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
             if (selectItem.value >= element.quantity)
             {
-                element.slot = ConvetSlotIndexToSelectedSlotIndex(element.slot);
+                element.slot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot);
             }
             else
             {
@@ -71,17 +82,22 @@ partial struct SelectionItemServerSystem : ISystem
                 slotsLookup[container.Value.entity].Add(new InventorySlot()
                 {
                     ItemId = element.ItemId,
-                    slot = ConvetSlotIndexToSelectedSlotIndex(element.slot),
+                    slot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot),
                     quantity = selectItem.value
                 });
             }
         }
+       
         var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
-        selectItem.position.slotIndex = ConvetSlotIndexToSelectedSlotIndex(selectItem.position.slotIndex);
-        selectedSlot.ValueRW.Position = selectItem.position;
-    }
-    private int ConvetSlotIndexToSelectedSlotIndex(int slotIndex)
-    {
-        return -(slotIndex + 1);
+
+        if (selectItem.position.slotIndex >= 0)
+        {
+            selectItem.position.slotIndex = EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectItem.position.slotIndex);
+            selectedSlot.ValueRW.Position = selectItem.position;
+        }
+        else
+        {
+            selectedSlot.ValueRW.Position = selectItem.position;
+        }
     }
 }

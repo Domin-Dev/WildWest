@@ -71,22 +71,42 @@ public class NewEquipmentManager : MonoBehaviour
         n = SelectN(item.quantity, selectionMode, n);
         selectedItem = TakeItems(slotPosition, n);
         selectedSlot = slotPosition;
+        Debug.Log("Select RPC send " + slotPosition + " " + n);
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
-
-
-        Debug.Log(SlotIsEmpty(slotPosition) + "   " + slotPosition.ToString());
         if (SlotIsEmpty(slotPosition))
             UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
         return selectedItem;
     }
-    public void CombineAllItems(SlotPosition slotPosition)
+    public ItemStats LocalSelectItem(SlotPosition slotPosition, ItemStats itemStats)
     {
-        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
+        selectedSlot = slotPosition;
+        selectedItem = itemStats;
+        if (SlotIsEmpty(slotPosition))
+            UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
+        LocalUpdateSlotIndex(slotPosition);
+        return selectedItem;
     }
-    public void DeselectItem()
+
+    public void ClearSelection()
     {
         selectedItem = null;
         selectedSlot = SlotPosition.NullSlot;
+    }
+
+    public void DeselectItem()
+    {
+        Debug.Log("deselect!!");
+        if (selectedItem != null)
+        {
+            RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDeselectItem() { });
+        }
+        ClearSelection();
+        DragManager.instance.UpdateSelected(null);
+    }
+
+    public void CombineAllItems(SlotPosition slotPosition)
+    {
+        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
     }
     private int SelectN(int itemQuantity, SelectionMode selectionMode, int n = 1)
     {
@@ -123,12 +143,19 @@ public class NewEquipmentManager : MonoBehaviour
     {
         return GetItemStats(slotPosition) == null;
     }
-    public void MoveItemData(SlotPosition to, int quantity)
+    public ItemStats MoveItemData(SlotPosition to, int quantity)
     {
         int maxStack = ItemsAsset.instance.GetStackMax(selectedItem.itemID);
         ItemStats stats = GetItemStats(to);
+        ItemStats statsToReturn = null;
+
         if (stats != null && (stats.itemID != selectedItem.itemID || stats.quantity >= maxStack))
-            return;
+        {
+            Debug.Log(to.ToString() + " " + quantity);
+            statsToReturn = GetItemStats(to);
+            stats = null;
+            ClearSlot(to);
+        }
 
         quantity = Math.Clamp(quantity, 0, selectedItem.quantity);
         if (stats != null && quantity + stats.quantity > maxStack)
@@ -138,15 +165,16 @@ public class NewEquipmentManager : MonoBehaviour
         SendMoveItem(to, quantity);
         LocalUpdateSlotIndex(to);
 
-        Debug.Log("<color=blue> " + selectedItem.quantity);
         DragManager.instance.UpdateSelected(selectedItem);
         if (selectedItem.quantity == 0)
-            DeselectItem();
+            ClearSelection();
+
+        return statsToReturn;
     }
-    public void MoveItemData(SlotPosition to, SelectionMode selectionMode, int n = 1)
+    public ItemStats MoveItemData(SlotPosition to, SelectionMode selectionMode, int n = 1)
     {
         n = SelectN(selectedItem.quantity, selectionMode, n);
-        MoveItemData(to, n);
+        return MoveItemData(to, n);
     }
     private ItemStats GetItemStats(SlotPosition slotPosition)
     {
@@ -230,8 +258,6 @@ public class NewEquipmentManager : MonoBehaviour
             if (item.slot == slotPosition.slotIndex)
             {
                 ItemStats slot = new ItemStats(item);
-                
-                Debug.Log("<Color=red> " + slot.quantity);
                 container.itemSlots[slotPosition.slotIndex] = slot;
                 return slot;
             }

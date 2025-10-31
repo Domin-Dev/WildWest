@@ -554,6 +554,7 @@ public class UIManager : MonoBehaviour
 
         if (!value)
         {
+            NewEquipmentManager.instance.DeselectItem();
             TooltipSystem.Hide();
             openWindows.Remove(equipment);
             ResetSelectedItem();
@@ -714,8 +715,12 @@ public class UIManager : MonoBehaviour
             {
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
-                if(equipmentGrid.gridTransform != mainItemBar) slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
-                slot.SetAsFirstSibling();
+                if (equipmentGrid.gridTransform != mainItemBar)
+                    slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                else
+                    Destroy(slot.GetComponent<Button>());
+
+                    slot.SetAsFirstSibling();
                 Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
             }
         }

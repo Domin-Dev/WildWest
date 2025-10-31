@@ -22,11 +22,10 @@ public class DropSlot : MonoBehaviour, IPointerDownHandler
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-
-        if (!DragManager.instance.SlotSelected(this,eventData))
-        {
-            slotClick?.Invoke(eventData);
-        }
+        if (slotClick != null)
+            slotClick.Invoke(eventData);
+        else
+            DragManager.instance.SlotSelected(this, eventData);
     }
 
 

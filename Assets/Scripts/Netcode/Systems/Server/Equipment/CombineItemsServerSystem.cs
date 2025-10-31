@@ -41,7 +41,7 @@ partial struct CombineItemsServerSystem : ISystem
         {
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
-            var events = CombineItems(ref state, ref entityCommandBuffer, player, command.ValueRO);
+            var events = CombineItems(ref state, ref entityCommandBuffer, player,rpcCommandRequest.ValueRO.SourceConnection, command.ValueRO);
             EQHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
             entityCommandBuffer.DestroyEntity(entity);
         }
@@ -49,7 +49,7 @@ partial struct CombineItemsServerSystem : ISystem
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    EquipmentEvent[] CombineItems(ref SystemState state,ref EntityCommandBuffer ecb,Entity player,EQCombineAllItems command)
+    EquipmentEvent[] CombineItems(ref SystemState state,ref EntityCommandBuffer ecb,Entity player,Entity connection,EQCombineAllItems command)
     {
         var container = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.position.containerIndex);
         if (!container.HasValue) return null; 
@@ -67,11 +67,8 @@ partial struct CombineItemsServerSystem : ISystem
             if (maxStack <= element.quantity) return null;            
             for (int i = 0; i < slots.Length; i++)
                 {
-                    Debug.Log(i);
                     if (i == bufferIndex) continue;
-
                     ref var slot = ref slots.ElementAt(i);
-                    Debug.Log(i + " " + slot.ItemId + "  ");
                     if(slot.ItemId == itemID)
                     {
                         if (slot.quantity == maxStack)
@@ -89,13 +86,9 @@ partial struct CombineItemsServerSystem : ISystem
                         else
                             gap = 0;
 
-                        Debug.Log("<Color=pink> " + gap + " " + transferValue);
                         moves.Add(new(slot.slot, command.position.slotIndex, transferValue));
                         if (gap <= 0)
-                        {
-                            Debug.Log("break!");
-                            break;
-                        }
+                            break;                     
                     }
                 }
           
@@ -103,7 +96,7 @@ partial struct CombineItemsServerSystem : ISystem
                 moves.Add(new(foundMaxSlotPos, command.position.slotIndex, gap));
 
             foreach (var item in moves)
-                list.AddRange(EQHelper.MoveBetweenContainers(slotsLookup, container.Value, container.Value, item.to, item.from, item.amount, true));
+                list.AddRange(EQHelper.MoveBetweenContainers(ref ecb, slotsLookup, connection, container.Value, container.Value, item.to, item.from, item.amount, true));
 
             return list.ToArray();
         }

@@ -97,7 +97,6 @@ public static class LoadSystem
    
     public static SettingsData LoadSettings(out string controls)
     {
-        Debug.Log("load!!");
         controls = File.ReadAllText(SaveSystem.controlsPath);
         return LoadJson<SettingsData>(SaveSystem.settingsPath);
     }

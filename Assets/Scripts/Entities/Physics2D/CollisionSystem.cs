@@ -245,7 +245,6 @@ public partial struct CollisionSystem : ISystem
                 entityCommandBuffer.RemoveComponent<Physics2D>(entity);
                 if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
                 entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(new float3(100000, 100000, 100000)));
-                Debug.Log("destory ! " + entity + " " + state.EntityManager.World.Flags);
             }
             else
             {

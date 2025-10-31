@@ -39,8 +39,6 @@ public static class BuildingObjectCreator
         {
 
             entity = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
-
-
             Entity sprite = entityManager.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
             SpriteRenderer spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(sprite);
             LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));

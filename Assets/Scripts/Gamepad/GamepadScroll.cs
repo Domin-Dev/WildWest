@@ -86,7 +86,6 @@ public class GamepadScroll : MonoBehaviour
                     Button btn = item.transform.GetChild(i).GetComponent<Button>();
                     if (btn != null)
                     {
-                        Debug.Log(EventSystem.current.currentSelectedGameObject);
                         if (EventSystem.current.currentSelectedGameObject == btn.gameObject)
                         {
                             Debug.Log("DZIALA!!!!!!!!11");
