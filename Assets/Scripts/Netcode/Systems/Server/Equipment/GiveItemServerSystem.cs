@@ -52,5 +52,4 @@ partial struct GiveItemServerSystem : ISystem
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    
 }

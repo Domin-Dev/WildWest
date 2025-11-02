@@ -109,7 +109,10 @@ partial struct GoInGameServerSystem : ISystem
     {
         var entities = SystemAPI.GetSingleton<EntitiesReferences>();
         entityCommandBuffer.AddBuffer<PlayerContainers>(character);
-        entityCommandBuffer.AddComponent<SelectedSlot>(character, new SelectedSlot() { Position = SlotPosition.NullSlot});
+        entityCommandBuffer.AddComponent<ContainerSettings>(character, new ContainerSettings() {
+            Position = SlotPosition.NullSlot,
+            targetContainer = -1
+        });
 
         CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,10,0);
         CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,30,1);

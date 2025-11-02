@@ -18,6 +18,11 @@ public struct EQAddItem
         this.quantity = quantity;
         this.slotExist = slotExist;
     }
+
+    public override string ToString()
+    {
+        return pos.ToString() + " " + quantity + " " + slotExist;
+    }
 }
 
 
@@ -244,7 +249,7 @@ public static class EQHelper
         {
             Debug.Log(item.pos.ToString());
             var containerTo = GetPlayerContainer(containers, player, item.pos.containerIndex);
-            equipmentEvents.AddRange(MoveBetweenContainers(ref ecb, slotLookup, connection, containerFrom.Value,containerTo.Value,item.pos.slotIndex,from.slotIndex,item.quantity));
+            equipmentEvents.AddRange(MoveBetweenContainers(ref ecb, slotLookup, connection, containerFrom.Value,containerTo.Value,item.pos.slotIndex,from.slotIndex,item.quantity,true));
         }
 
         return equipmentEvents.ToArray();
@@ -316,6 +321,86 @@ public static class EQHelper
         }
         return moves.ToArray(); 
     }
+
+    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, int itemID, int quantity, params int[] findIncontainers)
+    {
+        var playerContainers = containers[player];
+        int stackMax = ItemsAsset.instance.GetStackMax(itemID);
+        int numberSlots = (int)Math.Ceiling((float)quantity / (float)stackMax);
+        List<SlotPosition> freeSlots = new List<SlotPosition>();
+        List<EQAddItem> moves = new List<EQAddItem>();
+
+        for (int i = 0; i < findIncontainers.Length; i++)
+        {
+            PlayerContainers? container = null;
+            for (int j = 0; j < playerContainers.Length; j++)
+            {
+                if (playerContainers[j].index == findIncontainers[i])
+                    container = playerContainers[j];
+            }
+            if (!container.HasValue) continue;
+
+            var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.Value.entity);
+            if (CheckRequirements(containerComponent, itemID))
+            {
+                var slots = slotLookup[container.Value.entity];
+                bool[] occupiedSlots = new bool[containerComponent.capacity];
+
+                for (int j = 0; j < slots.Length; j++)
+                {
+                    var slot = slots[j];
+                    if (slot.slot < 0) continue;
+                    occupiedSlots[slot.slot] = true;
+                    if (slot.ItemId == itemID && slot.quantity < stackMax)
+                    {
+                        int free = stackMax - slot.quantity;
+                        if (free >= quantity)
+                        {
+                            moves.Add(new EQAddItem(new SlotPosition(container.Value.index, slot.slot), quantity, true));
+                            return moves.ToArray();
+                        }
+                        else
+                        {
+                            moves.Add(new EQAddItem(new SlotPosition(container.Value.index, slot.slot), free, true));
+                            quantity -= free;
+                        }
+                    }
+                }
+                if (numberSlots > 0)
+                {
+                    for (int j = 0; j < occupiedSlots.Length; j++)
+                    {
+                        if (!occupiedSlots[j])
+                        {
+                            freeSlots.Add(new SlotPosition(container.Value.index, j));
+                            numberSlots--;
+                            if (numberSlots == 0) break;
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach (var item in freeSlots)
+        {
+            if (quantity > stackMax)
+            {
+                moves.Add(new EQAddItem(item, stackMax, false));
+                quantity -= stackMax;
+            }
+            else
+            {
+                moves.Add(new EQAddItem(item, quantity, false));
+                break;
+            }
+        }
+        return moves.ToArray();
+    }
+
+
+
+
+
     public static bool CheckRequirements(ContainerComponent containerComponent, int itemID)
     {
         switch (containerComponent.mandatoryProperties)

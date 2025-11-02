@@ -38,7 +38,7 @@ partial struct DeselectionItemServerSystem : ISystem
         {
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
-            var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
+            var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
 
             if(!selectedSlot.ValueRO.Position.Compare(SlotPosition.NullSlot))
             {

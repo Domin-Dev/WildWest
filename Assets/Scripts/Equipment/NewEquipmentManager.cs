@@ -176,6 +176,11 @@ public class NewEquipmentManager : MonoBehaviour
         n = SelectN(selectedItem.quantity, selectionMode, n);
         return MoveItemData(to, n);
     }
+
+    public void MoveTheItemToNewContainer(SlotPosition slot)
+    {
+        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveItemToContainer() { from = slot });
+    }
     private ItemStats GetItemStats(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)

@@ -44,7 +44,7 @@ partial struct SelectionItemServerSystem : ISystem
             {
                 Debug.Log("Select : " + command.ValueRO.position + " " + command.ValueRO.value);
 
-                var selectedSlot = SystemAPI.GetComponentRO<SelectedSlot>(player);
+                var selectedSlot = SystemAPI.GetComponentRO<ContainerSettings>(player);
 
                 if (!selectedSlot.ValueRO.Position.Compare(command.ValueRO.position))
                 {
@@ -88,7 +88,7 @@ partial struct SelectionItemServerSystem : ISystem
             }
         }
        
-        var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
+        var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
 
         if (selectItem.position.slotIndex >= 0)
         {

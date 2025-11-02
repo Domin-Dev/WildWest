@@ -50,6 +50,13 @@ public class DragManager : MonoBehaviour
                 NewEquipmentManager.instance.CombineAllItems(dragItemSlot);
                 return false;
             }
+            if (InputManager.i.moveAllTheItems.inProgress)
+            {
+                NewEquipmentManager.instance.MoveTheItemToNewContainer(dragItemSlot);
+                return false;
+            }
+
+
             dragItem = dragDrop.GetComponent<RectTransform>();
             lastSlotPostion = dragItemSlot;
             lastSelectionTime = Time.time;
@@ -60,7 +67,7 @@ public class DragManager : MonoBehaviour
         }
         else
         {
-            ItemStats item = SlotSelected(dropSlot, eventData);
+            ItemStats item = SlotSelected(dropSlot, eventData,true);
             if (item != null)
             {
                 SlotPosition slotPosition = dropSlot.GetSlotPosition();
@@ -74,12 +81,13 @@ public class DragManager : MonoBehaviour
                 return false;
         }
     }
-    public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData)
+    public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData, bool putAllItems = false)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
         if (dragItem != null)
         {
             SelectionMode mode = GetSelectionModeForSelectSlot(eventData,out int n);
+            if (putAllItems) mode = SelectionMode.All;
             return NewEquipmentManager.instance.MoveItemData(slotPosition, mode, n); 
         }
         Debug.Log("NIE UDALO SIE!!");

@@ -50,7 +50,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
     }
     private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, EQMoveItem moveItem, Entity player, Entity connection)
     {
-        var selectedSlot = SystemAPI.GetComponentRW<SelectedSlot>(player);
+        var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
         var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectedSlot.ValueRO.Position.containerIndex);
         var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, moveItem.to.containerIndex);
 
