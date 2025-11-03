@@ -117,7 +117,7 @@ partial struct GoInGameServerSystem : ISystem
         CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,10,0);
         CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,30,1);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 20, 2, MandatoryProperties.item, 30);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 8, 3, MandatoryProperties.tag, 1);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 8, 3, MandatoryProperties.item, 34);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 10, 4, MandatoryProperties.tag, 2);
     }
     private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, int capacity, byte index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
@@ -130,7 +130,6 @@ partial struct GoInGameServerSystem : ISystem
             mandatoryProperties = mandatory,
             mandatoryData = mandatoryData
         });
-
 
         entityCommandBuffer.AddComponent(e, new GhostChildEntity());
         entityCommandBuffer.AppendToBuffer<GhostGroup>(player, new GhostGroup() { Value = e });

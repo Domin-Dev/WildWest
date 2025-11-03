@@ -36,18 +36,15 @@ partial struct SelectionItemServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQSelectItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQSelectItem>>().WithEntityAccess())
         {
-
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             
             if (command.ValueRO.value > 0)
             {
-                Debug.Log("Select : " + command.ValueRO.position + " " + command.ValueRO.value);
-
                 var selectedSlot = SystemAPI.GetComponentRO<ContainerSettings>(player);
-
                 if (!selectedSlot.ValueRO.Position.Compare(command.ValueRO.position))
                 {
+                    EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
                     SelectItem(ref state, player, command.ValueRO);
                     if (command.ValueRO.position.slotIndex >= 0)
                     {

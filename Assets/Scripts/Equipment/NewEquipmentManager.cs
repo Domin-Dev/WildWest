@@ -177,10 +177,19 @@ public class NewEquipmentManager : MonoBehaviour
         return MoveItemData(to, n);
     }
 
-    public void MoveTheItemToNewContainer(SlotPosition slot)
+    public bool CanMove(SlotPosition to)
     {
-        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveItemToContainer() { from = slot });
+
+        if (selectedItem != null && containers.TryGetValue(to.containerIndex, out var container))
+        {
+           return EQHelper.CheckRequirements(container.mandatoryProperties, container.mandatoryData, selectedItem.itemID);
+        }
+        return false;
     }
+
+
+
+
     private ItemStats GetItemStats(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
@@ -256,11 +265,13 @@ public class NewEquipmentManager : MonoBehaviour
     }
     private ItemStats LoadItemFromEntities(SlotPosition slotPosition)
     {
+        if(slotPosition.slotIndex < 0) return null;
+
         Container container = containers[slotPosition.containerIndex];
         var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
         foreach (var item in buffer)
         {
-            if (item.slot == slotPosition.slotIndex)
+            if (item.slot == slotPosition.slotIndex )
             {
                 ItemStats slot = new ItemStats(item);
                 container.itemSlots[slotPosition.slotIndex] = slot;

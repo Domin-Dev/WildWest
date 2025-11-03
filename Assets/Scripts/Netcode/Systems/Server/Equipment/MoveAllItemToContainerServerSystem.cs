@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
@@ -11,7 +12,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.Processors;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-partial struct DeselectionItemServerSystem : ISystem
+partial struct MoveAllItemToContainerServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
@@ -19,7 +20,7 @@ partial struct DeselectionItemServerSystem : ISystem
     {
         state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAny<EQDeselectItem>().WithAll<ReceiveRpcCommandRequest>();
+            .WithAny<EQMoveAllItemsToContainer>().WithAll<ReceiveRpcCommandRequest>();
 
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
@@ -33,18 +34,33 @@ partial struct DeselectionItemServerSystem : ISystem
         slotsLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQDeselectItem> command, Entity entity) in
-        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQDeselectItem>>().WithEntityAccess())
+        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveAllItemsToContainer> command, Entity entity) in
+        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQMoveAllItemsToContainer>>().WithEntityAccess())
         {
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
 
-            EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
-            selectedSlot.ValueRW.Position = SlotPosition.NullSlot;
+
+
+               Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+            if (selectedSlot.ValueRO.targetContainer < 0)
+            {
+                if (EQHelper.TryGetBufferIndex(slotsLookup, playerContainersLookup, player, command.ValueRO.from, out InventorySlot? slot, out int bufferindex))
+                {
+                    List<int> containers = EQHelper.GetPlayerContainers(ref state, playerContainersLookup, player, slot.Value.ItemId);
+                    containers.Remove(command.ValueRO.from.containerIndex);
+                    var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, slot.Value.ItemId, slot.Value.quantity, containers.ToArray());
+                    var events = EQHelper.MoveItems(ref state,ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup, command.ValueRO.from, player, items, slot.Value.ItemId);
+                    EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);
+                }
+            }
+            else
+            {
+
+            }
             entityCommandBuffer.DestroyEntity(entity);
         }
-
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

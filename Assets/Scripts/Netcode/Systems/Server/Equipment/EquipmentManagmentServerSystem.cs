@@ -55,7 +55,9 @@ partial struct EquipmentManagmentServerSystem : ISystem
         var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, moveItem.to.containerIndex);
 
         if (!containerFrom.HasValue || !containerTo.HasValue) return null;
-        return EQHelper.MoveBetweenContainers(ref entityCommandBuffer, slotsLookup, connection, containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
+
+
+        return EQHelper.MoveBetweenContainers(ref state,ref entityCommandBuffer, slotsLookup, connection, containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
     }   
     private bool SlotIsEmpty(Entity container, int slotIndex)
     {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -50,12 +51,16 @@ public class DragManager : MonoBehaviour
                 NewEquipmentManager.instance.CombineAllItems(dragItemSlot);
                 return false;
             }
-            if (InputManager.i.moveAllTheItems.inProgress)
+            if (InputManager.i.moveTheItem.inProgress)
             {
-                NewEquipmentManager.instance.MoveTheItemToNewContainer(dragItemSlot);
+                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveItemToContainer() { from = dragItemSlot });
                 return false;
             }
-
+            if (InputManager.i.moveAllTheItems.inProgress)
+            {
+                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveAllItemsToContainer() { from = dragItemSlot });
+                return false;
+            }
 
             dragItem = dragDrop.GetComponent<RectTransform>();
             lastSlotPostion = dragItemSlot;
@@ -84,7 +89,8 @@ public class DragManager : MonoBehaviour
     public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData, bool putAllItems = false)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
-        if (dragItem != null)
+
+        if (dragItem != null && NewEquipmentManager.instance.CanMove(slotPosition))
         {
             SelectionMode mode = GetSelectionModeForSelectSlot(eventData,out int n);
             if (putAllItems) mode = SelectionMode.All;

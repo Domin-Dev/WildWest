@@ -41,6 +41,9 @@ partial struct CombineItemsServerSystem : ISystem
         {
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
+
+            Debug.Log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+            
             var events = CombineItems(ref state, ref entityCommandBuffer, player,rpcCommandRequest.ValueRO.SourceConnection, command.ValueRO);
             EQHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
             entityCommandBuffer.DestroyEntity(entity);
@@ -96,7 +99,7 @@ partial struct CombineItemsServerSystem : ISystem
                 moves.Add(new(foundMaxSlotPos, command.position.slotIndex, gap));
 
             foreach (var item in moves)
-                list.AddRange(EQHelper.MoveBetweenContainers(ref ecb, slotsLookup, connection, container.Value, container.Value, item.to, item.from, item.amount, true));
+                list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb, slotsLookup, connection, container.Value, container.Value, item.to, item.from, item.amount, true));
 
             return list.ToArray();
         }
