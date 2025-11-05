@@ -32,7 +32,7 @@ public class ItemStats
 
     public ItemStats(InventorySlot inventorySlot)
     {
-        itemID = inventorySlot.ItemId;
+        itemID = inventorySlot.itemId;
         quantity = inventorySlot.quantity;
     }
 

@@ -42,7 +42,7 @@ partial struct CombineItemsServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
-            Debug.Log(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+            Debug.Log("EQCombineAllItems");
             
             var events = CombineItems(ref state, ref entityCommandBuffer, player,rpcCommandRequest.ValueRO.SourceConnection, command.ValueRO);
             EQHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
@@ -72,7 +72,7 @@ partial struct CombineItemsServerSystem : ISystem
                 {
                     if (i == bufferIndex) continue;
                     ref var slot = ref slots.ElementAt(i);
-                    if(slot.ItemId == itemID)
+                    if(slot.itemId == itemID)
                     {
                         if (slot.quantity == maxStack)
                         {

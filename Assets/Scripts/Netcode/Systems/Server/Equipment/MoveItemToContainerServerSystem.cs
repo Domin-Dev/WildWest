@@ -47,14 +47,14 @@ partial struct MoveItemToContainerServerSystem : ISystem
             {
                 if (EQHelper.TryGetBufferIndex(slotsLookup, playerContainersLookup, player, command.ValueRO.from, out InventorySlot? slot, out int bufferindex))
                 {
-                    List<int> containers = EQHelper.GetPlayerContainers(ref state, playerContainersLookup, player, slot.Value.ItemId);
+                    List<int> containers = EQHelper.GetPlayerContainers(ref state, playerContainersLookup, player, slot.Value.itemId);
                     containers.Remove(command.ValueRO.from.containerIndex);
-                    var itemsInContainer = EQHelper.TryGetAllItemsInContainer(slotsLookup,playerContainersLookup, player,command.ValueRO.from.containerIndex,slot.Value.ItemId);
+                    var itemsInContainer = EQHelper.TryGetAllItemsInContainer(slotsLookup,playerContainersLookup, player,command.ValueRO.from.containerIndex,slot.Value.itemId);
 
                     foreach (var item in itemsInContainer)
                     {
-                        var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, item.ItemId, item.quantity, containers.ToArray());
-                        var events = EQHelper.MoveItems(ref state, ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup,new SlotPosition(command.ValueRO.from.containerIndex,item.slot), player, items, slot.Value.ItemId);
+                        var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, item.itemId, item.quantity, containers.ToArray());
+                        var events = EQHelper.MoveItems(ref state, ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup,new SlotPosition(command.ValueRO.from.containerIndex,item.slot), player, items, slot.Value.itemId);
                         EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);
                     }
                 }

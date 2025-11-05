@@ -642,7 +642,6 @@ public class UIManager : MonoBehaviour
 
         if (mainBar)
         {
-            Debug.Log(slotIndex + " pdate!" + " " + slot?.ToString());
             slotObj = mainItemBar.GetChild(slotIndex);
             parent = mainItemBar;
         }

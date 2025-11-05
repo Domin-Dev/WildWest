@@ -43,6 +43,9 @@ partial struct GiveItemServerSystem : ISystem
             int networkID = SystemAPI.GetComponent<NetworkId>(command.ValueRO.networkEntity).Value;
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(command.ValueRO.networkEntity).entity;
 
+
+            Debug.Log("Give!!");
+            
             var slots = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, command.ValueRO.itemID, command.ValueRO.quantity);
             var events = EQHelper.AddItems(slotsLookup, playerContainersLookup, player, slots, command.ValueRO.itemID);
             EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);

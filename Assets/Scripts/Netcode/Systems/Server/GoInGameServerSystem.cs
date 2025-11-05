@@ -137,9 +137,9 @@ partial struct GoInGameServerSystem : ISystem
         entityCommandBuffer.AddComponent(e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
         entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = index});
         entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(capacity + 1);
-        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { ItemId = 30, quantity = 20, slot = 2 });
-        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { ItemId = 30, quantity = 10, slot = 4 });
-        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { ItemId = 21, quantity = 20, slot = 3 });
+        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 30, quantity = 20, slot = 2 });
+        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 30, quantity = 10, slot = 4 });
+        entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 21, quantity = 20, slot = 3 });
         entityCommandBuffer.AddComponent(e, new SendToPlayer());
     }
 

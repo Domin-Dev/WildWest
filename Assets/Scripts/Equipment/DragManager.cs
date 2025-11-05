@@ -73,6 +73,7 @@ public class DragManager : MonoBehaviour
         else
         {
             ItemStats item = SlotSelected(dropSlot, eventData,true);
+            Debug.Log( " <Color=green> " + item?.ToString());
             if (item != null)
             {
                 SlotPosition slotPosition = dropSlot.GetSlotPosition();
@@ -89,14 +90,12 @@ public class DragManager : MonoBehaviour
     public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData, bool putAllItems = false)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
-
         if (dragItem != null && NewEquipmentManager.instance.CanMove(slotPosition))
         {
             SelectionMode mode = GetSelectionModeForSelectSlot(eventData,out int n);
             if (putAllItems) mode = SelectionMode.All;
             return NewEquipmentManager.instance.MoveItemData(slotPosition, mode, n); 
         }
-        Debug.Log("NIE UDALO SIE!!");
         return null;
     }
     public void UpdateSelected(ItemStats stats)

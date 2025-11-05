@@ -40,6 +40,9 @@ partial struct DeselectionItemServerSystem : ISystem
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
 
+
+            Debug.Log("Deselection");
+
             EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
             selectedSlot.ValueRW.Position = SlotPosition.NullSlot;
             entityCommandBuffer.DestroyEntity(entity);

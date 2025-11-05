@@ -58,6 +58,14 @@ public class NewEquipmentManager : MonoBehaviour
                 open = !open;
                 UIManager.instance.OpenEquipment(open);
             }
+
+            if (Input.GetMouseButton(0))
+            {
+                if(selectedItem != null && UIManager.instance.mouseIsOverEQUI)
+                {
+                   // Debug.Log("Drop!!!");
+                }
+            }
         }
     }
 
@@ -71,7 +79,6 @@ public class NewEquipmentManager : MonoBehaviour
         n = SelectN(item.quantity, selectionMode, n);
         selectedItem = TakeItems(slotPosition, n);
         selectedSlot = slotPosition;
-        Debug.Log("Select RPC send " + slotPosition + " " + n);
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
         if (SlotIsEmpty(slotPosition))
             UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
@@ -95,7 +102,6 @@ public class NewEquipmentManager : MonoBehaviour
 
     public void DeselectItem()
     {
-        Debug.Log("deselect!!");
         if (selectedItem != null)
         {
             RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDeselectItem() { });
@@ -151,7 +157,6 @@ public class NewEquipmentManager : MonoBehaviour
 
         if (stats != null && (stats.itemID != selectedItem.itemID || stats.quantity >= maxStack))
         {
-            Debug.Log(to.ToString() + " " + quantity);
             statsToReturn = GetItemStats(to);
             stats = null;
             ClearSlot(to);

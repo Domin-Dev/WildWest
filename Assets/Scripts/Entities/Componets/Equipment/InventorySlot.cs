@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.NetCode;
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
 public struct InventorySlot : IBufferElementData
 {
     [GhostField] public int slot;
-    [GhostField] public int ItemId;    
-    [GhostField] public int quantity; 
+    [GhostField] public int itemId;    
+    [GhostField] public int quantity;
+
+
+    public override string ToString()
+    {
+        return $"Slot:{slot} ItemID:{itemId} Quantity:{quantity}";
+    }
 }
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]

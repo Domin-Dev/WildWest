@@ -71,10 +71,8 @@ public static class SaveSystem
     }
     public static void SaveSettings(SettingsData Data, InputActionAsset Controls)
     {
-        Debug.Log(Controls.SaveBindingOverridesAsJson());
         SaveJson(Data,settingsPath);
         SaveJson(Controls.SaveBindingOverridesAsJson(), controlsPath);
-        Debug.Log("save!!");
     }
     public static void SaveJson(object data, string path)
     {
@@ -83,7 +81,6 @@ public static class SaveSystem
     }
     public static void SaveJson(string data, string path)
     {
-        Debug.Log(path);
         File.WriteAllText(path, data);
     }
     #endregion

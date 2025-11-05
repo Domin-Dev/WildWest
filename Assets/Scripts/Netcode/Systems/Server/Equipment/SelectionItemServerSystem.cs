@@ -38,13 +38,17 @@ partial struct SelectionItemServerSystem : ISystem
         {
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
-            
+            var selectedSlot = SystemAPI.GetComponentRO<ContainerSettings>(player);
+
+
+            Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk " + command.ValueRO.position);
+
+
             if (command.ValueRO.value > 0)
             {
-                var selectedSlot = SystemAPI.GetComponentRO<ContainerSettings>(player);
-                if (!selectedSlot.ValueRO.Position.Compare(command.ValueRO.position))
+                if (!EQHelper.BufferContains(slotsLookup, playerContainersLookup, player, selectedSlot.ValueRO.Position))
                 {
-                    EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
+                    if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
                     SelectItem(ref state, player, command.ValueRO);
                     if (command.ValueRO.position.slotIndex >= 0)
                     {
@@ -76,9 +80,10 @@ partial struct SelectionItemServerSystem : ISystem
             {
                 int dif = element.quantity - selectItem.value;
                 element.quantity = dif;
+                Debug.Log("new element!");
                 slotsLookup[container.Value.entity].Add(new InventorySlot()
                 {
-                    ItemId = element.ItemId,
+                    itemId = element.itemId,
                     slot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot),
                     quantity = selectItem.value
                 });

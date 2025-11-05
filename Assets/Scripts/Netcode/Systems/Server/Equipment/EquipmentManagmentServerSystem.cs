@@ -34,6 +34,11 @@ partial struct EquipmentManagmentServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQMoveItem>>().WithEntityAccess())
         {
+
+
+            Debug.Log("EQMoveItem");
+
+
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, command.ValueRO, player, rpcCommandRequest.ValueRO.SourceConnection);
