@@ -46,8 +46,8 @@ partial struct SelectionItemServerSystem : ISystem
 
             if (command.ValueRO.value > 0)
             {
-                if (!EQHelper.BufferContains(slotsLookup, playerContainersLookup, player, selectedSlot.ValueRO.Position))
-                {
+               if (!EQHelper.BufferContains(slotsLookup, playerContainersLookup, player, selectedSlot.ValueRO.Position))
+               {
                     if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
                     SelectItem(ref state, player, command.ValueRO);
                     if (command.ValueRO.position.slotIndex >= 0)
@@ -55,7 +55,7 @@ partial struct SelectionItemServerSystem : ISystem
                         EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
                             (new EquipmentEventData(command.ValueRO.position.slotIndex, 1), command.ValueRO.position.containerIndex, networkID));
                     }
-                }
+               }
             }
             entityCommandBuffer.DestroyEntity(entity);
         }

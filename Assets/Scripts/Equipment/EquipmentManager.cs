@@ -549,7 +549,6 @@ public class EquipmentManager : MonoBehaviour
             UpdateItemInHand(this, new ItemStatsArgs(equipmentBar[slotInHand]));
     }
 
-
     private void UseSelectedItem(object sender, EventArgs e)
     {
         IBarValue item = equipmentBar[slotInHand] as IBarValue;

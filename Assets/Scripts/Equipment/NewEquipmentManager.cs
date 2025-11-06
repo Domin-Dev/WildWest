@@ -191,10 +191,6 @@ public class NewEquipmentManager : MonoBehaviour
         }
         return false;
     }
-
-
-
-
     private ItemStats GetItemStats(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)

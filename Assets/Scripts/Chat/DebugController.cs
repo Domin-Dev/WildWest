@@ -146,6 +146,14 @@ public static class DebugController
             }
             return null;
         }));
+        commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                
+            }
+            return null;
+        }));
 
 
 

@@ -6,8 +6,6 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Progress;
-using static UnityEngine.Rendering.DebugUI;
 
 public struct EQAddItem
 {
@@ -136,6 +134,23 @@ public static class EQHelper
             return BufferContains(lookup, contaner.Value.entity, pos.slotIndex);
         return false;
     }
+
+    public static EquipmentEvent[] ClearContainer(BufferLookup<InventorySlot> lookup, BufferLookup<PlayerContainers> containers, Entity player, int containerIndex)
+    {
+        var container = GetPlayerContainer(containers, player, containerIndex);
+        List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
+
+        if (container.HasValue)
+        {
+            equipmentEvents.Add(new EquipmentEvent(new EquipmentEventData(0, 2),containerIndex));
+            lookup[container.Value.entity].Clear();
+        }
+        return null;
+    }
+
+
+
+
 
     public static List<InventorySlot> TryGetAllItemsInContainer(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, int containerIndex, int itemID)
     {
