@@ -632,6 +632,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateDragItem(Transform dragDrop,ItemStats stats)
     {
+        if (dragDrop == null || stats == null) return;
         dragDrop.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(stats.itemID);
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
     }

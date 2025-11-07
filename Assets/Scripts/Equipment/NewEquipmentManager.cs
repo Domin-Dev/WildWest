@@ -109,6 +109,17 @@ public class NewEquipmentManager : MonoBehaviour
         ClearSelection();
         DragManager.instance.UpdateSelected(null);
     }
+    public void DeselectItem(ref EntityCommandBuffer ecb)
+    {
+        if (selectedItem != null)
+        {
+            RPCHelper.SendRpc(ref ecb, new EQDeselectItem() { });
+        }
+        ClearSelection();
+        DragManager.instance.UpdateSelected(null);
+    }
+
+
 
     public void CombineAllItems(SlotPosition slotPosition)
     {
@@ -266,8 +277,6 @@ public class NewEquipmentManager : MonoBehaviour
     }
     private ItemStats LoadItemFromEntities(SlotPosition slotPosition)
     {
-        if(slotPosition.slotIndex < 0) return null;
-
         Container container = containers[slotPosition.containerIndex];
         var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
         foreach (var item in buffer)
@@ -275,22 +284,78 @@ public class NewEquipmentManager : MonoBehaviour
             if (item.slot == slotPosition.slotIndex )
             {
                 ItemStats slot = new ItemStats(item);
-                container.itemSlots[slotPosition.slotIndex] = slot;
+                if(slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = slot;
                 return slot;
             }
         }
 
-        container.itemSlots[slotPosition.slotIndex] = null;
+        if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = null;
         return null;
     }
+   
+
+    
+    
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
+            bool s = false;
+            if (!selectedSlot.Compare(SlotPosition.NullSlot) && slotPosition.Compare(selectedSlot))
+            {
+                ItemStats item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
+                    EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
+
+                Debug.Log(item + " " + selectedItem);
+                selectedItem = item;
+                s = true;
+                DragManager.instance.UpdateSelected(item);
+            }
+
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
+            if(s) Debug.Log("TOo " + itemSlot);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
         }
     }
+    public void ClearContainer(int index, ref EntityCommandBuffer ecb)
+    {
+        if (containers.TryGetValue(index,out Container container))
+        {
+            for (int i = 0;i < container.itemSlots.Length;i++)
+            {
+                var item = container.itemSlots[i];
+                if (item != null)
+                {
+                    container.itemSlots[i] = null;
+                    UIManager.instance.UpdateItemSlot(container, null, i);
+                }
+            }
+
+            if (selectedSlot.containerIndex == index)
+                DeselectItem(ref ecb);
+        }
+    }
+    public void ClearAllContainers(ref EntityCommandBuffer ecb)
+    {
+        Debug.Log("dziala!");
+        foreach (var container in containers.Values)
+        {   
+            for (int i = 0; i < container.itemSlots.Length; i++)
+            {
+                var item = container.itemSlots[i];
+                if (item != null)
+                {
+                    container.itemSlots[i] = null;
+                    UIManager.instance.UpdateItemSlot(container, null, i);
+                }
+            }
+            if (selectedSlot.containerIndex == container.gridIndex)
+                DeselectItem(ref ecb);
+        }
+    }
+
+
+
     public void LocalUpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))

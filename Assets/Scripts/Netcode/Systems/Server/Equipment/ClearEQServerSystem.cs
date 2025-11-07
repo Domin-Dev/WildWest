@@ -22,7 +22,7 @@ partial struct ClearEQServerSystem : ISystem
     {
         state.RequireForUpdate<EntitiesReferences>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAny<EQClear>().WithAll<ReceiveRpcCommandRequest>();
+            .WithAny<EQClear>();
 
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
@@ -36,17 +36,19 @@ partial struct ClearEQServerSystem : ISystem
         slotsLookup.Update(ref state);
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         
-        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQClear> command, Entity entity) in
-        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQClear>>().WithEntityAccess())
+        foreach ((RefRO<EQClear> command, Entity entity) in
+        SystemAPI.Query<RefRO<EQClear>>().WithEntityAccess())
         {
-            Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
-            int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
- 
-            
-            
+            Entity player = SystemAPI.GetComponent<LinkedCharacter>(command.ValueRO.networkEntity).entity;
+            int networkID = SystemAPI.GetComponent<NetworkId>(command.ValueRO.networkEntity).Value;
+            EquipmentEvent[] events;
 
-            EQHelper.GetPlayerContainer
-            EQHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
+            if (command.ValueRO.containerIndex < 0)
+                events = EQHelper.ClearAllContainer(slotsLookup, playerContainersLookup, player);
+            else
+                events = EQHelper.ClearContainer(slotsLookup, playerContainersLookup, player, command.ValueRO.containerIndex);        
+
+            EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);
             entityCommandBuffer.DestroyEntity(entity);
         }
 

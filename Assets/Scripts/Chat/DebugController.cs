@@ -150,7 +150,24 @@ public static class DebugController
         {
             if (ClientServerBootstrap.HasServerWorld)
             {
-                
+                Debug.Log("dziala!");
+                EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
+                {
+                    containerIndex = -1,
+                    networkEntity = e
+                });
+            }
+            return null;
+        }));
+        commandList.Add(new DebugCommand<int>("cleareq", "Removes all items from your inventory", "[Container Index]", (ref EntityCommandBuffer ecb, Entity e,int index) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
+                {
+                    containerIndex = index,
+                    networkEntity = e
+                });
             }
             return null;
         }));

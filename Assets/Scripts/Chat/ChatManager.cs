@@ -236,7 +236,6 @@ public class ChatManager : MonoBehaviour
     }
     private void SendRPC(string value)
     {
-        Debug.Log("new rpc");
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         Entity messageEntity = entityCommandBuffer.CreateEntity();
         entityCommandBuffer.AddComponent(messageEntity, new NewMessageRPC() { message = value.Substring(0, Math.Min(511, value.Length)) });
@@ -354,7 +353,7 @@ public class ChatManager : MonoBehaviour
         List<CommandBase> hints = new List<CommandBase>();
         foreach (var item in commandList)
         {
-            Debug.Log(item.commandId);
+            //Debug.Log(item.commandId);
             CommandBase commandBase = item as CommandBase;
             if (string.Compare(commandBase.commandId, properties[0], true) == 0)
             {
