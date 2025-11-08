@@ -316,10 +316,12 @@ public static class EQHelper
             }
         }
     }
-    public static EquipmentEvent[] AddItems(BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, EQAddItem[] values, int itemID)
+    public static EquipmentEvent[] AddItems(BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, EQAddItem[] values, int itemID)
     {
         List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
         if (values == null) return null;
+        bool hasBar = ItemsAsset.instance.TryGetBarValues(itemID, out float startValue, out float maxValue);
+
 
         foreach (EQAddItem item in values)
         {
@@ -340,16 +342,25 @@ public static class EQHelper
             if (!item.slotExist)
             {
                 var container = containers[player][item.pos.containerIndex];
-                Debug.Log("new element!");
                 slotLookup[container.entity].Add(new InventorySlot()
                 {
                     itemId = itemID,
                     quantity = item.quantity,
                     slot = item.pos.slotIndex,
                 });
+                if(hasBar)
+                {
+                    barsLookup[container.entity].Add(new ItemBarData() {
+                        slot = item.pos.slotIndex,
+                        value = startValue,
+                        maxValue = maxValue
+                    });
+                }
+
                 equipmentEvents.Add(new EquipmentEvent(new EquipmentEventData(item.pos.slotIndex, 1), container.index));
             }
         }
+
         return equipmentEvents.ToArray();
     }
     public static EquipmentEvent[] MoveItems(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<InventorySlot> slotLookup,Entity connection, BufferLookup<PlayerContainers> containers,SlotPosition from, Entity player, EQAddItem[] values, int itemID)

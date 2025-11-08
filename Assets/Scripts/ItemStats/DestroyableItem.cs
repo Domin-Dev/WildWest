@@ -5,12 +5,12 @@ public class DestroyableItem : ItemStats, IBarValue
     public float maxLifePonits { private set; get; }
     public float currentLifePoints { private set; get; }
 
-    public DestroyableItem(int itemID, int maxLifePoints, int itemCount = 1) : base(itemID, itemCount)
+    public DestroyableItem(int itemID, float maxLifePoints, int itemCount = 1) : base(itemID, itemCount)
     {
         this.maxLifePonits = maxLifePoints;
         currentLifePoints = this.maxLifePonits;
     }
-    public DestroyableItem(int itemID, int itemCount, int maxLifePoints, int currentLifePoints) : base(itemID, itemCount)
+    public DestroyableItem(int itemID, int itemCount, float maxLifePoints, float currentLifePoints) : base(itemID, itemCount)
     {
         this.maxLifePonits = maxLifePoints;
         this.currentLifePoints = currentLifePoints;

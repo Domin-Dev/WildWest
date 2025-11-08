@@ -189,12 +189,14 @@ public class NewEquipmentManager : MonoBehaviour
         return MoveItemData(to, n);
     }
 
-    public bool CanMove(SlotPosition to)
+    public bool CanMove(SlotPosition to, out bool haveSameId)
     {
-
+        haveSameId = false;
         if (selectedItem != null && containers.TryGetValue(to.containerIndex, out var container))
         {
-           return EQHelper.CheckRequirements(container.mandatoryProperties, container.mandatoryData, selectedItem.itemID);
+            if (container.itemSlots.Length > to.slotIndex && container.itemSlots[to.slotIndex] != null) 
+                haveSameId = selectedItem.itemID == container.itemSlots[to.slotIndex].itemID;
+            return EQHelper.CheckRequirements(container.mandatoryProperties, container.mandatoryData, selectedItem.itemID);
         }
         return false;
     }

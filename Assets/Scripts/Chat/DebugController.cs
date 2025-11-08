@@ -95,6 +95,8 @@ public static class DebugController
             }
             return null;
         }));
+
+        #region Give
         commandList.Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "[Item ID] [Quantity] [player name]", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
         {
             if (ClientServerBootstrap.HasServerWorld)
@@ -146,11 +148,27 @@ public static class DebugController
             }
             return null;
         }));
+        commandList.Add(new DebugCommand<int>("give", "Gives you the specified item", "[Item ID]", (ref EntityCommandBuffer ecb, Entity e, int id) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                if (ItemsAsset.instance.GetItem(id) == null) return null;
+
+                EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                {
+                    itemID = id,
+                    quantity = 1,
+                    networkEntity = e
+                });
+            }
+            return null;
+        }));
+        #endregion
+
         commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
         {
             if (ClientServerBootstrap.HasServerWorld)
             {
-                Debug.Log("dziala!");
                 EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
                 {
                     containerIndex = -1,

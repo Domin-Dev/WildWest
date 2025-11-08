@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Unity.Entities;
+using UnityEngine;
 using UnityEngine.Video;
 
 public class ItemsAsset : MonoBehaviour
@@ -276,6 +277,24 @@ public class ItemsAsset : MonoBehaviour
             return buildingItem.toolRequired;
         }
         return ToolType.None;
+    }
+
+    public bool TryGetBarValues(int itemID, out float startValue,out float maxValue)
+    {
+        var item = GetItem(itemID);
+        if (item != null)
+        {
+            var bar = item as IItemBar;
+            if(bar != null)
+            {
+                startValue = bar.GetStartBarValue();
+                maxValue = bar.GetMaxBarValue();
+                return true;
+            }
+        }
+        startValue = 0; 
+        maxValue = 0;
+        return false;
     }
 
     ////////

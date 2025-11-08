@@ -514,21 +514,21 @@ public class UIManager : MonoBehaviour
         }
 
     }
-    private void NewItemUI(Transform gridUI, ItemStats itemSlot, int slotIndex)
+    private void NewItemUI(Transform gridUI, ItemStats itemStats, int slotIndex)
     {
         RectTransform transform = Instantiate(item, gridUI.GetChild(slotIndex)).GetComponent<RectTransform>();
         transform.SetAsFirstSibling();
 
-        //if (e.itemStats as IBarValue != null)
-        //{
-        //    Transform bar = Instantiate(itembar, transform).transform.GetChild(0);
-        //    SetBarColor(bar, slot.itemStats);
-        //    UpdateBar((e.itemStats as IBarValue).GetBarValue(), bar);
-        //}
+        if (itemStats as IBarValue != null)
+        {
+            Transform bar = Instantiate(itembar, transform).transform.GetChild(0);
+            SetBarColor(bar, itemStats);
+            UpdateBar((itemStats as IBarValue).GetBarValue(), bar);
+        }
 
         transform.anchoredPosition = Vector2.zero;
-        transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(itemSlot.itemID);
-        if (itemSlot.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = itemSlot.quantity.ToString();
+        transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(itemStats.itemID);
+        if (itemStats.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = itemStats.quantity.ToString();
         else transform.GetComponentInChildren<TextMeshProUGUI>().text = "";
 
         if (gridUI != mainItemBar)
@@ -747,10 +747,24 @@ public class UIManager : MonoBehaviour
         }
 
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
+        var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);
         foreach (InventorySlot slot in slots)
         {
             if (icon != null) equipmentGrid.gridTransform.GetChild(slot.slot).GetChild(0).gameObject.SetActive(false);
-            NewItemUI(equipmentGrid.gridTransform,new ItemStats(slot),slot.slot);
+
+            ItemBarData? itemBarData = null;
+            foreach (ItemBarData bar in bars) 
+            {
+                if(bar.slot == slot.slot)
+                {
+                    itemBarData = bar;
+                    break;
+                }
+            }
+            if(itemBarData.HasValue) 
+                NewItemUI(equipmentGrid.gridTransform, new DestroyableItem(slot.itemId, 1, itemBarData.Value.maxValue, itemBarData.Value.value), slot.slot);
+            else
+                NewItemUI(equipmentGrid.gridTransform, new ItemStats(slot), slot.slot);
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.GetComponent<RectTransform>());

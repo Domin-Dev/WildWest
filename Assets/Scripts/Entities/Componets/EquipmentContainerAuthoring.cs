@@ -16,8 +16,9 @@ public class EquipmentContainerAuthoring : MonoBehaviour
             AddComponent(entity, new EquipmentEventCounter() { index = uint.MaxValue });
 
 
-
             AddBuffer<InventorySlot>(entity);
+            AddBuffer<ItemBarData>(entity);
+
             AddBuffer<EquipmentEventBuffer>(entity);
         }
     }

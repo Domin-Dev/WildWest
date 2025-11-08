@@ -7,13 +7,12 @@ public struct InventorySlot : IBufferElementData
     [GhostField] public int slot;
     [GhostField] public int itemId;    
     [GhostField] public int quantity;
-
-
     public override string ToString()
     {
         return $"Slot:{slot} ItemID:{itemId} Quantity:{quantity}";
     }
 }
+
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
 public struct ContainerComponent : IComponentData

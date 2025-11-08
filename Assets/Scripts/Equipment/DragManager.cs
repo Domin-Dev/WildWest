@@ -78,6 +78,8 @@ public class DragManager : MonoBehaviour
             {
                 SlotPosition slotPosition = dropSlot.GetSlotPosition();
                 lastSlotPostion = slotPosition;
+
+                UpdateSelected(null);
                 dragItem = dragDrop.GetComponent<RectTransform>();
                 ItemStats itemStats = NewEquipmentManager.instance.LocalSelectItem(slotPosition, item);
                 UIManager.instance.UpdateDragItem(dragDrop.transform, item);
@@ -87,13 +89,13 @@ public class DragManager : MonoBehaviour
                 return false;
         }
     }
-    public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData, bool putAllItems = false)
+    public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData, bool slotIsOccupied = false)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
-        if (dragItem != null && NewEquipmentManager.instance.CanMove(slotPosition))
+        if (dragItem != null && NewEquipmentManager.instance.CanMove(slotPosition,out bool haveSameID))
         {
             SelectionMode mode = GetSelectionModeForSelectSlot(eventData,out int n);
-            if (putAllItems) mode = SelectionMode.All;
+            if (slotIsOccupied && !haveSameID) mode = SelectionMode.All;
             return NewEquipmentManager.instance.MoveItemData(slotPosition, mode, n); 
         }
         return null;

@@ -7,8 +7,8 @@ public class Item : ScriptableObject
     public string name;
     [Multiline()]
     public string description;
-    public int ID = -1;
     public int stackMax = 50;
+    public int ID = -1;
 
     [Header("Item graphic")]
     public Sprite icon;
@@ -64,13 +64,22 @@ public class TagSelection
 }
 
 [CreateAssetMenu(fileName = "DestroyableItem", menuName = "GameAsset/Items/DestroyableItem")]
-public class Destroyable : Item
+public class Destroyable : Item, IItemBar
 {
     [Header("Destroyable")]
     public int durability;
+   
     public override ItemStats GetItemStats()
     {
         return new DestroyableItem(ID,durability);
+    }
+    public float GetMaxBarValue()
+    {
+        return durability;
+    }
+    public float GetStartBarValue()
+    {
+        return durability;
     }
 }
 

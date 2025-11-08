@@ -18,7 +18,10 @@ using UnityEngine.InputSystem.Processors;
 partial struct GiveItemServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
+
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -30,11 +33,14 @@ partial struct GiveItemServerSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
+        barsLookup.Update(ref state);
+
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         
         foreach ((RefRO<EQGiveItem> command, Entity entity) in
@@ -47,7 +53,8 @@ partial struct GiveItemServerSystem : ISystem
             Debug.Log("Give!!");
             
             var slots = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, command.ValueRO.itemID, command.ValueRO.quantity);
-            var events = EQHelper.AddItems(slotsLookup, playerContainersLookup, player, slots, command.ValueRO.itemID);
+            var events = EQHelper.AddItems(barsLookup,slotsLookup, playerContainersLookup, player, slots, command.ValueRO.itemID);
+           
             EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
             entityCommandBuffer.DestroyEntity(entity);
         }
