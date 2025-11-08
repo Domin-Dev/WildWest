@@ -38,12 +38,17 @@ public class DragItem : MonoBehaviour, IPointerDownHandler
         if (DragManager.instance.ItemSelected(this, dropSlot,eventData))
         {
             dropSlot.slotClick -= ClickItem;
-            canvasGroup.alpha = 0.7f;
-            canvasGroup.blocksRaycasts = false;
-            rectTransform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
-            transform.SetParent(UIManager.instance.itemParent);
+            SlotSelected();
             NewEquipmentManager.instance.LocalUpdateSlotIndex(dropSlot.GetSlotPosition());
         }
+    }
+
+    public void SlotSelected()
+    {
+        canvasGroup.alpha = 0.7f;
+        canvasGroup.blocksRaycasts = false;
+        transform.SetParent(UIManager.instance.itemParent);
+        rectTransform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
     }
     public void SetSlot(RectTransform newSlot)
     {

@@ -101,8 +101,11 @@ public class DragManager : MonoBehaviour
     public void UpdateSelected(ItemStats stats)
     {
         if (stats != null && stats.quantity >= 1)
+        {
+            if(dragItem == null) dragItem = UIManager.instance.CreateDragItem();
             UIManager.instance.UpdateDragItem(dragItem, stats);
-        else if(dragItem != null)
+        }
+        else if (dragItem != null)
         {
             Destroy(dragItem.gameObject);
             dragItem = null;

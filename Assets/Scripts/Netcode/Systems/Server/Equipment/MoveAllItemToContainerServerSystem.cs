@@ -52,7 +52,7 @@ partial struct MoveAllItemToContainerServerSystem : ISystem
                     containers.Remove(command.ValueRO.from.containerIndex);
                     var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, slot.Value.itemId, slot.Value.quantity, containers.ToArray());
                     var events = EQHelper.MoveItems(ref state,ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup, command.ValueRO.from, player, items, slot.Value.itemId);
-                    EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);
+                    EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
                 }
             }
             else

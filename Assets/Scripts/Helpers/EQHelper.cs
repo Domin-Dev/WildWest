@@ -191,14 +191,15 @@ public static class EQHelper
     public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<InventorySlot> slotsLookup, Entity connection, PlayerContainers containersFrom, PlayerContainers containersTo,
     int slotTo, int slotFrom, int value, out int transferValue, bool eventForSlotFrom = false)
     {
-        Debug.Log("Containers: " + containersFrom.index + " " + containersTo.index + " " + slotFrom + " " + slotTo);
-        PrintBuffer(slotsLookup, containersFrom.entity);
-        PrintBuffer(slotsLookup, containersTo.entity);
+       // Debug.Log("Containers: " + containersFrom.index + " " + containersTo.index + " " + slotFrom + " " + slotTo);
+        //PrintBuffer(slotsLookup, containersFrom.entity);
+        //PrintBuffer(slotsLookup, containersTo.entity);
 
         TryGetBufferIndex(slotsLookup, slotFrom, containersFrom.entity, out InventorySlot? itemFrom, out int fromIndex);
         TryGetBufferIndex(slotsLookup, slotTo, containersTo.entity, out InventorySlot? itemTo, out int toIndex);
         transferValue = 0;
-        if (!itemFrom.HasValue) return null;
+        if (!itemFrom.HasValue) return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotTo, 1), containersTo.index) };
+        ;
 
         Debug.Log(toIndex + " " + fromIndex);
 
@@ -282,21 +283,22 @@ public static class EQHelper
         }
         else
         {
-            return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotTo, 1), containersTo.index) };
+            return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotTo, 1), containersTo.index) };  
         }
     }
-    public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer,EquipmentEvent[] events,int networkID)
+    public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer,int networkID, params EquipmentEvent[] events)
     {
         if (events != null)
         {
             foreach (EquipmentEvent eventData in events)
             {
                 eventData.SetNetworkID(networkID);
+                Debug.Log("Event! Container" + eventData.containerIndex +  ", slot"+ eventData.data.slot);
                 EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, eventData);
             }
         }
     }
-    public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer, EquipmentEvent[] events, int networkID, int duplicatedSlot)
+    public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer, int networkID, int duplicatedSlot, params EquipmentEvent[] events)
     {
         if (events != null)
         {
@@ -557,14 +559,14 @@ public static class EQHelper
                     {
                         var events = MoveBetweenContainers(ref state, ref entityCommandBuffer, slotsLookup, connection, container.Value, container.Value, slotIndex, selectedSlot.Position.slotIndex, quantity, out int transferValue);
                         quantity -= transferValue;
-                        SendEvents(ref entityCommandBuffer, events, networkID);
+                        SendEvents(ref entityCommandBuffer, networkID,events);
                     }
                 }
                 if (quantity > 0)
                 {
                     var items = FindSlotForItem(ref state, slotsLookup, containers, player, slot.Value.itemId, quantity);
                     var events = MoveItems(ref state, ref entityCommandBuffer, slotsLookup, connection, containers, selectedSlot.Position, player, items, slot.Value.itemId);
-                    SendEvents(ref entityCommandBuffer, events, networkID);
+                    SendEvents(ref entityCommandBuffer, networkID, events);
                 }
             }
         }

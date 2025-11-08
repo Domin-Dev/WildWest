@@ -45,7 +45,7 @@ partial struct CombineItemsServerSystem : ISystem
             Debug.Log("EQCombineAllItems");
             
             var events = CombineItems(ref state, ref entityCommandBuffer, player,rpcCommandRequest.ValueRO.SourceConnection, command.ValueRO);
-            EQHelper.SendEvents(ref entityCommandBuffer, events, networkID,command.ValueRO.position.slotIndex);
+            EQHelper.SendEvents(ref entityCommandBuffer, networkID,command.ValueRO.position.slotIndex, events);
             entityCommandBuffer.DestroyEntity(entity);
         }
 

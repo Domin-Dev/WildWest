@@ -48,7 +48,7 @@ partial struct ClearEQServerSystem : ISystem
             else
                 events = EQHelper.ClearContainer(slotsLookup, playerContainersLookup, player, command.ValueRO.containerIndex);        
 
-            EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);
+            EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
             entityCommandBuffer.DestroyEntity(entity);
         }
 

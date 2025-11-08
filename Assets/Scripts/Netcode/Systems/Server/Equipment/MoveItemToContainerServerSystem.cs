@@ -55,7 +55,7 @@ partial struct MoveItemToContainerServerSystem : ISystem
                     {
                         var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player, item.itemId, item.quantity, containers.ToArray());
                         var events = EQHelper.MoveItems(ref state, ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup,new SlotPosition(command.ValueRO.from.containerIndex,item.slot), player, items, slot.Value.itemId);
-                        EQHelper.SendEvents(ref entityCommandBuffer, events, networkID);
+                        EQHelper.SendEvents(ref entityCommandBuffer,networkID, events);
                     }
                 }
             }

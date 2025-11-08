@@ -99,7 +99,6 @@ public class NewEquipmentManager : MonoBehaviour
         selectedItem = null;
         selectedSlot = SlotPosition.NullSlot;
     }
-
     public void DeselectItem()
     {
         if (selectedItem != null)
@@ -118,9 +117,6 @@ public class NewEquipmentManager : MonoBehaviour
         ClearSelection();
         DragManager.instance.UpdateSelected(null);
     }
-
-
-
     public void CombineAllItems(SlotPosition slotPosition)
     {
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
@@ -292,10 +288,24 @@ public class NewEquipmentManager : MonoBehaviour
         if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = null;
         return null;
     }
-   
 
-    
-    
+    private ItemStats LoadSelectedItemFromEntities(int containerIndex)
+    {
+        Container container = containers[containerIndex];
+        var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
+        foreach (var item in buffer)
+        {
+            if(item.slot < 0)
+            {
+                ItemStats slot = new ItemStats(item);
+                return slot;
+            }
+        }
+
+        return null;
+    }
+
+
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
@@ -305,15 +315,24 @@ public class NewEquipmentManager : MonoBehaviour
             {
                 ItemStats item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
                     EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
-
-                Debug.Log(item + " " + selectedItem);
                 selectedItem = item;
                 s = true;
                 DragManager.instance.UpdateSelected(item);
             }
+            else
+            {
+                ItemStats item = LoadSelectedItemFromEntities(slotPosition.containerIndex);
+                if (item != null)
+                {
+                    selectedItem = item;
+                    selectedSlot = slotPosition;
+                    DragManager.instance.UpdateSelected(item);
+                }
+            }
 
+            Debug.Log("Update!!! " + slotPosition.ToString() );
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
-            if(s) Debug.Log("TOo " + itemSlot);
+            Debug.Log("TOo " + itemSlot);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
         }
     }

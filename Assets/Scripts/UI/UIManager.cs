@@ -636,6 +636,14 @@ public class UIManager : MonoBehaviour
         dragDrop.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(stats.itemID);
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
     }
+
+    public RectTransform CreateDragItem()
+    {
+        var dragItem = Instantiate(item).GetComponent<DragItem>();
+        dragItem.SlotSelected();
+        return dragItem.GetComponent<RectTransform>();
+    }
+
     public void UpdateItemSlot(Container container,ItemStats slot, int slotIndex, bool mainBar = false)
     {
         Transform slotObj;

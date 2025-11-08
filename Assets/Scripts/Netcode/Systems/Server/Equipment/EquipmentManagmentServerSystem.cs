@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
@@ -7,6 +8,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 using UnityEngine.InputSystem.Processors;
 
@@ -36,13 +38,30 @@ partial struct EquipmentManagmentServerSystem : ISystem
         {
 
 
-            Debug.Log("EQMoveItem");
 
 
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
-            EquipmentEvent[] events = MoveItem(ref state, ref entityCommandBuffer, command.ValueRO, player, rpcCommandRequest.ValueRO.SourceConnection);
-            EQHelper.SendEvents(ref entityCommandBuffer,events,networkID);
+
+            var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
+            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player, selectedSlot.ValueRO.Position.containerIndex);
+            var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.ValueRO.to.containerIndex);
+
+
+            Debug.Log($"EQMoveItem from {selectedSlot.ValueRO.Position.ToString()} to {command.ValueRO.to.ToString()}");
+
+
+
+            List<EquipmentEvent> events = new List<EquipmentEvent>();
+            if (containerFrom.HasValue && containerTo.HasValue)
+            {
+                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
+                    containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, command.ValueRO.value);
+                if (tab != null) events.AddRange(tab);
+            }
+            events.Add(new EquipmentEvent(new EquipmentEventData(EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.ValueRO.Position.slotIndex), 1), selectedSlot.ValueRO.Position.containerIndex));
+
+            EQHelper.SendEvents(ref entityCommandBuffer,networkID,events.ToArray());
             entityCommandBuffer.DestroyEntity(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);
@@ -53,17 +72,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
         slotsLookup.Update(ref state);
         playerContainersLookup.Update(ref state);
     }
-    private EquipmentEvent[] MoveItem(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, EQMoveItem moveItem, Entity player, Entity connection)
-    {
-        var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
-        var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectedSlot.ValueRO.Position.containerIndex);
-        var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, moveItem.to.containerIndex);
 
-        if (!containerFrom.HasValue || !containerTo.HasValue) return null;
-
-
-        return EQHelper.MoveBetweenContainers(ref state,ref entityCommandBuffer, slotsLookup, connection, containerFrom.Value, containerTo.Value, moveItem.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, moveItem.value);
-    }   
     private bool SlotIsEmpty(Entity container, int slotIndex)
     {
         var slots = slotsLookup[container];
