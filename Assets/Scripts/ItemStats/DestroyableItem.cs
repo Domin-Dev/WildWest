@@ -10,6 +10,13 @@ public class DestroyableItem : ItemStats, IBarValue
         this.maxLifePonits = maxLifePoints;
         currentLifePoints = this.maxLifePonits;
     }
+
+    public DestroyableItem(InventorySlot slot,ItemBarData barData) : base(slot.itemId, 1)
+    {
+        this.maxLifePonits = barData.maxValue;
+        this.currentLifePoints = barData.value;
+    }
+
     public DestroyableItem(int itemID, int itemCount, float maxLifePoints, float currentLifePoints) : base(itemID, itemCount)
     {
         this.maxLifePonits = maxLifePoints;
@@ -20,14 +27,21 @@ public class DestroyableItem : ItemStats, IBarValue
         this.maxLifePonits = item.maxLifePonits;
         this.currentLifePoints = item.currentLifePoints;
     }
+
+    public DestroyableItem(DestroyableItem item, int quantity) : base(item,quantity)
+    {
+        this.maxLifePonits = item.maxLifePonits;
+        this.currentLifePoints = item.currentLifePoints;
+    }
+
     public float GetBarValue()
     {
         return currentLifePoints / (float)maxLifePonits;
     }
 
-    public override ItemStats Clon()
+    public override ItemStats Clon(int quantity)
     {
-        return new DestroyableItem(this);
+        return new DestroyableItem(this,quantity);
     }
 
     public void Decrease(float value = 1)

@@ -8,12 +8,14 @@ using Unity.NetCode;
 using Unity.VisualScripting;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.InputSystem.Processors;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct SelectionItemServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     public void OnCreate(ref SystemState state)
     {
@@ -26,11 +28,13 @@ partial struct SelectionItemServerSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
+        barsLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQSelectItem> command, Entity entity) in
@@ -41,14 +45,14 @@ partial struct SelectionItemServerSystem : ISystem
             var selectedSlot = SystemAPI.GetComponentRO<ContainerSettings>(player);
 
 
-            Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk " + command.ValueRO.position);
+          //  Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk " + command.ValueRO.position);
 
 
             if (command.ValueRO.value > 0)
             {
              ///  if (!EQHelper.BufferContains(slotsLookup, playerContainersLookup, player, selectedSlot.ValueRO.Position))
             //   {
-                    if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
+                    if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
                     SelectItem(ref state, player, command.ValueRO);
                     if (command.ValueRO.position.slotIndex >= 0)
                     {
@@ -72,21 +76,41 @@ partial struct SelectionItemServerSystem : ISystem
         if (selectItem.position.slotIndex >= 0 && EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
         {
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
+            int newSlot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot); 
+
+
             if (selectItem.value >= element.quantity)
             {
-                element.slot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot);
+                Debug.Log("skoksoak   " + element.slot);
+                if (EQHelper.TryGetBufferIndex(barsLookup,element.slot,container.Value.entity,out var barData,out int bIndex))
+                {
+                    Debug.Log("DZIALAK");
+                    barsLookup[container.Value.entity].ElementAt(bIndex).slot = newSlot;
+                }
+
+                element.slot = newSlot;
             }
             else
             {
                 int dif = element.quantity - selectItem.value;
                 element.quantity = dif;
-                Debug.Log("new element!");
+
                 slotsLookup[container.Value.entity].Add(new InventorySlot()
                 {
                     itemId = element.itemId,
-                    slot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot),
+                    slot = newSlot,
                     quantity = selectItem.value
                 });
+
+                if (EQHelper.TryGetBufferIndex(barsLookup, element.slot, container.Value.entity, out var barData, out int bIndex))
+                {
+                    barsLookup[container.Value.entity].Add(new ItemBarData()
+                    {
+                        slot = newSlot,
+                        maxValue = barData.Value.maxValue,
+                        value = barData.Value.value,                       
+                    });
+                }
             }
         }
        

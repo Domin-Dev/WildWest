@@ -67,6 +67,10 @@ public class DragManager : MonoBehaviour
             lastSelectionTime = Time.time;
             SelectionMode mode = GetSelectionModeForSelectItem(eventData, out int n);
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
+
+
+            Debug.Log(itemStats + " " + (itemStats is DestroyableItem));
+
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
         }

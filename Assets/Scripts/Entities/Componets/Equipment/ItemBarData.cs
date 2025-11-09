@@ -2,7 +2,7 @@
 using Unity.NetCode;
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
-public struct ItemBarData : IBufferElementData
+public struct ItemBarData : IBufferElementData, IGetSlot
 {
     [GhostField] public int slot;
     [GhostField] public float value;
@@ -11,6 +11,11 @@ public struct ItemBarData : IBufferElementData
     public override string ToString()
     {
         return $"Slot:{slot} Value:[{value}/{maxValue}]";
+    }
+
+    public int GetSlot()
+    {
+        return slot;
     }
 }
 public class ExampleManagedComponent : IComponentData

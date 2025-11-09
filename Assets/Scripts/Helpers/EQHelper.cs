@@ -74,6 +74,8 @@ public static class EQHelper
         }
 
     }
+
+
     public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out InventorySlot? inventorySlot, out int bufferIndex)
     {
         var container = GetPlayerContainer(containers, player, slotPosition.containerIndex);
@@ -100,23 +102,28 @@ public static class EQHelper
         bufferIndex = -1;
         return false;
     }
-    public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, int slotIndex, Entity container, out InventorySlot? inventorySlot , out int bufferIndex)
+    public static bool TryGetBufferIndex<T>(BufferLookup<T> slotsLookup, int slotIndex, Entity container, out T? bufforElement , out int bufferIndex) where T : unmanaged,IBufferElementData,IGetSlot
     {
         var slots = slotsLookup[container];
         for (int j = 0; j < slots.Length; j++)
         {
             ref var slot = ref slots.ElementAt(j);
-            if (slot.slot == slotIndex)
+            if (slot.GetSlot() == slotIndex)
             {
-                inventorySlot = slot;
+                bufforElement = slot;
                 bufferIndex = j;
                 return true;
             }
         }
+
         bufferIndex = -1;
-        inventorySlot = null;
+        bufforElement = null;
         return false;
     }
+
+
+
+
 
     public static bool BufferContains(BufferLookup<InventorySlot> lookup,Entity container, int slotIndex) 
     {
@@ -191,15 +198,11 @@ public static class EQHelper
     public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<InventorySlot> slotsLookup, Entity connection, PlayerContainers containersFrom, PlayerContainers containersTo,
     int slotTo, int slotFrom, int value, out int transferValue, bool eventForSlotFrom = false)
     {
-       // Debug.Log("Containers: " + containersFrom.index + " " + containersTo.index + " " + slotFrom + " " + slotTo);
-        //PrintBuffer(slotsLookup, containersFrom.entity);
-        //PrintBuffer(slotsLookup, containersTo.entity);
-
         TryGetBufferIndex(slotsLookup, slotFrom, containersFrom.entity, out InventorySlot? itemFrom, out int fromIndex);
         TryGetBufferIndex(slotsLookup, slotTo, containersTo.entity, out InventorySlot? itemTo, out int toIndex);
         transferValue = 0;
         if (!itemFrom.HasValue) return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotTo, 1), containersTo.index) };
-        ;
+        
 
         Debug.Log(toIndex + " " + fromIndex);
 
@@ -550,7 +553,7 @@ public static class EQHelper
         }
         return false;
     }
-    public static void Deselection(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player,int networkID, Entity connection)
+    public static void Deselection(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player,int networkID, Entity connection)
     {
         var selectedSlot = state.EntityManager.GetComponentData<ContainerSettings>(player);
 

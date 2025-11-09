@@ -22,7 +22,7 @@ public class FoodItem : ItemStats, IBarValue , IStackingBarValues
     }
 
 
-    public override ItemStats Clon()
+    public override ItemStats Clon(int q)
     {
         return new FoodItem(this);
     }

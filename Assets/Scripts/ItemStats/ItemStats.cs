@@ -24,11 +24,19 @@ public class ItemStats
         this.itemID = itemStats.itemID;
         this.quantity = itemStats.quantity;
     }
+
+    public ItemStats(ItemStats itemStats, int quantity)
+    {
+        itemID = itemStats.itemID;
+        this.quantity = quantity;
+    }
     public ItemStats(int itemID, int itemCount = 1)
     {
         this.itemID = itemID;
         this.quantity = itemCount;
     }
+
+
 
     public ItemStats(InventorySlot inventorySlot)
     {
@@ -47,9 +55,9 @@ public class ItemStats
     }
 
 
-    public virtual ItemStats Clon()
+    public virtual ItemStats Clon(int quantity)
     {
-        return new ItemStats(this);
+        return new ItemStats(this,quantity);
     }
 
     public override string ToString()

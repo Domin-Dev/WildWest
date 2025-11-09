@@ -7,6 +7,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 [System.Serializable]
@@ -78,6 +79,9 @@ public class NewEquipmentManager : MonoBehaviour
         ItemStats item = GetItemStats(slotPosition);
         n = SelectN(item.quantity, selectionMode, n);
         selectedItem = TakeItems(slotPosition, n);
+        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+
+
         selectedSlot = slotPosition;
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
         if (SlotIsEmpty(slotPosition))
@@ -88,6 +92,10 @@ public class NewEquipmentManager : MonoBehaviour
     {
         selectedSlot = slotPosition;
         selectedItem = itemStats;
+        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+
+
+
         if (SlotIsEmpty(slotPosition))
             UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
         LocalUpdateSlotIndex(slotPosition);
@@ -97,6 +105,8 @@ public class NewEquipmentManager : MonoBehaviour
     public void ClearSelection()
     {
         selectedItem = null;
+        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+
         selectedSlot = SlotPosition.NullSlot;
     }
     public void DeselectItem()
@@ -171,8 +181,12 @@ public class NewEquipmentManager : MonoBehaviour
 
         quantity = Math.Clamp(quantity, 0, selectedItem.quantity);
         if (stats != null && quantity + stats.quantity > maxStack)
-            quantity = maxStack - stats.quantity;      
-        bool itemExist = SetOrAddItemSlot(to, new ItemStats(selectedItem.itemID, quantity));
+            quantity = maxStack - stats.quantity;
+
+
+        Debug.Log(selectedItem is DestroyableItem);
+
+        bool itemExist = SetOrAddItemSlot(to, selectedItem.Clon(quantity));
         selectedItem.quantity -= quantity;
         SendMoveItem(to, quantity);
         LocalUpdateSlotIndex(to);
@@ -226,6 +240,7 @@ public class NewEquipmentManager : MonoBehaviour
     // Return true if exist itemslot
     private bool SetOrAddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {
+        Debug.Log(itemSlot + " ------ " + (itemSlot is DestroyableItem));
         if (GetItemStats(slotPosition) != null)
         {
             AddItemSlot(slotPosition, itemSlot);
@@ -260,16 +275,27 @@ public class NewEquipmentManager : MonoBehaviour
         containers.Add(containerComponent.containerIndex, container);
 
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
+        var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);
         foreach (InventorySlot slot in slots)
         {
-            container.itemSlots[slot.slot] = new ItemStats(slot);
+            ItemBarData? itemBarData = null;
+            foreach (ItemBarData barData in bars)
+            {
+                if(barData.slot == slot.slot)
+                {
+                    itemBarData = barData;
+                    break;
+                }
+            }
+
+            container.itemSlots[slot.slot] = CreateItemStats(slot, itemBarData);
         }
 
 
-        UIManager.instance.LoadSlots(v, entity, containerComponent, v.gridIndex == 0);
+        UIManager.instance.LoadSlots(v, entity, container, v.gridIndex == 0);
         if (containerComponent.containerIndex == 0)
         {
-            UIManager.instance.LoadBarSlots(containerComponent, entity);
+            UIManager.instance.LoadBarSlots(container, entity);
             // ChangeSelectedSlot(0);
         }
     }
@@ -277,15 +303,32 @@ public class NewEquipmentManager : MonoBehaviour
     {
         Container container = containers[slotPosition.containerIndex];
         var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
+        var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(container.entity);
+
+
         foreach (var item in buffer)
         {
             if (item.slot == slotPosition.slotIndex )
             {
-                ItemStats slot = new ItemStats(item);
-                if(slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = slot;
+                ItemBarData? itemBarData = null;
+                foreach (ItemBarData barData in bars)
+                {
+                    if (barData.slot == item.slot)
+                    {
+                        itemBarData = barData;
+                        break;
+                    }
+                }
+                ItemStats slot = CreateItemStats(item, itemBarData);
+                Debug.Log("  " + (slot is DestroyableItem).ToString());
+
+                if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = slot;
                 return slot;
             }
         }
+
+
+
 
         if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = null;
         return null;
@@ -295,11 +338,23 @@ public class NewEquipmentManager : MonoBehaviour
     {
         Container container = containers[containerIndex];
         var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
+        var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(container.entity);
+
+
         foreach (var item in buffer)
         {
-            if(item.slot < 0)
+            if (item.slot < 0)
             {
-                ItemStats slot = new ItemStats(item);
+                ItemBarData? itemBarData = null;
+                foreach (ItemBarData barData in bars)
+                {
+                    if (barData.slot == item.slot)
+                    {
+                        itemBarData = barData;
+                        break;
+                    }
+                }
+                ItemStats slot = CreateItemStats(item, itemBarData);
                 return slot;
             }
         }
@@ -307,6 +362,13 @@ public class NewEquipmentManager : MonoBehaviour
         return null;
     }
 
+    private ItemStats CreateItemStats(InventorySlot slot,ItemBarData? itemBarData)
+    {
+        if (itemBarData.HasValue)
+            return new DestroyableItem(slot, itemBarData.Value);
+        else
+            return new ItemStats(slot);
+    }
 
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
@@ -317,7 +379,10 @@ public class NewEquipmentManager : MonoBehaviour
             {
                 ItemStats item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
                     EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
+
                 selectedItem = item;
+                Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+
                 s = true;
                 DragManager.instance.UpdateSelected(item);
             }
@@ -327,14 +392,16 @@ public class NewEquipmentManager : MonoBehaviour
                 if (item != null)
                 {
                     selectedItem = item;
+                    Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+
                     selectedSlot = slotPosition;
                     DragManager.instance.UpdateSelected(item);
                 }
             }
 
-            Debug.Log("Update!!! " + slotPosition.ToString() );
+           // Debug.Log("Update!!! " + slotPosition.ToString() );
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
-            Debug.Log("TOo " + itemSlot);
+           // Debug.Log("TOo " + itemSlot);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
         }
     }

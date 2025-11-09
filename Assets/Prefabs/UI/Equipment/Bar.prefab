@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 3, y: 0}
-  m_SizeDelta: {x: 34, y: 4}
+  m_AnchoredPosition: {x: 2, y: 0}
+  m_SizeDelta: {x: 36, y: 4}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &968577838587271281
 CanvasRenderer:
@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 3828581887861740438}
   - component: {fileID: 6984753615040477627}
   - component: {fileID: 5751452532244896532}
+  - component: {fileID: -6942297497575401528}
   m_Layer: 5
   m_Name: Bar
   m_TagString: Bar
@@ -110,8 +111,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 40, y: 9}
+  m_AnchoredPosition: {x: 0, y: -1}
+  m_SizeDelta: {x: 40, y: 8}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &6984753615040477627
 CanvasRenderer:
@@ -151,3 +152,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &-6942297497575401528
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8418885583612049286}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 279a543aef1ed854ba42cc8ccfdfcd7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EQBar

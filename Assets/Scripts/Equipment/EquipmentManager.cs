@@ -246,14 +246,14 @@ public class EquipmentManager : MonoBehaviour
 
     private Dictionary<int,Entity> containers = new Dictionary<int,Entity>();
 
-    public void LoadContainer(ContainerComponent containerComponent, Entity entity)
+    public void LoadContainer(Container containerComponent, Entity entity)
     {
-        containers.Add(containerComponent.containerIndex, entity);
+        containers.Add(containerComponent.gridIndex, entity);
         var container = Instantiate(containerPrefab, containerParent);
-        var v = new EquipmentGrid(container.transform, containerComponent.containerIndex);
+        var v = new EquipmentGrid(container.transform, containerComponent.gridIndex);
 
         UIManager.instance.LoadSlots(v,entity,containerComponent,v.gridIndex == 0);
-        if (containerComponent.containerIndex == 0)
+        if (containerComponent.gridIndex == 0)
         {
             UIManager.instance.LoadBarSlots(containerComponent, entity);
             ChangeSelectedSlot(0);
@@ -606,7 +606,7 @@ public class EquipmentManager : MonoBehaviour
             return;
         }
         int half = itemStats.quantity / 2;
-        selectedItemStats = itemStats.Clon();
+      //  selectedItemStats = itemStats.Clon();
         selectedItemStats.quantity =- half;
 
         itemStats.quantity = half;
@@ -664,10 +664,10 @@ public class EquipmentManager : MonoBehaviour
         if (itemStats.quantity > stackMax)
         {
             itemStats.quantity -= stackMax;
-            ItemStats newItem = itemStats.Clon();
-            newItem.quantity = stackMax;
-            items[slotIndex] = newItem;
-            NewItemUI(newItem, new SlotPosition(gridIndex, slotIndex), false);
+           // ItemStats newItem = itemStats.Clon();
+            //newItem.quantity = stackMax;
+          //  items[slotIndex] = newItem;
+         //   NewItemUI(newItem, new SlotPosition(gridIndex, slotIndex), false);
             return false;
         }
         else
@@ -912,10 +912,10 @@ public class EquipmentManager : MonoBehaviour
             ItemStats itemStats;
             if (IsFreeSlot(position))
             {
-                itemStats = selectedItemStats.Clon();
-                itemStats.quantity = 1;
-                SetItemStats(position, itemStats);
-                NewItemUI(itemStats, position, false);
+                //itemStats = selectedItemStats.Clon();
+               // itemStats.quantity = 1;
+                //SetItemStats(position, itemStats);
+               // NewItemUI(itemStats, position, false);
             }
             else
             {
@@ -1083,8 +1083,8 @@ public class EquipmentManager : MonoBehaviour
     {
         if (position.slotIndex >= 0)
         {
-            ItemStats itemStats = GetGrid(position.containerIndex)[position.slotIndex];
-            if(itemStats != null) return itemStats.Clon();
+          //  ItemStats itemStats = GetGrid(position.containerIndex)[position.slotIndex];
+          //  if(itemStats != null) return itemStats.Clon();
         }
         return null;
     }

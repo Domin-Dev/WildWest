@@ -19,7 +19,7 @@ public class LiquidContainerItem : ItemStats, IBarValue
         this.currentFill = item.currentFill;
     }
 
-    public override ItemStats Clon()
+    public override ItemStats Clon(int q)
     {
         return new LiquidContainerItem(this);
     }

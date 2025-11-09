@@ -2,15 +2,20 @@
 using Unity.NetCode;
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
-public struct InventorySlot : IBufferElementData
+public struct InventorySlot : IBufferElementData, IGetSlot
 {
     [GhostField] public int slot;
+
     [GhostField] public int itemId;    
     [GhostField] public int quantity;
+    [GhostField] public byte wetness; // 0% - 100%
+
     public override string ToString()
     {
         return $"Slot:{slot} ItemID:{itemId} Quantity:{quantity}";
     }
+
+    public int GetSlot() { return slot; }
 }
 
 
