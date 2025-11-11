@@ -75,11 +75,6 @@ public class ItemsAsset : MonoBehaviour
         outItem = item as T;
         return item is T;
     }
-
-
-
-
-
     public Variant GetVariant(int itemID,int variantID,int state)
     {
         var item = GetItem<VariantItem>(itemID);
@@ -92,7 +87,6 @@ public class ItemsAsset : MonoBehaviour
         }
         return null;
     }
-
     public Sprite GetBuildingObjectSprite(int id, int index)
     {
         if (items.ContainsKey(id))

@@ -1,11 +1,15 @@
 
 using System;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class ItemStats
 {
     public int itemID { private set; get; } = -1;
     private int _quantity;
+    private byte _wetness;
+    public Quality quality { private set; get; }
+
     public int quantity
     {
         set
@@ -18,32 +22,52 @@ public class ItemStats
             return _quantity; 
         }
     }
+    public byte wetness
+    {
+        set
+        {
+            _wetness = Math.Clamp(value,(byte)0,(byte)100);
+        }
+        get
+        {
+            return _wetness;
+        }
+    }
 
     public ItemStats(ItemStats itemStats)
     {
         this.itemID = itemStats.itemID;
         this.quantity = itemStats.quantity;
+        this.wetness = itemStats.wetness;
+        this.quality = itemStats.quality;
     }
-
     public ItemStats(ItemStats itemStats, int quantity)
     {
-        itemID = itemStats.itemID;
+        this.itemID = itemStats.itemID;
+        this.wetness= itemStats.wetness;
+        this.quality = itemStats.quality;
         this.quantity = quantity;
     }
-    public ItemStats(int itemID, int itemCount = 1)
+    public ItemStats(int itemID, int itemCount = 1, byte wetness = 0, Quality quality = Quality.none)
     {
         this.itemID = itemID;
+        this.wetness = wetness;
+        this.quality = quality;
         this.quantity = itemCount;
     }
-
-
-
     public ItemStats(InventorySlot inventorySlot)
     {
         itemID = inventorySlot.itemId;
         quantity = inventorySlot.quantity;
+        wetness = inventorySlot.wetness;
+        quality = inventorySlot.quality;
     }
 
+
+    public float GetFloatWetness()
+    {
+        return wetness * 0.01f;
+    }
     public int GetMaxStack()
     {
         return ItemsAsset.instance.GetStackMax(itemID);
@@ -53,13 +77,10 @@ public class ItemStats
         if (itemID != -1) return false;
         else return true;
     }
-
-
     public virtual ItemStats Clon(int quantity)
     {
         return new ItemStats(this,quantity);
     }
-
     public override string ToString()
     {
         return $"Count: {quantity} ItemID: {itemID}"; 

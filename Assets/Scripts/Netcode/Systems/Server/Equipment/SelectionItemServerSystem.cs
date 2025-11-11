@@ -78,13 +78,10 @@ partial struct SelectionItemServerSystem : ISystem
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
             int newSlot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot); 
 
-
             if (selectItem.value >= element.quantity)
             {
-                Debug.Log("skoksoak   " + element.slot);
                 if (EQHelper.TryGetBufferIndex(barsLookup,element.slot,container.Value.entity,out var barData,out int bIndex))
                 {
-                    Debug.Log("DZIALAK");
                     barsLookup[container.Value.entity].ElementAt(bIndex).slot = newSlot;
                 }
 
@@ -93,13 +90,16 @@ partial struct SelectionItemServerSystem : ISystem
             else
             {
                 int dif = element.quantity - selectItem.value;
+
                 element.quantity = dif;
 
                 slotsLookup[container.Value.entity].Add(new InventorySlot()
                 {
                     itemId = element.itemId,
                     slot = newSlot,
-                    quantity = selectItem.value
+                    quantity = selectItem.value,
+                    wetness = element.wetness,
+                    quality = element.quality,
                 });
 
                 if (EQHelper.TryGetBufferIndex(barsLookup, element.slot, container.Value.entity, out var barData, out int bIndex))

@@ -9,6 +9,8 @@ public struct InventorySlot : IBufferElementData, IGetSlot
     [GhostField] public int itemId;    
     [GhostField] public int quantity;
     [GhostField] public byte wetness; // 0% - 100%
+    [GhostField] public Quality quality; 
+
 
     public override string ToString()
     {
@@ -17,6 +19,18 @@ public struct InventorySlot : IBufferElementData, IGetSlot
 
     public int GetSlot() { return slot; }
 }
+
+public enum Quality : byte
+{
+    none = 0,
+    terrible = 1,
+    poor = 2,
+    normal = 3,
+    good = 4,
+    masterful = 5,
+    legendary = 6,
+}
+
 
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]

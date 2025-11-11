@@ -71,7 +71,7 @@ public class Destroyable : Item, IItemBar
    
     public override ItemStats GetItemStats()
     {
-        return new DestroyableItem(ID,durability);
+        return new ItemWithBar(ID,durability);
     }
     public float GetMaxBarValue()
     {

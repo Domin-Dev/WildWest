@@ -8,9 +8,9 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 public class EquipmentGrid
 {
@@ -491,7 +491,7 @@ public class UIManager : MonoBehaviour
             case LiquidContainerItem:
                 image.color = uISettings.liquidCapacityBarColor;
                 break;
-            case DestroyableItem:
+            case ItemWithBar:
                 image.color = uISettings.durabilityBarColor;
                 break;
             case FoodItem:
@@ -529,18 +529,54 @@ public class UIManager : MonoBehaviour
         }
 
     }
+
+
+
+    private void SetWetness(float value,Transform itemTransform)
+    {
+        value = math.clamp(value, 0f, 1f);
+        EQWetness obj;
+        obj = itemTransform.GetComponentInChildren<EQWetness>(true);
+
+        Debug.Log("Dziala!!!   " + value);
+        if (value > 0)
+        {
+            obj.gameObject.SetActive(true);
+            obj.gameObject.GetComponentInChildren<EQWetnessFill>(true).GetComponent<Image>().fillAmount = value;
+        }
+        else
+            obj.gameObject.SetActive(false);
+    }
+    private void SetQuality(Quality quality,Transform itemTransform)
+    {
+        EQQuality obj;
+        obj = itemTransform.GetComponentInChildren<EQQuality>(true);
+        if(quality == Quality.none || quality == Quality.normal)
+            obj.gameObject.SetActive(false);
+        else
+        {
+            obj.gameObject.SetActive(true);
+            obj.gameObject.GetComponent<Image>().sprite = UIAssetsManager.instance.GetQualitySprite(quality);
+        }
+    }
+
     private void NewItemUI(Transform gridUI, ItemStats itemStats, int slotIndex)
     {
         RectTransform transform = Instantiate(item, gridUI.GetChild(slotIndex)).GetComponent<RectTransform>();
         transform.SetAsFirstSibling();
 
         TryCreateBar(transform, itemStats);
-        
+        SetWetness(itemStats.GetFloatWetness(), transform);
+        SetQuality(itemStats.quality, transform);
+
+
 
         transform.anchoredPosition = Vector2.zero;
         transform.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(itemStats.itemID);
+
         if (itemStats.quantity != 1) transform.GetComponentInChildren<TextMeshProUGUI>().text = itemStats.quantity.ToString();
         else transform.GetComponentInChildren<TextMeshProUGUI>().text = "";
+
 
         if (gridUI != mainItemBar)
         {
@@ -548,9 +584,8 @@ public class UIManager : MonoBehaviour
             transform.GetComponent<DragItem>().IsInSlot();
         }
         else
-        {
             transform.GetComponent<DragItem>().enabled = false;
-        }
+        
     }
     public void SwitchBackground(bool value)
     {
@@ -646,6 +681,8 @@ public class UIManager : MonoBehaviour
         if (dragDrop == null || stats == null) return;
         dragDrop.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(stats.itemID);
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
+        SetWetness(stats.GetFloatWetness(),dragDrop);
+        SetQuality(stats.quality,dragDrop);
     }
 
     public RectTransform CreateDragItem()
@@ -671,7 +708,8 @@ public class UIManager : MonoBehaviour
             if (container.gridIndex == 0) UpdateItemSlot(container, slot, slotIndex, true);
         }
 
-        Debug.Log(slot + " " + (slot is DestroyableItem));
+
+
 
         if (slot == null || slot.quantity == 0)
         {
@@ -680,30 +718,20 @@ public class UIManager : MonoBehaviour
                 Destroy(slotObj.GetChild(0).gameObject);
                 if (container.mandatoryProperties != MandatoryProperties.none)
                     slotObj.GetComponentInChildren<EQPlaceholder>(true)?.gameObject.SetActive(true);
-                slotObj.GetComponentInChildren<EQBar>(true)?.gameObject.SetActive(false);
             }
         }
         else
         {
-
-            Debug.Log(slotObj.childCount);
-
             if (slotObj.childCount > 0 && slotObj.GetComponentInChildren<DragItem>() != null)
             {
-                Debug.Log("update!!!!!!!! " + slot);
-                slotObj.GetChild(0).GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(slot.itemID);
-                slotObj.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity > 1 ? slot.quantity.ToString() : "";
-                var bar = slotObj.GetComponentInChildren<EQBar>(true);
-                if(slot is DestroyableItem)
-                {
-                    
-                   
-                }
+                var item = slotObj.GetChild(0);
+                item.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(slot.itemID);
+                item.GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity > 1 ? slot.quantity.ToString() : "";
+                SetWetness(slot.GetFloatWetness(), item);
+                SetQuality(slot.quality, item);
             }
             else
             {
-                Debug.Log("nowy!!!!!!!!!");
-
                 NewItemUI(parent, slot, slotIndex);
                 if (container.mandatoryProperties != MandatoryProperties.none)
                     slotObj.GetComponentInChildren<EQPlaceholder>(true)?.gameObject.SetActive(false);

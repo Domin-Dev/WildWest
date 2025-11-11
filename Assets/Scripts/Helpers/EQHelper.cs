@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.VisualScripting;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -13,6 +14,7 @@ public struct EQAddItem
     public SlotPosition pos;
     public int quantity;
     public bool slotExist;
+
     public EQAddItem(SlotPosition pos, int quantity, bool slotExist)
     {
         this.pos = pos;
@@ -33,7 +35,6 @@ public static class EQHelper
     {
         return -(slotIndex + 1);
     }
-
     public static PlayerContainers? GetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player, int containerIndex)
     {
         if (!containersLookup.TryGetBuffer(player, out var containers))
@@ -50,7 +51,6 @@ public static class EQHelper
         }
         return container;
     }
-
     public static List<int> GetPlayerContainers(ref SystemState state,BufferLookup<PlayerContainers> lookup, Entity player, int itemID)
     {
         List<int> result = new List<int>();
@@ -62,7 +62,6 @@ public static class EQHelper
         }
         return result;
     }
-
 
     public static void PrintBuffer(BufferLookup<InventorySlot> slotsLookup, Entity container)
     {
@@ -163,10 +162,6 @@ public static class EQHelper
         }
         return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(0, 3), 0) };
     }
-
-
-
-
     public static List<InventorySlot> TryGetAllItemsInContainer(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, int containerIndex, int itemID)
     {
         var container = GetPlayerContainer(containers, player, containerIndex);
@@ -218,7 +213,7 @@ public static class EQHelper
                 var fromBuffer = slotsLookup[containersFrom.entity];
                 var toBuffer = slotsLookup[containersTo.entity];
 
-                if (itemTo.HasValue && (itemFrom.Value.itemId != itemTo.Value.itemId || itemTo.Value.quantity >= stackMax))
+                if (itemTo.HasValue && (itemFrom.Value.itemId != itemTo.Value.itemId || itemFrom.Value.quality != itemTo.Value.quality || itemTo.Value.quantity >= stackMax))
                 {
                     ref var slot = ref toBuffer.ElementAt(toIndex);
                     slot.slot = ConvetSlotIndexToSelectedSlotIndex(slotTo);
@@ -266,6 +261,8 @@ public static class EQHelper
                         slot = slotTo,
                         itemId = itemFrom.Value.itemId,
                         quantity = to,
+                        quality = itemFrom.Value.quality,
+                        wetness = itemFrom.Value.wetness
                     });
                 }
 
@@ -319,11 +316,16 @@ public static class EQHelper
             }
         }
     }
-    public static EquipmentEvent[] AddItems(BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, EQAddItem[] values, int itemID)
+  
+    
+    
+    
+    
+    public static EquipmentEvent[] AddItems(BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, EQAddItem[] values, InventorySlot itemData)
     {
         List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
         if (values == null) return null;
-        bool hasBar = ItemsAsset.instance.TryGetBarValues(itemID, out float startValue, out float maxValue);
+        bool hasBar = ItemsAsset.instance.TryGetBarValues(itemData.itemId, out float startValue, out float maxValue);
 
 
         foreach (EQAddItem item in values)
@@ -347,9 +349,11 @@ public static class EQHelper
                 var container = containers[player][item.pos.containerIndex];
                 slotLookup[container.entity].Add(new InventorySlot()
                 {
-                    itemId = itemID,
+                    itemId = itemData.itemId,
                     quantity = item.quantity,
                     slot = item.pos.slotIndex,
+                    wetness = itemData.wetness,
+                    quality = itemData.quality,
                 });
                 if(hasBar)
                 {
@@ -366,6 +370,11 @@ public static class EQHelper
 
         return equipmentEvents.ToArray();
     }
+
+
+
+
+
     public static EquipmentEvent[] MoveItems(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<InventorySlot> slotLookup,Entity connection, BufferLookup<PlayerContainers> containers,SlotPosition from, Entity player, EQAddItem[] values, int itemID)
     {
         List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
@@ -381,11 +390,35 @@ public static class EQHelper
 
         return equipmentEvents.ToArray();
     }
-    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, int itemID, int quantity)
+
+
+
+
+    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player,int itemID,int quantity = 1, byte wetness = 0, Quality quality = Quality.none)
+    {
+        return FindSlotForItem(ref state, slotLookup, containers, player, new InventorySlot() {
+            itemId = itemID,
+            quantity = quantity,
+            wetness = wetness,
+            quality = quality
+        });
+    }
+
+    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, int itemID, int quantity = 1, byte wetness = 0, Quality quality = Quality.none, params int[] findIncontainers)
+    {
+        return FindSlotForItem(ref state, slotLookup, containers, player, new InventorySlot()
+        {
+            itemId = itemID,
+            quantity = quantity,
+            wetness = wetness,
+            quality = quality
+        },findIncontainers);
+    }
+    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, InventorySlot inventorySlot)
     {
         var playerContainers = containers[player];
-        int stackMax = ItemsAsset.instance.GetStackMax(itemID);
-        int numberSlots = (int)Math.Ceiling((float)quantity / (float)stackMax);
+        int stackMax = ItemsAsset.instance.GetStackMax(inventorySlot.itemId);
+        int numberSlots = (int)Math.Ceiling((float)inventorySlot.quantity / (float)stackMax);
         List<SlotPosition> freeSlots = new List<SlotPosition>();
         List<EQAddItem> moves = new List<EQAddItem>();
 
@@ -393,7 +426,7 @@ public static class EQHelper
         {
             var container = playerContainers[i];
             var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.entity);
-            if (CheckRequirements(containerComponent, itemID))
+            if (CheckRequirements(containerComponent, inventorySlot.itemId))
             {
                 var slots = slotLookup[container.entity];
                 bool[] occupiedSlots = new bool[containerComponent.capacity];
@@ -404,7 +437,7 @@ public static class EQHelper
                     var slot = slots[j];
                     if (slot.slot < 0) continue;
                     occupiedSlots[slot.slot] = true;
-                    if (slot.itemId == itemID && slot.quantity < stackMax)
+                    if (slot.itemId == inventorySlot.itemId && inventorySlot.quality == slot.quality && slot.quantity < stackMax)
                     {
                         slotIndexToBuffer.Add(slot.slot, j);
                     }
@@ -413,15 +446,15 @@ public static class EQHelper
                 {
                     var slot = slots[slotToBuffor.Value];
                     int free = stackMax - slot.quantity;
-                    if (free >= quantity)
+                    if (free >= inventorySlot.quantity)
                     {
-                        moves.Add(new EQAddItem(new SlotPosition(container.index, slot.slot), quantity, true));
+                        moves.Add(new EQAddItem(new SlotPosition(container.index, slot.slot), inventorySlot.quantity, true));
                         return moves.ToArray();
                     }
                     else
                     {
                         moves.Add(new EQAddItem(new SlotPosition(container.index, slot.slot), free, true));
-                        quantity -= free;
+                        inventorySlot.quantity -= free;
                     }
                 }
 
@@ -442,24 +475,25 @@ public static class EQHelper
 
         foreach (var item in freeSlots)
         {
-            if(quantity > stackMax)
+            if(inventorySlot.quantity > stackMax)
             {
                 moves.Add(new EQAddItem(item, stackMax, false));
-                quantity -= stackMax;
+                inventorySlot.quantity -= stackMax;
             }
             else
             {
-                moves.Add(new EQAddItem(item, quantity,false));
+                moves.Add(new EQAddItem(item, inventorySlot.quantity, false));
                 break;
             }
         }
         return moves.ToArray(); 
     }
-    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, int itemID, int quantity, params int[] findIncontainers)
+
+    public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, InventorySlot inventorySlot, params int[] findIncontainers)
     {
         var playerContainers = containers[player];
-        int stackMax = ItemsAsset.instance.GetStackMax(itemID);
-        int numberSlots = (int)Math.Ceiling((float)quantity / (float)stackMax);
+        int stackMax = ItemsAsset.instance.GetStackMax(inventorySlot.itemId);
+        int numberSlots = (int)Math.Ceiling((float)inventorySlot.quantity / (float)stackMax);
         List<SlotPosition> freeSlots = new List<SlotPosition>();
         List<EQAddItem> moves = new List<EQAddItem>();
 
@@ -474,7 +508,7 @@ public static class EQHelper
             if (!container.HasValue) continue;
 
             var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.Value.entity);
-            if (CheckRequirements(containerComponent, itemID))
+            if (CheckRequirements(containerComponent, inventorySlot.itemId))
             {
                 var slots = slotLookup[container.Value.entity];
                 bool[] occupiedSlots = new bool[containerComponent.capacity];
@@ -485,7 +519,7 @@ public static class EQHelper
                     var slot = slots[j];
                     if (slot.slot < 0) continue;
                     occupiedSlots[slot.slot] = true;
-                    if (slot.itemId == itemID && slot.quantity < stackMax)
+                    if (slot.itemId == inventorySlot.itemId && slot.quality == inventorySlot.quality && slot.quantity < stackMax)
                     {
                         slotIndexToBuffer.Add(slot.slot,j);
                     }
@@ -494,15 +528,15 @@ public static class EQHelper
                 {
                     var slot = slots[slotToBuffor.Value];
                     int free = stackMax - slot.quantity;
-                    if (free >= quantity)
+                    if (free >= inventorySlot.quantity)
                     {
-                        moves.Add(new EQAddItem(new SlotPosition(container.Value.index, slot.slot), quantity, true));
+                        moves.Add(new EQAddItem(new SlotPosition(container.Value.index, slot.slot), inventorySlot.quantity, true));
                         return moves.ToArray();
                     }
                     else
                     {
                         moves.Add(new EQAddItem(new SlotPosition(container.Value.index, slot.slot), free, true));
-                        quantity -= free;
+                        inventorySlot.quantity -= free;
                     }    
                 }
 
@@ -523,14 +557,14 @@ public static class EQHelper
 
         foreach (var item in freeSlots)
         {
-            if (quantity > stackMax)
+            if (inventorySlot.quantity > stackMax)
             {
                 moves.Add(new EQAddItem(item, stackMax, false));
-                quantity -= stackMax;
+                inventorySlot.quantity -= stackMax;
             }
             else
             {
-                moves.Add(new EQAddItem(item, quantity, false));
+                moves.Add(new EQAddItem(item, inventorySlot.quantity, false));
                 break;
             }
         }

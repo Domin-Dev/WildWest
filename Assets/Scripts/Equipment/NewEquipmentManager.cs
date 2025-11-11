@@ -79,7 +79,7 @@ public class NewEquipmentManager : MonoBehaviour
         ItemStats item = GetItemStats(slotPosition);
         n = SelectN(item.quantity, selectionMode, n);
         selectedItem = TakeItems(slotPosition, n);
-        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
 
         selectedSlot = slotPosition;
@@ -92,7 +92,7 @@ public class NewEquipmentManager : MonoBehaviour
     {
         selectedSlot = slotPosition;
         selectedItem = itemStats;
-        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
 
 
@@ -105,7 +105,7 @@ public class NewEquipmentManager : MonoBehaviour
     public void ClearSelection()
     {
         selectedItem = null;
-        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
         selectedSlot = SlotPosition.NullSlot;
     }
@@ -172,7 +172,7 @@ public class NewEquipmentManager : MonoBehaviour
         ItemStats stats = GetItemStats(to);
         ItemStats statsToReturn = null;
 
-        if (stats != null && (stats.itemID != selectedItem.itemID || stats.quantity >= maxStack))
+        if (stats != null && (stats.itemID != selectedItem.itemID || stats.quality != selectedItem.quality || stats.quantity >= maxStack))
         {
             statsToReturn = GetItemStats(to);
             stats = null;
@@ -184,7 +184,7 @@ public class NewEquipmentManager : MonoBehaviour
             quantity = maxStack - stats.quantity;
 
 
-        Debug.Log(selectedItem is DestroyableItem);
+        Debug.Log(selectedItem is ItemWithBar);
 
         bool itemExist = SetOrAddItemSlot(to, selectedItem.Clon(quantity));
         selectedItem.quantity -= quantity;
@@ -203,13 +203,16 @@ public class NewEquipmentManager : MonoBehaviour
         return MoveItemData(to, n);
     }
 
-    public bool CanMove(SlotPosition to, out bool haveSameId)
+    public bool CanMove(SlotPosition to, out bool haveSameItem)
     {
-        haveSameId = false;
+        haveSameItem = false;
         if (selectedItem != null && containers.TryGetValue(to.containerIndex, out var container))
         {
-            if (container.itemSlots.Length > to.slotIndex && container.itemSlots[to.slotIndex] != null) 
-                haveSameId = selectedItem.itemID == container.itemSlots[to.slotIndex].itemID;
+            if (container.itemSlots.Length > to.slotIndex && container.itemSlots[to.slotIndex] != null)
+            {
+                haveSameItem = selectedItem.itemID == container.itemSlots[to.slotIndex].itemID &&
+                     selectedItem.quality == container.itemSlots[to.slotIndex].quality;
+            }
             return EQHelper.CheckRequirements(container.mandatoryProperties, container.mandatoryData, selectedItem.itemID);
         }
         return false;
@@ -240,7 +243,7 @@ public class NewEquipmentManager : MonoBehaviour
     // Return true if exist itemslot
     private bool SetOrAddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {
-        Debug.Log(itemSlot + " ------ " + (itemSlot is DestroyableItem));
+        Debug.Log(itemSlot + " ------ " + (itemSlot is ItemWithBar));
         if (GetItemStats(slotPosition) != null)
         {
             AddItemSlot(slotPosition, itemSlot);
@@ -320,7 +323,7 @@ public class NewEquipmentManager : MonoBehaviour
                     }
                 }
                 ItemStats slot = CreateItemStats(item, itemBarData);
-                Debug.Log("  " + (slot is DestroyableItem).ToString());
+                Debug.Log("  " + (slot is ItemWithBar).ToString());
 
                 if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = slot;
                 return slot;
@@ -333,7 +336,6 @@ public class NewEquipmentManager : MonoBehaviour
         if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = null;
         return null;
     }
-
     private ItemStats LoadSelectedItemFromEntities(int containerIndex)
     {
         Container container = containers[containerIndex];
@@ -361,11 +363,10 @@ public class NewEquipmentManager : MonoBehaviour
 
         return null;
     }
-
     private ItemStats CreateItemStats(InventorySlot slot,ItemBarData? itemBarData)
     {
         if (itemBarData.HasValue)
-            return new DestroyableItem(slot, itemBarData.Value);
+            return new ItemWithBar(slot, itemBarData.Value);
         else
             return new ItemStats(slot);
     }
@@ -381,7 +382,7 @@ public class NewEquipmentManager : MonoBehaviour
                     EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
 
                 selectedItem = item;
-                Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+                Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
                 s = true;
                 DragManager.instance.UpdateSelected(item);
@@ -392,7 +393,7 @@ public class NewEquipmentManager : MonoBehaviour
                 if (item != null)
                 {
                     selectedItem = item;
-                    Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is DestroyableItem));
+                    Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
                     selectedSlot = slotPosition;
                     DragManager.instance.UpdateSelected(item);

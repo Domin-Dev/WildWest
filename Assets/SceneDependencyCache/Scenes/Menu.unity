@@ -6339,6 +6339,17 @@ MonoBehaviour:
       m_WaitForCompletion: 0
       m_LocalVariables: []
     font: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  qualitySprites:
+  - quality: 1
+    sprite: {fileID: -144673411, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+  - quality: 2
+    sprite: {fileID: -604605295, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+  - quality: 4
+    sprite: {fileID: -2002146841, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+  - quality: 5
+    sprite: {fileID: -1501567345, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+  - quality: 6
+    sprite: {fileID: -908559967, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
   UIHeadMaterial: {fileID: 2100000, guid: df6d9abd4c7883d4684371e2537265b4, type: 2}
   bronzeBackgroundUI: {fileID: -387067171, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   silverBackgroundUI: {fileID: 1922422707, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}

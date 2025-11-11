@@ -57,11 +57,11 @@ partial struct CombineItemsServerSystem : ISystem
         var container = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.position.containerIndex);
         if (!container.HasValue) return null; 
 
-        if(EQHelper.TryGetBufferIndex(slotsLookup, command.position.slotIndex,container.Value.entity, out int itemID, out int bufferIndex))
+        if(EQHelper.TryGetBufferIndex(slotsLookup, command.position.slotIndex,container.Value.entity, out InventorySlot? item, out int bufferIndex))
         {
             var slots = slotsLookup[container.Value.entity];
             var element = slots.ElementAt(bufferIndex);
-            int maxStack = ItemsAsset.instance.GetStackMax(itemID);
+            int maxStack = ItemsAsset.instance.GetStackMax(item.Value.itemId);
             List<EquipmentEvent> list = new List<EquipmentEvent>();
             List<(int from, int to, int amount)> moves = new();
             int foundMaxSlotPos = -1;
@@ -72,7 +72,7 @@ partial struct CombineItemsServerSystem : ISystem
                 {
                     if (i == bufferIndex) continue;
                     ref var slot = ref slots.ElementAt(i);
-                    if(slot.itemId == itemID)
+                    if(slot.itemId == item.Value.itemId && slot.quality == item.Value.quality)
                     {
                         if (slot.quantity == maxStack)
                         {
@@ -98,8 +98,8 @@ partial struct CombineItemsServerSystem : ISystem
             if(gap > 0 && foundMaxSlotPos >= 0)
                 moves.Add(new(foundMaxSlotPos, command.position.slotIndex, gap));
 
-            foreach (var item in moves)
-                list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb, slotsLookup, connection, container.Value, container.Value, item.to, item.from, item.amount, true));
+            foreach (var move in moves)
+                list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb, slotsLookup, connection, container.Value, container.Value, move.to, move.from, move.amount, true));
 
             return list.ToArray();
         }

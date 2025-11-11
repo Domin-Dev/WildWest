@@ -17,12 +17,21 @@ public class FontData
     public TMP_FontAsset font;
 }
 
+[System.Serializable]
+public class QualityData
+{
+    public Quality quality;
+    public Sprite sprite;
+}
+
 
 public class  UIAssetsManager : MonoBehaviour
 {
 
     [Header("Fonts")]
     [SerializeField] public List<FontData> fonts;
+    [SerializeField] public List<QualityData> qualitySprites;
+
     [Header("Materials")]
     [SerializeField] public Material UIHeadMaterial;
     [Header("Rewards")]
@@ -58,6 +67,17 @@ public class  UIAssetsManager : MonoBehaviour
         }
         return names.ToArray();
     }
+
+    public Sprite GetQualitySprite(Quality quality)
+    {
+        foreach (var item in qualitySprites)
+        {
+            if (item.quality == quality)
+                return item.sprite;
+        }
+        return null;
+    }
+
     private void Awake()
     {
         if (instance == null)

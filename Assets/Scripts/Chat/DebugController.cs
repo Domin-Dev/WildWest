@@ -125,8 +125,11 @@ public static class DebugController
                 {
                     EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
                     {
-                        itemID = id,
-                        quantity = quantity,
+                        item = new InventorySlot
+                        {
+                            itemId = id,
+                            quantity = quantity
+                        },
                         networkEntity = networkPlayer
                     });
                 }
@@ -141,9 +144,34 @@ public static class DebugController
 
                 EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
                 {
-                    itemID = id,
-                    quantity = quantity,
+                    item = new InventorySlot
+                    {
+                        itemId = id,
+                        quantity = quantity
+                    },
+
                     networkEntity = e
+                });
+            }
+            return null;
+        }));
+        commandList.Add(new DebugCommand<int, int,int,int>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,int wetness,int quality) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                if (ItemsAsset.instance.GetItem(id) == null) return null;
+                EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                {
+                    item = new InventorySlot
+                    {
+                        itemId = id,
+                        wetness = (byte) wetness,
+                        quality = (Quality)quality, 
+                        quantity = quantity
+                    },
+                    networkEntity = e
+
+
                 });
             }
             return null;
@@ -156,13 +184,18 @@ public static class DebugController
 
                 EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
                 {
-                    itemID = id,
-                    quantity = 1,
+                    item = new InventorySlot
+                    {
+                        itemId = id,
+                        quantity = 1
+                    },
                     networkEntity = e
                 });
             }
             return null;
         }));
+       
+        
         #endregion
 
         commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>

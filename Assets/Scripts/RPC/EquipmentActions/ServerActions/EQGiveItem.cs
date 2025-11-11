@@ -5,7 +5,6 @@ using UnityEngine;
 
 public struct EQGiveItem : IComponentData
 {
-    public int itemID;
-    public int quantity;
+    public InventorySlot item;
     public Entity networkEntity;
 }

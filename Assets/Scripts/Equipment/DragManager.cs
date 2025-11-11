@@ -69,7 +69,7 @@ public class DragManager : MonoBehaviour
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
 
 
-            Debug.Log(itemStats + " " + (itemStats is DestroyableItem));
+            Debug.Log(itemStats + " " + (itemStats is ItemWithBar));
 
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
@@ -96,10 +96,10 @@ public class DragManager : MonoBehaviour
     public ItemStats SlotSelected(DropSlot slot, PointerEventData eventData, bool slotIsOccupied = false)
     {
         SlotPosition slotPosition = slot.GetSlotPosition();
-        if (dragItem != null && NewEquipmentManager.instance.CanMove(slotPosition,out bool haveSameID))
+        if (dragItem != null && NewEquipmentManager.instance.CanMove(slotPosition,out bool haveSameItem))
         {
             SelectionMode mode = GetSelectionModeForSelectSlot(eventData,out int n);
-            if (slotIsOccupied && !haveSameID) mode = SelectionMode.All;
+            if (slotIsOccupied && !haveSameItem) mode = SelectionMode.All;
             return NewEquipmentManager.instance.MoveItemData(slotPosition, mode, n); 
         }
         return null;

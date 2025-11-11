@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-public class RangedWeaponItem : DestroyableItem
+public class RangedWeaponItem : ItemWithBar
 {
     public int magazineCapacity { private set; get; }
     public int currentAmmoCount { private set; get; }
