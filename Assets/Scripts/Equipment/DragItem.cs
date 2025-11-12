@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragItem : MonoBehaviour, IPointerDownHandler
+public class DragItem : MonoBehaviour, IPointerDownHandler, IGetSlotPosition
 {
     private RectTransform rectTransform;
     public Transform parent;
@@ -16,7 +16,7 @@ public class DragItem : MonoBehaviour, IPointerDownHandler
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
     }
-    public SlotPosition GetSlotPostion()
+    public SlotPosition GetSlotPosition()
     {
         return parent.GetComponent<DropSlot>().GetSlotPosition();
     }

@@ -6,18 +6,20 @@ using UnityEngine.Localization;
 
 
 [DisallowMultipleComponent]
-public class TooltipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
-{
-    [SerializeField] private string header;
-    [Multiline()]
-    [SerializeField] private string content;
+public abstract class TooltipTriggerBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+{   
     public void OnPointerEnter(PointerEventData eventData)
     {
-        TooltipSystem.Show(content,header);
+        Tooltip(eventData);
     }
-
     public void OnPointerExit(PointerEventData eventData)
     {
         TooltipSystem.Hide();
     }
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        TooltipSystem.Hide();
+    }
+
+    public abstract void Tooltip(PointerEventData eventData);
 }

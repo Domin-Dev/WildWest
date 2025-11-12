@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -22,6 +19,7 @@ public class QualityData
 {
     public Quality quality;
     public Sprite sprite;
+    public Color color;
 }
 
 
@@ -32,6 +30,10 @@ public class  UIAssetsManager : MonoBehaviour
     [SerializeField] public List<FontData> fonts;
     [SerializeField] public List<QualityData> qualitySprites;
 
+
+    [Header("Headers")]
+    [SerializeField] public Sprite yellowHeader;
+    [SerializeField] public Sprite whiteHeader;
     [Header("Materials")]
     [SerializeField] public Material UIHeadMaterial;
     [Header("Rewards")]
@@ -74,6 +76,15 @@ public class  UIAssetsManager : MonoBehaviour
         {
             if (item.quality == quality)
                 return item.sprite;
+        }
+        return null;
+    }
+    public Color? GetQualityColor(Quality quality)
+    {
+        foreach (var item in qualitySprites)
+        {
+            if (item.quality == quality)
+                return item.color;
         }
         return null;
     }

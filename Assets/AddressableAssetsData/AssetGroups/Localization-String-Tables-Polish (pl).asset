@@ -15,12 +15,24 @@ MonoBehaviour:
   m_GroupName: Localization-String-Tables-Polish (pl)
   m_GUID: 0234c4a1a94fea440a6fa097db46a2c3
   m_SerializeEntries:
+  - m_GUID: 108cbcb1dde194d43a1a9daad14d5a63
+    m_Address: Items_pl
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pl
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7595b8f3a663c3546aa3fec4bd85b5d0
     m_Address: UIStrings_pl
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-pl
     - Preload
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 8f6066dc59b64794baa98cbfbe0f325d
+    m_Address: Equipment_pl
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-pl
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dbb7927337a39a14090804c9d22f529f
     m_Address: Controls_pl

@@ -28,6 +28,18 @@ MonoBehaviour:
     - Locale-es
     - Preload
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e4bb920fe7ce2c4bb7c2b152b118f7f
+    m_Address: Items_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a87d244280927d744ba83090260be1ef
+    m_Address: Equipment_es
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-es
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 1
   m_Settings: {fileID: 11400000, guid: 8b2d6da0ba931bb478b53b34654cb2a6, type: 2}
   m_SchemaSet:

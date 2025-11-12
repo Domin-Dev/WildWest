@@ -44,6 +44,12 @@ public class ItemWithBar : ItemStats, IBarValue
         return new ItemWithBar(this,quantity);
     }
 
+    public override ItemStats Clon()
+    {
+        return new ItemWithBar(this);
+    }
+
+
     public void Decrease(float value = 1)
     {
         current = math.clamp(current - value, 0, maxValue);

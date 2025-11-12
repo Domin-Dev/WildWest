@@ -6,7 +6,10 @@ using UnityEngine;
 public class Tooltip : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI headerField;
+    [SerializeField] private RectTransform headerParent;
+    [SerializeField] private VerticalLayoutGroup verticalLayoutGroup;
     [SerializeField] private TextMeshProUGUI contentField;
+
     [SerializeField] private LayoutElement layoutElement;
     [SerializeField] private int characterWrapLimit;
     [SerializeField] private RectTransform rectTransform;
@@ -16,25 +19,48 @@ public class Tooltip : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
     }
-    public void SetText(string content, string header = "")
+
+    private void SetColorHeader(Color color, Sprite sprite)
+    {
+        var spriteRe = headerParent.GetComponent<Image>();
+        spriteRe.sprite = sprite;
+        spriteRe.material.SetColor("_Color", color);
+      
+    }
+    public void SetText(string content, string header = "", Color? headerColor = null)
     {
         UpdatePosition();
-        Show();
         if (string.IsNullOrEmpty(header))
         {
             headerField.gameObject.SetActive(false);
+            headerParent.gameObject.SetActive(false);
+            verticalLayoutGroup.padding.top = verticalLayoutGroup.padding.left;
         }
         else
         {
-            headerField.gameObject.SetActive(true);
+            layoutElement.enabled = true;
             headerField.text = header;
+            verticalLayoutGroup.padding.top = (int)headerParent.sizeDelta.y + 15;
+            headerField.gameObject.SetActive(true);
+            headerParent.gameObject.SetActive(true);
+
+            if (headerColor == null)
+                SetColorHeader(Color.white, UIAssetsManager.instance.yellowHeader);
+            else
+                SetColorHeader(headerColor.Value, UIAssetsManager.instance.whiteHeader);
+
+
         }
+
+
 
         contentField.text = content;
         int headerLength = headerField.text.Length;
         int contentLength = contentField.text.Length;
 
-        layoutElement.enabled = (headerLength > characterWrapLimit || contentLength > characterWrapLimit) ? true : false;     
+        if (string.IsNullOrEmpty(header))
+            layoutElement.enabled = (headerLength > characterWrapLimit || contentLength > characterWrapLimit) ? true : false;
+        Show();
     }
 
     public void Show()

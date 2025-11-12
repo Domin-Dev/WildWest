@@ -45,7 +45,7 @@ public class DragManager : MonoBehaviour
     {
         if (dragItem == null)
         {
-            dragItemSlot = dragDrop.GetSlotPostion();
+            dragItemSlot = dragDrop.GetSlotPosition();
             if (lastSlotPostion.Compare(dragItemSlot) && Time.time - lastSelectionTime < doubleClickThreshold)
             {
                 NewEquipmentManager.instance.CombineAllItems(dragItemSlot);

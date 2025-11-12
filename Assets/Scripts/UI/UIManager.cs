@@ -777,7 +777,10 @@ public class UIManager : MonoBehaviour
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
                 if (equipmentGrid.gridTransform != mainItemBar)
+                {
                     slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                    slot.AddComponent<ItemSlotTooltipTrigger>();
+                }
                 else
                     Destroy(slot.GetComponent<Button>());
 
@@ -796,6 +799,7 @@ public class UIManager : MonoBehaviour
                     grey.GetComponent<Image>().sprite = icon;
                 }
                 slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                slot.AddComponent<ItemSlotTooltipTrigger>();
             }
         }
 

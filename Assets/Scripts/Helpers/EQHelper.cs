@@ -5,9 +5,7 @@ using System.Linq;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 public struct EQAddItem
 {
@@ -251,7 +249,9 @@ public static class EQHelper
                 Debug.Log(toIndex + " " + fromIndex);
                 if (toIndex >= 0)
                 {
-                    toBuffer.ElementAt(toIndex).quantity += to;
+                    ref var i = ref  toBuffer.ElementAt(toIndex);
+                    i.wetness = EQHelperClient.CalculateMixPercentageByte(i.quantity, i.wetness,to, from.wetness);
+                    i.quantity += to;
                 }
                 else
                 {
@@ -336,7 +336,10 @@ public static class EQHelper
                 var container = containers[player][item.pos.containerIndex];
                 if (TryGetBufferIndex(slotLookup, item.pos.slotIndex, container.entity, out int id, out int bufferIndex))
                 {
-                    slotLookup[container.entity].ElementAt(bufferIndex).quantity += item.quantity;
+                    ref var i = ref slotLookup[container.entity].ElementAt(bufferIndex);
+                    i.wetness = EQHelperClient.CalculateMixPercentageByte(i.quantity, i.wetness, item.quantity, itemData.wetness);             
+                    i.quantity += item.quantity;
+
                     equipmentEvents.Add(new EquipmentEvent(new EquipmentEventData(item.pos.slotIndex, 1), container.index));
                 }
             }
@@ -403,7 +406,6 @@ public static class EQHelper
             quality = quality
         });
     }
-
     public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, int itemID, int quantity = 1, byte wetness = 0, Quality quality = Quality.none, params int[] findIncontainers)
     {
         return FindSlotForItem(ref state, slotLookup, containers, player, new InventorySlot()
@@ -488,7 +490,6 @@ public static class EQHelper
         }
         return moves.ToArray(); 
     }
-
     public static EQAddItem[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, InventorySlot inventorySlot, params int[] findIncontainers)
     {
         var playerContainers = containers[player];

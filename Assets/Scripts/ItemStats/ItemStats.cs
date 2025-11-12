@@ -1,7 +1,6 @@
 
 using System;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
 public class ItemStats
 {
@@ -64,6 +63,10 @@ public class ItemStats
     }
 
 
+    public void AddWetness(int wetnessNewItems, int itemQuantity)
+    {
+        wetness = EQHelperClient.CalculateMixPercentageByte(itemQuantity,wetnessNewItems,quantity,wetness);
+    }
     public float GetFloatWetness()
     {
         return wetness * 0.01f;
@@ -81,6 +84,12 @@ public class ItemStats
     {
         return new ItemStats(this,quantity);
     }
+
+    public virtual ItemStats Clon()
+    {
+        return new ItemStats(this);
+    }
+
     public override string ToString()
     {
         return $"Count: {quantity} ItemID: {itemID}"; 

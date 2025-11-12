@@ -192,6 +192,7 @@ public class NewEquipmentManager : MonoBehaviour
         LocalUpdateSlotIndex(to);
 
         DragManager.instance.UpdateSelected(selectedItem);
+        TooltipSystem.Hide();
         if (selectedItem.quantity == 0)
             ClearSelection();
 
@@ -217,6 +218,8 @@ public class NewEquipmentManager : MonoBehaviour
         }
         return false;
     }
+  
+    
     private ItemStats GetItemStats(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
@@ -225,6 +228,14 @@ public class NewEquipmentManager : MonoBehaviour
         }
         return null;
     }
+   
+    public ItemStats ReadItemStats(SlotPosition slotPosition)
+    {
+        var item = GetItemStats(slotPosition);
+        if (item == null) return null;
+        return item.Clon();
+    }
+    
     private void SetItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
@@ -236,10 +247,12 @@ public class NewEquipmentManager : MonoBehaviour
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
         {
-            container.itemSlots[slotPosition.slotIndex].quantity += itemSlot.quantity;
+            var item =  container.itemSlots[slotPosition.slotIndex];
+            item.AddWetness(itemSlot.wetness,itemSlot.quantity);
+            item.quantity += itemSlot.quantity;
         }
-    }
-
+        
+    } 
     // Return true if exist itemslot
     private bool SetOrAddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {

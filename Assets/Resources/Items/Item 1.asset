@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Item 1
   m_EditorClassIdentifier: 
   name: Dolar
-  description: 
-  ID: 30
+  description: It is the currency you use to buy equipment.
   stackMax: 50
+  ID: 30
   icon: {fileID: -788020699, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags: []
   crafingIngredients: []

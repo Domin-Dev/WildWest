@@ -69,12 +69,12 @@ MonoBehaviour:
     m_Left: 15
     m_Right: 15
     m_Top: 15
-    m_Bottom: 15
+    m_Bottom: 19
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
   m_CellSize: {x: 60, y: 66}
-  m_Spacing: {x: 5, y: 5}
+  m_Spacing: {x: 5, y: 7}
   m_Constraint: 1
   m_ConstraintCount: 10
 --- !u!222 &5360971865625372438
