@@ -64,4 +64,9 @@ public class ItemWithBar : ItemStats, IBarValue
     {
         current = value;
     }
+
+    public void AddBarValue(ItemWithBar barValue)
+    {
+        current = math.clamp(EQHelperClient.CalculateMixPercentage(this.quantity, this.current, barValue.quantity, barValue.current), 0, maxValue);
+    }
 }

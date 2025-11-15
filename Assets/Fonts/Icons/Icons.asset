@@ -94,12 +94,12 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 2
     m_Scale: 1
-    m_Name: Icons_2
+    m_Name: Freshness
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 3
     m_Scale: 1
-    m_Name: Icons_3
+    m_Name: Durability
   - m_ElementType: 2
     m_Unicode: 65534
     m_GlyphIndex: 4

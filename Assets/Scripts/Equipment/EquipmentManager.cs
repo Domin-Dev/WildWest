@@ -24,15 +24,21 @@ public struct SlotPosition
 
     public bool Compare(SlotPosition slotPosition)
     {
-        if (slotPosition.containerIndex == containerIndex && slotPosition.slotIndex == slotIndex) return true;
-        else return false;
+        return Equals(slotPosition);
     }
 
     public static SlotPosition NullSlot = new SlotPosition(-1, -1);
 
+
     public override string ToString()
     {
         return $"Grid Index:{containerIndex},Slot Index:{slotIndex}";
+    }
+
+    public override bool Equals(object obj)
+    {
+        SlotPosition? pos = obj as SlotPosition?;
+        return pos.HasValue && pos.Value.containerIndex == containerIndex && pos.Value.slotIndex == slotIndex;
     }
 
 }
@@ -40,10 +46,15 @@ public class TooltipInfo
 {
     public string content;
     public string header;
-    public TooltipInfo(string content, string header)
+    public Color? headerColor;
+    public object displayingObj;
+
+    public TooltipInfo(string content, string header,object displayingObj = null, Color? headerColor = null)
     {
         this.content = content;
         this.header = header;
+        this.headerColor = headerColor;
+        this.displayingObj = displayingObj; 
     }
 
     public TooltipInfo(string content)
@@ -1192,7 +1203,7 @@ public class EquipmentManager : MonoBehaviour
         ItemStats item = GetItemStats(position);
         if (item is IStackingBarValues)
         {
-            (item as IStackingBarValues).Stacking(number, (itemStats as IBarValue).GetCurrentValue());
+         //   (item as IStackingBarValues).Stacking(number, (itemStats as IBarValue).GetCurrentValue());
             UpdateItemBar(this, new LifeBarArgs(position, (item as IBarValue).GetBarValue()));
         }
         item.quantity += number; 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -178,6 +179,21 @@ public class ItemsAsset : MonoBehaviour
         else 
             return null;
     }
+
+    public string GetBarName(int itemID)
+    {
+        var item = GetItem(itemID) as IItemBar;
+        if(item != null)
+        {
+            return item.GetBarName();
+        }
+        return null;
+    }
+
+    public Type GetType(int itemID)
+    {
+        return GetItem(itemID).GetType();
+    }
     public T GetItem<T>(int itemID) where T : Item
     {
         Item item = GetItem(itemID);
@@ -191,8 +207,6 @@ public class ItemsAsset : MonoBehaviour
     {
         return GetTooltipInfo(GetItem(itemID));
     }
-
-
     public TooltipInfo GetTooltipInfo(Item item)
     {
         return new TooltipInfo(item.description, item.name);
@@ -292,6 +306,17 @@ public class ItemsAsset : MonoBehaviour
         }
         startValue = 0; 
         maxValue = 0;
+        return false;
+    }
+    public bool HaveBarValue(int itemID)
+    {
+        var item = GetItem(itemID);
+        if (item != null)
+        {
+            var bar = item as IItemBar;
+            if (bar != null)         
+                return true;
+        }
         return false;
     }
 

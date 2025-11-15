@@ -6,7 +6,7 @@ public class ItemStats
 {
     public int itemID { private set; get; } = -1;
     private int _quantity;
-    private byte _wetness;
+    private float _wetness;
     public Quality quality { private set; get; }
 
     public int quantity
@@ -21,11 +21,11 @@ public class ItemStats
             return _quantity; 
         }
     }
-    public byte wetness
+    public float wetness
     {
         set
         {
-            _wetness = Math.Clamp(value,(byte)0,(byte)100);
+            _wetness = Math.Clamp(value,0f,100f);
         }
         get
         {
@@ -47,7 +47,7 @@ public class ItemStats
         this.quality = itemStats.quality;
         this.quantity = quantity;
     }
-    public ItemStats(int itemID, int itemCount = 1, byte wetness = 0, Quality quality = Quality.none)
+    public ItemStats(int itemID, int itemCount = 1, float wetness = 0, Quality quality = Quality.none)
     {
         this.itemID = itemID;
         this.wetness = wetness;
@@ -63,9 +63,9 @@ public class ItemStats
     }
 
 
-    public void AddWetness(int wetnessNewItems, int itemQuantity)
+    public void AddWetness(float wetnessNewItems, int itemQuantity)
     {
-        wetness = EQHelperClient.CalculateMixPercentageByte(itemQuantity,wetnessNewItems,quantity,wetness);
+        wetness = EQHelperClient.CalculateMixPercentage(itemQuantity,wetnessNewItems,quantity,wetness);
     }
     public float GetFloatWetness()
     {

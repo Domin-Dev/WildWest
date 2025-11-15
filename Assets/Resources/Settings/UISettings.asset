@@ -16,3 +16,10 @@ MonoBehaviour:
   liquidCapacityBarColor: {r: 0, g: 0.30396703, b: 0.9716981, a: 1}
   dirtyWaterBarColor: {r: 0.058561735, g: 0.6603774, b: 0.5284181, a: 1}
   shelfLifeBarColor: {r: 0.9056604, g: 0.5736605, b: 0.13157704, a: 1}
+  barColors:
+  - color: {r: 0.18947636, g: 0.6754716, b: 0.15676033, a: 1}
+    type: Food
+  - color: {r: 0.7647059, g: 0.27282125, b: 0.09803921, a: 1}
+    type: Destroyable
+  - color: {r: 0.7647059, g: 0.27450982, b: 0.09803922, a: 1}
+    type: RangedWeapon

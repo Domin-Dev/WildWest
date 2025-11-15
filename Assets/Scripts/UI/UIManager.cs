@@ -8,7 +8,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -91,12 +90,13 @@ public class UIManager : MonoBehaviour
     private List<Transform> openWindows = new List<Transform>();
 
     private List<int> loadedScene = new List<int>();
-
+    private List<(Color color, Type type)> colors;
 
     public event EventHandler windowOpen;
 
     [SerializeField] private UISettings uISettings;
 
+   
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -105,6 +105,7 @@ public class UIManager : MonoBehaviour
         SetGrids();
         SetUpNotices();
         LoadRecipes();
+        colors = uISettings.GetColors();
     }
     private void Update()
     {
@@ -330,18 +331,6 @@ public class UIManager : MonoBehaviour
     }
 
 
-    private bool TryCreateBar(Transform itemObj,ItemStats stats)
-    {
-        if (stats as IBarValue != null)
-        {
-            Transform bar = Instantiate(itembar, itemObj).transform.GetChild(0);
-            SetBarColor(bar, stats);
-            UpdateBar((stats as IBarValue).GetBarValue(), bar);
-            return true;
-        }
-        return false;
-    }
-
 
     private void UpdateMainBarItemCount(object sender, UpdateItemCountArgs e)
     {
@@ -486,20 +475,32 @@ public class UIManager : MonoBehaviour
     private void SetBarColor(Transform bar,ItemStats itemStats)
     {
         Image image = bar.GetComponent<Image>();
-        switch (itemStats)
-        {
-            case LiquidContainerItem:
-                image.color = uISettings.liquidCapacityBarColor;
-                break;
-            case ItemWithBar:
-                image.color = uISettings.durabilityBarColor;
-                break;
-            case FoodItem:
-                image.color = uISettings.shelfLifeBarColor;
-                break;
-        }
+        image.color = GetColorForItem(itemStats.itemID);
     }
-   
+
+
+    public Color GetColorForItem(int itemID)
+    {
+        Type type = ItemsAsset.instance.GetType(itemID);
+        Color color = Color.hotPink;
+        foreach (var item in colors)
+        {
+            if (type == item.type)
+            {
+                color = item.color;
+                break;
+            }
+        }
+        return color;
+    }
+
+    public string GetColorHexStringForItem(int itemID)
+    {
+        return UnityEngine.ColorUtility.ToHtmlStringRGB(GetColorForItem(itemID));
+    }
+
+
+
     private void NewItemUI(Transform gridUI, CreateItemArgs e)
     {
         RectTransform transform = Instantiate(item, gridUI.GetChild(e.position.slotIndex)).GetComponent<RectTransform>();
@@ -531,6 +532,23 @@ public class UIManager : MonoBehaviour
     }
 
 
+    private bool SetBarValue(ItemStats stats, Transform itemObj)
+    {
+        if (stats as IBarValue != null)
+        {
+            EQBar obj = itemObj.GetComponentInChildren<EQBar>(true);
+            Transform bar;
+            if (obj == null)
+                bar = Instantiate(itembar, itemObj).transform.GetChild(0);
+            else
+                bar = obj.transform.GetChild(0);
+
+            SetBarColor(bar, stats);
+            UpdateBar((stats as IBarValue).GetBarValue(), bar);
+            return true;
+        }
+        return false;
+    }
 
     private void SetWetness(float value,Transform itemTransform)
     {
@@ -539,7 +557,7 @@ public class UIManager : MonoBehaviour
         obj = itemTransform.GetComponentInChildren<EQWetness>(true);
 
         Debug.Log("Dziala!!!   " + value);
-        if (value > 0)
+        if (value >= 0.0001)
         {
             obj.gameObject.SetActive(true);
             obj.gameObject.GetComponentInChildren<EQWetnessFill>(true).GetComponent<Image>().fillAmount = value;
@@ -560,12 +578,28 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void SetBarValue(Quality quality, Transform itemTransform)
+    {
+        EQQuality obj;
+        obj = itemTransform.GetComponentInChildren<EQQuality>(true);
+        if (quality == Quality.none || quality == Quality.normal)
+            obj.gameObject.SetActive(false);
+        else
+        {
+            obj.gameObject.SetActive(true);
+            obj.gameObject.GetComponent<Image>().sprite = UIAssetsManager.instance.GetQualitySprite(quality);
+        }
+    }
+
+
+
+
     private void NewItemUI(Transform gridUI, ItemStats itemStats, int slotIndex)
     {
         RectTransform transform = Instantiate(item, gridUI.GetChild(slotIndex)).GetComponent<RectTransform>();
         transform.SetAsFirstSibling();
 
-        TryCreateBar(transform, itemStats);
+        SetBarValue(itemStats, transform);
         SetWetness(itemStats.GetFloatWetness(), transform);
         SetQuality(itemStats.quality, transform);
 
@@ -683,6 +717,7 @@ public class UIManager : MonoBehaviour
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
         SetWetness(stats.GetFloatWetness(),dragDrop);
         SetQuality(stats.quality,dragDrop);
+        SetBarValue(stats, dragDrop);
     }
 
     public RectTransform CreateDragItem()
@@ -729,6 +764,7 @@ public class UIManager : MonoBehaviour
                 item.GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity > 1 ? slot.quantity.ToString() : "";
                 SetWetness(slot.GetFloatWetness(), item);
                 SetQuality(slot.quality, item);
+                SetBarValue(slot, item);
             }
             else
             {

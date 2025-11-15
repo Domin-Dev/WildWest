@@ -30,15 +30,19 @@ partial struct EquipmentClientSystem : ISystem
                         switch (ev.data.flags)
                         {
                             case 1:
-                                if(ev.data.slot >= 0)
+                                Debug.Log(" aaaaaAaaaaaaaaaa" + ev.data.slot); 
+                                if (ev.data.slot >= 0)
+                                    
                                     NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(container.ValueRO.containerIndex, ev.data.slot));
                                 break;
                             case 2:
                                     NewEquipmentManager.instance.ClearContainer(container.ValueRO.containerIndex,ref entityCommandBuffer);
                                 break;
                             case 3:
-                                Debug.Log("dzial!!!!!");
                                     NewEquipmentManager.instance.ClearAllContainers(ref entityCommandBuffer);
+                                break;
+                            case 4:
+                                    NewEquipmentManager.instance.UpdateWetness();
                                 break;
                         }
                         isEvent = true;

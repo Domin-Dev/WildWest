@@ -114,13 +114,13 @@ partial struct GoInGameServerSystem : ISystem
             targetContainer = -1
         });
 
-        CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,10,0);
-        CreateNewContainer(character,ref entityCommandBuffer, ref entities,networkID,30,1);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 20, 2, MandatoryProperties.item, 30);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 8, 3, MandatoryProperties.item, 34);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities, networkID, 10, 4, MandatoryProperties.tag, 2);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0,networkID,10,0);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,50,networkID,30,1);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,100, networkID, 20, 2, MandatoryProperties.item, 30);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 8, 3, MandatoryProperties.item, 34);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 10, 4, MandatoryProperties.tag, 2);
     }
-    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, int capacity, byte index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
+    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,byte waterResistance, int networkID, int capacity, byte index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
         var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
@@ -128,7 +128,8 @@ partial struct GoInGameServerSystem : ISystem
             capacity = capacity,
             containerIndex = index,
             mandatoryProperties = mandatory,
-            mandatoryData = mandatoryData
+            mandatoryData = mandatoryData,
+            waterResistance = waterResistance
         });
 
         entityCommandBuffer.AddComponent(e, new GhostChildEntity());

@@ -14,9 +14,4 @@ public static class EQHelperClient
     {
         return ((volume1 * percent1 + volume2 * percent2) / (volume1 + volume2));
     }
-
-    public static byte CalculateMixPercentageByte(float volume1, float percent1, float volume2, float percent2)
-    {
-       return (byte) Math.Ceiling(CalculateMixPercentage(volume1,percent1, volume2, percent2));    
-    }
 }

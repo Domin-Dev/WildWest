@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Unity.Entities;
 using UnityEngine;
 
@@ -42,7 +43,8 @@ public abstract class CommandBase
         }
         else if (targetType == typeof(float))
         {
-            if (float.TryParse(value, out var tmp)) { result = tmp; return true; }
+            var normalized = value.Replace(',', '.');          
+            if (float.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out var tmp)) { result = tmp; return true; }
         }
         else if (targetType == typeof(string))
         {

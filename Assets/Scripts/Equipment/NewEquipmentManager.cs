@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
@@ -192,7 +193,9 @@ public class NewEquipmentManager : MonoBehaviour
         LocalUpdateSlotIndex(to);
 
         DragManager.instance.UpdateSelected(selectedItem);
-        TooltipSystem.Hide();
+        if (TooltipSystem.IsDisplaying(to))
+            TooltipSystem.ShowInstant(to, GetItemStats(to));
+
         if (selectedItem.quantity == 0)
             ClearSelection();
 
@@ -250,6 +253,12 @@ public class NewEquipmentManager : MonoBehaviour
             var item =  container.itemSlots[slotPosition.slotIndex];
             item.AddWetness(itemSlot.wetness,itemSlot.quantity);
             item.quantity += itemSlot.quantity;
+
+            ItemWithBar itemWithBarTo = item as ItemWithBar;
+            ItemWithBar itemWithBarFrom = itemSlot as ItemWithBar;
+            if(itemWithBarFrom != null && itemWithBarTo != null)
+                itemWithBarTo.AddBarValue(itemWithBarFrom);
+            
         }
         
     } 
@@ -314,6 +323,8 @@ public class NewEquipmentManager : MonoBehaviour
             UIManager.instance.LoadBarSlots(container, entity);
             // ChangeSelectedSlot(0);
         }
+
+
     }
     private ItemStats LoadItemFromEntities(SlotPosition slotPosition)
     {
@@ -336,7 +347,6 @@ public class NewEquipmentManager : MonoBehaviour
                     }
                 }
                 ItemStats slot = CreateItemStats(item, itemBarData);
-                Debug.Log("  " + (slot is ItemWithBar).ToString());
 
                 if (slotPosition.slotIndex >= 0) container.itemSlots[slotPosition.slotIndex] = slot;
                 return slot;
@@ -455,7 +465,26 @@ public class NewEquipmentManager : MonoBehaviour
                 DeselectItem(ref ecb);
         }
     }
+    public void UpdateWetness()
+    {
+        foreach (var container in containers)
+        {
+            var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.Value.entity);
 
+            foreach (var item in buffer)
+            {
+                if (item.slot >= 0 && container.Value.itemSlots[item.slot] != null)
+                {
+                    var itemS = container.Value.itemSlots[item.slot];
+                    itemS.wetness = item.wetness;
+                    UIManager.instance.UpdateItemSlot(container.Value, itemS,item.slot);
+                }
+            }
+        }
+        if(TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
+            TooltipSystem.ShowInstant(slotPosition.Value, GetItemStats(slotPosition.Value));
+       
+    }
 
 
     public void LocalUpdateSlotIndex(SlotPosition slotPosition)

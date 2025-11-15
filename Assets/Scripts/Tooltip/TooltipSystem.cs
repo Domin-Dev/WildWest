@@ -1,8 +1,10 @@
 
+using System;
 using System.Text;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
 
 public class TooltipSystem : MonoBehaviour
 {
@@ -12,9 +14,12 @@ public class TooltipSystem : MonoBehaviour
     [SerializeField] private LocalizedString wetness;
     [SerializeField] private LocalizedString quality;
     [SerializeField] private LocalizedString maxStack;
-    private static TooltipSystem current;
 
+
+    private static TooltipSystem current;
     private static Timer timer;
+
+    private object displayingObj;
 
     private void Awake()
     {
@@ -27,7 +32,11 @@ public class TooltipSystem : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public static void Show(ItemStats itemStats)
+    private static void Append(StringBuilder content, string colorString, string fieldName, string value, string iconName)
+    {
+        content.Append($"\n<Color=#{colorString}><Sprite name={iconName}> {fieldName}:</Color> {value}");
+    }
+    private static TooltipInfo GetTooltip(ItemStats itemStats,SlotPosition slotPosition)
     {
         var data = ItemsAsset.instance.GetTooltipInfo(itemStats.itemID);
         StringBuilder content = new StringBuilder();
@@ -35,52 +44,95 @@ public class TooltipSystem : MonoBehaviour
         Color? hColor = UIAssetsManager.instance.GetQualityColor(itemStats.quality);
 
 
-
-
         header.Append(data.header);
         if (itemStats.quality != Quality.none)
-        {
             header.Append($" [ {itemStats.quality.ToString().ToUpper()} ]");
-        }
-
+       
         content.Append(data.content);
-        if(itemStats.wetness > 0)
-            Append(content,"67CCFF",current.wetness.GetLocalizedString(),itemStats.wetness+ " %","Water");
+
+
+        if (itemStats is ItemWithBar)
+        {
+            ItemWithBar barValue = (ItemWithBar)itemStats;
+            string bar = ItemsAsset.instance.GetBarName(itemStats.itemID);
+            Append(content, UIManager.instance.GetColorHexStringForItem(itemStats.itemID), LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", bar, fallbackBehavior: FallbackBehavior.UseProjectSettings), barValue.current.ToString("F2") + "/" + barValue.maxValue.ToString("F2"), bar);
+        }
+            if (itemStats.wetness >= 0.01)
+            Append(content, "67CCFF", current.wetness.GetLocalizedString(), itemStats.wetness.ToString("F2") + " %", "Water");
         Append(content, "F09A42", current.maxStack.GetLocalizedString(), itemStats.GetMaxStack().ToString(), "MaxStack");
-
-
-
-        Show(content.ToString(), header.ToString(),hColor );
+      
+        return new TooltipInfo(content.ToString(), header.ToString(),slotPosition,hColor);
     }
 
-    private static void Append(StringBuilder content,string colorString,string fieldName,string value)
-    {
-        content.Append($"\n<Color=#{colorString}>{fieldName}:</Color> {value}");
-    }
-    private static void Append(StringBuilder content, string colorString, string fieldName, string value, string iconName)
-    {
-        content.Append($"\n<Color=#{colorString}><Sprite name={iconName}> {fieldName}:</Color> {value}");
-    }
+
+
     public static void Show(TooltipInfo tooltip)
     {
-        Debug.Log(tooltip.header);
-        Show(tooltip.content, tooltip.header);
+        Show(tooltip.content, tooltip.header,tooltip.displayingObj,tooltip.headerColor);
     }
-    public static void Show(string content,string header = "",Color? headerColor = null)
+    public static void Show(string content,string header = "", object displayingObj = null, Color? headerColor = null)
     {
-        if (timer != null) timer.Cancel(); 
-        timer = Timer.Create(0.45f,() => { current.tooltip.SetText(content, header, headerColor); return false;});
+        ShowBase(() => {
+            current.displayingObj = displayingObj; 
+            current.tooltip.SetText(content, header, headerColor); 
+            return false;
+        });
     }
-    public static void ShowInstant(string content, string header = "")
+    public static void Show(SlotPosition slotPosition, ItemStats itemStats)
     {
-       current.tooltip.SetText(content, header);
+        if (itemStats == null) return;
+        TooltipInfo tooltipInfo = GetTooltip(itemStats,slotPosition);
+        Show(tooltipInfo);
+    }
+
+
+    private static void ShowBase(Func<bool> func, float time = 0.45f)
+    {
+        if (timer != null) timer.Cancel();
+        timer = Timer.Create(time, func);
+    }
+    public static void ShowInstant(string content, string header = "",object displayingObj = null, Color? headerColor = null)
+    {
+        current.displayingObj = displayingObj;
+        current.tooltip.SetText(content, header,headerColor);
+    }
+    public static void ShowInstant(TooltipInfo tooltip)
+    {
+        ShowInstant(tooltip.content, tooltip.header,tooltip.displayingObj, tooltip.headerColor);
+    }
+    public static void ShowInstant(SlotPosition slotPosition, ItemStats itemStats)
+    {
+        if (itemStats == null) return;
+        TooltipInfo tooltipInfo = GetTooltip(itemStats,slotPosition);
+        ShowInstant(tooltipInfo);
+    }
+
+    public static bool IsDisplaying(object obj)
+    {
+        Debug.Log(obj +  ",,, " + current.displayingObj);
+        Debug.Log(obj == current.displayingObj);
+        return obj.Equals(current.displayingObj);
+    }
+
+    public static bool IsDisplaying<T>()
+    {
+        return current.displayingObj is T;
+    }
+
+    public static bool IsSlotPostion(out SlotPosition? slotPosition)
+    {
+        if(current.displayingObj is SlotPosition)
+        {
+            slotPosition = current.displayingObj as SlotPosition?;
+            return true;
+        }
+        slotPosition = null;
+        return false;
     }
     public static void Hide()
     {
-        if(timer != null) timer.Cancel();
+        current.displayingObj = null;
+        if (timer != null) timer.Cancel();
         current.tooltip.Hide();
     }
-
-
-
 }

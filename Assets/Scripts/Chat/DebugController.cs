@@ -130,6 +130,7 @@ public static class DebugController
                             itemId = id,
                             quantity = quantity
                         },
+                        barValue = 1,
                         networkEntity = networkPlayer
                     });
                 }
@@ -149,13 +150,13 @@ public static class DebugController
                         itemId = id,
                         quantity = quantity
                     },
-
+                    barValue = 1,
                     networkEntity = e
                 });
             }
             return null;
         }));
-        commandList.Add(new DebugCommand<int, int,int,int>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,int wetness,int quality) =>
+        commandList.Add(new DebugCommand<int, int,float,int,float>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue) =>
         {
             if (ClientServerBootstrap.HasServerWorld)
             {
@@ -165,12 +166,12 @@ public static class DebugController
                     item = new InventorySlot
                     {
                         itemId = id,
-                        wetness = (byte) wetness,
-                        quality = (Quality)quality, 
+                        wetness = wetness,
+                        quality = (Quality)quality,
                         quantity = quantity
                     },
+                    barValue = barValue,
                     networkEntity = e
-
 
                 });
             }
@@ -189,6 +190,7 @@ public static class DebugController
                         itemId = id,
                         quantity = 1
                     },
+                    barValue = 1,
                     networkEntity = e
                 });
             }
@@ -196,6 +198,25 @@ public static class DebugController
         }));
        
         
+
+        #endregion
+
+
+        #region Weather
+        commandList.Add(new DebugCommand<float,float>("rain", "", "[intensity] [time (s)]", (ref EntityCommandBuffer ecb, Entity e,float intensity,float time) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                EntityHelper.CreateEntityWithComponent(ref ecb, new Rain()
+                {
+                    intensity = intensity,
+                    time = time,
+                    tick = NetworkTick.Invalid
+                });
+            }
+            return null;
+        }));
+
         #endregion
 
         commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>

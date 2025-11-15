@@ -8,6 +8,7 @@ using UnityEngine;
 partial struct EquipmentManagmentServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     public void OnCreate(ref SystemState state)
     {
@@ -20,6 +21,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -28,9 +30,6 @@ partial struct EquipmentManagmentServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQMoveItem>>().WithEntityAccess())
         {
-
-
-
 
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
@@ -47,7 +46,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
             List<EquipmentEvent> events = new List<EquipmentEvent>();
             if (containerFrom.HasValue && containerTo.HasValue)
             {
-                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
+                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
                     containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, command.ValueRO.value);
                 if (tab != null) events.AddRange(tab);
             }
@@ -63,6 +62,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
     {
         slotsLookup.Update(ref state);
         playerContainersLookup.Update(ref state);
+        barsLookup.Update(ref state);
     }
 
     private bool SlotIsEmpty(Entity container, int slotIndex)

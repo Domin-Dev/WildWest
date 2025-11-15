@@ -14,6 +14,6 @@ public class ItemSlotTooltipTrigger :  TooltipTriggerBase
         SlotPosition slotPosition = GetComponent<IGetSlotPosition>().GetSlotPosition();
         ItemStats item = NewEquipmentManager.instance.ReadItemStats(slotPosition);
         if (item == null) return;  
-        TooltipSystem.Show(item);
+        TooltipSystem.Show(slotPosition,item);
     }
 }

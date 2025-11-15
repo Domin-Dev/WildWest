@@ -18,6 +18,7 @@ partial struct CombineItemsServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<ItemBarData> barsLookup;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -29,11 +30,14 @@ partial struct CombineItemsServerSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
+        barsLookup.Update(ref state);
+
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQCombineAllItems> command, Entity entity) in
@@ -99,7 +103,7 @@ partial struct CombineItemsServerSystem : ISystem
                 moves.Add(new(foundMaxSlotPos, command.position.slotIndex, gap));
 
             foreach (var move in moves)
-                list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb, slotsLookup, connection, container.Value, container.Value, move.to, move.from, move.amount, true));
+                list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb,barsLookup, slotsLookup, connection, container.Value, container.Value, move.to, move.from, move.amount, true));
 
             return list.ToArray();
         }

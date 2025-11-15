@@ -68,11 +68,18 @@ public class Destroyable : Item, IItemBar
 {
     [Header("Destroyable")]
     public int durability;
-   
+
+    public string GetBarName()
+    {
+        return "Durability";
+    }
+
     public override ItemStats GetItemStats()
     {
         return new ItemWithBar(ID,durability);
     }
+
+
     public float GetMaxBarValue()
     {
         return durability;

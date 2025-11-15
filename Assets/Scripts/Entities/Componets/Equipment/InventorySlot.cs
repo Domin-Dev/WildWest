@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
@@ -8,13 +9,18 @@ public struct InventorySlot : IBufferElementData, IGetSlot
 
     [GhostField] public int itemId;    
     [GhostField] public int quantity;
-    [GhostField] public byte wetness; // 0% - 100%
+    [GhostField] public float wetness; // 0% - 100%
     [GhostField] public Quality quality; 
 
 
     public override string ToString()
     {
         return $"Slot:{slot} ItemID:{itemId} Quantity:{quantity}";
+    }
+
+    public void UpdateWetness(float newValue)
+    {
+        wetness = math.clamp(newValue + wetness, 0.0f, 100.0f);
     }
 
     public int GetSlot() { return slot; }
@@ -29,27 +35,6 @@ public enum Quality : byte
     good = 4,
     masterful = 5,
     legendary = 6,
-}
-
-
-
-[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
-public struct ContainerComponent : IComponentData
-{
-    [GhostField] public byte containerIndex;
-    [GhostField] public int capacity;
-
-    [GhostField] public MandatoryProperties mandatoryProperties; 
-    [GhostField] public int mandatoryData;
-}
-
-
-
-public enum MandatoryProperties : byte
-{ 
-    none = 0,
-    tag = 1,
-    item = 2,
 }
 public struct ContainerLoaded : IComponentData
 {

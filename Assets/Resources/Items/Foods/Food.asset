@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Carrot
   description: 
-  ID: 86
   stackMax: 50
-  icon: {fileID: 879685982, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  ID: 86
+  icon: {fileID: 479024344, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags: []
   crafingIngredients:
   - itemID: 0
     number: 0
