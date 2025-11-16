@@ -76,7 +76,7 @@ partial struct SelectionItemServerSystem : ISystem
         if (selectItem.position.slotIndex >= 0 && EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
         {
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
-            int newSlot = EQHelper.ConvetSlotIndexToSelectedSlotIndex(element.slot); 
+            int newSlot = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(element.slot); 
 
             if (selectItem.value >= element.quantity)
             {
@@ -118,7 +118,7 @@ partial struct SelectionItemServerSystem : ISystem
 
         if (selectItem.position.slotIndex >= 0)
         {
-            selectItem.position.slotIndex = EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectItem.position.slotIndex);
+            selectItem.position.slotIndex = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectItem.position.slotIndex);
             selectedSlot.ValueRW.Position = selectItem.position;
         }
         else

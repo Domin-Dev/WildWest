@@ -6503,7 +6503,7 @@ MonoBehaviour:
   shadowColor: {r: 0, g: 0, b: 0, a: 0}
   shadowSettings:
     color: {r: 0, g: 0, b: 0, a: 0.5019608}
-    offset: {x: 0, y: -5}
+    offset: {x: 0, y: -4}
   titleFontSizes:
   - textType: 1
     fontSize: 35

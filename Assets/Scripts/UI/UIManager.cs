@@ -42,6 +42,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject slotIndex;
     [SerializeField] private GameObject item;
     [SerializeField] private GameObject itembar;
+    [Header("Container Options")]
+    [SerializeField] private GameObject containerInfo;
+    [SerializeField] private GameObject containerStack;
     [Space]
     
     [SerializeField] private Transform equipmentDragItems;
@@ -556,7 +559,6 @@ public class UIManager : MonoBehaviour
         EQWetness obj;
         obj = itemTransform.GetComponentInChildren<EQWetness>(true);
 
-        Debug.Log("Dziala!!!   " + value);
         if (value >= 0.0001)
         {
             obj.gameObject.SetActive(true);
@@ -820,7 +822,7 @@ public class UIManager : MonoBehaviour
                 else
                     Destroy(slot.GetComponent<Button>());
 
-                    slot.SetAsFirstSibling();
+                slot.SetAsFirstSibling();
                 Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
             }
         }
@@ -837,7 +839,9 @@ public class UIManager : MonoBehaviour
                 slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
                 slot.AddComponent<ItemSlotTooltipTrigger>();
             }
+            equipmentGrid.gridTransform.GetChild(0).SetAsLastSibling();
         }
+
 
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
         var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);

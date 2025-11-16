@@ -50,7 +50,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
                     containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, command.ValueRO.value);
                 if (tab != null) events.AddRange(tab);
             }
-            events.Add(new EquipmentEvent(new EquipmentEventData(EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.ValueRO.Position.slotIndex), 1), selectedSlot.ValueRO.Position.containerIndex));
+            events.Add(new EquipmentEvent(new EquipmentEventData(EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.ValueRO.Position.slotIndex), 1), selectedSlot.ValueRO.Position.containerIndex));
 
             EQHelper.SendEvents(ref entityCommandBuffer,networkID,events.ToArray());
             entityCommandBuffer.DestroyEntity(entity);

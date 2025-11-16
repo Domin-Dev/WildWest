@@ -21,7 +21,7 @@ public class Recipe : MonoBehaviour, IPointerClickHandler,IPointerEnterHandler,I
     }
     public void OnPointerExit(PointerEventData eventData)
     {
-        TooltipSystem.Hide();
+       // TooltipSystem.Hide();
     }
 
     public void OnPointerDown(PointerEventData eventData)

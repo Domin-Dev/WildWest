@@ -75,6 +75,7 @@ public class NewEquipmentManager : MonoBehaviour
 
     #region Selected Slot Management
     
+     
     public ItemStats SelectItem(SlotPosition slotPosition, SelectionMode selectionMode, int n = 1)
     {
         ItemStats item = GetItemStats(slotPosition);
@@ -193,7 +194,7 @@ public class NewEquipmentManager : MonoBehaviour
         LocalUpdateSlotIndex(to);
 
         DragManager.instance.UpdateSelected(selectedItem);
-        if (TooltipSystem.IsDisplaying(to))
+        if (TooltipSystem.IsDisplaying(to) && statsToReturn == null)
             TooltipSystem.ShowInstant(to, GetItemStats(to));
 
         if (selectedItem.quantity == 0)
@@ -206,7 +207,6 @@ public class NewEquipmentManager : MonoBehaviour
         n = SelectN(selectedItem.quantity, selectionMode, n);
         return MoveItemData(to, n);
     }
-
     public bool CanMove(SlotPosition to, out bool haveSameItem)
     {
         haveSameItem = false;
@@ -221,8 +221,6 @@ public class NewEquipmentManager : MonoBehaviour
         }
         return false;
     }
-  
-    
     private ItemStats GetItemStats(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container) && container.itemSlots.Length > slotPosition.slotIndex)
@@ -231,7 +229,6 @@ public class NewEquipmentManager : MonoBehaviour
         }
         return null;
     }
-   
     public ItemStats ReadItemStats(SlotPosition slotPosition)
     {
         var item = GetItemStats(slotPosition);
@@ -402,7 +399,7 @@ public class NewEquipmentManager : MonoBehaviour
             if (!selectedSlot.Compare(SlotPosition.NullSlot) && slotPosition.Compare(selectedSlot))
             {
                 ItemStats item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
-                    EQHelper.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
+                    EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
 
                 selectedItem = item;
                 Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
@@ -423,9 +420,7 @@ public class NewEquipmentManager : MonoBehaviour
                 }
             }
 
-           // Debug.Log("Update!!! " + slotPosition.ToString() );
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
-           // Debug.Log("TOo " + itemSlot);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
         }
     }
@@ -479,11 +474,22 @@ public class NewEquipmentManager : MonoBehaviour
                     itemS.wetness = item.wetness;
                     UIManager.instance.UpdateItemSlot(container.Value, itemS,item.slot);
                 }
+
+                Debug.Log("@@@ " + selectedSlot);
+                Debug.Log("@@@ " + item.slot + " " + container.Value.gridIndex);
+                if (EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(item.slot) == selectedSlot.slotIndex && container.Value.gridIndex == selectedSlot.containerIndex)
+                {
+                    Debug.Log("@@@@@@ " + selectedSlot);
+                    selectedItem.wetness = item.wetness;
+                    DragManager.instance.UpdateSelected(selectedItem);
+                }
             }
+
+            
         }
-        if(TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
+        if (TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
             TooltipSystem.ShowInstant(slotPosition.Value, GetItemStats(slotPosition.Value));
-       
+
     }
 
 

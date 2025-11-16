@@ -29,7 +29,6 @@ public class Tooltip : MonoBehaviour
     }
     public void SetText(string content, string header = "", Color? headerColor = null)
     {
-        UpdatePosition();
         if (string.IsNullOrEmpty(header))
         {
             headerField.gameObject.SetActive(false);
@@ -41,6 +40,7 @@ public class Tooltip : MonoBehaviour
             layoutElement.enabled = true;
             headerField.text = header;
             verticalLayoutGroup.padding.top = (int)headerParent.sizeDelta.y + 15;
+            verticalLayoutGroup.CalculateLayoutInputVertical();
             headerField.gameObject.SetActive(true);
             headerParent.gameObject.SetActive(true);
 
@@ -61,6 +61,10 @@ public class Tooltip : MonoBehaviour
         if (string.IsNullOrEmpty(header))
             layoutElement.enabled = (headerLength > characterWrapLimit || contentLength > characterWrapLimit) ? true : false;
         Show();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(verticalLayoutGroup.GetComponent<RectTransform>());
+        UpdatePosition();
+        Debug.Log("NEWWW!!!");
+
     }
 
     public void Show()
@@ -72,6 +76,7 @@ public class Tooltip : MonoBehaviour
     public void Hide()
     {
         isShow = false;
+        Debug.Log("Hide!!!");
         gameObject.SetActive(false);
     }
 
@@ -88,6 +93,9 @@ public class Tooltip : MonoBehaviour
         Vector2 position = Input.mousePosition;
         float pivotX = 0, pivotY = 0;
         if (Screen.width - position.x < rectTransform.rect.width) pivotX = 1;
+
+        Debug.Log(" 00000000000 --- " + ( Screen.height - position.y) + "  " + rectTransform.rect.height);
+
         if (Screen.height - position.y < rectTransform.rect.height) pivotY = 1;
         rectTransform.pivot = new Vector2(pivotX, pivotY);
         transform.position = position;

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1013853674962449640}
   - component: {fileID: 5755531334556300458}
   - component: {fileID: 1091598703355746975}
+  - component: {fileID: 7138199112057712223}
   m_Layer: 5
   m_Name: ItemSlot
   m_TagString: Untagged
@@ -120,3 +121,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7138199112057712223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 82361425133246159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1ddb15fefbe754ab68a2e45bd4c6b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateShadow

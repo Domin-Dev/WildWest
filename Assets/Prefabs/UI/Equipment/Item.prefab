@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 3637136757538013655}
   - component: {fileID: 2649665161027054483}
   - component: {fileID: 4342769940938785984}
+  - component: {fileID: 8136014724470247379}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -377,6 +378,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 109dd80db833e3c4eabd7d29e7e73c58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemSlotTooltipTrigger
+--- !u!114 &8136014724470247379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1807920759468963396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd1ddb15fefbe754ab68a2e45bd4c6b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateShadow
 --- !u!1 &3189993136914670430
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,4 +14,10 @@ public static class EQHelperClient
     {
         return ((volume1 * percent1 + volume2 * percent2) / (volume1 + volume2));
     }
+
+    public static int ConvetSlotIndexToSelectedSlotIndex(int slotIndex)
+    {
+        return -(slotIndex + 1);
+    }
+
 }

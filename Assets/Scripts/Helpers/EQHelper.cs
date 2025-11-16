@@ -30,10 +30,6 @@ public struct EQAddItem
 
 public static class EQHelper
 {
-    public static int ConvetSlotIndexToSelectedSlotIndex(int slotIndex)
-    {
-        return -(slotIndex + 1);
-    }
     public static PlayerContainers? GetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player, int containerIndex)
     {
         if (!containersLookup.TryGetBuffer(player, out var containers))
@@ -218,7 +214,7 @@ public static class EQHelper
                 if (itemTo.HasValue && (itemFrom.Value.itemId != itemTo.Value.itemId || itemFrom.Value.quality != itemTo.Value.quality || itemTo.Value.quantity >= stackMax))
                 {
                     ref var slot = ref toBuffer.ElementAt(toIndex);
-                    slot.slot = ConvetSlotIndexToSelectedSlotIndex(slotTo);
+                    slot.slot = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(slotTo);
                     if(haveBarTo)
                         barsLookup[containersTo.entity].ElementAt(barToIndex).slot = slot.slot;
 
@@ -650,7 +646,7 @@ public static class EQHelper
 
         if (!selectedSlot.Position.Compare(SlotPosition.NullSlot))
         {
-            int slotIndex = ConvetSlotIndexToSelectedSlotIndex(selectedSlot.Position.slotIndex);
+            int slotIndex = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.Position.slotIndex);
 
             if (TryGetBufferIndex(slotsLookup, containers, player, selectedSlot.Position, out InventorySlot? slot, out int index))
             {
