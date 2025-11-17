@@ -38,6 +38,22 @@ MonoBehaviour:
     m_Localized: Freshness
     m_Metadata:
       m_Items: []
+  - m_Id: 1851635165212672
+    m_Localized: Container
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1853220121391104
+    m_Localized: Main Inventory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1853280695529472
+    m_Localized: Quick Access Bar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1856188992368640
+    m_Localized: Water Resistance
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

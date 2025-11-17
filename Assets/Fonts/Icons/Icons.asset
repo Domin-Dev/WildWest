@@ -229,7 +229,12 @@ MonoBehaviour:
     m_Unicode: 65534
     m_GlyphIndex: 29
     m_Scale: 1
-    m_Name: Icons_29
+    m_Name: WaterResistance
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 30
+    m_Scale: 1
+    m_Name: Icons_30
   m_GlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -703,13 +708,29 @@ MonoBehaviour:
       m_HorizontalBearingY: 10.5
       m_HorizontalAdvance: 18
     m_GlyphRect:
-      m_X: 580
-      m_Y: 20
+      m_X: 0
+      m_Y: 0
       m_Width: 20
       m_Height: 20
     m_Scale: 1
     m_AtlasIndex: 0
     m_ClassDefinitionType: 0
     sprite: {fileID: 192758770, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
+  - m_Index: 30
+    m_Metrics:
+      m_Width: 20
+      m_Height: 20
+      m_HorizontalBearingX: -10
+      m_HorizontalBearingY: 10
+      m_HorizontalAdvance: 20
+    m_GlyphRect:
+      m_X: 40
+      m_Y: 0
+      m_Width: 20
+      m_Height: 20
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -563931502, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []

@@ -38,6 +38,22 @@ MonoBehaviour:
     m_Localized: "\u015Awie\u017Co\u015B\u0107"
     m_Metadata:
       m_Items: []
+  - m_Id: 1851635165212672
+    m_Localized: Kontener
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1853220121391104
+    m_Localized: "Ekwipunek g\u0142\xF3wny"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1853280695529472
+    m_Localized: "Pasek podr\u0119czny"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1856188992368640
+    m_Localized: "Wodoszczelno\u015B\u0107"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

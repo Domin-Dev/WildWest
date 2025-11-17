@@ -804,7 +804,7 @@ public class UIManager : MonoBehaviour
     public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity, Container containerComponent,bool numbering)
     {
         OpenEquipment(true);
-        bool isMainBar = equipmentGrid.gridIndex == 0;
+        bool isMainBar = equipmentGrid.gridTransform == mainItemBar;
         Sprite icon = LoadPlaceholder(containerComponent.mandatoryProperties, containerComponent.mandatoryData);
 
         if (numbering)
@@ -814,7 +814,7 @@ public class UIManager : MonoBehaviour
             {
                 index = i + 1;
                 Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
-                if (equipmentGrid.gridTransform != mainItemBar)
+                if (!isMainBar)
                 {
                     slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
                     slot.AddComponent<ItemSlotTooltipTrigger>();
@@ -842,6 +842,9 @@ public class UIManager : MonoBehaviour
             equipmentGrid.gridTransform.GetChild(0).SetAsLastSibling();
         }
 
+        if (!isMainBar)
+            LoadContainerOptions(equipmentGrid,containerComponent);
+
 
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
         var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);
@@ -857,6 +860,12 @@ public class UIManager : MonoBehaviour
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.GetComponent<RectTransform>());
         OpenEquipment(false);
+    }
+    
+    private void LoadContainerOptions(EquipmentGrid equipmentGrid, Container containerComponent)
+    {
+        Transform options = equipmentGrid.gridTransform.GetChild(equipmentGrid.gridTransform.childCount - 1);
+        Instantiate(containerInfo, options).AddComponent<StaticTooltipTrigger>().SetUp(containerComponent);
     }
     public EquipmentGrid LoadBarSlots(Container containerComponent, Entity entity)
     {

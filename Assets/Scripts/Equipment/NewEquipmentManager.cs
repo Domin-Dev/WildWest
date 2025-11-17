@@ -8,11 +8,12 @@ using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.Localization.Settings;
 using static UnityEngine.EventSystems.EventTrigger;
 
 
 [System.Serializable]
-public class Container
+public class Container : IHaveTooltip
 {
     public Entity entity;
     public int gridIndex;
@@ -20,6 +21,35 @@ public class Container
     public ItemStats[] itemSlots;
     public MandatoryProperties mandatoryProperties;
     public int mandatoryData;
+
+    public TooltipInfo GetTooltip()
+    { 
+        StringBuilder header = new StringBuilder();
+        StringBuilder content = new StringBuilder();
+
+        header.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", GetName(gridIndex)));
+
+        ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
+        TooltipSystem.Append(content, "67CCFF", LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "WaterResistance"), c.waterResistance + " %", "WaterResistance");
+
+
+
+        return new TooltipInfo(content.ToString(), header.ToString(),null);
+    }
+
+    public static string GetName(int gridIndex)
+    {
+        switch (gridIndex)
+        {
+            case 0:
+                return "QuickAccessBar";
+            case 1:
+                return "MainInventory";
+            default:
+                return "Container";
+        }
+
+    }
 }
 public enum SelectionMode
 {
@@ -195,7 +225,7 @@ public class NewEquipmentManager : MonoBehaviour
 
         DragManager.instance.UpdateSelected(selectedItem);
         if (TooltipSystem.IsDisplaying(to) && statsToReturn == null)
-            TooltipSystem.ShowInstant(to, GetItemStats(to));
+            TooltipSystem.Show(to, GetItemStats(to),true);
 
         if (selectedItem.quantity == 0)
             ClearSelection();
@@ -488,7 +518,7 @@ public class NewEquipmentManager : MonoBehaviour
             
         }
         if (TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
-            TooltipSystem.ShowInstant(slotPosition.Value, GetItemStats(slotPosition.Value));
+            TooltipSystem.Show(slotPosition.Value, GetItemStats(slotPosition.Value),true);
 
     }
 

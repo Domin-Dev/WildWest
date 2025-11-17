@@ -49,18 +49,12 @@ public class TooltipInfo
     public Color? headerColor;
     public object displayingObj;
 
-    public TooltipInfo(string content, string header,object displayingObj = null, Color? headerColor = null)
+    public TooltipInfo(string content, string header = "",object displayingObj = null, Color? headerColor = null)
     {
         this.content = content;
         this.header = header;
         this.headerColor = headerColor;
         this.displayingObj = displayingObj; 
-    }
-
-    public TooltipInfo(string content)
-    {
-        this.content = content;
-        this.header = "";
     }
 }
 public class UpdateSelectedSlotInBarArgs : EventArgs

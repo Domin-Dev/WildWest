@@ -32,7 +32,7 @@ public class TooltipSystem : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private static void Append(StringBuilder content, string colorString, string fieldName, string value, string iconName)
+    public static void Append(StringBuilder content, string colorString, string fieldName, string value, string iconName)
     {
         content.Append($"\n<Color=#{colorString}><Sprite name={iconName}> {fieldName}:</Color> {value}");
     }
@@ -65,7 +65,10 @@ public class TooltipSystem : MonoBehaviour
     }
 
 
-
+    public static void Show(IHaveTooltip tooltip)
+    {
+        Show(tooltip.GetTooltip());
+    }
     public static void Show(TooltipInfo tooltip)
     {
         Show(tooltip.content, tooltip.header,tooltip.displayingObj,tooltip.headerColor);
@@ -78,12 +81,23 @@ public class TooltipSystem : MonoBehaviour
             return false;
         });
     }
-    public static void Show(SlotPosition slotPosition, ItemStats itemStats)
+    public static void Show(SlotPosition slotPosition, ItemStats itemStats, bool showInstant = false)
     {
         if (itemStats == null) return;
         TooltipInfo tooltipInfo = GetTooltip(itemStats,slotPosition);
-        Show(tooltipInfo);
+        if (showInstant)
+            ShowInstant(tooltipInfo);
+        else
+            Show(tooltipInfo);
     }
+    
+    //public static void Show(Container container)
+    //{
+    //    TooltipInfo tooltipInfo = GetTooltip(itemStats, slotPosition);
+    //    Show(tooltipInfo);
+    //}
+
+
 
 
     private static void ShowBase(Func<bool> func, float time = 0.45f)
@@ -100,12 +114,12 @@ public class TooltipSystem : MonoBehaviour
     {
         ShowInstant(tooltip.content, tooltip.header,tooltip.displayingObj, tooltip.headerColor);
     }
-    public static void ShowInstant(SlotPosition slotPosition, ItemStats itemStats)
-    {
-        if (itemStats == null) return;
-        TooltipInfo tooltipInfo = GetTooltip(itemStats,slotPosition);
-        ShowInstant(tooltipInfo);
-    }
+
+
+
+
+
+
 
     public static bool IsDisplaying(object obj)
     {
@@ -113,7 +127,6 @@ public class TooltipSystem : MonoBehaviour
         Debug.Log(obj == current.displayingObj);
         return obj.Equals(current.displayingObj);
     }
-
     public static bool IsDisplaying<T>()
     {
         return current.displayingObj is T;

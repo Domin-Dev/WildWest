@@ -35,6 +35,22 @@ MonoBehaviour:
     m_Key: Freshness
     m_Metadata:
       m_Items: []
+  - m_Id: 1851635165212672
+    m_Key: Container
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1853220121391104
+    m_Key: MainInventory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1853280695529472
+    m_Key: QuickAccessBar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1856188992368640
+    m_Key: WaterResistance
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
