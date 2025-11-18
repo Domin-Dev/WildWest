@@ -7,6 +7,7 @@ using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
 using static UnityEngine.EventSystems.EventTrigger;
@@ -28,6 +29,18 @@ public class Container : IHaveTooltip
         StringBuilder content = new StringBuilder();
 
         header.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", GetName(gridIndex)));
+
+        if (mandatoryProperties == MandatoryProperties.tag)
+        {
+            string arg = $"<Color=#{GamePreferences.instance.highlightColorString}>{ItemsAsset.instance.GetTag(mandatoryData)?.tagName}</Color>";
+            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "RequiredTag", arguments:  arg));
+        }
+        else if(mandatoryProperties == MandatoryProperties.item)
+        {
+            string arg = $"<Color=#{GamePreferences.instance.highlightColorString}>{ItemsAsset.instance.GetItem(mandatoryData)?.name}</Color>";
+            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "RequiredItem", arguments: arg));
+        }
+
 
         ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
         TooltipSystem.Append(content, "67CCFF", LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "WaterResistance"), c.waterResistance + " %", "WaterResistance");
@@ -60,6 +73,7 @@ public enum SelectionMode
 public class NewEquipmentManager : MonoBehaviour
 {
     #region Variables
+
     public static NewEquipmentManager instance {  get; private set; }
 
     [SerializeField] private GameObject containerPrefab;

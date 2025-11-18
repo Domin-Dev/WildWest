@@ -6511,6 +6511,7 @@ MonoBehaviour:
     fontSize: 45
   - textType: 3
     fontSize: 35
+  _highlightColor: {r: 1, g: 0.6521469, b: 0, a: 1}
 --- !u!114 &1204180797
 MonoBehaviour:
   m_ObjectHideFlags: 0

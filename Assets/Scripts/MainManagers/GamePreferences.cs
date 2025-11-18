@@ -28,6 +28,7 @@ public class ShadowSettings
 
 public class GamePreferences : MonoBehaviour
 {
+
     public static GamePreferences instance;
     public static Action<TMP_FontAsset> onNewFont;
     private int fontIndex = 0;
@@ -35,6 +36,11 @@ public class GamePreferences : MonoBehaviour
     [SerializeField] private Color shadowColor; 
     [SerializeField] private ShadowSettings shadowSettings;
     [SerializeField] private List<TextTypePair> titleFontSizes;
+    [SerializeField] private Color _highlightColor;
+    public Color highlightColor => _highlightColor;
+    public string highlightColorString => UnityEngine.ColorUtility.ToHtmlStringRGB(_highlightColor);
+
+
 
     public TMP_FontAsset GetCurrentFont()
     {

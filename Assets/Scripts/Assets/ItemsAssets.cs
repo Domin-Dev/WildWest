@@ -324,11 +324,11 @@ public class ItemsAsset : MonoBehaviour
     //////// TAG
     ////////
 
-    public Tag GetTag(int tagID)
+    public IReadTag GetTag(int tagID)
     {
         if(tags.ContainsKey(tagID))
             return tags[tagID];
-        return null;
+        return  null;
     }
     public Sprite GetTagIcon(int tagID)
     {
@@ -336,7 +336,6 @@ public class ItemsAsset : MonoBehaviour
             return tags[tagID].icon;
         return null;
     }
-
     public bool ItemHasTheTag(int itemID, int tagID)
     {
         var tags = GetItem(itemID).tags;

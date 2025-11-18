@@ -118,7 +118,7 @@ partial struct GoInGameServerSystem : ISystem
         CreateNewContainer(character, ref entityCommandBuffer, ref entities,50,networkID,30,1);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities,100, networkID, 20, 2, MandatoryProperties.item, 30);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 8, 3, MandatoryProperties.item, 34);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 10, 4, MandatoryProperties.tag, 2);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 10, 4, MandatoryProperties.tag, 0);
     }
     private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,byte waterResistance, int networkID, int capacity, byte index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
@@ -138,15 +138,6 @@ partial struct GoInGameServerSystem : ISystem
         entityCommandBuffer.AddComponent(e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
         entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = index});
         entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(capacity + 1);
-
-
-        //entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 30, quantity = 20, slot = 2 , wetness = 90, quality = Quality.masterful });
-        //entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 30, quantity = 10, slot = 4 , wetness = 50 , quality = Quality.legendary});
-        //entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 30, quantity = 40, slot = 3, wetness = 50 , quality = Quality.legendary});
-
-
-        //entityCommandBuffer.AppendToBuffer<InventorySlot>(e, new InventorySlot() { itemId = 40, quantity = 1, slot = 1 });
-        //entityCommandBuffer.AppendToBuffer<ItemBarData>(e, new ItemBarData() { slot = 1, value = 0.5f , maxValue = 1f });
 
 
         entityCommandBuffer.AddComponent(e, new SendToPlayer());

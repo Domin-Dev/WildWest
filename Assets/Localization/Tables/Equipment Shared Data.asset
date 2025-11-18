@@ -51,6 +51,14 @@ MonoBehaviour:
     m_Key: WaterResistance
     m_Metadata:
       m_Items: []
+  - m_Id: 2142888993927168
+    m_Key: RequiredTag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2165001301700608
+    m_Key: RequiredItem
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
