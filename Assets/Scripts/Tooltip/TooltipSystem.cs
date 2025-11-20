@@ -32,9 +32,10 @@ public class TooltipSystem : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public static void Append(StringBuilder content, string colorString, string fieldName, string value, string iconName)
+    public static void Append(StringBuilder content, string colorString, string fieldName,string iconName, params string[] value)
     {
-        content.Append($"\n<Color=#{colorString}><Sprite name={iconName}> {fieldName}:</Color> {value}");
+        string joined = string.Join(" ", value);
+        content.Append($"{(content.Length > 0 ? "\n" : "")}<Color=#{colorString}>{UIStringsHelper.GetSpriteIcon(iconName)} {fieldName}:</Color> {joined}");
     }
     private static TooltipInfo GetTooltip(ItemStats itemStats,SlotPosition slotPosition)
     {
@@ -47,19 +48,24 @@ public class TooltipSystem : MonoBehaviour
         header.Append(data.header);
         if (itemStats.quality != Quality.none)
             header.Append($" [ {itemStats.quality.ToString().ToUpper()} ]");
-       
+
         content.Append(data.content);
 
-
+        var tags = ItemsAsset.instance.GetItemTags(itemStats.itemID);
+        if (tags.Length > 0)
+        {   
+            Append(content, GamePreferences.instance.highlightColorStr,LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "Tags"),"Tag", tags);
+        }
         if (itemStats is ItemWithBar)
         {
             ItemWithBar barValue = (ItemWithBar)itemStats;
             string bar = ItemsAsset.instance.GetBarName(itemStats.itemID);
-            Append(content, UIManager.instance.GetColorHexStringForItem(itemStats.itemID), LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", bar, fallbackBehavior: FallbackBehavior.UseProjectSettings), barValue.current.ToString("F2") + "/" + barValue.maxValue.ToString("F2"), bar);
+            Append(content, UIManager.instance.GetColorHexStringForItem(itemStats.itemID), LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, bar, fallbackBehavior: FallbackBehavior.UseProjectSettings),bar,barValue.current.ToString("F2") + "/" + barValue.maxValue.ToString("F2"));
         }
-            if (itemStats.wetness >= 0.01)
-            Append(content, "67CCFF", current.wetness.GetLocalizedString(), itemStats.wetness.ToString("F2") + " %", "Water");
-        Append(content, "F09A42", current.maxStack.GetLocalizedString(), itemStats.GetMaxStack().ToString(), "MaxStack");
+
+        if (itemStats.wetness >= 0.01)
+            Append(content, "67CCFF", current.wetness.GetLocalizedString(),"Water", itemStats.wetness.ToString("F2") + " %");
+        Append(content, "F09A42", current.maxStack.GetLocalizedString(),"MaxStack", itemStats.GetMaxStack().ToString());
       
         return new TooltipInfo(content.ToString(), header.ToString(),slotPosition,hColor);
     }

@@ -25,6 +25,7 @@ public class AudioTab : SettingsTab
     }
     private void OnDisable()
     {
+        
     }
 
     public override void ResetToDefault()

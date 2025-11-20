@@ -15,7 +15,7 @@ public class BaseSwitch : MonoBehaviour
     [SerializeField] private int minValue;
     [SerializeField] private int maxValue;
 
-
+    
     public Action<int> OnChangedValue;
 
     private void Start()

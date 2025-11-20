@@ -38,7 +38,7 @@ public class GamePreferences : MonoBehaviour
     [SerializeField] private List<TextTypePair> titleFontSizes;
     [SerializeField] private Color _highlightColor;
     public Color highlightColor => _highlightColor;
-    public string highlightColorString => UnityEngine.ColorUtility.ToHtmlStringRGB(_highlightColor);
+    public string highlightColorStr => UnityEngine.ColorUtility.ToHtmlStringRGB(_highlightColor);
 
 
 

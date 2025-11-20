@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.unity.collab-proxy": "2.10.1",
+    "com.unity.collab-proxy": "2.10.2",
     "com.unity.entities": "1.4.2",
     "com.unity.entities.graphics": "1.4.15",
     "com.unity.feature.2d": "2.0.1",
@@ -12,11 +12,12 @@
     "com.unity.memoryprofiler": "1.1.9",
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.multiplayer.playmode": "1.6.1",
-    "com.unity.netcode": "1.9.1",
+    "com.unity.netcode": "1.9.2",
     "com.unity.physics": "1.4.2",
     "com.unity.render-pipelines.universal": "17.2.0",
     "com.unity.test-framework": "1.6.0",
     "com.unity.timeline": "1.8.9",
+    "com.unity.toolchain.linux-x86_64": "2.0.11",
     "com.unity.toolchain.win-x86_64-linux-x86_64": "2.0.10",
     "com.unity.transport": "2.6.0",
     "com.unity.ugui": "2.0.0",

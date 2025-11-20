@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -330,6 +331,23 @@ public class ItemsAsset : MonoBehaviour
             return tags[tagID];
         return  null;
     }
+
+    public string[] GetItemTags(int itemId)
+    {
+        List<string> tags = new List<string>();
+        var item = GetItem(itemId);
+        if(item != null)
+        {
+            foreach(var i in item.tags)
+            {
+                var tag = GetTag(i.tagID);
+                if(tag != null) tags.Add(tag.tagName);
+            }
+        }
+        return tags.ToArray();
+    }
+
+
     public Sprite GetTagIcon(int tagID)
     {
         if (tags.ContainsKey(tagID))

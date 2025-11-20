@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
-using static UnityEngine.EventSystems.EventTrigger;
 
 
 [System.Serializable]
@@ -32,20 +29,20 @@ public class Container : IHaveTooltip
 
         if (mandatoryProperties == MandatoryProperties.tag)
         {
-            string arg = $"<Color=#{GamePreferences.instance.highlightColorString}>{ItemsAsset.instance.GetTag(mandatoryData)?.tagName}</Color>";
-            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "RequiredTag", arguments:  arg));
+            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag(mandatoryData)?.tagName);
+            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "RequiredTag", arguments:  arg));
         }
         else if(mandatoryProperties == MandatoryProperties.item)
-        {
-            string arg = $"<Color=#{GamePreferences.instance.highlightColorString}>{ItemsAsset.instance.GetItem(mandatoryData)?.name}</Color>";
-            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "RequiredItem", arguments: arg));
+        {  
+            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetItem(mandatoryData)?.name);
+            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "RequiredItem", arguments: arg));
         }
 
-
         ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
-        TooltipSystem.Append(content, "67CCFF", LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", "WaterResistance"), c.waterResistance + " %", "WaterResistance");
-
-
+        TooltipSystem.Append(content, "67CCFF", LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "WaterResistance"),"WaterResistance",
+         c.waterResistance + " %");
+        TooltipSystem.Append(content, "5acf97", LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "Capacity"),"Capacity",
+         c.capacity.ToString());
 
         return new TooltipInfo(content.ToString(), header.ToString(),null);
     }

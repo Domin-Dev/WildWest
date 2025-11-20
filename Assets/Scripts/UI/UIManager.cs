@@ -842,8 +842,7 @@ public class UIManager : MonoBehaviour
             equipmentGrid.gridTransform.GetChild(0).SetAsLastSibling();
         }
 
-        if (!isMainBar)
-            LoadContainerOptions(equipmentGrid,containerComponent);
+
 
 
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
@@ -853,12 +852,16 @@ public class UIManager : MonoBehaviour
         {
             var item = containerComponent.itemSlots[i];
             if (item == null) continue;
-
+            
             if (icon != null) equipmentGrid.gridTransform.GetChild(i).GetChild(0).gameObject.SetActive(false);
             NewItemUI(equipmentGrid.gridTransform, item, i);
         }
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.GetComponent<RectTransform>());
+        if (!isMainBar)
+        {
+            LoadContainerOptions(equipmentGrid,containerComponent);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.parent.GetComponent<RectTransform>());
+        }
         OpenEquipment(false);
     }
     

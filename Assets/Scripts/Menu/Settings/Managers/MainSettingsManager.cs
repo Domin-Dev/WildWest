@@ -18,7 +18,7 @@ public class MainSettingsManager : MonoBehaviour
     public VideoSettings videoSettings { private set; get; }
     public AudioSettings audioSettings { private set; get; }
     public LanguageSettings languageSettings { private set; get; }
-    [SerializeField]public SettingsData settings;
+    [SerializeField] public SettingsData settings;
     public ControlsSettings controlsSettings { private set; get; }
 
     private LocaleManager localeManager;
@@ -33,6 +33,7 @@ public class MainSettingsManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            
             return;
         }
         SetSettings();
@@ -51,10 +52,12 @@ public class MainSettingsManager : MonoBehaviour
 
     private void SetSettings()
     {
+        Load();
         bool settingsEmpty = settings == null;
         if (settingsEmpty) settings = new SettingsData();
-        Load();
+  
 
+        Debug.Log(settingsEmpty);
 
         localeManager = this.AddComponent<LocaleManager>();
 
@@ -73,8 +76,8 @@ public class MainSettingsManager : MonoBehaviour
 
     private void Load()
     {
-        settings = LoadSystem.LoadSettings(out string controlJson);
-        Debug.Log(controlJson);
+        LoadSystem.LoadSettings(out string controlJson,out SettingsData settingsData);
+        settings = settingsData;
         inputActions.Disable();
         inputActions.LoadBindingOverridesFromJson(controlJson);
         inputActions.Enable();

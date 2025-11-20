@@ -64,6 +64,14 @@ MonoBehaviour:
     m_Localized: This container can store only items of the type {0}
     m_Metadata:
       m_Items: []
+  - m_Id: 2956435793555456
+    m_Localized: Capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2964330694225920
+    m_Localized: Tags
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

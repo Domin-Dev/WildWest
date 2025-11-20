@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Gun Bullet
   description: 
-  ID: 0
   stackMax: 20
+  ID: 0
   icon: {fileID: -1329511708, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags:
-  - tagID: -1
+  - tagID: 0
   crafingIngredients:
   - itemID: 0
     number: 0

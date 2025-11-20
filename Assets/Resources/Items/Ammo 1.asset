@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Shotgun Bullet
   description: 
-  ID: 1
   stackMax: 20
+  ID: 1
   icon: {fileID: 2076849020, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags:
-  - tagID: 2
+  - tagID: 0
   crafingIngredients:
   - itemID: 0
     number: 0

@@ -15,6 +15,7 @@ public static class LoadSystem
     public static List<HeaderData> LoadHeaders()
     {
         List<HeaderData> headers = new List<HeaderData>();
+        Debug.Log(SaveSystem.savesPath);
         if (!Directory.Exists(SaveSystem.savesPath)) return null;
 
         var files = Directory.GetDirectories(SaveSystem.savesPath);
@@ -84,21 +85,34 @@ public static class LoadSystem
     {
        return LoadPlayerSave(GameInfo.instance.worldName,playerName);
     }
-    public static T LoadJson<T>(string path) 
+    public static T LoadJson<T>(string path) where T : class
     {
-        T Data = default(T);
+        T Data = null;
+        Debug.Log("null jest");
         if (File.Exists(path))
         {
+            Debug.Log("exist!");
             string json = File.ReadAllText(path);
             Data = JsonUtility.FromJson<T>(json);
         }
         return Data;
     }
    
-    public static SettingsData LoadSettings(out string controls)
+
+    public static string LoadText(string path) 
     {
-        controls = File.ReadAllText(SaveSystem.controlsPath);
-        return LoadJson<SettingsData>(SaveSystem.settingsPath);
+        if (File.Exists(path))
+        {
+            return File.ReadAllText(path);
+        }
+        return null;
+    }
+
+
+    public static void LoadSettings(out string controls, out SettingsData settings)
+    {
+        controls = LoadText(SaveSystem.controlsPath);
+        settings = LoadJson<SettingsData>(SaveSystem.settingsPath);
     }
 
 

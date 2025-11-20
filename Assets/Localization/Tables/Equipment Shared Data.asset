@@ -59,6 +59,14 @@ MonoBehaviour:
     m_Key: RequiredItem
     m_Metadata:
       m_Items: []
+  - m_Id: 2956435793555456
+    m_Key: Capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2964330694225920
+    m_Key: Tags
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

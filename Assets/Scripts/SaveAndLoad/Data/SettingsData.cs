@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Mathematics;
-
+﻿
 
 [System.Serializable]
 public class SettingsData
@@ -20,4 +13,9 @@ public class SettingsData
     public float musicVolume;
 
     public string language;
+
+    public override string ToString()
+    {
+        return  $"{resolutionWidth} x {resolutionHeight} , FullScreen: {fullScreen} , FPS Limit: {fpsLimit}";
+    }
 }
