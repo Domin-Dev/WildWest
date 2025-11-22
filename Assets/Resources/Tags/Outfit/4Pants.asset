@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b14d90bbc0b0b9b44b669c7c7e90daa0, type: 3}
-  m_Name: Ammunition
+  m_Name: 4Pants
   m_EditorClassIdentifier: Assembly-CSharp::Tag
-  _icon: {fileID: -2066496519, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  _icon: {fileID: -795953274, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   _localizedString:
     m_TableReference:
-      m_TableCollectionName: 
+      m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
     m_TableEntryReference:
-      m_KeyId: 0
+      m_KeyId: 3699543099486208
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  _tagName: Guns
-  _ID: 9
+  _tagName: Outerwear
+  _ID: 4
   references:
     version: 2
     RefIds: []

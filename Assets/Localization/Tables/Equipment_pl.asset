@@ -74,6 +74,38 @@ MonoBehaviour:
     m_Localized: Tagi
     m_Metadata:
       m_Items: []
+  - m_Id: 3699050356846592
+    m_Localized: Torba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699178908069888
+    m_Localized: Akcesorium
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699484928684032
+    m_Localized: Pasek
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699543099486208
+    m_Localized: Spodnie
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699765246603264
+    m_Localized: Koszula
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3700044348174336
+    m_Localized: "Odzie\u017C wierzchnia"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3700212464267264
+    m_Localized: Maska
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701103254745088
+    m_Localized: "Nakrycie g\u0142owy"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

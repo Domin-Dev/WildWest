@@ -5,11 +5,9 @@ using Unity.NetCode;
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
 public struct ContainerComponent : IComponentData
 {
-    [GhostField] public byte containerIndex;
-
+    [GhostField] public int containerIndex;
     [GhostField] public MandatoryProperties mandatoryProperties;
     [GhostField] public int mandatoryData;
-    
     [GhostField] public int capacity;
     [GhostField] public byte waterResistance;
 }

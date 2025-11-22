@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,10 +72,6 @@ public class NewEquipmentManager : MonoBehaviour
     #region Variables
 
     public static NewEquipmentManager instance {  get; private set; }
-
-    [SerializeField] private GameObject containerPrefab;
-    [SerializeField] private Transform containerParent;
-
     public Dictionary<int, Container> containers = new Dictionary<int, Container>();
     private bool open = false;
 
@@ -327,7 +323,7 @@ public class NewEquipmentManager : MonoBehaviour
         if (containers.ContainsKey(containerComponent.containerIndex)) return;
         Container container = new Container();
 
-        container.gridTransform = Instantiate(containerPrefab, containerParent).transform;
+        container.gridTransform = UIManager.instance.CreateUIContainer(containerComponent);
         container.entity = entity;
         container.gridIndex = containerComponent.containerIndex;
         container.itemSlots = new ItemStats[containerComponent.capacity];
@@ -532,8 +528,6 @@ public class NewEquipmentManager : MonoBehaviour
             TooltipSystem.Show(slotPosition.Value, GetItemStats(slotPosition.Value),true);
 
     }
-
-
     public void LocalUpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))

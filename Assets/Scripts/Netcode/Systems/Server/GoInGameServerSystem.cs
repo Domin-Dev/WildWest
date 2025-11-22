@@ -118,9 +118,26 @@ partial struct GoInGameServerSystem : ISystem
         CreateNewContainer(character, ref entityCommandBuffer, ref entities,50,networkID,30,1);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities,100, networkID, 20, 2, MandatoryProperties.item, 30);
         CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 8, 3, MandatoryProperties.item, 34);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 10, 4, MandatoryProperties.tag, 0);
+
+
+
+
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10000, MandatoryProperties.tag, 0);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10001, MandatoryProperties.tag, 1);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10002, MandatoryProperties.tag, 2);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10003, MandatoryProperties.tag, 3);
+
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10004, MandatoryProperties.tag, 4);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10005, MandatoryProperties.tag, 5);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10006, MandatoryProperties.tag, 6);
+        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10007, MandatoryProperties.tag, 7);
+
+
+
+
+
     }
-    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,byte waterResistance, int networkID, int capacity, byte index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
+    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,byte waterResistance, int networkID, int capacity, int index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
         var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });

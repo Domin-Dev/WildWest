@@ -67,6 +67,38 @@ MonoBehaviour:
     m_Key: Tags
     m_Metadata:
       m_Items: []
+  - m_Id: 3699050356846592
+    m_Key: Bag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699178908069888
+    m_Key: Accessory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699484928684032
+    m_Key: Belt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699543099486208
+    m_Key: Pants
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3699765246603264
+    m_Key: Shirt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3700044348174336
+    m_Key: Outerwear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3700212464267264
+    m_Key: FaceCover
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3701103254745088
+    m_Key: Headwear
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

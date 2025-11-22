@@ -42,6 +42,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject slotIndex;
     [SerializeField] private GameObject item;
     [SerializeField] private GameObject itembar;
+    [Header("Container Objects")]
+    [SerializeField] private Transform outfitContainersParent;
+    [SerializeField] private Transform defaultContainersParent;
+    [SerializeField] private GameObject containerPrefab;
+
     [Header("Container Options")]
     [SerializeField] private GameObject containerInfo;
     [SerializeField] private GameObject containerStack;
@@ -49,7 +54,6 @@ public class UIManager : MonoBehaviour
     
     [SerializeField] private Transform equipmentDragItems;
     [SerializeField] private Transform equipmentClothes;
-    [SerializeField] private Transform equipmentContainer;
     [Space(20f)]
     #endregion
     #region Stats UI
@@ -140,7 +144,6 @@ public class UIManager : MonoBehaviour
     {
         barGrid = new EquipmentGrid(mainItemBar, 0);
         clothesGrid = new EquipmentGrid(equipmentClothes, 2);
-        containerGrid = new EquipmentGrid(equipmentContainer, 3);
     }
     public void SetUpUIEquipment(EquipmentManager eqManager)
     { 
@@ -436,7 +439,6 @@ public class UIManager : MonoBehaviour
         switch(gridIndex)
         {
             case 2: return equipmentClothes;
-            case 3: return equipmentContainer;
         }
         return null;
     }
@@ -640,7 +642,7 @@ public class UIManager : MonoBehaviour
             TooltipSystem.Hide();
             openWindows.Remove(equipment);
             ResetSelectedItem();
-            containerGrid.gridTransform.gameObject.SetActive(false);
+           
             if(timer != null) timer.Cancel();
         }
         else
@@ -801,75 +803,6 @@ public class UIManager : MonoBehaviour
         return LoadPlaceholder(container.mandatoryProperties, container.mandatoryData);
     }
 
-    public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity, Container containerComponent,bool numbering)
-    {
-        OpenEquipment(true);
-        bool isMainBar = equipmentGrid.gridTransform == mainItemBar;
-        Sprite icon = LoadPlaceholder(containerComponent.mandatoryProperties, containerComponent.mandatoryData);
-
-        if (numbering)
-        {
-            int index;
-            for (int i = containerComponent.itemSlots.Length - 1; i >= 0; i--)
-            {
-                index = i + 1;
-                Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
-                if (!isMainBar)
-                {
-                    slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
-                    slot.AddComponent<ItemSlotTooltipTrigger>();
-                }
-                else
-                    Destroy(slot.GetComponent<Button>());
-
-                slot.SetAsFirstSibling();
-                Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
-            }
-        }
-        else
-        {
-            for (int i = 0; i < containerComponent.itemSlots.Length; i++)
-            {
-                Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
-                if (icon != null)
-                {
-                    Transform grey = Instantiate(greyIcon, slot).transform;
-                    grey.GetComponent<Image>().sprite = icon;
-                }
-                slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
-                slot.AddComponent<ItemSlotTooltipTrigger>();
-            }
-            equipmentGrid.gridTransform.GetChild(0).SetAsLastSibling();
-        }
-
-
-
-
-        var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
-        var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);
-
-        for (int i = 0; i < containerComponent.itemSlots.Length; i++)
-        {
-            var item = containerComponent.itemSlots[i];
-            if (item == null) continue;
-            
-            if (icon != null) equipmentGrid.gridTransform.GetChild(i).GetChild(0).gameObject.SetActive(false);
-            NewItemUI(equipmentGrid.gridTransform, item, i);
-        }
-
-        if (!isMainBar)
-        {
-            LoadContainerOptions(equipmentGrid,containerComponent);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.parent.GetComponent<RectTransform>());
-        }
-        OpenEquipment(false);
-    }
-    
-    private void LoadContainerOptions(EquipmentGrid equipmentGrid, Container containerComponent)
-    {
-        Transform options = equipmentGrid.gridTransform.GetChild(equipmentGrid.gridTransform.childCount - 1);
-        Instantiate(containerInfo, options).AddComponent<StaticTooltipTrigger>().SetUp(containerComponent);
-    }
     public EquipmentGrid LoadBarSlots(Container containerComponent, Entity entity)
     {
         EquipmentGrid equipmentGrid = new EquipmentGrid(mainItemBar, 0);
@@ -880,7 +813,6 @@ public class UIManager : MonoBehaviour
     private Transform GetItem(SlotPosition position)
     {
         Transform parent = null;
-        if (position.containerIndex == 3) parent = equipmentContainer;
 
         if(parent != null)
         {
@@ -1203,6 +1135,94 @@ public class UIManager : MonoBehaviour
         obj.GetChild(1).GetComponent<Image>().sprite = item.icon;
         obj.GetChild(2).GetComponent<TextMeshProUGUI>().text = item.name;
     }
+
+
+
+    #region  ContainersFuncs
+
+
+    public Transform CreateUIContainer(ContainerComponent containerComponent)
+    {
+        Transform parent = defaultContainersParent;
+
+Debug.Log(containerComponent.containerIndex + " ------------------");
+
+        if(containerComponent.containerIndex >= 10000 && containerComponent.containerIndex < 20000)
+            parent = outfitContainersParent;
+            
+        return Instantiate(containerPrefab,parent).transform;
+    } 
+    public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity, Container containerComponent,bool numbering)
+    {
+        OpenEquipment(true);
+        bool isMainBar = equipmentGrid.gridTransform == mainItemBar;
+        Sprite icon = LoadPlaceholder(containerComponent.mandatoryProperties, containerComponent.mandatoryData);
+
+        if (numbering)
+        {
+            int index;
+            for (int i = containerComponent.itemSlots.Length - 1; i >= 0; i--)
+            {
+                index = i + 1;
+                Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
+                if (!isMainBar)
+                {
+                    slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                    slot.AddComponent<ItemSlotTooltipTrigger>();
+                }
+                else
+                    Destroy(slot.GetComponent<Button>());
+
+                slot.SetAsFirstSibling();
+                Instantiate(slotIndex, slot).GetComponent<TextMeshProUGUI>().text = (index % 10).ToString();
+            }
+        }
+        else
+        {
+            for (int i = 0; i < containerComponent.itemSlots.Length; i++)
+            {
+                Transform slot = Instantiate(itemSlot, equipmentGrid.gridTransform).transform;
+                if (icon != null)
+                {
+                    Transform grey = Instantiate(greyIcon, slot).transform;
+                    grey.GetComponent<Image>().sprite = icon;
+                }
+                slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
+                slot.AddComponent<ItemSlotTooltipTrigger>();
+            }
+            equipmentGrid.gridTransform.GetChild(0).SetAsLastSibling();
+        }
+
+
+
+
+        var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
+        var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);
+
+        for (int i = 0; i < containerComponent.itemSlots.Length; i++)
+        {
+            var item = containerComponent.itemSlots[i];
+            if (item == null) continue;
+            
+            if (icon != null) equipmentGrid.gridTransform.GetChild(i).GetChild(0).gameObject.SetActive(false);
+            NewItemUI(equipmentGrid.gridTransform, item, i);
+        }
+
+        if (!isMainBar)
+        {
+            LoadContainerOptions(equipmentGrid,containerComponent);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.parent.GetComponent<RectTransform>());
+        }
+        OpenEquipment(false);
+    }
+    private void LoadContainerOptions(EquipmentGrid equipmentGrid, Container containerComponent)
+    {
+        Transform options = equipmentGrid.gridTransform.GetChild(equipmentGrid.gridTransform.childCount - 1);
+        Instantiate(containerInfo, options).AddComponent<StaticTooltipTrigger>().SetUp(containerComponent);
+    }
+    
+    #endregion
 }
+
 
 
