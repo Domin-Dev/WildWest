@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: 
   description: 
-  ID: 132
   stackMax: 1
+  ID: 132
   icon: {fileID: -196481088, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags: []
+  x: 0
+  modules: []
   crafingIngredients:
   - itemID: 0
     number: 0
@@ -29,3 +32,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 60000117a409ae1459bd25bb88e56f6d, type: 2}
   - {fileID: 21300000, guid: c7516259a0d9f664ba311985b72c6f77, type: 2}
   - {fileID: 21300000, guid: 3bff8655e9501154a894b29dd640413c, type: 2}
+  references:
+    version: 2
+    RefIds: []

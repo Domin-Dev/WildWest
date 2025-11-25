@@ -16,6 +16,8 @@ public class Item : ScriptableObject
     [Header("Item Tags")]
     public List<TagSelection> tags;
 
+    [Header("Modules")]
+
     [Header("Craft recipe")]
     public Ingredient[] crafingIngredients;
     public int[] craftTables;
@@ -78,7 +80,6 @@ public class Destroyable : Item, IItemBar
     {
         return new ItemWithBar(ID,durability);
     }
-
 
     public float GetMaxBarValue()
     {

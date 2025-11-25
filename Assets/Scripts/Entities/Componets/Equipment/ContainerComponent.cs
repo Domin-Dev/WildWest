@@ -5,12 +5,27 @@ using Unity.NetCode;
 [GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
 public struct ContainerComponent : IComponentData
 {
-    [GhostField] public int containerIndex;
-    [GhostField] public MandatoryProperties mandatoryProperties;
-    [GhostField] public int mandatoryData;
-    [GhostField] public int capacity;
-    [GhostField] public byte waterResistance;
+    [GhostField] public ContainerStats containerStats;
+
+    public int containerIndex => containerStats.containerIndex;
+    public MandatoryProperties mandatoryProperties => containerStats.mandatoryProperties;
+    public int mandatoryData => containerStats.mandatoryData;
+    public int capacity => containerStats.capacity;
+    public byte waterResistance => containerStats.waterResistance;
+    public ContainerType containerType => EQHelperClient.GetContainerType(containerIndex);
 }
+
+[System.Serializable]
+public struct ContainerStats
+{
+    public int containerIndex;
+    public MandatoryProperties mandatoryProperties;
+    public int mandatoryData;
+    public int capacity;
+    public byte waterResistance;
+}
+
+
 
 public enum MandatoryProperties : byte
 {

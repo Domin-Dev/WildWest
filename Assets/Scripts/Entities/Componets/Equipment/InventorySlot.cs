@@ -36,6 +36,14 @@ public enum Quality : byte
     masterful = 5,
     legendary = 6,
 }
+
+
+
 public struct ContainerLoaded : IComponentData
 {
+}
+
+public struct OnEquip : IComponentData
+{
+    SlotPosition slotPosition;
 }

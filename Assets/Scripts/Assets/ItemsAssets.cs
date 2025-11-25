@@ -41,6 +41,7 @@ public class ItemsAsset : MonoBehaviour
     public void Awake()
     {
         LoadItems();
+        DontDestroyOnLoad(gameObject);
     }
     public T[] GetItemsByType<T>() where T : Item
     {
@@ -341,7 +342,7 @@ public class ItemsAsset : MonoBehaviour
             foreach(var i in item.tags)
             {
                 var tag = GetTag(i.tagID);
-                if(tag != null) tags.Add(tag.tagName);
+                if(tag != null) tags.Add(tag.localizedString.GetLocalizedString());
             }
         }
         return tags.ToArray();

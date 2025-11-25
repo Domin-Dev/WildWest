@@ -22,7 +22,7 @@ MonoBehaviour:
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  _tagName: Outerwear
+  _tagName: Belt
   _ID: 5
   references:
     version: 2

@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Cent
   description: 
-  ID: 31
   stackMax: 200
+  ID: 31
   icon: {fileID: -43997528, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags: []
   crafingIngredients: []
   craftTables: 
   numberItem: 1

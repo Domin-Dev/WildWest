@@ -864,10 +864,10 @@ public class EquipmentManager : MonoBehaviour
         if (ItemsAsset.instance.CheckItemType<Garment>(itemStats.itemID))
         {
             Garment garment = (Garment)ItemsAsset.instance.GetItem(itemStats.itemID);
-            if (garment.type == clothesSlots[target.slotIndex])
-            {
+         //   if (garment.type == clothesSlots[target.slotIndex])
+           // {
                 return true;
-            }
+          //  }
         }
         return false;
     }
@@ -878,10 +878,10 @@ public class EquipmentManager : MonoBehaviour
         if(itemStats == null) return true;
 
         Garment garment = (Garment)ItemsAsset.instance.GetItem(itemStats.itemID);
-        if(garment != null && (int)garment.type == selectedSlotInEQ.slotIndex)
-        {
+    //    if(garment != null && (int)garment.type == selectedSlotInEQ.slotIndex)
+     //   {
             return true;
-        }
+     //   }
         return false;
     }
 
@@ -988,28 +988,28 @@ public class EquipmentManager : MonoBehaviour
         }
     }
 
-    public void DoubleClick(SlotPosition slotPosition)
-    {
-        ItemStats itemStats = GetItemStats(slotPosition);
-        Item item = ItemsAsset.instance.GetItem(itemStats.itemID);
-        if(item is Garment && slotPosition.containerIndex != 2)
-        {
-            SlotPosition pos = new SlotPosition(2, (int)((Garment)item).type);
-            ItemStats a = GetItemStatsValue(pos);
-            if (a != null)
-            {
-                RemoveItem(pos);
-            }
-            MoveItem(slotPosition,pos);
-            ClearSlot(slotPosition);
-            if(HasPlaceholders(slotPosition))TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
-            AddNewItem(a);
-        }
-        else
-        {
-            CollectAll(slotPosition);
-        }
-    }
+    // public void DoubleClick(SlotPosition slotPosition)
+    // {
+    //     ItemStats itemStats = GetItemStats(slotPosition);
+    //     Item item = ItemsAsset.instance.GetItem(itemStats.itemID);
+    //     if(item is Garment && slotPosition.containerIndex != 2)
+    //     {
+    //        // SlotPosition pos = new SlotPosition(2, (int)((Garment)item).type);
+    //         ItemStats a = GetItemStatsValue(pos);
+    //         if (a != null)
+    //         {
+    //             RemoveItem(pos);
+    //         }
+    //         MoveItem(slotPosition,pos);
+    //         ClearSlot(slotPosition);
+    //         if(HasPlaceholders(slotPosition))TurnPlaceholder(this, new PlaceholderArgs(true, slotPosition));
+    //         AddNewItem(a);
+    //     }
+    //     else
+    //     {
+    //         CollectAll(slotPosition);
+    //     }
+    // }
     public void CollectAll(SlotPosition position)
     {
         ItemStats itemStats = GetItemStats(position);

@@ -31,7 +31,7 @@ public class GarmentEditor : ItemEditor
         for (int j = 0; j < 4; j++)
         {
             Sprite sprite = Sprite.Create(texture, new Rect(j * size, 0, size, size), new Vector2(0.5f, 0.5f));
-            AssetDatabase.CreateAsset(sprite, $"{MyTools.clothesSpritesPath}/{id}/{settings.type.ToString()}{j}_{id}.asset");
+            AssetDatabase.CreateAsset(sprite, $"{MyTools.clothesSpritesPath}/{id}/{j}_{id}.asset");
             spites.Add(sprite);
         }
         

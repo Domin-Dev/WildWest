@@ -23,3 +23,5 @@ MonoBehaviour:
     type: Destroyable
   - color: {r: 0.7647059, g: 0.27450982, b: 0.09803922, a: 1}
     type: RangedWeapon
+  - color: {r: 0.7647059, g: 0.60025746, b: 0.09803921, a: 1}
+    type: Garment

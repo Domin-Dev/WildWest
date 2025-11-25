@@ -22,6 +22,20 @@ public class EquipmentGrid
         this.gridIndex = gridIndex;
     }
 }
+
+
+[System.Serializable]
+public class ContainerUI
+{
+    [SerializeField] private GameObject _prefab;
+    [SerializeField] private Transform _parent;
+    [SerializeField] private ContainerType _containerType;
+
+    public GameObject prefab => _prefab;
+    public Transform parent => _parent;
+    public ContainerType containerType => _containerType;
+}
+
 public class UIManager : MonoBehaviour
 {
     //black background
@@ -43,10 +57,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject item;
     [SerializeField] private GameObject itembar;
     [Header("Container Objects")]
-    [SerializeField] private Transform outfitContainersParent;
-    [SerializeField] private Transform defaultContainersParent;
-    [SerializeField] private GameObject containerPrefab;
-
+    [SerializeField] private List<ContainerUI> containers; 
     [Header("Container Options")]
     [SerializeField] private GameObject containerInfo;
     [SerializeField] private GameObject containerStack;
@@ -1141,18 +1152,12 @@ public class UIManager : MonoBehaviour
     #region  ContainersFuncs
 
 
-    public Transform CreateUIContainer(ContainerComponent containerComponent)
+    public Transform CreateUIContainer(ContainerType type)
     {
-        Transform parent = defaultContainersParent;
-
-Debug.Log(containerComponent.containerIndex + " ------------------");
-
-        if(containerComponent.containerIndex >= 10000 && containerComponent.containerIndex < 20000)
-            parent = outfitContainersParent;
-            
-        return Instantiate(containerPrefab,parent).transform;
+        ContainerUI containerUI = containers.Find((ContainerUI k) => { return k.containerType == type;});
+        return Instantiate(containerUI.prefab,containerUI.parent).transform;
     } 
-    public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity, Container containerComponent,bool numbering)
+    public void LoadSlots(EquipmentGrid equipmentGrid,Entity entity, Container containerComponent,bool numbering = false)
     {
         OpenEquipment(true);
         bool isMainBar = equipmentGrid.gridTransform == mainItemBar;
@@ -1190,7 +1195,8 @@ Debug.Log(containerComponent.containerIndex + " ------------------");
                 slot.AddComponent<DropSlot>().SetSlotPosition(i, equipmentGrid.gridIndex);
                 slot.AddComponent<ItemSlotTooltipTrigger>();
             }
-            equipmentGrid.gridTransform.GetChild(0).SetAsLastSibling();
+
+            equipmentGrid.gridTransform.GetComponentInChildren<EQOptionsTag>(true)?.transform.SetAsLastSibling();
         }
 
 
@@ -1212,12 +1218,17 @@ Debug.Log(containerComponent.containerIndex + " ------------------");
         {
             LoadContainerOptions(equipmentGrid,containerComponent);
             LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.parent.GetComponent<RectTransform>());
+            if(containerComponent.containerType == ContainerType.Outfit)
+                containerComponent.gridTransform.AddComponent<StaticTooltipTrigger>().SetUp(containerComponent);
         }
+
         OpenEquipment(false);
     }
     private void LoadContainerOptions(EquipmentGrid equipmentGrid, Container containerComponent)
     {
-        Transform options = equipmentGrid.gridTransform.GetChild(equipmentGrid.gridTransform.childCount - 1);
+        Transform options = equipmentGrid.gridTransform.GetComponentInChildren<EQOptionsTag>(true)?.transform;
+        if(options == null) return;
+
         Instantiate(containerInfo, options).AddComponent<StaticTooltipTrigger>().SetUp(containerComponent);
     }
     

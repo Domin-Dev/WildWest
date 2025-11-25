@@ -604,13 +604,13 @@ MonoBehaviour:
   m_Padding:
     m_Left: 15
     m_Right: 15
-    m_Top: 15
-    m_Bottom: 15
+    m_Top: 20
+    m_Bottom: 20
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 60, y: 64}
-  m_Spacing: {x: 5, y: 5}
+  m_CellSize: {x: 60, y: 66}
+  m_Spacing: {x: 5, y: 7}
   m_Constraint: 1
   m_ConstraintCount: 2
 --- !u!114 &23292529
@@ -2821,7 +2821,7 @@ MonoBehaviour:
     m_Right: 15
     m_Top: 15
     m_Bottom: 15
-  m_ChildAlignment: 0
+  m_ChildAlignment: 4
   m_Spacing: 0
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
@@ -8395,7 +8395,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.4700003, y: 0.4329999, z: -612200}
+  m_LocalPosition: {x: 3.4700003, y: 0.4329999, z: -1155660}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11251,9 +11251,13 @@ MonoBehaviour:
   slotIndex: {fileID: 2309248620030816333, guid: adec6a7773267d64bb47795d2cad2c7b, type: 3}
   item: {fileID: 1807920759468963396, guid: 3acdc534579b6384f8a5d022487325ce, type: 3}
   itembar: {fileID: 8418885583612049286, guid: 5406dfd1ac2fb904e8aa300b36d66009, type: 3}
-  outfitContainersParent: {fileID: 23292525}
-  defaultContainersParent: {fileID: 800270328}
-  containerPrefab: {fileID: 947762421515297116, guid: 15aa8d87fcc2ccc4ea69bce5a680bc2d, type: 3}
+  containers:
+  - _prefab: {fileID: 947762421515297116, guid: 15aa8d87fcc2ccc4ea69bce5a680bc2d, type: 3}
+    _parent: {fileID: 800270328}
+    _containerType: 0
+  - _prefab: {fileID: 947762421515297116, guid: d6337383c5a33b6abaad18d3060831bd, type: 3}
+    _parent: {fileID: 23292525}
+    _containerType: 1
   containerInfo: {fileID: 2365610509699621772, guid: 1a6f198cf225fdb42b276ebadf07d12d, type: 3}
   containerStack: {fileID: 2365610509699621772, guid: 1a6f198cf225fdb42b276ebadf07d12d, type: 3}
   equipmentDragItems: {fileID: 100357396}
@@ -12946,7 +12950,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.04}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 960.03754, y: -540}
+  m_AnchoredPosition: {x: 1003.0133, y: -540}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &800270329
@@ -15340,7 +15344,7 @@ Transform:
   m_GameObject: {fileID: 917291348}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.4700003, y: 0.4329999, z: -612200}
+  m_LocalPosition: {x: 3.4700003, y: 0.4329999, z: -1155660}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -19934,7 +19938,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1238.0376, y: -540}
+  m_AnchoredPosition: {x: 1281.0133, y: -540}
   m_SizeDelta: {x: 491, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1263004383
@@ -21855,7 +21859,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0.04}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 927.53754, y: -540}
+  m_AnchoredPosition: {x: 970.5133, y: -540}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1345758276
@@ -21870,7 +21874,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 4aa04be5a91261f4ab1a058095314a79, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -28238,6 +28242,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8835181125799260992, guid: 053139062e821f346a66543bac009196, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -32458,8 +32466,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 034bad4a3cdc01c4faf6cee6127cc7b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewEquipmentManager
-  containerPrefab: {fileID: 947762421515297116, guid: 15aa8d87fcc2ccc4ea69bce5a680bc2d, type: 3}
-  containerParent: {fileID: 800270328}
 --- !u!1 &1917769010
 GameObject:
   m_ObjectHideFlags: 0

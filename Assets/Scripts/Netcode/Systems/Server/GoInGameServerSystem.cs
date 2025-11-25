@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -105,48 +106,55 @@ partial struct GoInGameServerSystem : ISystem
         playerSave.isAdmin = false;
     }
 
-    private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity character, int networkID)
+    private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer ecb, Entity character, int networkID)
     {
         var entities = SystemAPI.GetSingleton<EntitiesReferences>();
-        entityCommandBuffer.AddBuffer<PlayerContainers>(character);
-        entityCommandBuffer.AddComponent<ContainerSettings>(character, new ContainerSettings() {
+        ecb.AddBuffer<PlayerContainers>(character);
+        ecb.AddComponent<ContainerSettings>(character, new ContainerSettings() {
             Position = SlotPosition.NullSlot,
             targetContainer = -1
         });
 
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0,networkID,10,0);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,50,networkID,30,1);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,100, networkID, 20, 2, MandatoryProperties.item, 30);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 8, 3, MandatoryProperties.item, 34);
+        var containers = EquipmentConfig.Instance.Containers;
+        foreach(var cont in containers)
+        { 
+            CreateNewContainer(character,ref ecb,ref entities,networkID,cont.Value);
+        }
+
+        
 
 
 
-
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10000, MandatoryProperties.tag, 0);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10001, MandatoryProperties.tag, 1);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10002, MandatoryProperties.tag, 2);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10003, MandatoryProperties.tag, 3);
-
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10004, MandatoryProperties.tag, 4);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10005, MandatoryProperties.tag, 5);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10006, MandatoryProperties.tag, 6);
-        CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10007, MandatoryProperties.tag, 7);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0,networkID,10,0);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,50,networkID,30,1);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,100, networkID, 20, 2, MandatoryProperties.item, 30);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 8, 3, MandatoryProperties.item, 34);
 
 
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10000, MandatoryProperties.tag, 0);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10001, MandatoryProperties.tag, 1);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10002, MandatoryProperties.tag, 2);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10003, MandatoryProperties.tag, 3);
 
-
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10004, MandatoryProperties.tag, 4);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10005, MandatoryProperties.tag, 5);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10006, MandatoryProperties.tag, 6);
+        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10007, MandatoryProperties.tag, 7);
 
     }
-    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,byte waterResistance, int networkID, int capacity, int index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
+    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,byte waterResistance, int capacity, int index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
         var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
-        entityCommandBuffer.SetComponent(e, new ContainerComponent() { 
-            capacity = capacity,
-            containerIndex = index,
-            mandatoryProperties = mandatory,
-            mandatoryData = mandatoryData,
-            waterResistance = waterResistance
+        entityCommandBuffer.SetComponent(e, new ContainerComponent() {
+            containerStats = new ContainerStats()
+            { 
+                capacity = capacity,
+                containerIndex = index,
+                mandatoryProperties = mandatory,
+                mandatoryData = mandatoryData,
+                waterResistance = waterResistance
+            }
         });
 
         entityCommandBuffer.AddComponent(e, new GhostChildEntity());
@@ -160,4 +168,10 @@ partial struct GoInGameServerSystem : ISystem
         entityCommandBuffer.AddComponent(e, new SendToPlayer());
     }
 
+
+    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, ContainerData data)
+    {
+        CreateNewContainer(player,ref entityCommandBuffer,ref entities,networkID,data.stats.waterResistance,data.stats.capacity,
+        data.stats.containerIndex,data.stats.mandatoryProperties,data.stats.mandatoryData);
+    }
 }

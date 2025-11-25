@@ -6,9 +6,27 @@ using Unity.Entities;
 using Unity.NetCode;
 
 
+
+public enum SelectionMode
+
+{
+    N,
+    All,
+    Half,
+}
+public enum ContainerType
+{
+    Standard,
+    Outfit
+}
+
 public static class EQHelperClient
 {
-       
+    public static readonly (ContainerType type, int min, int maxExclusive)[] containerTypeRanges =
+    {
+        (ContainerType.Outfit, 10000,20000),
+    };
+
 
     public static float CalculateMixPercentage(float volume1, float percent1, float volume2, float percent2)
     {
@@ -20,4 +38,16 @@ public static class EQHelperClient
         return -(slotIndex + 1);
     }
 
+    public static ContainerType GetContainerType(int containerIndex)
+    {
+        ContainerType type = ContainerType.Standard;
+        foreach (var item in containerTypeRanges)
+        {
+            if(containerIndex >= item.min && containerIndex < item.maxExclusive)
+            {
+                type = item.type;
+            }
+        }
+        return type;
+    }
 }

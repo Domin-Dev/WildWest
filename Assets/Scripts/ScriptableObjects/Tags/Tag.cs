@@ -14,6 +14,8 @@ public interface IReadTag
     public int ID { get; }
     public string tagName { get; }
     public Sprite icon { get; }
+    public LocalizedString localizedString { get; }
+
 }
 
 
@@ -29,10 +31,10 @@ public class Tag : ScriptableObject, IReadTag
     [SerializeField] private string _tagName;
     [SerializeField] int _ID = -1;
 
-    public string tagName { get { return _tagName; } }
-    public int ID { get { return _ID; } }
-    public Sprite icon { get { return _icon; } }
-
+    public string tagName => _tagName; 
+    public int ID => _ID; 
+    public Sprite icon => _icon; 
+    public LocalizedString localizedString => _localizedString;
 
 
 

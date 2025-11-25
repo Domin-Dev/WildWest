@@ -196,11 +196,31 @@ public static class DebugController
             }
             return null;
         }));
-       
         
+        commandList.Add(new DebugCommand("giveoutfit", "debug outfit kit","", (ref EntityCommandBuffer ecb, Entity e) =>
+        {
+            if (ClientServerBootstrap.HasServerWorld)
+            {
+                int[] items = {11,12,133,14,15,16,17,18};
 
+                foreach (int i in items)
+                {
+                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                    {
+                        item = new InventorySlot
+                        {
+                            itemId = i,
+                            quantity = 1
+                        },
+                        barValue = 1,
+                        networkEntity = e
+                    });
+                }
+            }
+            return null;
+        }));
+        
         #endregion
-
 
         #region Weather
         commandList.Add(new DebugCommand<float,float>("rain", "", "[intensity] [time (s)]", (ref EntityCommandBuffer ecb, Entity e,float intensity,float time) =>
@@ -243,7 +263,6 @@ public static class DebugController
             }
             return null;
         }));
-
 
 
         commandList.Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>

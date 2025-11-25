@@ -12,17 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32860fb8bd6d1554b823a8f6e17479c2, type: 3}
   m_Name: Garment 1
   m_EditorClassIdentifier: 
-  name: 
+  name: Face Cover
   description: 
-  ID: 12
   stackMax: 1
+  ID: 12
   icon: {fileID: 2059572541, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags:
+  - tagID: 1
   crafingIngredients:
   - itemID: 0
     number: 0
   craftTables: ffffffff
   numberItem: 1
-  type: 1
+  durability: 50
   texture: {fileID: 2800000, guid: dad0c82c6dce6a34eb87107877394c46, type: 3}
   sprites:
   - {fileID: 21300000, guid: 9cefd2037aab72d4999584fcfbb9edfb, type: 2}

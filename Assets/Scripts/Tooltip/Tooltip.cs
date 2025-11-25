@@ -93,9 +93,6 @@ public class Tooltip : MonoBehaviour
         Vector2 position = Input.mousePosition;
         float pivotX = 0, pivotY = 0;
         if (Screen.width - position.x < rectTransform.rect.width) pivotX = 1;
-
-        Debug.Log(" 00000000000 --- " + ( Screen.height - position.y) + "  " + rectTransform.rect.height);
-
         if (Screen.height - position.y < rectTransform.rect.height) pivotY = 1;
         rectTransform.pivot = new Vector2(pivotX, pivotY);
         transform.position = position;

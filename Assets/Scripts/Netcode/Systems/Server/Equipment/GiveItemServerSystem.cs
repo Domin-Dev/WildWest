@@ -50,8 +50,6 @@ partial struct GiveItemServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(command.ValueRO.networkEntity).entity;
 
 
-            Debug.Log("Give!!");
-            
             var slots = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player,command.ValueRO.item);
             var events = EQHelper.AddItems(barsLookup,slotsLookup, playerContainersLookup, player, slots, command.ValueRO);
            

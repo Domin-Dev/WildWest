@@ -18,6 +18,8 @@ public class Container : IHaveTooltip
     public Transform gridTransform;
     public ItemStats[] itemSlots;
     public MandatoryProperties mandatoryProperties;
+    public ContainerType containerType;
+
     public int mandatoryData;
 
     public TooltipInfo GetTooltip()
@@ -25,8 +27,18 @@ public class Container : IHaveTooltip
         StringBuilder header = new StringBuilder();
         StringBuilder content = new StringBuilder();
 
-        header.Append(LocalizationSettings.StringDatabase.GetLocalizedString("Equipment", GetName(gridIndex)));
+        header.Append(EquipmentConfig.Instance.GetContainerName(gridIndex));
+        content.Append(EquipmentConfig.Instance.GetContainerDescription(gridIndex));
 
+        if(containerType == ContainerType.Standard)
+            WriteContainerStats(header,content);
+            
+           
+        return new TooltipInfo(content.ToString(), header.ToString(),null);
+    }
+    
+    private void WriteContainerStats(StringBuilder header, StringBuilder content)
+    {
         if (mandatoryProperties == MandatoryProperties.tag)
         {
             string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag(mandatoryData)?.tagName);
@@ -43,30 +55,10 @@ public class Container : IHaveTooltip
          c.waterResistance + " %");
         TooltipSystem.Append(content, "5acf97", LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "Capacity"),"Capacity",
          c.capacity.ToString());
-
-        return new TooltipInfo(content.ToString(), header.ToString(),null);
     }
-
-    public static string GetName(int gridIndex)
-    {
-        switch (gridIndex)
-        {
-            case 0:
-                return "QuickAccessBar";
-            case 1:
-                return "MainInventory";
-            default:
-                return "Container";
-        }
-
-    }
+    
 }
-public enum SelectionMode
-{
-    N,
-    All,
-    Half,
-}
+
 public class NewEquipmentManager : MonoBehaviour
 {
     #region Variables
@@ -318,12 +310,15 @@ public class NewEquipmentManager : MonoBehaviour
     #endregion
 
     #region Slot Synchronization
+    
+
     public void LoadContainer(ContainerComponent containerComponent, Entity entity)
     {
         if (containers.ContainsKey(containerComponent.containerIndex)) return;
         Container container = new Container();
 
-        container.gridTransform = UIManager.instance.CreateUIContainer(containerComponent);
+        container.containerType = EQHelperClient.GetContainerType(containerComponent.containerIndex);
+        container.gridTransform = UIManager.instance.CreateUIContainer(container.containerType);
         container.entity = entity;
         container.gridIndex = containerComponent.containerIndex;
         container.itemSlots = new ItemStats[containerComponent.capacity];
@@ -346,7 +341,6 @@ public class NewEquipmentManager : MonoBehaviour
                     break;
                 }
             }
-
             container.itemSlots[slot.slot] = CreateItemStats(slot, itemBarData);
         }
 
