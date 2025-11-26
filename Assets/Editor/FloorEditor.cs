@@ -4,7 +4,6 @@ using System.Security.Permissions;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.U2D.ScriptablePacker;
 
 
 

@@ -26,11 +26,11 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
 
-
             AddComponent(entity, new Health());
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
 
+            AddComponent(entity, new PlayerOutfitStats());
   
             AddBuffer<CooldownTargetTick>(entity);
         }
@@ -127,6 +127,8 @@ public struct Thirst : IComponentData
     [GhostField] public int Value;
     [GhostField] public int Max;
 }
+
+
 
 public struct LastChunk : IComponentData
 {

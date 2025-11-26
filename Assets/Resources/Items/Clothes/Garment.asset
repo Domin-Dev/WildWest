@@ -31,3 +31,9 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 334073b03eeebff4cb21ce38fc972c0b, type: 2}
   - {fileID: 21300000, guid: 8d2f41762cc99ad4b835dbc39e9a38f1, type: 2}
   - {fileID: 21300000, guid: e2c957283da8e2249bdddb90d40a3c33, type: 2}
+  garmentStats:
+    armor: 10
+    movementSpeed: 1
+    insulation: 10
+    waterResistance: 200
+    aesthetic: 20

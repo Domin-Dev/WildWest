@@ -52,7 +52,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1856188992368640
-    m_Localized: "Wodoszczelno\u015B\u0107"
+    m_Localized: "Wodoodporno\u015B\u0107 kontenera"
     m_Metadata:
       m_Items: []
   - m_Id: 2142888993927168
@@ -104,6 +104,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3701103254745088
     m_Localized: "Nakrycie g\u0142owy"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061384413294592
+    m_Localized: Pancerz
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061607856451584
+    m_Localized: "Pr\u0119dko\u015B\u0107 ruchu"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061774802333696
+    m_Localized: Izolacja
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061965961932800
+    m_Localized: "Wodoszczelno\u015B\u0107"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5065090412228608
+    m_Localized: Estetyka
     m_Metadata:
       m_Items: []
   references:

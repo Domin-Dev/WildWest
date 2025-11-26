@@ -110,9 +110,11 @@ public class UIManager : MonoBehaviour
     private List<int> loadedScene = new List<int>();
     private List<(Color color, Type type)> colors;
 
+    private Dictionary<string,Property> properties;
+
     public event EventHandler windowOpen;
 
-    [SerializeField] private UISettings uISettings;
+    [SerializeField] private UIConfig uISettings;
 
    
     private void Awake()
@@ -124,6 +126,7 @@ public class UIManager : MonoBehaviour
         SetUpNotices();
         LoadRecipes();
         colors = uISettings.GetColors();
+        properties = uISettings.GetProperties();
     }
     private void Update()
     {
@@ -508,6 +511,13 @@ public class UIManager : MonoBehaviour
             }
         }
         return color;
+    }
+
+    public Property GetProperty(string name)
+    {
+        if(properties.TryGetValue(name, out Property p))
+            return p;
+        return null;
     }
 
     public string GetColorHexStringForItem(int itemID)

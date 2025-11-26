@@ -48,7 +48,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 1856188992368640
-    m_Key: WaterResistance
+    m_Key: ContainerWaterResistance
     m_Metadata:
       m_Items: []
   - m_Id: 2142888993927168
@@ -97,6 +97,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 3701103254745088
     m_Key: Headwear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061384413294592
+    m_Key: Armor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061607856451584
+    m_Key: MovementSpeed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061774802333696
+    m_Key: Insulation
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5061965961932800
+    m_Key: WaterResistance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5065090412228608
+    m_Key: Aesthetic
     m_Metadata:
       m_Items: []
   m_Metadata:

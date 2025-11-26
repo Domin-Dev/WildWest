@@ -42,19 +42,18 @@ public class Container : IHaveTooltip
         if (mandatoryProperties == MandatoryProperties.tag)
         {
             string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag(mandatoryData)?.tagName);
-            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "RequiredTag", arguments:  arg));
+            UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)
         {  
             string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetItem(mandatoryData)?.name);
-            content.Append(LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "RequiredItem", arguments: arg));
+            UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
 
+
         ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
-        TooltipSystem.Append(content, "67CCFF", LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "WaterResistance"),"WaterResistance",
-         c.waterResistance + " %");
-        TooltipSystem.Append(content, "5acf97", LocalizationSettings.StringDatabase.GetLocalizedString(Translations.eqTable, "Capacity"),"Capacity",
-         c.capacity.ToString());
+        UIStringsHelper.Append(content, UIManager.instance.GetProperty("ContainerWaterResistance") ,c.waterResistance + " %");
+        UIStringsHelper.Append(content,UIManager.instance.GetProperty("Capacity"),c.capacity.ToString());
     }
     
 }

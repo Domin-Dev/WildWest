@@ -1252,15 +1252,16 @@ public class EquipmentManager : MonoBehaviour
     public TooltipInfo GetTooltipInfo(SlotPosition position)
     {
         ItemStats itemStats = GetItemStats(position);
-        if (itemStats == null) return null;
-        else
-        {
-            if (itemStats is IBarValue)
-            {
-                return new TooltipInfo((itemStats as IBarValue).GetBarValue().ToString());
-            }
-            return ItemsAsset.instance.GetTooltipInfo(itemStats.itemID);
-        }
+        // if (itemStats == null) 
+        return null;
+        // else
+        // {
+        //     if (itemStats is IBarValue)
+        //     {
+        //         return new TooltipInfo((itemStats as IBarValue).GetBarValue().ToString());
+        //     }
+        //    /return ItemsAsset.instance.GetTooltipInfo(itemStats.itemID);
+        // }
     }
     public bool CountAmmo(RangedWeaponItem rangedWeaponItem)
     {

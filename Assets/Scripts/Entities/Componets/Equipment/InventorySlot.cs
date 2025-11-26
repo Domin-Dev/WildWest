@@ -45,5 +45,5 @@ public struct ContainerLoaded : IComponentData
 
 public struct OnEquip : IComponentData
 {
-    SlotPosition slotPosition;
+    public SlotPosition slotPosition;
 }

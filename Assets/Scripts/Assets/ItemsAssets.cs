@@ -205,13 +205,13 @@ public class ItemsAsset : MonoBehaviour
         }
         return null;
     }
-    public TooltipInfo GetTooltipInfo(int itemID)
+       
+    public TooltipInfo GetTooltipInfo(ItemStats itemstats)
     {
-        return GetTooltipInfo(GetItem(itemID));
-    }
-    public TooltipInfo GetTooltipInfo(Item item)
-    {
-        return new TooltipInfo(item.description, item.name);
+        var item = GetItem(itemstats.itemID);
+        if(item == null) return null; 
+
+        return item.GetTooltip(itemstats);
     }
 
 

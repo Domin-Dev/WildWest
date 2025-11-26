@@ -5,9 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
-using UnityEngine;
-using UnityEngine.TextCore.Text;
+
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct GoInGameServerSystem : ISystem

@@ -25,8 +25,6 @@ public class EquipmentConfig : MonoBehaviour
             return i;
         }
     }
-
-
     public void Awake()
     {
         var config = Resources.Load<EquipmentConfigData>("Config/EquipmentConfig");

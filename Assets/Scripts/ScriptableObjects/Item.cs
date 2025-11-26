@@ -1,5 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Text;
+
+
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]
 public class Item : ScriptableObject
 {
@@ -30,6 +34,38 @@ public class Item : ScriptableObject
     private void OnValidate()
     {
        if(ID == -1) ID = Resources.Load<IDManager>("IDManager").GetNextID();
+    }
+
+    public virtual TooltipInfo GetTooltip(ItemStats itemStats)
+    {
+        StringBuilder content = new StringBuilder();
+        StringBuilder header = new StringBuilder();
+        Color? hColor = UIAssetsManager.instance.GetQualityColor(itemStats.quality);
+
+        header.Append(name);
+        if (itemStats.quality != Quality.none)
+            header.Append($" [ {itemStats.quality.ToString().ToUpper()} ]");
+
+        content.Append(description);
+
+        var tags = ItemsAsset.instance.GetItemTags(itemStats.itemID);
+        if (tags.Length > 0)
+        {   
+            UIStringsHelper.Append(content,UIManager.instance.GetProperty("Tags"), tags);
+        }
+        // if (itemStats is ItemWithBar)
+        // {
+        //     ItemWithBar barValue = (ItemWithBar)itemStats;
+        //     string bar = ItemsAsset.instance.GetBarName(itemStats.itemID);
+        //      UIStringsHelper.Append(content, UIManager.instance.GetColorHexStringForItem(itemStats.itemID), .StringDatabase.GetLocalizedString(Translations.eqTable, bar, fallbackBehavior: FallbackBehavior.UseProjectSettings),bar,barValue.current.ToString("F2") + "/" + barValue.maxValue.ToString("F2"));
+        // }
+
+        if (itemStats.wetness >= 0.01)
+             UIStringsHelper.Append(content, UIManager.instance.GetProperty("Wetness"), itemStats.wetness.ToString("F2") + " %");
+         UIStringsHelper.Append(content, UIManager.instance.GetProperty("MaxStack") , stackMax.ToString());
+      
+ 
+        return new TooltipInfo(content.ToString(), header.ToString(),hColor);
     }
 }
 
@@ -89,5 +125,7 @@ public class Destroyable : Item, IItemBar
     {
         return durability;
     }
+
+
 }
 

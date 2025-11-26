@@ -16,8 +16,8 @@ public class Recipe : MonoBehaviour, IPointerClickHandler,IPointerEnterHandler,I
     }
     public void OnPointerEnter(PointerEventData eventData)
     {
-        TooltipInfo tooltipInfo = ItemsAsset.instance.GetTooltipInfo(id);
-        TooltipSystem.Show(tooltipInfo.content, tooltipInfo.header);
+        //TooltipInfo tooltipInfo = ItemsAsset.instance.GetTooltipInfo(id);
+       // TooltipSystem.Show(tooltipInfo.content, tooltipInfo.header);
     }
     public void OnPointerExit(PointerEventData eventData)
     {
