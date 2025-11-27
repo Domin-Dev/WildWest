@@ -182,6 +182,13 @@ public class ItemsAsset : MonoBehaviour
             return null;
     }
 
+    public bool TryGetItem<T>(int itemId, out T item) where T : Item
+    {
+        item = GetItem<T>(itemId);
+        return item != null;
+    }
+
+
     public string GetBarName(int itemID)
     {
         var item = GetItem(itemID) as IItemBar;
@@ -206,6 +213,9 @@ public class ItemsAsset : MonoBehaviour
         return null;
     }
        
+
+
+
     public TooltipInfo GetTooltipInfo(ItemStats itemstats)
     {
         var item = GetItem(itemstats.itemID);

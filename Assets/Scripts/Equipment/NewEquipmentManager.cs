@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Profiling.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
 
@@ -36,7 +37,6 @@ public class Container : IHaveTooltip
            
         return new TooltipInfo(content.ToString(), header.ToString(),null);
     }
-    
     private void WriteContainerStats(StringBuilder header, StringBuilder content)
     {
         if (mandatoryProperties == MandatoryProperties.tag)
@@ -157,10 +157,25 @@ public class NewEquipmentManager : MonoBehaviour
         ClearSelection();
         DragManager.instance.UpdateSelected(null);
     }
-    public void CombineAllItems(SlotPosition slotPosition)
+   
+    public void DoubleClick(SlotPosition slotPosition)
+    {
+        int id = GetItemStats(slotPosition).itemID;
+
+        if(ItemsAsset.instance.TryGetItem<Garment>(id,out Garment item))
+        {
+            SendMoveItem(slotPosition,new SlotPosition(1,1),int.MaxValue);
+            return;
+        }
+        CombineAllItems(slotPosition);
+    }
+
+    private void CombineAllItems(SlotPosition slotPosition)
     {
         RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
     }
+
+
     private int SelectN(int itemQuantity, SelectionMode selectionMode, int n = 1)
     {
         switch (selectionMode)
@@ -213,8 +228,6 @@ public class NewEquipmentManager : MonoBehaviour
         if (stats != null && quantity + stats.quantity > maxStack)
             quantity = maxStack - stats.quantity;
 
-
-        Debug.Log(selectedItem is ItemWithBar);
 
         bool itemExist = SetOrAddItemSlot(to, selectedItem.Clon(quantity));
         selectedItem.quantity -= quantity;
@@ -346,10 +359,8 @@ public class NewEquipmentManager : MonoBehaviour
 
         UIManager.instance.LoadSlots(v, entity, container, v.gridIndex == 0);
         if (containerComponent.containerIndex == 0)
-        {
             UIManager.instance.LoadBarSlots(container, entity);
-            // ChangeSelectedSlot(0);
-        }
+        
 
 
     }
@@ -528,12 +539,28 @@ public class NewEquipmentManager : MonoBehaviour
             UIManager.instance.UpdateItemSlot(container, GetItemStats(slotPosition), slotPosition.slotIndex);
         }
     }
-    private void SendMoveItem(SlotPosition to, int quantity)
+    private void SendMoveItem(SlotPosition from,SlotPosition to, int quantity)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() { to = to, value = quantity });
+        RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() {
+             to = to,
+             from = from, 
+             value = quantity
+             });
         entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
         entityCommandBuffer.Dispose();
+    }
+    private void SendMoveItem(SlotPosition to, int quantity)
+    {
+        SendMoveItem(SlotPosition.NullSlot,to,quantity);
+    }
+
+
+    public TooltipInfo GetTooltipInfo(int containerIndex)
+    {
+        if(containers.TryGetValue(containerIndex,out Container c))
+            return c.GetTooltip();
+        return null;
     }
 
     #endregion

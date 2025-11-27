@@ -38,6 +38,15 @@ public static class EQHelperClient
         return -(slotIndex + 1);
     }
 
+
+    // normal == no selected
+    public static int GetNormalSlotIndex(int slotIndex)
+    {
+        if(slotIndex < 0) return ConvetSlotIndexToSelectedSlotIndex(slotIndex);
+        return slotIndex;
+    }
+
+
     public static ContainerType GetContainerType(int containerIndex)
     {
         ContainerType type = ContainerType.Standard;

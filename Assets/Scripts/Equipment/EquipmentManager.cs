@@ -22,12 +22,20 @@ public struct SlotPosition
         this.slotIndex = slotIndex;
     }
 
+
+
     public bool Compare(SlotPosition slotPosition)
     {
         return Equals(slotPosition);
     }
 
-    public static SlotPosition NullSlot = new SlotPosition(-1, -1);
+    public bool IsNullSlot()
+    {
+        return this.Compare(NullSlot);
+    }
+
+
+    public static readonly SlotPosition NullSlot = new SlotPosition(-1, -1);
 
 
     public override string ToString()

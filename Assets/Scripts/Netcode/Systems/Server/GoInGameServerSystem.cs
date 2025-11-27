@@ -68,6 +68,8 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
             entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });
 
+
+
             //entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
             Entity confirmation = entityCommandBuffer.CreateEntity();

@@ -18,7 +18,5 @@ public struct ItemBarData : IBufferElementData, IGetSlot
         return slot;
     }
 }
-public class ExampleManagedComponent : IComponentData
-{
-    public int Value;
-}
+
+

@@ -30,7 +30,6 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
 
-            AddComponent(entity, new PlayerOutfitStats());
   
             AddBuffer<CooldownTargetTick>(entity);
         }
@@ -88,8 +87,14 @@ public struct PlayerLook : IComponentData
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
 public struct Player : IComponentData
 {
-    public float speed;
+    [GhostField] public float speed;
     [GhostField] public FixedString128Bytes playerName;
+
+    [GhostField] public float armor; 
+    [GhostField] public float movementSpeed;
+    [GhostField] public float insulation;
+    [GhostField] public float waterResistance;
+    [GhostField] public float aesthetic;
 }
 public struct Character : IComponentData
 {

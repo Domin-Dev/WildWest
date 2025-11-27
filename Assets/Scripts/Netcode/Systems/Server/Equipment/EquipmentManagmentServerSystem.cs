@@ -30,27 +30,25 @@ partial struct EquipmentManagmentServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQMoveItem>>().WithEntityAccess())
         {
-
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
+            SlotPosition from =  command.ValueRO.from;
+            if(command.ValueRO.from.IsNullSlot())
+                from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
 
-            var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
-            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player, selectedSlot.ValueRO.Position.containerIndex);
+
+            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player, from.containerIndex);
             var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.ValueRO.to.containerIndex);
-
-
-            Debug.Log($"EQMoveItem from {selectedSlot.ValueRO.Position.ToString()} to {command.ValueRO.to.ToString()}");
-
 
 
             List<EquipmentEvent> events = new List<EquipmentEvent>();
             if (containerFrom.HasValue && containerTo.HasValue)
             {
                 var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
-                    containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, selectedSlot.ValueRO.Position.slotIndex, command.ValueRO.value);
+                    containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, from.slotIndex, command.ValueRO.value);
                 if (tab != null) events.AddRange(tab);
             }
-            events.Add(new EquipmentEvent(new EquipmentEventData(EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.ValueRO.Position.slotIndex), 1), selectedSlot.ValueRO.Position.containerIndex));
+            events.Add(new EquipmentEvent(new EquipmentEventData(EQHelperClient.GetNormalSlotIndex(from.slotIndex), 1), from.containerIndex));
 
             EQHelper.SendEvents(ref entityCommandBuffer,networkID,events.ToArray());
             entityCommandBuffer.DestroyEntity(entity);

@@ -1,4 +1,4 @@
-﻿using Unity.Entities;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 
@@ -43,7 +43,4 @@ public struct ContainerLoaded : IComponentData
 {
 }
 
-public struct OnEquip : IComponentData
-{
-    public SlotPosition slotPosition;
-}
+

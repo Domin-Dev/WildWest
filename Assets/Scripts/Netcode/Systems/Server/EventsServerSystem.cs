@@ -1,8 +1,9 @@
 using System;
-using Unity.Burst;
+using UnityEngine;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -23,27 +24,13 @@ partial struct EventsServerSystem : ISystem
         foreach ((RefRO<EquipmentEvent> eventData,Entity entity)
         in SystemAPI.Query<RefRO<EquipmentEvent>>().WithEntityAccess())
         {
+            Debug.Log("new item!!! " + eventData.ValueRO.data.slot);
             CreateNewEquipmentEvent(ref state,eventData.ValueRO);
             entityCommandBuffer.DestroyEntity(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    
-    //public void CreateNewChunkEvent(int networkID, ChunkEvents chunkEvent)
-    //{
-    //    foreach ((DynamicBuffer<ChunkEvents> events, RefRO<GhostOwner> ghostOwner, RefRW<ServerChunkEventCounter> counter, RefRO<ChunkEventCounter> clientCounter)
-    //    in SystemAPI.Query<DynamicBuffer<ChunkEvents>, RefRO<GhostOwner>, RefRW<ServerChunkEventCounter>, RefRO<ChunkEventCounter>>().WithAll<Player>())
-    //    {
-    //        if (ghostOwner.ValueRO.NetworkId == networkID)
-    //        {
-    //            chunkEvent.index = counter.ValueRO.index;
-    //            events.Add(chunkEvent);
-    //            counter.ValueRW.index++;
-    //            ClearBuffer(events,clientCounter.ValueRO.index);
-    //        }
-    //    }
-    //}
     public void CreateNewEquipmentEvent(ref SystemState state,EquipmentEvent equipmentEvent)
     {
         foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<GhostOwner> ghostOwner, RefRO<ContainerComponent> container, RefRW<ServerEquipmentEventCounter> counter, RefRO<EquipmentEventCounter> clientCounter)
@@ -52,6 +39,8 @@ partial struct EventsServerSystem : ISystem
             if (ghostOwner.ValueRO.NetworkId == equipmentEvent.networkID && container.ValueRO.containerIndex == equipmentEvent.containerIndex)
             {
                 EquipmentEventBuffer equipmentEventBuffer = new EquipmentEventBuffer(equipmentEvent.data, counter.ValueRO.index);
+                               Debug.Log("new item!!! " + equipmentEvent.data.slot + "  " + container.ValueRO.containerIndex );
+            
                 events.Add(equipmentEventBuffer);
                 counter.ValueRW.index++;
                 ClearBuffer(events, clientCounter.ValueRO.index);

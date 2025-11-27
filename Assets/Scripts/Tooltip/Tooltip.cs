@@ -63,7 +63,6 @@ public class Tooltip : MonoBehaviour
         Show();
         LayoutRebuilder.ForceRebuildLayoutImmediate(verticalLayoutGroup.GetComponent<RectTransform>());
         UpdatePosition();
-        Debug.Log("NEWWW!!!");
 
     }
 
@@ -75,8 +74,7 @@ public class Tooltip : MonoBehaviour
 
     public void Hide()
     {
-        isShow = false;
-        Debug.Log("Hide!!!");
+        isShow = false; 
         gameObject.SetActive(false);
     }
 

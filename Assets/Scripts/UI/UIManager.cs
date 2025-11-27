@@ -1228,8 +1228,6 @@ public class UIManager : MonoBehaviour
         {
             LoadContainerOptions(equipmentGrid,containerComponent);
             LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.parent.GetComponent<RectTransform>());
-            if(containerComponent.containerType == ContainerType.Outfit)
-                containerComponent.gridTransform.AddComponent<StaticTooltipTrigger>().SetUp(containerComponent);
         }
 
         OpenEquipment(false);
