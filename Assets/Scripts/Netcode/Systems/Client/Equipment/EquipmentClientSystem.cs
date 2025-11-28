@@ -31,8 +31,7 @@ partial struct EquipmentClientSystem : ISystem
                         {
                             case 1:
                                 Debug.Log(" aaaaaAaaaaaaaaaa" + ev.data.slot); 
-                                if (ev.data.slot >= 0)
-                                    
+                                if (ev.data.slot >= 0)                          
                                     NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(container.ValueRO.containerIndex, ev.data.slot));
                                 break;
                             case 2:

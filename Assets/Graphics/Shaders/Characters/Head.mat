@@ -96,8 +96,8 @@ Material:
     m_Colors:
     - _HairColor: {r: 0.45660365, g: 0.26073897, b: 0.054275475, a: 1}
     - _HatColor: {r: 0.71841145, g: 0.51559556, b: 0.1314855, a: 1}
-    - _MaskColor: {r: 1, g: 0.39418858, b: 0, a: 1}
-    - _SkinColor: {r: 0.80377346, g: 0.59834296, b: 0.34425768, a: 1}
+    - _MaskColor: {r: 1, g: 0.39607847, b: 0, a: 1}
+    - _SkinColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &545638399688690190

@@ -19,7 +19,7 @@ public class DragManager : MonoBehaviour
     private SlotPosition lastSlotPostion;
 
     private float lastSelectionTime = 0f;
-    private float doubleClickThreshold = 0.5f;
+    private float doubleClickThreshold = 0.55f;
 
     [SerializeField] Canvas canvas;
 

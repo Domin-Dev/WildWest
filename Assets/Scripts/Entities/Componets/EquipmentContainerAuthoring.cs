@@ -18,6 +18,8 @@ public class EquipmentContainerAuthoring : MonoBehaviour
 
             AddBuffer<InventorySlot>(entity);
             AddBuffer<ItemBarData>(entity);
+            AddBuffer<OptionalItemData>(entity);
+
 
             AddBuffer<EquipmentEventBuffer>(entity);
         }

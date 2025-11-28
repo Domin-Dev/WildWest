@@ -40,7 +40,6 @@ partial struct EquipmentManagmentServerSystem : ISystem
             var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player, from.containerIndex);
             var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.ValueRO.to.containerIndex);
 
-
             List<EquipmentEvent> events = new List<EquipmentEvent>();
             if (containerFrom.HasValue && containerTo.HasValue)
             {

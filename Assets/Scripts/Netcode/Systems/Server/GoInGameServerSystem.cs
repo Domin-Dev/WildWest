@@ -61,6 +61,7 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent(character, new SendToPlayer());
 
 
+           
             AddEquipmentEntities(ref state, ref entityCommandBuffer, character, networkId);
             
 
@@ -162,9 +163,12 @@ partial struct GoInGameServerSystem : ISystem
 
         entityCommandBuffer.AddComponent(e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
         entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = index});
+        
+        
         entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(capacity + 1);
+        entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(capacity + 1);
 
-
+        
         entityCommandBuffer.AddComponent(e, new SendToPlayer());
     }
 

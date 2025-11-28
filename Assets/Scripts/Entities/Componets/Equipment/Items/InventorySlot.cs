@@ -6,10 +6,10 @@ using Unity.NetCode;
 public struct InventorySlot : IBufferElementData, IGetSlot
 {
     [GhostField] public int slot;
-
     [GhostField] public int itemId;    
     [GhostField] public int quantity;
     [GhostField] public float wetness; // 0% - 100%
+    [GhostField] public float3 color; // 0% - 100%
     [GhostField] public Quality quality; 
 
 

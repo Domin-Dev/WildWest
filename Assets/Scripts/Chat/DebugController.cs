@@ -201,7 +201,7 @@ public static class DebugController
         {
             if (ClientServerBootstrap.HasServerWorld)
             {
-                int[] items = {11,12,133,14,15,16,17,18};
+                int[] items = {11,12,133,14,15,16,17,18,47};
 
                 foreach (int i in items)
                 {

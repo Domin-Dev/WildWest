@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public abstract class CommandBase 
@@ -54,6 +55,12 @@ public abstract class CommandBase
         {
             if (bool.TryParse(value, out var tmp)) { result = tmp; return true; }
         }
+        else if (targetType == typeof(float3))
+        {
+            if (Eqhe) { result = tmp; return true; }
+        }
+
+
         result = null;
         return false;
     }

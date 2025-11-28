@@ -54,14 +54,20 @@ public class TooltipSystem : MonoBehaviour
             Show(tooltipInfo);
     }
     
-    //public static void Show(Container container)
-    //{
-    //    TooltipInfo tooltipInfo = GetTooltip(itemStats, slotPosition);
-    //    Show(tooltipInfo);
-    //}
-
-
-
+    public static void Show(Func<TooltipInfo> func)
+    {
+        ShowBase(() =>
+        {
+            TooltipInfo tooltipInfo = func();
+            if(tooltipInfo != null)
+            {
+                current.displayingObj = tooltipInfo.displayingObj; 
+                current.tooltip.SetText(tooltipInfo.content,tooltipInfo.header, tooltipInfo.headerColor);
+            }
+            return false;
+        });
+    }
+    
 
     private static void ShowBase(Func<bool> func, float time = 0.45f)
     {
@@ -105,6 +111,17 @@ public class TooltipSystem : MonoBehaviour
         slotPosition = null;
         return false;
     }
+
+    public static bool IsSelected(SlotPosition slotPosition)
+    {
+        if(IsSlotPostion(out SlotPosition? s))
+        {
+            Debug.Log(s);
+            return s.Equals(slotPosition);
+        }
+        return false;
+    }
+
     public static void Hide()
     {
         current.displayingObj = null;

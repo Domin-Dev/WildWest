@@ -1,5 +1,4 @@
 ﻿
-using System.ComponentModel;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -24,6 +23,7 @@ public struct EquipmentEvent : IComponentData
     public EquipmentEventData data;
     public int networkID;
     public int containerIndex;
+    public SlotPosition slotPosition => new SlotPosition(containerIndex,data.slot);
 
     public EquipmentEvent(EquipmentEventData data, int containerIndex, int networkID = 0)
     {

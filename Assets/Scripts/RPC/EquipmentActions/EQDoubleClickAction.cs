@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-public struct EQCombineAllItems : IRpcCommand
+public struct EQDoubleClickAction : IRpcCommand
 {
     public SlotPosition position;
 }

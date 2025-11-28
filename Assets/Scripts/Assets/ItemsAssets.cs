@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -313,11 +314,16 @@ public class ItemsAsset : MonoBehaviour
             {
                 startValue = bar.GetStartBarValue();
                 maxValue = bar.GetMaxBarValue();
+                if(maxValue <= 0) 
+                {
+                    startValue = 1;
+                    maxValue = 1;
+                }
                 return true;
             }
         }
-        startValue = 0; 
-        maxValue = 0;
+        startValue = 1; 
+        maxValue = 1;
         return false;
     }
     public bool HaveBarValue(int itemID)

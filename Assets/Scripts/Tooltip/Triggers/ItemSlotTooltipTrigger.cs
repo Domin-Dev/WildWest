@@ -16,9 +16,22 @@ public class ItemSlotTooltipTrigger :  TooltipTriggerBase
 
         Debug.Log("!!!!!!!!!!!!!!dziala!!!!!!!!!!!!!!!!!1");
 
+
+        Debug.Log(item == null);
         if (item == null) 
+        {
             TooltipSystem.Show(NewEquipmentManager.instance.GetTooltipInfo(slotPosition.containerIndex));
- 
-        TooltipSystem.Show(slotPosition,item);
+        }
+        else
+        {
+            TooltipSystem.Show(() => 
+            {
+                ItemStats itemStats = NewEquipmentManager.instance.ReadItemStats(slotPosition);
+                if( itemStats == null) return null;
+                TooltipInfo tooltipInfo = ItemsAsset.instance.GetTooltipInfo(itemStats);
+                tooltipInfo.displayingObj = slotPosition;
+                return tooltipInfo;
+            });
+        }
     }
 }

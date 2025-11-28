@@ -160,20 +160,10 @@ public class NewEquipmentManager : MonoBehaviour
    
     public void DoubleClick(SlotPosition slotPosition)
     {
-        int id = GetItemStats(slotPosition).itemID;
-
-        if(ItemsAsset.instance.TryGetItem<Garment>(id,out Garment item))
-        {
-            SendMoveItem(slotPosition,new SlotPosition(1,1),int.MaxValue);
-            return;
-        }
-        CombineAllItems(slotPosition);
+        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDoubleClickAction() { position = slotPosition});
     }
 
-    private void CombineAllItems(SlotPosition slotPosition)
-    {
-        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQCombineAllItems() { position = slotPosition});
-    }
+
 
 
     private int SelectN(int itemQuantity, SelectionMode selectionMode, int n = 1)
@@ -436,16 +426,11 @@ public class NewEquipmentManager : MonoBehaviour
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
-            bool s = false;
             if (!selectedSlot.Compare(SlotPosition.NullSlot) && slotPosition.Compare(selectedSlot))
             {
                 ItemStats item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
                     EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
-
                 selectedItem = item;
-                Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
-
-                s = true;
                 DragManager.instance.UpdateSelected(item);
             }
             else
@@ -454,15 +439,21 @@ public class NewEquipmentManager : MonoBehaviour
                 if (item != null)
                 {
                     selectedItem = item;
-                    Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
-
                     selectedSlot = slotPosition;
                     DragManager.instance.UpdateSelected(item);
                 }
             }
-
+            
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
+
+
+            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   " + slotPosition); 
+            if(TooltipSystem.IsSelected(slotPosition))
+            {
+                TooltipSystem.Show(slotPosition, itemSlot,true);
+                Debug.Log("...............................");
+            }
         }
     }
     public void ClearContainer(int index, ref EntityCommandBuffer ecb)
@@ -530,7 +521,6 @@ public class NewEquipmentManager : MonoBehaviour
         }
         if (TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
             TooltipSystem.Show(slotPosition.Value, GetItemStats(slotPosition.Value),true);
-
     }
     public void LocalUpdateSlotIndex(SlotPosition slotPosition)
     {
