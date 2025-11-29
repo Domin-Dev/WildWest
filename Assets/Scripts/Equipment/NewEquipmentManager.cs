@@ -41,7 +41,7 @@ public class Container : IHaveTooltip
     {
         if (mandatoryProperties == MandatoryProperties.tag)
         {
-            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag(mandatoryData)?.tagName);
+            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag(mandatoryData)?.localizedString.GetLocalizedString());
             UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)
@@ -293,7 +293,6 @@ public class NewEquipmentManager : MonoBehaviour
     // Return true if exist itemslot
     private bool SetOrAddItemSlot(SlotPosition slotPosition, ItemStats itemSlot)
     {
-        Debug.Log(itemSlot + " ------ " + (itemSlot is ItemWithBar));
         if (GetItemStats(slotPosition) != null)
         {
             AddItemSlot(slotPosition, itemSlot);
@@ -448,11 +447,9 @@ public class NewEquipmentManager : MonoBehaviour
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
 
 
-            Debug.Log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa   " + slotPosition); 
             if(TooltipSystem.IsSelected(slotPosition))
             {
                 TooltipSystem.Show(slotPosition, itemSlot,true);
-                Debug.Log("...............................");
             }
         }
     }

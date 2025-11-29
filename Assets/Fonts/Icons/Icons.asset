@@ -260,6 +260,26 @@ MonoBehaviour:
     m_GlyphIndex: 35
     m_Scale: 1
     m_Name: Aesthetic
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 36
+    m_Scale: 1
+    m_Name: Hunger
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 37
+    m_Scale: 1
+    m_Name: Health
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 38
+    m_Scale: 1
+    m_Name: Health
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 39
+    m_Scale: 1
+    m_Name: Color
   m_GlyphTable:
   - m_Index: 0
     m_Metrics:
@@ -830,6 +850,70 @@ MonoBehaviour:
       m_HorizontalAdvance: 18
     m_GlyphRect:
       m_X: 120
+      m_Y: 0
+      m_Width: 20
+      m_Height: 20
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -1825917198, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
+  - m_Index: 36
+    m_Metrics:
+      m_Width: 20
+      m_Height: 20
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 10.5
+      m_HorizontalAdvance: 18
+    m_GlyphRect:
+      m_X: 140
+      m_Y: 0
+      m_Width: 20
+      m_Height: 20
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -1825917198, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
+  - m_Index: 37
+    m_Metrics:
+      m_Width: 20
+      m_Height: 20
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 10.5
+      m_HorizontalAdvance: 18
+    m_GlyphRect:
+      m_X: 160
+      m_Y: 0
+      m_Width: 20
+      m_Height: 20
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -1825917198, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
+  - m_Index: 38
+    m_Metrics:
+      m_Width: 20
+      m_Height: 20
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 10.5
+      m_HorizontalAdvance: 18
+    m_GlyphRect:
+      m_X: 180
+      m_Y: 0
+      m_Width: 20
+      m_Height: 20
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -1825917198, guid: 48fb58dbf4b1f5f46b24e28a1fc81c82, type: 3}
+  - m_Index: 39
+    m_Metrics:
+      m_Width: 20
+      m_Height: 20
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 10.5
+      m_HorizontalAdvance: 18
+    m_GlyphRect:
+      m_X: 200
       m_Y: 0
       m_Width: 20
       m_Height: 20

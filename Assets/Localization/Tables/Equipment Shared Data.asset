@@ -119,6 +119,10 @@ MonoBehaviour:
     m_Key: Aesthetic
     m_Metadata:
       m_Items: []
+  - m_Id: 6153795537383424
+    m_Key: Color
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

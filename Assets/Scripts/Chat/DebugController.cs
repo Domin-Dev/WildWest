@@ -156,7 +156,7 @@ public static class DebugController
             }
             return null;
         }));
-        commandList.Add(new DebugCommand<int, int,float,int,float>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue) =>
+        commandList.Add(new DebugCommand<int, int,float,int,float,MyColor>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value] [Color]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue,MyColor color) =>
         {
             if (ClientServerBootstrap.HasServerWorld)
             {
@@ -168,7 +168,8 @@ public static class DebugController
                         itemId = id,
                         wetness = wetness,
                         quality = (Quality)quality,
-                        quantity = quantity
+                        quantity = quantity,
+                        color = color,
                     },
                     barValue = barValue,
                     networkEntity = e

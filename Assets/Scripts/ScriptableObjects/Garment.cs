@@ -11,7 +11,6 @@ public class Garment : Destroyable
     public Sprite[] sprites;
 
     public OutfitStats garmentStats;
-
     
     public override TooltipInfo GetTooltip(ItemStats itemStats)
     {

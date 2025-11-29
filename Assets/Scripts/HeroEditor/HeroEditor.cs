@@ -162,9 +162,18 @@ public class HeroEditor: MonoBehaviour
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
         spriteRenderer.GetPropertyBlock(materialPropertyBlock);
-        materialPropertyBlock.SetColor(name, value);
+        materialPropertyBlock.SetColor(name, value);     
         spriteRenderer.SetPropertyBlock(materialPropertyBlock);
     }
+
+    public static void SetMaterialTexture2D(SpriteRenderer spriteRenderer, string name, Texture2D value)
+    {
+        MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
+        spriteRenderer.GetPropertyBlock(materialPropertyBlock);
+        materialPropertyBlock.SetTexture(name, value);     
+        spriteRenderer.SetPropertyBlock(materialPropertyBlock);
+    }
+
     private int GetMaterialInt(SpriteRenderer spriteRenderer, string name)
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();

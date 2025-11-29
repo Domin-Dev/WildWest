@@ -9,9 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b14d90bbc0b0b9b44b669c7c7e90daa0, type: 3}
-  m_Name: 0Headwear
-  m_EditorClassIdentifier: Assembly-CSharp::Tag
+  m_Script: {fileID: 11500000, guid: ebde2a68752d16f45ad44fdb6db01cd5, type: 3}
+  m_Name: Headwear
+  m_EditorClassIdentifier: Assembly-CSharp::GarmentTag
   _icon: {fileID: 918400040, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   _localizedString:
     m_TableReference:
@@ -24,6 +24,9 @@ MonoBehaviour:
     m_LocalVariables: []
   _tagName: Headwear
   _ID: 0
+  _bodyPart: 0
+  _texturePropertyName: _Headwear
+  _colorPropertyName: _HeadwearColor
   references:
     version: 2
     RefIds: []

@@ -111,7 +111,6 @@ partial struct NewPlayerSystem : ISystem
 
     private void SetPlayerLook(ref PlayerLook playerLook,ref Hands hands, ref Character character, ref SystemState state)
     {
-
         var mpb = new MaterialPropertyBlock();
 
         state.EntityManager.GetComponentObject<SpriteRenderer>(character.head).SetPropertyBlock(mpb);

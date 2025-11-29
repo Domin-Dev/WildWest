@@ -32,7 +32,9 @@ public static class EQHelper
    
     public static bool TryGetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player,int containerIndex, out PlayerContainers? playerContainer)
     {
-        playerContainer  = GetPlayerContainer(containersLookup,player,containerIndex);
+        playerContainer = GetPlayerContainer(containersLookup,player,containerIndex);
+        
+
         return playerContainer.HasValue;
     }
     public static PlayerContainers? GetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player, int containerIndex)
@@ -93,6 +95,9 @@ public static class EQHelper
     public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out InventorySlot? inventorySlot, out int bufferIndex)
     {
         var container = GetPlayerContainer(containers, player, slotPosition.containerIndex);
+
+        Debug.Log(container.HasValue + " " + container.Value.entity);
+
         if(container.HasValue)
             return TryGetBufferIndex(slotsLookup, slotPosition.slotIndex, container.Value.entity, out inventorySlot, out bufferIndex);
         inventorySlot = null;
@@ -119,19 +124,24 @@ public static class EQHelper
     public static bool TryGetBufferIndex<T>(BufferLookup<T> lookup, int slotIndex, Entity container, out T? bufforElement , out int bufferIndex) where T : unmanaged,IBufferElementData,IGetSlot
     {
         var slots = lookup[container];
+
+        Debug.Log(slots.Length);
         for (int j = 0; j < slots.Length; j++)
         {
-            ref var slot = ref slots.ElementAt(j);
+            var slot = slots[j];
             if (slot.GetSlot() == slotIndex)
             {
                 bufforElement = slot;
                 bufferIndex = j;
+                Debug.Log("jest git");
                 return true;
             }
         }
 
         bufferIndex = -1;
         bufforElement = null;
+                        Debug.Log("nie jest git");
+
         return false;
     }
 
@@ -268,7 +278,8 @@ public static class EQHelper
                                 itemId = itemTo.Value.itemId,
                                 quantity = itemTo.Value.quantity,
                                 quality = itemTo.Value.quality,
-                                wetness = itemTo.Value.wetness
+                                wetness = itemTo.Value.wetness,
+                                color = itemTo.Value.color
                             });
 
                             if (haveBarTo)
@@ -336,7 +347,8 @@ public static class EQHelper
                             itemId = itemFrom.Value.itemId,
                             quantity = to,
                             quality = itemFrom.Value.quality,
-                            wetness = itemFrom.Value.wetness
+                            wetness = itemFrom.Value.wetness,
+                            color = itemFrom.Value.color
                         });
 
                         if (haveBarFrom)
@@ -481,6 +493,7 @@ public static class EQHelper
                     slot = item.pos.slotIndex,
                     wetness = itemData.item.wetness,
                     quality = itemData.item.quality,
+                    color = itemData.item.color,
                 });
                 if(hasBar)
                 {

@@ -43,7 +43,7 @@ Material:
     m_Floats:
     - _AlphaClip: 0.5
     - _ColorMask: 15
-    - _DarkValue: 0.728
+    - _DarkValue: 0.72
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0

@@ -7,6 +7,7 @@ public class IDManager : ScriptableObject
     public int LastID  = 0;
     public int LastTagID = 0;
 
+
     public int GetNextID()
     {
         LastID++;

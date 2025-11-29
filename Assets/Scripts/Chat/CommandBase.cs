@@ -55,11 +55,12 @@ public abstract class CommandBase
         {
             if (bool.TryParse(value, out var tmp)) { result = tmp; return true; }
         }
-        else if (targetType == typeof(float3))
+        else if (targetType == typeof(MyColor))
         {
-            if (Eqhe) { result = tmp; return true; }
+            if (MyColor.TryParseHex(value, out var tmp)) { result = tmp; return true; }
         }
 
+        
 
         result = null;
         return false;

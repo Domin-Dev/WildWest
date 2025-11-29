@@ -109,7 +109,6 @@ public class UIManager : MonoBehaviour
 
     private List<int> loadedScene = new List<int>();
     private List<(Color color, Type type)> colors;
-
     private Dictionary<string,Property> properties;
 
     public event EventHandler windowOpen;
@@ -558,6 +557,26 @@ public class UIManager : MonoBehaviour
     }
 
 
+
+
+
+
+    private void SetColor(ItemStats stats,Transform itemTransform)
+    {
+        Image image = itemTransform.GetComponent<Image>();
+        if(image == null) return;
+
+        if(stats.color.HasValue)
+        {
+            Material mat = new Material(UIAssetsManager.instance.UIColorItem);
+            image.material = mat;
+            mat.SetColor("_Color",stats.color.Value);
+            image.SetMaterialDirty();
+        }
+        else
+            image.material = null;         
+    }
+
     private bool SetBarValue(ItemStats stats, Transform itemObj)
     {
         if (stats as IBarValue != null)
@@ -575,7 +594,6 @@ public class UIManager : MonoBehaviour
         }
         return false;
     }
-
     private void SetWetness(float value,Transform itemTransform)
     {
         value = math.clamp(value, 0f, 1f);
@@ -603,19 +621,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void SetBarValue(Quality quality, Transform itemTransform)
-    {
-        EQQuality obj;
-        obj = itemTransform.GetComponentInChildren<EQQuality>(true);
-        if (quality == Quality.none || quality == Quality.normal)
-            obj.gameObject.SetActive(false);
-        else
-        {
-            obj.gameObject.SetActive(true);
-            obj.gameObject.GetComponent<Image>().sprite = UIAssetsManager.instance.GetQualitySprite(quality);
-        }
-    }
-
 
 
 
@@ -626,6 +631,7 @@ public class UIManager : MonoBehaviour
 
         SetBarValue(itemStats, transform);
         SetWetness(itemStats.GetFloatWetness(), transform);
+        SetColor(itemStats,transform);
         SetQuality(itemStats.quality, transform);
 
 
@@ -741,6 +747,7 @@ public class UIManager : MonoBehaviour
         dragDrop.GetComponent<Image>().sprite = ItemsAsset.instance.GetIcon(stats.itemID);
         dragDrop.GetComponentInChildren<TextMeshProUGUI>().text = stats.quantity > 1 ? stats.quantity.ToString() : "";
         SetWetness(stats.GetFloatWetness(),dragDrop);
+        SetColor(stats,dragDrop);
         SetQuality(stats.quality,dragDrop);
         SetBarValue(stats, dragDrop);
     }
@@ -789,6 +796,7 @@ public class UIManager : MonoBehaviour
                 item.GetComponentInChildren<TextMeshProUGUI>().text = slot.quantity > 1 ? slot.quantity.ToString() : "";
                 SetWetness(slot.GetFloatWetness(), item);
                 SetQuality(slot.quality, item);
+                SetColor(slot,item);
                 SetBarValue(slot, item);
             }
             else

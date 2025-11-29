@@ -13,11 +13,7 @@ public class ItemSlotTooltipTrigger :  TooltipTriggerBase
     {
         SlotPosition slotPosition = GetComponent<IGetSlotPosition>().GetSlotPosition();
         ItemStats item = NewEquipmentManager.instance.ReadItemStats(slotPosition);
-
-        Debug.Log("!!!!!!!!!!!!!!dziala!!!!!!!!!!!!!!!!!1");
-
-
-        Debug.Log(item == null);
+      
         if (item == null) 
         {
             TooltipSystem.Show(NewEquipmentManager.instance.GetTooltipInfo(slotPosition.containerIndex));

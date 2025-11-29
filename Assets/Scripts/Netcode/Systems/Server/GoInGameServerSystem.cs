@@ -110,7 +110,6 @@ partial struct GoInGameServerSystem : ISystem
     private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer ecb, Entity character, int networkID)
     {
         var entities = SystemAPI.GetSingleton<EntitiesReferences>();
-        ecb.AddBuffer<PlayerContainers>(character);
         ecb.AddComponent<ContainerSettings>(character, new ContainerSettings() {
             Position = SlotPosition.NullSlot,
             targetContainer = -1

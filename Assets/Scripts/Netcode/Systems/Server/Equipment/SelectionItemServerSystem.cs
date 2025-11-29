@@ -100,6 +100,7 @@ partial struct SelectionItemServerSystem : ISystem
                     quantity = selectItem.value,
                     wetness = element.wetness,
                     quality = element.quality,
+                    color = element.color,
                 });
 
                 if (EQHelper.TryGetBufferIndex(barsLookup, element.slot, container.Value.entity, out var barData, out int bIndex))

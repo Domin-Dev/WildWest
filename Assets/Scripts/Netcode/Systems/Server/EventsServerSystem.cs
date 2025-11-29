@@ -24,7 +24,6 @@ partial struct EventsServerSystem : ISystem
         foreach ((RefRO<EquipmentEvent> eventData,Entity entity)
         in SystemAPI.Query<RefRO<EquipmentEvent>>().WithEntityAccess())
         {
-            Debug.Log("new item!!! " + eventData.ValueRO.data.slot);
             CreateNewEquipmentEvent(ref state,eventData.ValueRO);
             entityCommandBuffer.DestroyEntity(entity);
         }
@@ -39,8 +38,6 @@ partial struct EventsServerSystem : ISystem
             if (ghostOwner.ValueRO.NetworkId == equipmentEvent.networkID && container.ValueRO.containerIndex == equipmentEvent.containerIndex)
             {
                 EquipmentEventBuffer equipmentEventBuffer = new EquipmentEventBuffer(equipmentEvent.data, counter.ValueRO.index);
-                               Debug.Log("new item!!! " + equipmentEvent.data.slot + "  " + container.ValueRO.containerIndex );
-            
                 events.Add(equipmentEventBuffer);
                 counter.ValueRW.index++;
                 ClearBuffer(events, clientCounter.ValueRO.index);

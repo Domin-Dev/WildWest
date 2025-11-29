@@ -56,8 +56,6 @@ public class ItemsAsset : MonoBehaviour
         }
         return itemList.ToArray();
     }
-
-
     public Vector2 GetOffsetVector(int itemID)
     {
         Item item = GetItem(itemID);
@@ -188,8 +186,6 @@ public class ItemsAsset : MonoBehaviour
         item = GetItem<T>(itemId);
         return item != null;
     }
-
-
     public string GetBarName(int itemID)
     {
         var item = GetItem(itemID) as IItemBar;
@@ -348,7 +344,6 @@ public class ItemsAsset : MonoBehaviour
             return tags[tagID];
         return  null;
     }
-
     public string[] GetItemTags(int itemId)
     {
         List<string> tags = new List<string>();
@@ -357,12 +352,26 @@ public class ItemsAsset : MonoBehaviour
         {
             foreach(var i in item.tags)
             {
-                var tag = GetTag(i.tagID);
-                if(tag != null) tags.Add(tag.localizedString.GetLocalizedString());
+                if(tag != null) tags.Add(i.tag.localizedString.GetLocalizedString());
             }
         }
         return tags.ToArray();
     }
+
+    public T GetTagType<T>(int itemId,out Item item) where T : Tag
+    {
+        if(TryGetItem(itemId,out item))
+        {
+            foreach(var tag in item.tags)
+            {
+                if(tag is T)
+                    return tag as T;
+            }
+        }
+        return null;
+    }
+
+
 
 
     public Sprite GetTagIcon(int tagID)
@@ -376,7 +385,7 @@ public class ItemsAsset : MonoBehaviour
         var tags = GetItem(itemID).tags;
         foreach (var tag in tags)
         {
-            if (tag.tagID == tagID)
+            if (tag?.tag?.ID == tagID)
                 return true;
         }
         return false;

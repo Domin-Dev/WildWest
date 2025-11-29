@@ -5,10 +5,13 @@ using UnityEngine;
 public class ItemStats
 {
     public int itemID { private set; get; } = -1;
+    public Quality quality { private set; get; }
     private int _quantity;
     private float _wetness;
-    public Quality quality { private set; get; }
+    private Color? _color;
 
+
+    public Color? color => _color; 
     public int quantity
     {
         set
@@ -39,6 +42,7 @@ public class ItemStats
         this.quantity = itemStats.quantity;
         this.wetness = itemStats.wetness;
         this.quality = itemStats.quality;
+        this._color = itemStats.color;
     }
     public ItemStats(ItemStats itemStats, int quantity)
     {
@@ -46,13 +50,15 @@ public class ItemStats
         this.wetness= itemStats.wetness;
         this.quality = itemStats.quality;
         this.quantity = quantity;
+        this._color = itemStats.color;
     }
-    public ItemStats(int itemID, int itemCount = 1, float wetness = 0, Quality quality = Quality.none)
+    public ItemStats(int itemID, int itemCount = 1, float wetness = 0, Quality quality = Quality.none, Color? color = null)
     {
         this.itemID = itemID;
         this.wetness = wetness;
         this.quality = quality;
         this.quantity = itemCount;
+        this._color = color;
     }
     public ItemStats(InventorySlot inventorySlot)
     {
@@ -60,6 +66,7 @@ public class ItemStats
         quantity = inventorySlot.quantity;
         wetness = inventorySlot.wetness;
         quality = inventorySlot.quality;
+        _color = inventorySlot.color.ConvertToUnityColor();
     }
 
 
@@ -84,12 +91,10 @@ public class ItemStats
     {
         return new ItemStats(this,quantity);
     }
-
     public virtual ItemStats Clon()
     {
         return new ItemStats(this);
     }
-
     public override string ToString()
     {
         return $"Count: {quantity} ItemID: {itemID}"; 

@@ -24,6 +24,14 @@ partial struct ContainerClientSystem : ISystem
         {
             NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
             entityCommandBuffer.AddComponent<ContainerLoaded>(entity);
+            foreach ((RefRO<Player> player, Entity e) in SystemAPI.Query<RefRO<Player>>().WithAll<GhostOwnerIsLocal,PlayerContainers>().WithEntityAccess())
+            {
+                entityCommandBuffer.AppendToBuffer(e, new PlayerContainers() 
+                {
+                     entity = entity,
+                     index = containerComponent.ValueRO.containerIndex
+                });
+            }
         }
         
         

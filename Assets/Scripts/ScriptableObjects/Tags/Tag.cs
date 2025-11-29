@@ -20,8 +20,7 @@ public interface IReadTag
 
 
 
-
-[CreateAssetMenu(fileName = "NewTag", menuName = "GameAsset/Tag")]
+[CreateAssetMenu(fileName = "NewTag", menuName = "GameAsset/Tags/Tag")]
 public class Tag : ScriptableObject, IReadTag
 {
     [Header("Tag info")]
@@ -37,10 +36,9 @@ public class Tag : ScriptableObject, IReadTag
     public LocalizedString localizedString => _localizedString;
 
 
-
     private void OnValidate()
     {
         if (_ID == -1) _ID = Resources.Load<IDManager>("IDManager").GetNextTagID();
     }
- 
+
 }

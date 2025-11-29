@@ -53,6 +53,11 @@ partial struct OnEquipServerSystem : ISystem
                         playerComp.ValueRW.armor += item.garmentStats.armor;
                         playerComp.ValueRW.waterResistance += item.garmentStats.waterResistance;
                         playerComp.ValueRW.insulation += item.garmentStats.insulation;
+
+                        RPCHelper.SendRpc(ref entityCommandBuffer, new EQOnEquipRPC()
+                        {
+                            position = command.ValueRO.slotPosition
+                        });
                     }
                 }
             }

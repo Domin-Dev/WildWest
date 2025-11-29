@@ -278,6 +278,27 @@ MonoBehaviour:
       m_LocalVariables: []
     _color: {r: 0.2117647, g: 0.56324846, b: 0.78431374, a: 1}
     _nameIcon: Armor
+  - _name: Color
+    _localizedName:
+      m_TableReference:
+        m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+      m_TableEntryReference:
+        m_KeyId: 6153795537383424
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    _description:
+      m_TableReference:
+        m_TableCollectionName: 
+      m_TableEntryReference:
+        m_KeyId: 0
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    _color: {r: 0.73293316, g: 0.19013485, b: 0.03034279, a: 1}
+    _nameIcon: Color
   references:
     version: 2
     RefIds: []

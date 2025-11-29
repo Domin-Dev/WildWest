@@ -16,7 +16,7 @@ MonoBehaviour:
   description: 
   stackMax: 1
   ID: 12
-  icon: {fileID: 2059572541, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: -637833051, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags:
   - tagID: 1
   crafingIngredients:

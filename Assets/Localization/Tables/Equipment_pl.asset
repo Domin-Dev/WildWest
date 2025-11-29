@@ -126,6 +126,10 @@ MonoBehaviour:
     m_Localized: Estetyka
     m_Metadata:
       m_Items: []
+  - m_Id: 6153795537383424
+    m_Localized: Kolor
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Text;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]
@@ -59,11 +60,17 @@ public class Item : ScriptableObject
         //     string bar = ItemsAsset.instance.GetBarName(itemStats.itemID);
         //      UIStringsHelper.Append(content, UIManager.instance.GetColorHexStringForItem(itemStats.itemID), .StringDatabase.GetLocalizedString(Translations.eqTable, bar, fallbackBehavior: FallbackBehavior.UseProjectSettings),bar,barValue.current.ToString("F2") + "/" + barValue.maxValue.ToString("F2"));
         // }
-
+        
         if (itemStats.wetness >= 0.01)
              UIStringsHelper.Append(content, UIManager.instance.GetProperty("Wetness"), itemStats.wetness.ToString("F2") + " %");
          UIStringsHelper.Append(content, UIManager.instance.GetProperty("MaxStack") , stackMax.ToString());
       
+        if (itemStats.color.HasValue)
+        {
+            string colorHex = ColorUtility.ToHtmlStringRGB(itemStats.color.Value);
+            UIStringsHelper.Append(content,UIManager.instance.GetProperty("Color"), UIStringsHelper.GetColorfulString( "#" + colorHex,colorHex));
+        }
+
  
         return new TooltipInfo(content.ToString(), header.ToString(),hColor);
     }
@@ -93,11 +100,11 @@ public class ItemID
 [System.Serializable]
 public class TagSelection
 {
-    public int tagID;
+    public Tag tag;
 
-    public TagSelection(int tagID)
+    public TagSelection(Tag tag)
     {
-        this.tagID = tagID;
+        this.tag = tag;
     }
 }
 

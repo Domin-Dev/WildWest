@@ -36,6 +36,7 @@ public class  UIAssetsManager : MonoBehaviour
     [SerializeField] public Sprite whiteHeader;
     [Header("Materials")]
     [SerializeField] public Material UIHeadMaterial;
+    [SerializeField] public Material UIColorItem;
     [Header("Rewards")]
     [SerializeField] public Sprite bronzeBackgroundUI;
     [SerializeField] public Sprite silverBackgroundUI;

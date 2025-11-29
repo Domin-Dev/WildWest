@@ -45,6 +45,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 71253a8602cd87e4d8a8abf368fa2363, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Headwear:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 2802e128b3a0cea4cb0dca733b6b8717, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -90,13 +94,14 @@ Material:
     - _Direction: 0
     - _EyesIndex: 2
     - _HairIndex: 26
-    - _HairUnderHat: 1
+    - _HairUnderHat: 0
     - _MouthIndex: 2
     - _PaintingsIndex: 0
     m_Colors:
     - _HairColor: {r: 0.45660365, g: 0.26073897, b: 0.054275475, a: 1}
     - _HatColor: {r: 0.71841145, g: 0.51559556, b: 0.1314855, a: 1}
-    - _MaskColor: {r: 1, g: 0.39607847, b: 0, a: 1}
+    - _HeadwearColor: {r: 0.4339623, g: 0.04830898, b: 0.2136369, a: 1}
+    - _MaskColor: {r: 0.7407658, g: 0.30018252, b: 0.0100423535, a: 1}
     - _SkinColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -138,7 +138,7 @@ public class DebugCommand<T1, T2, T3, T4,T5,T6> : CommandBase
         TryConvert(args[2], typeof(T3), out arg3);
         TryConvert(args[3], typeof(T4), out arg4);
         TryConvert(args[4], typeof(T5), out arg5);
-        TryConvert(args[5], typeof(T5), out arg6);
+        TryConvert(args[5], typeof(T6), out arg6);
 
         return command.Invoke(ref entityCommandBuffer, sender, (T1)arg1, (T2)arg2, (T3)arg3, (T4)arg4,(T5) arg5,(T6) arg6);
     }

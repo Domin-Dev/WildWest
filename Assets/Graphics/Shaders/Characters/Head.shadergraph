@@ -609,7 +609,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
     "m_ObjectId": "08e269105ae448158d3cc9a75b3c8e1a",
     "m_Id": 0,
-    "m_DisplayName": "HatColor",
+    "m_DisplayName": "HeadwearColor",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -712,11 +712,11 @@
     "m_Guid": {
         "m_GuidSerialized": "279a8653-fa6b-4546-8ec0-ccc5233bd42c"
     },
-    "m_Name": "Hat",
+    "m_Name": "Headwear",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "Hat",
-    "m_DefaultReferenceName": "_Hat",
-    "m_OverrideReferenceName": "",
+    "m_RefNameGeneratedByDisplayName": "Headwear",
+    "m_DefaultReferenceName": "_Headwear",
+    "m_OverrideReferenceName": "_Headwear",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
@@ -2232,7 +2232,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Texture2DMaterialSlot",
     "m_ObjectId": "a1a27f4b7a7d49b680bff1aacc411349",
     "m_Id": 0,
-    "m_DisplayName": "Hat",
+    "m_DisplayName": "Headwear",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",
@@ -2524,11 +2524,11 @@
     "m_Guid": {
         "m_GuidSerialized": "99b0d1e5-4e71-4424-b45e-02989ab992dc"
     },
-    "m_Name": "HatColor",
+    "m_Name": "HeadwearColor",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "HatColor",
-    "m_DefaultReferenceName": "_HatColor",
-    "m_OverrideReferenceName": "",
+    "m_RefNameGeneratedByDisplayName": "HeadwearColor",
+    "m_DefaultReferenceName": "_HeadwearColor",
+    "m_OverrideReferenceName": "_HeadwearColor",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
     "m_CustomSlotLabel": "",
@@ -3070,7 +3070,7 @@
     "m_Group": {
         "m_Id": ""
     },
-    "m_Name": "HeadUI",
+    "m_Name": "Head UI",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {
