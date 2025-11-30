@@ -61,9 +61,13 @@ public struct EquipmentEventBuffer : IBufferElementData, IIndexed
         this.data = data;
         this.index = index;
     }
+
+
+    
     // flags
     // 0 
     // 1 - update ItemSlot;
+    //
 }
 
 public struct PlayerContainers : IBufferElementData

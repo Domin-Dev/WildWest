@@ -95,9 +95,6 @@ public static class EQHelper
     public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out InventorySlot? inventorySlot, out int bufferIndex)
     {
         var container = GetPlayerContainer(containers, player, slotPosition.containerIndex);
-
-        Debug.Log(container.HasValue + " " + container.Value.entity);
-
         if(container.HasValue)
             return TryGetBufferIndex(slotsLookup, slotPosition.slotIndex, container.Value.entity, out inventorySlot, out bufferIndex);
         inventorySlot = null;
@@ -124,8 +121,6 @@ public static class EQHelper
     public static bool TryGetBufferIndex<T>(BufferLookup<T> lookup, int slotIndex, Entity container, out T? bufforElement , out int bufferIndex) where T : unmanaged,IBufferElementData,IGetSlot
     {
         var slots = lookup[container];
-
-        Debug.Log(slots.Length);
         for (int j = 0; j < slots.Length; j++)
         {
             var slot = slots[j];
@@ -133,15 +128,11 @@ public static class EQHelper
             {
                 bufforElement = slot;
                 bufferIndex = j;
-                Debug.Log("jest git");
                 return true;
             }
         }
-
         bufferIndex = -1;
         bufforElement = null;
-                        Debug.Log("nie jest git");
-
         return false;
     }
 

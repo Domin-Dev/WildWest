@@ -312,7 +312,6 @@ public class NewEquipmentManager : MonoBehaviour
 
     #region Slot Synchronization
     
-
     public void LoadContainer(ContainerComponent containerComponent, Entity entity)
     {
         if (containers.ContainsKey(containerComponent.containerIndex)) return;
@@ -392,7 +391,6 @@ public class NewEquipmentManager : MonoBehaviour
         var buffer = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(container.entity);
         var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(container.entity);
 
-
         foreach (var item in buffer)
         {
             if (item.slot < 0)
@@ -410,7 +408,6 @@ public class NewEquipmentManager : MonoBehaviour
                 return slot;
             }
         }
-
         return null;
     }
     private ItemStats CreateItemStats(InventorySlot slot,ItemBarData? itemBarData)
@@ -420,7 +417,6 @@ public class NewEquipmentManager : MonoBehaviour
         else
             return new ItemStats(slot);
     }
-
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
@@ -541,8 +537,6 @@ public class NewEquipmentManager : MonoBehaviour
     {
         SendMoveItem(SlotPosition.NullSlot,to,quantity);
     }
-
-
     public TooltipInfo GetTooltipInfo(int containerIndex)
     {
         if(containers.TryGetValue(containerIndex,out Container c))
@@ -551,4 +545,8 @@ public class NewEquipmentManager : MonoBehaviour
     }
 
     #endregion
+
+
+
+
 }

@@ -10,6 +10,9 @@ using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.InputSystem.Processors;
 
+
+
+[UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct DeselectionItemServerSystem : ISystem
 {

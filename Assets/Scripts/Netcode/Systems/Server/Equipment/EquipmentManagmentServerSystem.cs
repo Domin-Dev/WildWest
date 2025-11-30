@@ -4,6 +4,9 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
+
+
+[UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct EquipmentManagmentServerSystem : ISystem
 {

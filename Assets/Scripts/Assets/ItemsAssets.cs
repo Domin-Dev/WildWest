@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -364,8 +365,9 @@ public class ItemsAsset : MonoBehaviour
         {
             foreach(var tag in item.tags)
             {
-                if(tag is T)
-                    return tag as T;
+                T tagT = tag.tag as T;
+                if(tagT != null)
+                    return tagT;
             }
         }
         return null;

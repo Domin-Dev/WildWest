@@ -4,9 +4,17 @@ using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 
+
+
+public partial class EquipmentSystemGroup : ComponentSystemGroup
+{
+    
+}
+
+
+[UpdateInGroup(typeof(EquipmentSystemGroup),OrderLast = true)]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct OnEquipServerSystem : ISystem
 {
@@ -42,6 +50,7 @@ partial struct OnEquipServerSystem : ISystem
             if(SystemAPI.Exists(command.ValueRO.connection))
             {
                 Entity player = SystemAPI.GetComponent<LinkedCharacter>(command.ValueRO.connection).entity;
+                int networkID =  SystemAPI.GetComponent<NetworkId>(command.ValueRO.connection).Value;
                 var playerComp = SystemAPI.GetComponentRW<Player>(player);
 
                 if(EQHelper.TryGetBufferIndex(slotsLookup,playerContainersLookup,player,command.ValueRO.slotPosition, out InventorySlot? inventorySlot, out int bufferIndex))
@@ -53,11 +62,11 @@ partial struct OnEquipServerSystem : ISystem
                         playerComp.ValueRW.armor += item.garmentStats.armor;
                         playerComp.ValueRW.waterResistance += item.garmentStats.waterResistance;
                         playerComp.ValueRW.insulation += item.garmentStats.insulation;
-
-                        RPCHelper.SendRpc(ref entityCommandBuffer, new EQOnEquipRPC()
-                        {
-                            position = command.ValueRO.slotPosition
-                        });
+       
+                        EQHelper.SendEvents(ref entityCommandBuffer,networkID, new EquipmentEvent
+                        (
+                            new EquipmentEventData(command.ValueRO.slotPosition.slotIndex,5),command.ValueRO.slotPosition.containerIndex)
+                        );
                     }
                 }
             }

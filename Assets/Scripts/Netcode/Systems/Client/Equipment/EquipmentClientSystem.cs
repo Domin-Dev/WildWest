@@ -6,6 +6,9 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
+
+
+[UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct EquipmentClientSystem : ISystem
 {
@@ -13,8 +16,8 @@ partial struct EquipmentClientSystem : ISystem
     {   
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<ContainerComponent> container, RefRW<EquipmentEventCounter> counter) in 
-        SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>,RefRO<ContainerComponent>,RefRW<EquipmentEventCounter>>())
+        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<ContainerComponent> container, RefRW<EquipmentEventCounter> counter, Entity entity) in 
+        SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>,RefRO<ContainerComponent>,RefRW<EquipmentEventCounter>>().WithEntityAccess())
         {
             if (events.IsEmpty) continue;
             while (true)
@@ -30,7 +33,6 @@ partial struct EquipmentClientSystem : ISystem
                         switch (ev.data.flags)
                         {
                             case 1:
-                                Debug.Log(" aaaaaAaaaaaaaaaa" + ev.data.slot); 
                                 if (ev.data.slot >= 0)                          
                                     NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(container.ValueRO.containerIndex, ev.data.slot));
                                 break;
@@ -42,6 +44,13 @@ partial struct EquipmentClientSystem : ISystem
                                 break;
                             case 4:
                                     NewEquipmentManager.instance.UpdateWetness();
+                                break;
+                            case 5:
+                                    EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EQOnEquipClient()
+                                    {
+                                        slotPosition = new SlotPosition(container.ValueRO.containerIndex, ev.data.slot),
+                                        container = entity
+                                    });
                                 break;
                         }
                         isEvent = true;

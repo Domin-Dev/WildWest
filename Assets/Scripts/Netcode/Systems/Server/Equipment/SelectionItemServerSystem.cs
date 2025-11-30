@@ -5,12 +5,10 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEngine;
-using UnityEngine.Assertions.Must;
-using UnityEngine.InputSystem.Processors;
 
+
+
+[UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct SelectionItemServerSystem : ISystem
 {

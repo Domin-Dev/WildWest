@@ -100,7 +100,7 @@ public class ItemID
 [System.Serializable]
 public class TagSelection
 {
-    public Tag tag;
+    [SerializeReference] public Tag tag;
 
     public TagSelection(Tag tag)
     {
