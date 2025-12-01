@@ -1,67 +1,126 @@
-using Game.Client.Map;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Burst.Intrinsics;
+using System.Linq;
+using Unity.Entities.UniversalDelegates;
 
 
+public struct EqiupmentEventClient
+{
+    public EquipmentEventBuffer data;
+    public int containerIndex;
+
+    public int slot => data.data.slot;
+
+    public int flag => data.data.flags;
+
+    public EqiupmentEventClient(EquipmentEventBuffer element, int containerIndex)
+    {
+        this.data = element;
+        this.containerIndex = containerIndex;
+    }
+}
 
 [UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct EquipmentClientSystem : ISystem
 {
+    private NativeQueue<EqiupmentEventClient> slotsToUpdate;
+    private NetworkTick lastProcessedServerTick;
+
+    public void OnCreate(ref SystemState state)
+    {
+        slotsToUpdate = new NativeQueue<EqiupmentEventClient>(Allocator.Persistent);
+        lastProcessedServerTick = NetworkTick.Invalid;
+    }
+
+    public void OnDestroy(ref SystemState state)
+    {
+        slotsToUpdate.Dispose();
+    }
+
     public void OnUpdate(ref SystemState state)
-    {   
+    {
+        var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+        if (lastProcessedServerTick.IsValid && !serverTick.IsNewerThan(lastProcessedServerTick))
+            return;
+        lastProcessedServerTick = serverTick;
+
+        //Debug.Log("Update " + System.DateTime.Now.Second);
+        slotsToUpdate.Clear();
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<ContainerComponent> container, RefRW<EquipmentEventCounter> counter, Entity entity) in 
-        SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>,RefRO<ContainerComponent>,RefRW<EquipmentEventCounter>>().WithEntityAccess())
+        var job = new ProcessEquipmentEventsJob
         {
-            if (events.IsEmpty) continue;
-            while (true)
-            {
-                bool isEvent = false;
-                for (int i = 0; i < events.Length; i++)
-                {
-                    var ev = events[i];
-                    if (ev.index == counter.ValueRO.index)
-                    {
-                        counter.ValueRW.index++;
+            SlotsToUpdate = slotsToUpdate.AsParallelWriter(),
+            eventBuffer = SystemAPI.GetBufferTypeHandle<EquipmentEventBuffer>(true),
+            eventCounter = SystemAPI.GetComponentTypeHandle<EquipmentEventCounter>(),
+            container = SystemAPI.GetComponentTypeHandle<ContainerComponent>()
+        };
+        var query = SystemAPI.QueryBuilder()
+                             .WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter,GhostOwnerIsLocal>().Build();
 
-                        switch (ev.data.flags)
-                        {
-                            case 1:
-                                if (ev.data.slot >= 0)                          
-                                    NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(container.ValueRO.containerIndex, ev.data.slot));
-                                break;
-                            case 2:
-                                    NewEquipmentManager.instance.ClearContainer(container.ValueRO.containerIndex,ref entityCommandBuffer);
-                                break;
-                            case 3:
-                                    NewEquipmentManager.instance.ClearAllContainers(ref entityCommandBuffer);
-                                break;
-                            case 4:
-                                    NewEquipmentManager.instance.UpdateWetness();
-                                break;
-                            case 5:
-                                    EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EQOnEquipClient()
-                                    {
-                                        slotPosition = new SlotPosition(container.ValueRO.containerIndex, ev.data.slot),
-                                        container = entity
-                                    });
-                                break;
-                        }
-                        isEvent = true;
-                        break;
-                    }
-                }
-                if (!isEvent) break;
-            }
+        JobHandle jobHandle = job.ScheduleParallel(query, state.Dependency);
+        jobHandle.Complete();
+
+
+        if(slotsToUpdate.Count > 0)
+        {
+            EqiupmentEventClient[] managedArray = new EqiupmentEventClient[slotsToUpdate.Count];
+            int index = 0;
+            while (slotsToUpdate.Count > 0)
+                managedArray[index++] = slotsToUpdate.Dequeue();
+            NewEquipmentManager.instance.NewEvents(managedArray,ref entityCommandBuffer);
         }
         
+        state.Dependency = jobHandle;
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
+    }
+
+
+    [BurstCompile]
+    struct ProcessEquipmentEventsJob : IJobChunk
+    {
+        public NativeQueue<EqiupmentEventClient>.ParallelWriter SlotsToUpdate;
+        [ReadOnly] public BufferTypeHandle<EquipmentEventBuffer> eventBuffer;
+        public ComponentTypeHandle<EquipmentEventCounter> eventCounter;
+        [ReadOnly] public ComponentTypeHandle<ContainerComponent> container;
+
+        public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+        {
+            var events = chunk.GetBufferAccessorRO(ref eventBuffer);
+            var counters = chunk.GetNativeArray(ref eventCounter);
+            var containers = chunk.GetNativeArray(ref container);
+
+            for (int i = 0; i < chunk.Count; i++)
+            {
+                var eqEvents = events[i];
+                if (eqEvents.IsEmpty) continue;
+                var counter = counters[i]; 
+                int startIndex = 0;
+                while (true)
+                {
+                    bool isEvent = false;
+                    for (int j = startIndex; j < eqEvents.Length; j++)
+                    {
+                        if (eqEvents[j].index == counter.index)
+                        {
+                            counter.index++;
+                            isEvent = true;
+                            startIndex = j;
+                            SlotsToUpdate.Enqueue(new  EqiupmentEventClient(eqEvents[j],containers[i].containerIndex));  
+                            break;
+                        }
+                    }
+                    if (!isEvent) break;
+                }
+                counters[i] = counter;
+            } 
+        }
     }
 }

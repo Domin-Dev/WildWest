@@ -2,7 +2,7 @@
 using Unity.NetCode;
 
 
-[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
+[GhostComponent]
 public struct ContainerComponent : IComponentData
 {
     [GhostField] public ContainerStats containerStats;

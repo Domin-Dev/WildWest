@@ -37,30 +37,32 @@ public partial struct GlobalRelevancySystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
 
-        foreach ((RefRO<InterestArea> area, RefRO<LocalTransform> playerPos, RefRO<GhostOwner> ghostOwner, Entity entity)
-        in SystemAPI.Query<RefRO<InterestArea>, RefRO<LocalTransform>, RefRO<GhostOwner>>().WithEntityAccess())
-        {
-            foreach ((RefRO<GhostInstance> ghost, RefRO<LocalTransform> ghostPos, Entity ghostObj)
-            in SystemAPI.Query<RefRO<GhostInstance>,RefRO<LocalTransform>>().WithAll<Physics2D>().WithEntityAccess())
-            {
-                if(entity == ghostObj) continue;
-                bool isRelevant = math.distance(MyTools.ConvertFloat(playerPos.ValueRO.Position), MyTools.ConvertFloat(ghostPos.ValueRO.Position)) < area.ValueRO.radius;
-                var key = new RelevantGhostForConnection()
-                {
-                    Ghost = ghost.ValueRO.ghostId,
-                    Connection = ghostOwner.ValueRO.NetworkId
-                };
+        // foreach ((RefRO<InterestArea> area, RefRO<LocalTransform> playerPos, RefRO<GhostOwner> ghostOwner, Entity entity)
+        // in SystemAPI.Query<RefRO<InterestArea>, RefRO<LocalTransform>, RefRO<GhostOwner>>().WithEntityAccess())
+        // {
+        //     foreach ((RefRO<GhostInstance> ghost, RefRO<LocalTransform> ghostPos, Entity ghostObj)
+        //     in SystemAPI.Query<RefRO<GhostInstance>,RefRO<LocalTransform>>().WithAll<Physics2D>().WithEntityAccess())
+        //     {
+        //         if(entity == ghostObj) continue;
+        //         bool isRelevant = math.distance(MyTools.ConvertFloat(playerPos.ValueRO.Position), MyTools.ConvertFloat(ghostPos.ValueRO.Position)) < area.ValueRO.radius;
+        //         var key = new RelevantGhostForConnection()
+        //         {
+        //             Ghost = ghost.ValueRO.ghostId,
+        //             Connection = ghostOwner.ValueRO.NetworkId
+        //         };
 
-                if (isRelevant)
-                    ghostRelevancy.GhostRelevancySet.TryAdd(key, 0); 
-                else if(ghostRelevancy.GhostRelevancySet.TryGetValue(key,out int item))
-                    ghostRelevancy.GhostRelevancySet.Remove(key);
+        //         if (isRelevant)
+        //             ghostRelevancy.GhostRelevancySet.TryAdd(key, 0); 
+        //         else if(ghostRelevancy.GhostRelevancySet.TryGetValue(key,out int item))
+        //             ghostRelevancy.GhostRelevancySet.Remove(key);
 
-            }
-        }
+        //     }
+        // }
+
+
 
         foreach ((RefRO<GhostOwner> ghostOwner,RefRO<GhostInstance> ghost, Entity entity)
-        in SystemAPI.Query<RefRO<GhostOwner>, RefRO<GhostInstance>>().WithAll<SendToPlayer>().WithEntityAccess())
+        in SystemAPI.Query<RefRO<GhostOwner>, RefRO<GhostInstance>>().WithAll<SendToOwner>().WithEntityAccess())
         {
             if(ghost.ValueRO.ghostId == 0) continue;
             var key = new RelevantGhostForConnection()
@@ -69,8 +71,9 @@ public partial struct GlobalRelevancySystem : ISystem
                 Connection = ghostOwner.ValueRO.NetworkId
             };
             ghostRelevancy.GhostRelevancySet.Add(key, 0);
-            entityCommandBuffer.RemoveComponent<SendToPlayer>(entity);
+            entityCommandBuffer.RemoveComponent<SendToOwner>(entity);
         }
+
 
         foreach ((RefRO<GhostInstance> ghost, DynamicBuffer<ChunkServerActions> chunkRecipients, Entity entity)
         in SystemAPI.Query<RefRO<GhostInstance> , DynamicBuffer<ChunkServerActions>>().WithAll<NewChunkServerAction>().WithEntityAccess())
@@ -129,7 +132,6 @@ public partial struct GlobalRelevancySystem : ISystem
                     for (int i = events.Length - 1; i >= 0; i--)
                     {
                         long dis = Math.Abs((long)events[i].index - (long)clientCounter.ValueRO.index);
-                        Debug.Log(dis + "    " +  events[i].index);
                         if ((events[i].index < clientCounter.ValueRO.index && dis < cutoffBorder)
                           ||(events[i].index > clientCounter.ValueRO.index && dis > cutoffBorder))
                         {

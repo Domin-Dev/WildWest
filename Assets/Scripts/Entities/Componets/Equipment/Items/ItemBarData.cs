@@ -1,7 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.NetCode;
 
-[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
+[GhostComponent] 
 public struct ItemBarData : IBufferElementData, IGetSlot
 {
     [GhostField] public int slot;

@@ -408,7 +408,7 @@ public partial struct CollisionSystem : ISystem
     public static void PlayerChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
     {
         int index = MapServerSystem.Map.GetChunkIndex(newPos.Position);
-        var lastChunk = entityManager.GetComponentData<LastChunk>(player);
+        var lastChunk = entityManager.GetComponentData<CurrentChunk>(player);
         if (lastChunk.value != index)
         {
             lastChunk.value = index;

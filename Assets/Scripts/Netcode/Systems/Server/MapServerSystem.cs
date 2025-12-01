@@ -96,9 +96,9 @@ public partial class MapServerSystem : SystemBase
             entityCommandBuffer.RemoveComponent<SendMap>(entity);
         }
         
-
-        foreach ((RefRO<LastChunk> chunk,RefRO<GhostOwner> networkID, Entity entity) in
-        SystemAPI.Query<RefRO<LastChunk>,RefRO<GhostOwner>>().WithAll<NeedChunks>().WithEntityAccess())
+        
+        foreach ((RefRO<CurrentChunk> chunk,RefRO<GhostOwner> networkID, Entity entity) in
+        SystemAPI.Query<RefRO<CurrentChunk>,RefRO<GhostOwner>>().WithAll<NeedChunks>().WithEntityAccess())
         {
             var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.value,renderChunksSize);
 

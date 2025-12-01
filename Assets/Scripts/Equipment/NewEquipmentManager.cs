@@ -544,9 +544,34 @@ public class NewEquipmentManager : MonoBehaviour
         return null;
     }
 
+    public void NewEvents(EqiupmentEventClient[] events, ref EntityCommandBuffer ecb)
+    {
+        foreach(var eqEevent in events)
+        {
+            switch (eqEevent.flag)
+            {
+                case 1:
+                    if (eqEevent.slot >= 0)                          
+                        NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(eqEevent.containerIndex, eqEevent.slot));
+                    break;
+                case 2:
+                        NewEquipmentManager.instance.ClearContainer(eqEevent.containerIndex,ref ecb);
+                    break;
+                case 3:
+                        NewEquipmentManager.instance.ClearAllContainers(ref ecb);
+                    break;
+                case 4:
+                        NewEquipmentManager.instance.UpdateWetness();
+                    break;
+            }
+        }
+    }
+
+     
+
     #endregion
 
 
-
+    
 
 }

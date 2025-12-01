@@ -28,7 +28,7 @@ public partial struct SetUpContainersSystem : ISystem
         {
             foreach ((RefRO<Player> ghost, Entity player) in SystemAPI.Query<RefRO<Player>>().WithAll<GhostOwnerIsLocal>().WithEntityAccess())
             {
-                entityCommandBuffer.AppendToBuffer<GhostGroup>(player, new GhostGroup() { Value = e});
+             //   entityCommandBuffer.AppendToBuffer<GhostGroup>(player, new GhostGroup() { Value = e});
             }
             entityCommandBuffer.AddComponent(e, new GhostChildEntity());
         }

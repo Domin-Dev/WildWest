@@ -55,10 +55,10 @@ partial struct GoInGameServerSystem : ISystem
                 entityCommandBuffer.AddComponent<Admin>(rpcCommandRequest.ValueRO.SourceConnection);
 
 
-            entityCommandBuffer.AddComponent(character, new LastChunk());
+            entityCommandBuffer.AddComponent(character, new CurrentChunk());
             entityCommandBuffer.AddComponent(character, new NeedChunks());
             entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, true);
-            entityCommandBuffer.AddComponent(character, new SendToPlayer());
+            entityCommandBuffer.AddComponent(character, new SendToOwner());
 
 
            
@@ -84,7 +84,7 @@ partial struct GoInGameServerSystem : ISystem
 
     private void ServerComponents(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity character,int networkID)
     {
-        entityCommandBuffer.AddComponent(character, new LastChunk());
+        entityCommandBuffer.AddComponent(character, new CurrentChunk());
         entityCommandBuffer.AddComponent(character, new NeedChunks());
         entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, false);
         var key = new RelevantGhostForConnection()
@@ -120,27 +120,6 @@ partial struct GoInGameServerSystem : ISystem
         { 
             CreateNewContainer(character,ref ecb,ref entities,networkID,cont.Value);
         }
-
-        
-
-
-
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0,networkID,10,0);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,50,networkID,30,1);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,100, networkID, 20, 2, MandatoryProperties.item, 30);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 8, 3, MandatoryProperties.item, 34);
-
-
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10000, MandatoryProperties.tag, 0);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10001, MandatoryProperties.tag, 1);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10002, MandatoryProperties.tag, 2);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10003, MandatoryProperties.tag, 3);
-
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10004, MandatoryProperties.tag, 4);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10005, MandatoryProperties.tag, 5);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10006, MandatoryProperties.tag, 6);
-        // CreateNewContainer(character, ref entityCommandBuffer, ref entities,0, networkID, 1, 10007, MandatoryProperties.tag, 7);
-
     }
     private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,byte waterResistance, int capacity, int index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
@@ -157,8 +136,8 @@ partial struct GoInGameServerSystem : ISystem
             }
         });
 
-        entityCommandBuffer.AddComponent(e, new GhostChildEntity());
-        entityCommandBuffer.AppendToBuffer<GhostGroup>(player, new GhostGroup() { Value = e });
+       // entityCommandBuffer.AddComponent(e, new GhostChildEntity());
+      //  entityCommandBuffer.AppendToBuffer<GhostGroup>(player, new GhostGroup() { Value = e });
 
         entityCommandBuffer.AddComponent(e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
         entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = index});
@@ -168,7 +147,7 @@ partial struct GoInGameServerSystem : ISystem
         entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(capacity + 1);
 
         
-        entityCommandBuffer.AddComponent(e, new SendToPlayer());
+        entityCommandBuffer.AddComponent(e, new SendToOwner());
     }
 
 

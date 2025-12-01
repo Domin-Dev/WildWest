@@ -74,7 +74,6 @@ public struct MyColor
         }
     }
 }
-
 public enum Quality : byte
 {
     none = 0,
@@ -85,13 +84,6 @@ public enum Quality : byte
     masterful = 5,
     legendary = 6,
 }
-
-
-
-
-
 public struct ContainerLoaded : IComponentData
 {
 }
-
-

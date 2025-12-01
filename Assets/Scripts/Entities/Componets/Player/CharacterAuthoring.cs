@@ -31,7 +31,6 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Thirst());
 
 
-
             AddBuffer<PlayerContainers>(entity);
             AddBuffer<CooldownTargetTick>(entity);
         }
@@ -137,7 +136,7 @@ public struct Thirst : IComponentData
 
 
 
-public struct LastChunk : IComponentData
+public struct CurrentChunk : IComponentData
 {
     public int value;
 }

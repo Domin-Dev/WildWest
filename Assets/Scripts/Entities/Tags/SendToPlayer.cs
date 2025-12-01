@@ -5,5 +5,5 @@ using System.Text;
 using System.Threading.Tasks;
 using Unity.Entities;
 
-public struct SendToPlayer : IComponentData {
+public struct SendToOwner : IComponentData {
 }

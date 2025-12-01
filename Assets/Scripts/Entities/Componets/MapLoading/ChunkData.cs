@@ -14,6 +14,13 @@ public struct ChunkComponent : IComponentData
     [GhostField] public float2 worldPos;
 }
 
+public struct ChunkObjects : IBufferElementData
+{
+    public Entity entity;
+}
+
+
+
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
 public struct ChunkTiles : IBufferElementData
 {

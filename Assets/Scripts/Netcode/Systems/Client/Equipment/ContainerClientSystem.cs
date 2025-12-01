@@ -5,6 +5,8 @@ using Unity.NetCode;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
+
+[UpdateInGroup(typeof(EquipmentSystemGroup), OrderFirst = true)]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct ContainerClientSystem : ISystem
 {
@@ -32,10 +34,7 @@ partial struct ContainerClientSystem : ISystem
                      index = containerComponent.ValueRO.containerIndex
                 });
             }
-        }
-        
-        
-        
+        }   
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }

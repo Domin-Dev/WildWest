@@ -38,7 +38,7 @@ public struct EquipmentEvent : IComponentData
     }
 }
 
-[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)]
+[GhostComponent]
 public struct EquipmentEventBuffer : IBufferElementData, IIndexed
 {
     [GhostField] public EquipmentEventData data;

@@ -116,7 +116,6 @@ public class TooltipSystem : MonoBehaviour
     {
         if(IsSlotPostion(out SlotPosition? s))
         {
-            Debug.Log(s);
             return s.Equals(slotPosition);
         }
         return false;
