@@ -191,9 +191,6 @@ public partial struct CollisionSystem : ISystem
                 Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
                 float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
 
-
-
-
                 if (collisiontime < 1f)
                 {
                     if (layer == 2 && BulletHit(ref state, ref entityCommandBuffer, entityToCheck, entity))
@@ -376,13 +373,9 @@ public partial struct CollisionSystem : ISystem
                 getPosition[entity] = localTransform;
 
             }
-            if (isChanged.HasComponent(entity))
-            {
-                if (state.EntityManager.HasComponent<Player>(entity))
-                    PlayerChangePosition(ref state, ref entityCommandBuffer,localTransform,entity);
-                isChanged.SetComponentEnabled(entity, false);
-            }
-            
+           
+            EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform);
+
             collisions.Clear();
             potentialCollisions.Dispose();
         }
@@ -405,25 +398,37 @@ public partial struct CollisionSystem : ISystem
         hitboxes.Dispose();
     }
 
-    public static void PlayerChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
+    private void EntityChangePosition(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity entity, LocalTransform localTransform)
     {
-        int index = MapServerSystem.Map.GetChunkIndex(newPos.Position);
-        var lastChunk = entityManager.GetComponentData<CurrentChunk>(player);
-        if (lastChunk.value != index)
+         bool hasChanged = isChanged.HasComponent(entity);
+        if (hasChanged || alwaysUpdate.HasComponent(entity))
         {
-            lastChunk.value = index;
-            entityCommandBuffer.SetComponent(player, lastChunk);
-            entityCommandBuffer.SetComponentEnabled<NeedChunks>(player, true);
+            if(state.World.IsServer())
+            {
+                if (state.EntityManager.HasComponent<GhostInstance>(entity) &&  SystemAPI.HasComponent<GhostChunk>(entity))
+                    GhostChangeChunk(state.EntityManager, ref entityCommandBuffer,localTransform,entity);                
+            }
+            else if(SystemAPI.HasComponent<Player>(entity) && SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))
+            {
+                onPlayerMove?.Invoke(MyTools.ConvertFloat(localTransform.Position));
+            }
+            if(hasChanged)isChanged.SetComponentEnabled(entity, false);
         }
     }
 
-    public void PlayerChangePosition(ref SystemState state, ref EntityCommandBuffer ecb, LocalTransform newPos, Entity player)
+
+    public static void GhostChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
     {
-        if (state.World.IsServer())
-            PlayerChangeChunk(state.EntityManager, ref ecb, newPos, player);
-        else if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
-            onPlayerMove?.Invoke(MyTools.ConvertFloat(newPos.Position));
+        int index = MapServerSystem.Map.GetChunkIndex(newPos.Position);
+        var chunk = entityManager.GetComponentData<GhostChunk>(player);
+        if (chunk.current != index)
+        {
+            chunk.SetNewChunk(index);
+            entityCommandBuffer.SetComponent(player, chunk);
+            entityCommandBuffer.SetComponentEnabled<NewChunk>(player, true);
+        }
     }
+
 
     public float3 GetWorldPosition(Entity entity)
     {

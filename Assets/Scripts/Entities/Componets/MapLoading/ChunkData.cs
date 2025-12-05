@@ -40,6 +40,6 @@ public struct BuildingObjects : IBufferElementData
     [GhostField] public float maxHitPoints;
 }
 
-public struct NeedChunks : IComponentData, IEnableableComponent{}
+public struct NewChunk : IComponentData, IEnableableComponent{}
 
 

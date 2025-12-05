@@ -146,7 +146,7 @@ partial struct CharacterAimSystem : ISystem
                         LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.itemInHand);
 
 
-                      //  Debug.Log("<Color=#ff0000>shoot " + state.World.Flags + " " + currentTick.TickValue);
+                      
                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
                       //  Debug.Log("<Color=#00ff00>  Position! " + point.Position + " " + rotation.Rotation);
@@ -161,6 +161,9 @@ partial struct CharacterAimSystem : ISystem
 
                         if (state.World.Flags == WorldFlags.GameServer)
                         {
+                            entityCommandBuffer.AddComponent(bullet, new GhostChunk().StartValues());
+                            entityCommandBuffer.AddComponent(bullet, new NewChunk());
+    
                             entityCommandBuffer.AddComponent(bullet, new EntityToHide());
                             NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
                             bulletComp.isOnServer = true;

@@ -55,10 +55,11 @@ partial struct GoInGameServerSystem : ISystem
                 entityCommandBuffer.AddComponent<Admin>(rpcCommandRequest.ValueRO.SourceConnection);
 
 
-            entityCommandBuffer.AddComponent(character, new CurrentChunk());
-            entityCommandBuffer.AddComponent(character, new NeedChunks());
-            entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, true);
+            entityCommandBuffer.AddComponent(character, new GhostChunk().StartValues());
+            entityCommandBuffer.AddComponent(character, new NewChunk());
+            entityCommandBuffer.SetComponentEnabled<NewChunk>(character, true);
             entityCommandBuffer.AddComponent(character, new SendToOwner());
+ 
 
 
            
@@ -84,9 +85,9 @@ partial struct GoInGameServerSystem : ISystem
 
     private void ServerComponents(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity character,int networkID)
     {
-        entityCommandBuffer.AddComponent(character, new CurrentChunk());
-        entityCommandBuffer.AddComponent(character, new NeedChunks());
-        entityCommandBuffer.SetComponentEnabled<NeedChunks>(character, false);
+        entityCommandBuffer.AddComponent(character, new GhostChunk());
+        entityCommandBuffer.AddComponent(character, new NewChunk());
+        entityCommandBuffer.SetComponentEnabled<NewChunk>(character, false);
         var key = new RelevantGhostForConnection()
         {
             Ghost = SystemAPI.GetComponent<GhostInstance>(character).ghostId,

@@ -4,7 +4,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 
-[GhostComponent(OwnerSendType = SendToOwnerType.SendToOwner)] 
+[GhostComponent] 
 public struct InventorySlot : IBufferElementData, IGetSlot
 {
     [GhostField] public int slot;

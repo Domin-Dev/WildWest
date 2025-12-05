@@ -43,7 +43,7 @@ namespace Game.Client.Map
         }
         public void RemoveChunk(int chunkIndex)
         {
-            Debug.Log("usun!!!");
+            //Debug.Log("usun!!!");
             int2 coords = ChunkIndexToChunkCoordinates(chunkIndex);
             if (chunks.ContainsKey(coords))       
                 chunks.Remove(coords);

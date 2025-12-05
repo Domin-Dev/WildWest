@@ -8,10 +8,6 @@ using Unity.NetCode;
 
 
 
-public partial class EquipmentSystemGroup : ComponentSystemGroup
-{
-    
-}
 
 
 [UpdateInGroup(typeof(EquipmentSystemGroup),OrderLast = true)]

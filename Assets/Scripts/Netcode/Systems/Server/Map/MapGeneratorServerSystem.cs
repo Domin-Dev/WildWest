@@ -5,6 +5,8 @@ using Unity.NetCode;
 using Unity.Collections;
 using System;
 
+
+[UpdateAfter(typeof(CollisionSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapGeneratorServerSystem : SystemBase
 {

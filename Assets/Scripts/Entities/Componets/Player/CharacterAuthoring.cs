@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,9 +27,12 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
 
+
+
             AddComponent(entity, new Health());
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
+
 
 
             AddBuffer<PlayerContainers>(entity);
@@ -136,10 +140,25 @@ public struct Thirst : IComponentData
 
 
 
-public struct CurrentChunk : IComponentData
+public struct GhostChunk : IComponentData
 {
-    public int value;
+    public int current;
+    public int lastChunk;
+
+    public GhostChunk StartValues()
+    {
+        current = int.MinValue;
+        lastChunk = int.MinValue;
+        return this;
+    }
+
+    public void SetNewChunk(int newChunk)
+    {
+        lastChunk = current;
+        current = newChunk;
+    }
 }
+
 
 public struct InterestArea : IComponentData
 {

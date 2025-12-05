@@ -8,10 +8,9 @@ public class EquipmentContainerAuthoring : MonoBehaviour
 {
     public class Baker : Baker<EquipmentContainerAuthoring>
     {
-
         public override void Bake(EquipmentContainerAuthoring authoring)
         {
-            Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+            Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new ContainerComponent());
             AddComponent(entity, new EquipmentEventCounter() { index = uint.MaxValue });
 

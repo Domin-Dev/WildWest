@@ -4,7 +4,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
 public class BulletAuthoring : MonoBehaviour
 {

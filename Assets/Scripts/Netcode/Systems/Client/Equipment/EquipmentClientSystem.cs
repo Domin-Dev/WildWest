@@ -25,8 +25,12 @@ public struct EqiupmentEventClient
     }
 }
 
+
+
+
 [UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+[BurstCompile]
 partial struct EquipmentClientSystem : ISystem
 {
     private NativeQueue<EqiupmentEventClient> slotsToUpdate;
@@ -50,10 +54,8 @@ partial struct EquipmentClientSystem : ISystem
             return;
         lastProcessedServerTick = serverTick;
 
-        //Debug.Log("Update " + System.DateTime.Now.Second);
         slotsToUpdate.Clear();
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-
         var job = new ProcessEquipmentEventsJob
         {
             SlotsToUpdate = slotsToUpdate.AsParallelWriter(),
@@ -62,7 +64,7 @@ partial struct EquipmentClientSystem : ISystem
             container = SystemAPI.GetComponentTypeHandle<ContainerComponent>()
         };
         var query = SystemAPI.QueryBuilder()
-                             .WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter,GhostOwnerIsLocal>().Build();
+                             .WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter, GhostOwnerIsLocal>().Build();
 
         JobHandle jobHandle = job.ScheduleParallel(query, state.Dependency);
         jobHandle.Complete();
