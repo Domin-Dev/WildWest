@@ -100,7 +100,7 @@ public partial class MapLoadingClientSystem : SystemBase
 
         if (!chunksToLoad.IsEmpty)
         {
-            Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects, DynamicBuffer<LinkedEntityGroup> linkedEntities) =>
+            Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects) =>
             {
                 if(chunksToLoad.Contains(chunk.index))
                 {
@@ -109,8 +109,8 @@ public partial class MapLoadingClientSystem : SystemBase
 
                     foreach (var item in buildingObjects)
                     {
-                        Entity bObject = BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref ecb,item );
-                        linkedEntities.Add(bObject);
+                       ecb.AppendToBuffer<LinkedEntityGroup>(e,BuildingObjectCreator.CreateObject(entitiesReferences,EntityManager,ecb,item));
+
                     }
                 }
             }).WithoutBurst().Run();

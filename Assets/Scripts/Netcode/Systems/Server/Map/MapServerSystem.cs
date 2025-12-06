@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using TMPro;
 using Unity.Burst;
 using Unity.Burst.Intrinsics;
@@ -12,6 +13,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
 [UpdateAfter(typeof(CollisionSystem))]
@@ -26,16 +28,28 @@ public partial class MapServerSystem : SystemBase
     int simulationTickRate = 60;
     private const int ChunksPerTick = 3;
     private const int renderChunksSize = 2;
-    private const int maxChunkPreClient = 20;
+    private static int renderChunksCount => (2 * renderChunksSize + 1)*(2 * renderChunksSize + 1);
+
+    private const int maxChunkPerClient = 20;
 
     private NetworkTick currentTick;
-    private EntitiesReferences entitiesReferences;
+
 
     private NativeHashMap<int, Entity> loadedChunks;
     private NativeList<Entity> toUnloadChunks;
-    private NativeHashMap<int, NativeHashMap<int, double>> playerChunks;
 
-    private BufferLookup<ChunkObjects> chunkObjectsLookup;
+    private NativeParallelMultiHashMap<int,int> playerChunks;
+    private NativeParallelHashMap<(int networkID,int chunkIndex),double> times;
+
+
+    private NativeQueue<(Entity e,int chunkIndex)> objectsToRemoveFromBuffer;
+
+
+
+    // Changes
+    public NativeParallelMultiHashMap<int,int> stopSending;
+    public NativeParallelMultiHashMap<int,(int chunkIndex, Entity chunk)> startSending;
+
 
     public static Map Map { get { return map; } }
     #endregion
@@ -45,56 +59,88 @@ public partial class MapServerSystem : SystemBase
         if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
         loadedChunks = new NativeHashMap<int, Entity>(100, Allocator.Persistent);
         toUnloadChunks = new NativeList<Entity>(30, Allocator.Persistent);
-        playerChunks = new NativeHashMap<int, NativeHashMap<int, double>>(50, Allocator.Persistent);
-        chunkObjectsLookup = SystemAPI.GetBufferLookup<ChunkObjects>();
+        playerChunks = new NativeParallelMultiHashMap<int,int>(100, Allocator.Persistent);
+        times = new NativeParallelHashMap<(int networkID,int chunkIndex),double>(100,Allocator.Persistent);
+        objectsToRemoveFromBuffer = new NativeQueue<(Entity,int)>(Allocator.Persistent); 
 
+        stopSending = new NativeParallelMultiHashMap<int,int>(100,Allocator.Persistent);
+        startSending = new NativeParallelMultiHashMap<int,(int chunkIndex, Entity chunk)>(100,Allocator.Persistent);
+
+
+        RequireForUpdate<EntitiesReferences>();
 
         NetCodeConnectionEventListener.OnClientDisconnected += OnClientDisconnected;
     }
     private void OnClientDisconnected(int NetworkId)
     {
-        playerChunks[NetworkId].Dispose();
         playerChunks.Remove(NetworkId);
     }
     protected override void OnDestroy()
     {
-        foreach (var item in playerChunks)
-            item.Value.Dispose();
-        // toUnloadChunks.Dispose();    
+        playerChunks.Dispose();    
+        toUnloadChunks.Dispose();    
         loadedChunks.Dispose();
-        playerChunks.Dispose();
+        objectsToRemoveFromBuffer.Dispose();
+
+        startSending.Dispose();
+        stopSending.Dispose();
+        times.Dispose();
+
         NetCodeConnectionEventListener.OnClientDisconnected -= OnClientDisconnected;
         base.OnDestroy();
     }
     protected override void OnUpdate()
     {
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Persistent);
+        var ecbSystem = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        var entityCommandBuffer = ecbSystem.CreateCommandBuffer(EntityManager.WorldUnmanaged);
+        EntityCommandBuffer.ParallelWriter ecb = entityCommandBuffer.AsParallelWriter();
+
+
         currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-        ServerUnloadChunks(ref entityCommandBuffer);
+      //  ServerUnloadChunks(ref entityCommandBuffer);
+        objectsToRemoveFromBuffer.Clear();
+        stopSending.Clear();
+        startSending.Clear();
 
 
 
-
-        var job = new ProcessMovedEntitesJob
+        var job1 = new LoadChunksJob
         {
-            newChunk = SystemAPI.GetComponentTypeHandle<NewChunk>(),
-            ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(),
             loadedChunks = loadedChunks,
+            ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(true),
+            ghostOwner = SystemAPI.GetComponentTypeHandle<GhostOwner>(true),
             entityTypeHandle = SystemAPI.GetEntityTypeHandle(),
-            chunkObjects = entityCommandBuffer.AsParallelWriter()
+            ecb = ecb,
+            playerChunks = playerChunks,
+            times = times,
+            startSending = startSending.AsParallelWriter(),
+            stopSending = stopSending.AsParallelWriter(),
+            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>()
         };
-        var query = SystemAPI.QueryBuilder()
-                             .WithAll<GhostChunk, NewChunk>().Build();
-        JobHandle jobHandle = job.ScheduleParallel(query, Dependency);
-        jobHandle.Complete();
+        JobHandle jobHandle1 = job1.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk, GhostOwner, Player>().Build(), Dependency);
+        jobHandle1.Complete();
 
+
+        // var job = new ProcessMovedEntitesJob
+        // {
+        //     newChunk = SystemAPI.GetComponentTypeHandle<NewChunk>(),
+        //     ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(true),
+        //     loadedChunks = loadedChunks,
+        //     entityTypeHandle = SystemAPI.GetEntityTypeHandle(),
+        //     ecb = ecb,
+        //     objectsToRemoveFromBuffer = objectsToRemoveFromBuffer.AsParallelWriter()
+        // };
+        // var jobHandle2 = job.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk>().Build(), jobHandle1);
+        // jobHandle2.Complete();
+
+        LoadChanges();
+        
 
         foreach ((RefRO<SendMap> send, Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
             if (map == null)
             {
-                Debug.Log("new map!!!");
                 GenerateMap();
             }
 
@@ -114,188 +160,121 @@ public partial class MapServerSystem : SystemBase
             entityCommandBuffer.RemoveComponent<SendMap>(entity);
         }
 
-        foreach ((RefRO<GhostChunk> chunk, RefRO<GhostOwner> networkID, Entity entity) in
-        SystemAPI.Query<RefRO<GhostChunk>, RefRO<GhostOwner>>().WithAll<NewChunk, Player>().WithEntityAccess())
-        {
-            var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.current, renderChunksSize);
+        // foreach ((RefRO<GhostChunk> chunk, RefRO<GhostOwner> networkID, Entity entity) in
+        // SystemAPI.Query<RefRO<GhostChunk>, RefRO<GhostOwner>>().WithAll<NewChunk, Player>().WithEntityAccess())
+        // {
+        //     var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.current, renderChunksSize);
 
-            if (!playerChunks.ContainsKey(networkID.ValueRO.NetworkId))
-                playerChunks.Add(networkID.ValueRO.NetworkId, new NativeHashMap<int, double>(maxChunkPreClient, Allocator.Persistent));
+        //     // if (!playerChunks.ContainsKey(networkID.ValueRO.NetworkId))
+        //     //     playerChunks.Add(networkID.ValueRO.NetworkId, new NativeHashMap<int, double>(maxChunkPreClient, Allocator.Persistent));
 
-            UnloadChunks(ref entityCommandBuffer, chunksToSend, networkID.ValueRO.NetworkId);
-            for (int i = 0; i < chunksToSend.Count; i++)
-            {
-                int index = chunksToSend[i];
-                if (PlayerHasChunk(networkID.ValueRO.NetworkId, index)) continue;
-                Entity chunkEntity;
+        //     // UnloadChunks(ref entityCommandBuffer, chunksToSend, networkID.ValueRO.NetworkId);
+        //     // for (int i = 0; i < chunksToSend.Count; i++)
+        //     // {
+        //     //     int index = chunksToSend[i];
+        //     //     if (PlayerHasChunk(networkID.ValueRO.NetworkId, index)) continue;
+        //     //     Entity chunkEntity;
 
-                if (!loadedChunks.TryGetValue(index, out chunkEntity))
-                {
-                    if (!CreateChunk(ref entityCommandBuffer, index)) continue;
-                    chunkEntity = loadedChunks[index];
-                }
+        //     //     if (!loadedChunks.TryGetValue(index, out chunkEntity))
+        //     //     {
+        //     //         if (!CreateChunk(ref entityCommandBuffer, index)) continue;
+        //     //         chunkEntity = loadedChunks[index];
+        //     //     }
 
-                playerChunks[networkID.ValueRO.NetworkId].Add(index, (float)SystemAPI.Time.ElapsedTime);
-                entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunkEntity, true);
-                entityCommandBuffer.AppendToBuffer(chunkEntity, new ChunkServerActions()
-                {
-                    networkID = networkID.ValueRO.NetworkId,
-                    action = 1
-                });
-            }
-            entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, false);
-        }
+        //     //    // playerChunks[networkID.ValueRO.NetworkId].Add(index, (float)SystemAPI.Time.ElapsedTime);
+        //     //     entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunkEntity, true);
+        //     //     entityCommandBuffer.AppendToBuffer(chunkEntity, new ChunkServerActions()
+        //     //     {
+        //     //         networkID = networkID.ValueRO.NetworkId,
+        //     //         action = 1
+        //     //     });
+        //     // }
+        //     // entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, false);
+        // }
 
 
 
-        entityCommandBuffer.Playback(this.EntityManager);
-        entityCommandBuffer.Dispose();
+       // entityCommandBuffer.Playback(EntityManager);
+    
+
     }
 
+    private void LoadChanges()
+    {
+        foreach(var keyValue in startSending)
+        {
+            // start sending chunk to the player
+            playerChunks.Add(keyValue.Key,keyValue.Value.chunkIndex);
+            times.Add((keyValue.Key,keyValue.Value.chunkIndex),SystemAPI.Time.ElapsedTime);
 
-    #region Loadings Chunks
+            if(!loadedChunks.ContainsKey(keyValue.Value.chunkIndex))
+                loadedChunks.Add(keyValue.Value.chunkIndex,keyValue.Value.chunk);    
+        }
+
+        // var keys = stopSending.GetKeyArray(Allocator.Temp);
+        // foreach(var key in keys)
+        // {
+        //     var values = stopSending.GetValuesForKey(key);
+        //     var sending = playerChunks.GetValuesForKey(key);
+
+        //     foreach (var value in values)
+        //     {
+        //         foreach( var chunk in sending)
+        //         {
+        //             if(value == chunk.chunk)
+        //             {
+        //                 playerChunks.Remove<
+        //             }
+        //         }   
+        //     }
+
+        //     values.Dispose();
+        // }
+
+        // keys.Dispose();
+    }
+
+   // #region Loadings Chunks
     public void GenerateMap()
     {
         generator = new MapGenerator(GameInfo.instance.seed);
         map = generator.StartGenerator();
     }
-    private void UnloadChunks(ref EntityCommandBuffer entityCommandBuffer, List<int> neighboringChunks, int networkID)
-    {
-        var list = playerChunks[networkID];
-        if (list.IsEmpty) return;
+    
 
-        var toRemove = new NativeList<int>(Allocator.Temp);
-        foreach (var item in list)
-        {
-            if (!neighboringChunks.Contains(item.Key))
-            {
-                toRemove.Add(item.Key);
-            }
-        }
-
-        int number = toRemove.Length + neighboringChunks.Count - maxChunkPreClient;
-
-
-        while (number > 0 && toRemove.Length > 0)
-        {
-            int chunkIndex = GetChunkToRemove(ref toRemove, networkID);
-            Entity chunk = loadedChunks[chunkIndex];
-
-            entityCommandBuffer.AppendToBuffer(chunk, new ChunkServerActions()
-            {
-                networkID = networkID,
-                action = 2
-            });
-            entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk, true);
-
-            list.Remove(chunkIndex);
-            AddToUnload(chunkIndex, ref entityCommandBuffer);
-            number--;
-        }
-
-        toRemove.Dispose();
-    }
-    private int GetChunkToRemove(ref NativeList<int> list, int networkID)
-    {
-        double minTime = double.MaxValue;
-        int k = 0;
-        for (var i = list.Length - 1; i >= 0; i--)
-        {
-            double time = playerChunks[networkID][list[i]];
-            if (time < minTime)
-            {
-                k = i;
-                minTime = time;
-            }
-        }
-        int chunkIndex = list[k];
-        list.RemoveAt(k);
-        return chunkIndex;
-    }
-    private void ServerUnloadChunks(ref EntityCommandBuffer entityCommandBuffer)
-    {
-        if (!toUnloadChunks.IsEmpty)
-        {
-            for (int i = toUnloadChunks.Length - 1; i >= 0; i--)
-            {
-                Entity entity = toUnloadChunks[i];
-                if (SystemAPI.GetBuffer<ChunkServerActions>(entity).IsEmpty)
-                {
-                    toUnloadChunks.RemoveAt(i);
-                    entityCommandBuffer.DestroyEntity(entity);
-                }
-            }
-        }
-    }
-    private void AddToUnload(int index, ref EntityCommandBuffer entityCommandBuffer)
-    {
-        foreach (var item in playerChunks)
-        {
-            if (item.Value.ContainsKey(index))
-                return;
-        }
-        Entity entity = loadedChunks[index];
-        toUnloadChunks.Add(entity);
-        loadedChunks.Remove(index);
-    }
-    private bool PlayerHasChunk(int networkID, int chunkIndex)
-    {
-        var chunks = playerChunks[networkID];
-        return chunks.ContainsKey(chunkIndex);
-    }
-    private bool CreateChunk(ref EntityCommandBuffer entityCommandBuffer, int index)
-    {
-        if (!map.CheckChunkIndex(index)) return false;
-        var entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-        Entity chunkEntity = ClientServerBootstrap.ServerWorld.EntityManager.Instantiate(entitiesReferences.chunkEntity);
-        var tiles = SystemAPI.GetBuffer<ChunkTiles>(chunkEntity);
-        var objects = SystemAPI.GetBuffer<BuildingObjects>(chunkEntity);
-        var linkedEntitity = SystemAPI.GetBuffer<LinkedEntityGroup>(chunkEntity);
+    // private void ServerUnloadChunks(ref EntityCommandBuffer entityCommandBuffer)
+    // {
+    //     if (!toUnloadChunks.IsEmpty)
+    //     {
+    //         for (int i = toUnloadChunks.Length - 1; i >= 0; i--)
+    //         {
+    //             Entity entity = toUnloadChunks[i];
+    //             if (SystemAPI.GetBuffer<ChunkServerActions>(entity).IsEmpty)
+    //             {
+    //                 toUnloadChunks.RemoveAt(i);
+    //                 entityCommandBuffer.DestroyEntity(entity);
+    //             }
+    //         }
+    //     }
+    // }
+    
 
 
-        ChunkComponent chunkComponent = new ChunkComponent();
-        entityCommandBuffer.AddComponent<NewChunkServerAction>(chunkEntity);
-        entityCommandBuffer.AddBuffer<ChunkServerActions>(chunkEntity);
-        entityCommandBuffer.AddBuffer<ChunkObjects>(chunkEntity);
+    // #endregion
 
-        Chunk chunk = map.chunks[index];
-        chunkComponent.worldPos = chunk.worldPosition;
-        chunkComponent.index = index;
 
-        for (int i = 0; i < 10; i++)
-        {
-            for (int j = 0; j < 10; j++)
-            {
-                GridTile tile = chunk.grid[j, i];
-                tiles.Add(new ChunkTiles()
-                {
-                    tileID = tile.tileID,
-                    variant = (byte)tile.variant
-                });
 
-                if (tile.gridObject != null)
-                {
-                    var obj = new BuildingObjects()
-                    {
-                        id = tile.gridObject.ID,
-                        position = new int2(tile.x, tile.y),
-                        variantIndex = tile.gridObject.variantIndex,
-                        stateIndex = tile.gridObject.stateIndex,
-                        hitPoints = tile.gridObject.hitPoints
-                    };
-                    objects.Add(obj);
-                    var bObject = BuildingObjectCreator.CreateObject(ref entitiesReferences, EntityManager, ref entityCommandBuffer, obj);
-                    linkedEntitity.Add(bObject);
-                }
-            }
-        }
-
-        entityCommandBuffer.SetComponent(chunkEntity, chunkComponent);
-        loadedChunks.Add(index, chunkEntity);
-        return true;
-    }
-    #endregion
-
+        // private void AddToUnload(int index)
+        // {
+        //     foreach (var item in playerChunks)
+        //     {
+        //         if (item.Value.ContainsKey(index))
+        //             return;
+        //     }
+        //     Entity entity = loadedChunks[index];
+        //     toUnloadChunks.Add(entity);
+        //     loadedChunks.Remove(index);
+        // }
     #region Object transfer between chunks
 
     [BurstCompile]
@@ -303,26 +282,187 @@ public partial class MapServerSystem : SystemBase
     {
         public ComponentTypeHandle<NewChunk> newChunk;
         [ReadOnly] public ComponentTypeHandle<GhostChunk> ghostChunk;
-        public EntityCommandBuffer.ParallelWriter chunkObjects;
+        public EntityCommandBuffer.ParallelWriter ecb;
         public EntityTypeHandle entityTypeHandle;
         [ReadOnly] public NativeHashMap<int, Entity> loadedChunks;
+        public NativeQueue<(Entity,int)>.ParallelWriter objectsToRemoveFromBuffer;
 
 
         public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
         {
             var ghostChunks = chunk.GetNativeArray(ref ghostChunk);
             var entities = chunk.GetNativeArray(entityTypeHandle);
-
+        
             for (int i = 0; i < chunk.Count; i++)
             {
-                int current = ghostChunks[i].current;
-                if (loadedChunks.TryGetValue(current, out Entity e))
+                var gchunk = ghostChunks[i];
+                var entity = entities[i];
+                if (loadedChunks.TryGetValue(gchunk.current, out Entity e))
+                    ecb.AppendToBuffer(unfilteredChunkIndex,e,new ChunkObjects(){ entity = entity});
+
+                if(gchunk.LastChunkIsNotNull())
+                    objectsToRemoveFromBuffer.Enqueue((entity,gchunk.lastChunk));
+            }
+              
+            chunk.SetComponentEnabledForAll(ref newChunk, false);
+        }
+    }
+
+    struct LoadChunksJob : IJobChunk
+    {
+        [ReadOnly] public ComponentTypeHandle<GhostChunk> ghostChunk;
+        [ReadOnly] public ComponentTypeHandle<GhostOwner> ghostOwner;
+
+        [ReadOnly] public EntitiesReferences entitiesReferences;
+
+        [ReadOnly] public NativeHashMap<int, Entity> loadedChunks;
+        [ReadOnly] public NativeParallelMultiHashMap<int,int> playerChunks;
+        [ReadOnly] public NativeParallelHashMap<(int networkID,int chunkIndex),double> times;
+
+        public NativeParallelMultiHashMap<int,int>.ParallelWriter stopSending;
+        public NativeParallelMultiHashMap<int,(int chunkIndex, Entity chunk)>.ParallelWriter startSending;
+
+
+
+        public EntityCommandBuffer.ParallelWriter ecb;
+        public EntityTypeHandle entityTypeHandle;
+
+        public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
+        {
+            var ghostChunks = chunk.GetNativeArray(ref ghostChunk);
+            var ghostOwners = chunk.GetNativeArray(ref ghostOwner);
+            var entities = chunk.GetNativeArray(entityTypeHandle);
+            NativeHashSet<int> ChunkToSend = new NativeHashSet<int>(renderChunksCount,Allocator.TempJob);
+            NativeList<(int chunk,double time)> toRemove = new NativeList<(int,double)>(renderChunksCount,Allocator.TempJob);
+            
+
+            for(int i = 0; i < chunk.Count; i++)
+            {
+                int networkID = ghostOwners[i].NetworkId;
+                var gChunk = ghostChunks[i]; 
+                ChunkToSend.Clear();
+                toRemove.Clear();
+
+                Map.GetNeighboringChunkIndexes(gChunk.current, renderChunksSize,ChunkToSend);
+                UnloadChunks(toRemove,ChunkToSend,networkID,unfilteredChunkIndex);
+
+                foreach(int index  in ChunkToSend)
                 {
-                    chunkObjects.AppendToBuffer(unfilteredChunkIndex,e,new ChunkObjects(){ entity = entities[i]});
+                    Entity chunkEntity;
+                    if (!loadedChunks.TryGetValue(index, out chunkEntity) && !CreateChunk(networkID,index,unfilteredChunkIndex, out chunkEntity)) 
+                        continue;
+                    
+                    startSending.Add(networkID,(index,chunkEntity));
+                    ecb.SetComponentEnabled<NewChunkServerAction>(unfilteredChunkIndex,chunkEntity, true);
+                    ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity, new ChunkServerActions()
+                    {
+                        networkID = networkID,
+                        action = 1
+                    });
                 }
             }
-            
-            chunk.SetComponentEnabledForAll<NewChunk>(ref newChunk, false);
+            toRemove.Dispose();
+            ChunkToSend.Dispose();
+        }   
+        private void UnloadChunks(NativeList<(int chunk,double time)> toRemove , NativeHashSet<int> neighboringChunks, int networkID, int unfilteredChunkIndex)
+        {    
+            // Remove the chunks of the set that are sent to the player.        
+            int chunksToLoad = neighboringChunks.Count;
+            if (playerChunks.TryGetFirstValue(networkID, out var value, out var iterator))
+            {
+                if (!neighboringChunks.Contains(value))
+                    toRemove.Add((value,times[(networkID,value)]));
+                else
+                    neighboringChunks.Remove(value);
+                
+                while (playerChunks.TryGetNextValue(out value, ref iterator))
+                {
+                    if (!neighboringChunks.Contains(value))
+                        toRemove.Add((value,times[(networkID,value)]));
+                    else
+                        neighboringChunks.Remove(value);
+                }
+            }
+   
+            // Check the number of loaded chunks per player
+            int number = toRemove.Length + chunksToLoad - maxChunkPerClient;
+
+            while (number > 0 && toRemove.Length > 0)
+            {
+                int chunkIndex = GetChunkToRemove(toRemove);
+                Entity chunk = loadedChunks[chunkIndex];
+                ecb.AppendToBuffer(unfilteredChunkIndex,chunk, new ChunkServerActions()
+                {
+                    networkID = networkID,
+                    action = 2
+                });
+                ecb.SetComponentEnabled<NewChunkServerAction>(unfilteredChunkIndex,chunk, true);
+                stopSending.Add(networkID,chunkIndex);
+                number--;
+            }
+        }
+        private int GetChunkToRemove(NativeList<(int chunk,double time)> toRemove)
+        {
+            double minTime = toRemove[0].time;
+            int k = 0;
+            for (var i = toRemove.Length - 1; i >= 0; i--)
+            {
+                var data = toRemove[i];
+                if (data.time < minTime)
+                {
+                    k = i;
+                    minTime = data.time;
+                }
+            }
+            int chunkIndex = toRemove[k].chunk;
+            toRemove.RemoveAtSwapBack(k);
+            return chunkIndex;
+        } 
+        private bool CreateChunk(int networkID,int index,int unfilteredChunkIndex, out Entity entity)
+        {
+            entity = Entity.Null;
+            if (!map.CheckChunkIndex(index)) return false;
+
+            Entity chunkEntity = ecb.Instantiate(unfilteredChunkIndex,entitiesReferences.chunkEntity);
+            ChunkComponent chunkComponent = new ChunkComponent();
+            ecb.AddComponent<NewChunkServerAction>(unfilteredChunkIndex,chunkEntity);
+            ecb.AddBuffer<ChunkServerActions>(unfilteredChunkIndex,chunkEntity);
+            ecb.AddBuffer<ChunkObjects>(unfilteredChunkIndex,chunkEntity);
+
+            Chunk chunk = map.chunks[index];
+            chunkComponent.worldPos = chunk.worldPosition;
+            chunkComponent.index = index;
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    GridTile tile = chunk.grid[j, i];
+                    ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,new ChunkTiles()
+                    {
+                        tileID = tile.tileID,
+                        variant = (byte)tile.variant
+                    });
+
+                    if (tile.gridObject != null)
+                    {
+                        var obj = new BuildingObjects()
+                        {
+                            id = tile.gridObject.ID,
+                            position = new int2(tile.x, tile.y),
+                            variantIndex = tile.gridObject.variantIndex,
+                            stateIndex = tile.gridObject.stateIndex,
+                            hitPoints = tile.gridObject.hitPoints
+                        };
+                        ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,obj);
+                        ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ecb, obj,unfilteredChunkIndex));
+                    }
+                }
+            }
+
+            ecb.SetComponent(unfilteredChunkIndex,chunkEntity, chunkComponent);
+            entity = chunkEntity;
+            return true;
         }
     }
     #endregion
@@ -331,3 +471,6 @@ public partial class MapServerSystem : SystemBase
 
 
 
+
+
+ 

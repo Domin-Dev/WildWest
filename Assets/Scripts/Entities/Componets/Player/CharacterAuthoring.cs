@@ -152,6 +152,11 @@ public struct GhostChunk : IComponentData
         return this;
     }
 
+    public bool LastChunkIsNotNull()
+    {
+        return lastChunk == int.MinValue;
+    }
+
     public void SetNewChunk(int newChunk)
     {
         lastChunk = current;

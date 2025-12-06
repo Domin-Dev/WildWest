@@ -63,9 +63,7 @@ partial struct EquipmentClientSystem : ISystem
             eventCounter = SystemAPI.GetComponentTypeHandle<EquipmentEventCounter>(),
             container = SystemAPI.GetComponentTypeHandle<ContainerComponent>()
         };
-        var query = SystemAPI.QueryBuilder()
-                             .WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter, GhostOwnerIsLocal>().Build();
-
+        var query = SystemAPI.QueryBuilder().WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter, GhostOwnerIsLocal>().Build();
         JobHandle jobHandle = job.ScheduleParallel(query, state.Dependency);
         jobHandle.Complete();
 
@@ -79,7 +77,6 @@ partial struct EquipmentClientSystem : ISystem
             NewEquipmentManager.instance.NewEvents(managedArray,ref entityCommandBuffer);
         }
         
-        state.Dependency = jobHandle;
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }

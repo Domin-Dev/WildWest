@@ -14,39 +14,56 @@ using UnityEngine.UI;
 
 public static class BuildingObjectCreator
 {
-    public static Entity CreateObject(ref EntitiesReferences entitiesReferences,EntityManager entityManager, ref EntityCommandBuffer entityCommand, BuildingObjects buildingObject)
-    {
-  //      Debug.Log("New OBJ  " + entityManager.World.Flags);
-        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
 
+
+    public static Entity CreateObjectServer(EntitiesReferences entitiesReferences, EntityCommandBuffer.ParallelWriter entityCommand, BuildingObjects buildingObject, int unfilteredChunkIndex)
+    {
+        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
         float2 worldPos = new float2(buildingObject.position.x * ClientMap.cellSize, buildingObject.position.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
-        Entity entity;
-
-
-        if (entityManager.World.IsServer())
+           
+        Entity entity  = entityCommand.CreateEntity(unfilteredChunkIndex);
+        entityCommand.AddComponent(unfilteredChunkIndex,entity, localTransform);
+        entityCommand.AddComponent(unfilteredChunkIndex, entity, new Physics2D()
         {
-            entity  = entityManager.CreateEntity();
-            entityCommand.AddComponent(entity, localTransform);
-            entityCommand.AddComponent(entity, new Physics2D()
+            layer = 0,
+            cellIndex = new int2(int.MinValue, int.MinValue)
+        });     
+        
+        
+        if (rectangleHitbox != null)
+        {
+            entityCommand.AddComponent(unfilteredChunkIndex,entity, new IsChanged());
+            entityCommand.SetComponentEnabled(unfilteredChunkIndex,entity, typeof(IsChanged), true);
+            entityCommand.AddComponent(unfilteredChunkIndex,entity, new BoxCollider2D()
             {
-                layer = 0,
-                cellIndex = new int2(int.MinValue, int.MinValue)
+                offset = rectangleHitbox.offset +  new Vector2(0,shadow),
+                size = rectangleHitbox.size
             });
+            entityCommand.AddComponent(unfilteredChunkIndex,entity, new Velocity2D() { Value = float2.zero });
         }
-        else
-        {
-            entity = entityManager.Instantiate(entitiesReferences.buildObjectEntity);
-            Entity sprite = entityManager.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
-            SpriteRenderer spriteRenderer = entityManager.GetComponentObject<SpriteRenderer>(sprite);
-            LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));
+        return entity;
+    }
 
-            spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
-            entityCommand.SetComponent(entity, localTransform);
-            entityCommand.SetComponent(sprite, spriteTransform);
 
-        }
+    public static Entity CreateObject(EntitiesReferences entitiesReferences,EntityManager entityManagern,EntityCommandBuffer entityCommand, BuildingObjects buildingObject)
+    {
+        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
+        float2 worldPos = new float2(buildingObject.position.x * ClientMap.cellSize, buildingObject.position.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);
+        LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
+        RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
+ 
+        Entity entity = entityManagern.Instantiate(entitiesReferences.buildObjectEntity);
+
+
+        Entity sprite = entityManagern.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
+        SpriteRenderer spriteRenderer = entityManagern.GetComponentObject<SpriteRenderer>(sprite);
+        LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));
+        spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
+        entityCommand.SetComponent(sprite, spriteTransform);
+        entityCommand.SetComponent(entity, localTransform);
+
 
         if (rectangleHitbox != null)
         {

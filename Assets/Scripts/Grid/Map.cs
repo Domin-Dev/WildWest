@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Unity.Mathematics;
 using System;
+using Unity.Collections;
 
-public class 
-    Map
+public class Map
 {
     public Vector2 offset { private set;  get; }
     public float cellSize { private set;  get; }
@@ -73,17 +73,27 @@ public class
         }
         return indexes;   
     }
-
+    public void GetNeighboringChunkIndexes(int chunkIndex, int renderSize, NativeHashSet<int> indexes)
+    {
+        int2 pos = GetChunkPos(chunkIndex);
+        for (int y = -renderSize; y <= renderSize; y++)
+        {
+            for (int x = -renderSize; x <= renderSize; x++)
+            {
+                if (pos.x + x >= 0 && pos.y + y >= 0 && pos.x + x < widthInChunks && pos.y + y < heightInChunks)
+                {
+                    indexes.Add(chunkIndex + x + y * widthInChunks);
+                }
+            }
+        }
+    }
     public bool CheckChunkIndex(int chunkIndex)
     {
         return chunkIndex >= 0 && chunkIndex < widthInChunks * heightInChunks;
     }
-
     public float3 MapPositionToWorldPosition(int x, int y)
     {
         return new float3(offset.x + (x + 0.5f) * cellSize, offset.y + (y + 0.5f) * cellSize, offset.y + (y + 0.5f) * cellSize); 
     }
-
-
 }
 
