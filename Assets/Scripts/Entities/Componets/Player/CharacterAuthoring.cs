@@ -173,3 +173,11 @@ public struct PlayerSourceConnection : IComponentData {
     public Entity value;
 }
 
+
+
+public struct PlayerChunks : IBufferElementData
+{
+    public int index;
+    public Entity chunk;
+    public double time;
+}

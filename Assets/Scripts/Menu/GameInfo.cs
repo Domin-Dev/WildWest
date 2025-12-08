@@ -32,7 +32,6 @@ public class GameInfo : MonoBehaviour
     public string errorMessage;
 
 
-
     public static GameInfo instance { get; private set; }
 
 

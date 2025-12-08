@@ -423,7 +423,7 @@ public class MenuManager : MonoBehaviour
 
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
-        Debug.Log("Próba po³¹czenia");
+        Debug.Log("Prï¿½ba poï¿½ï¿½czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
     private void RunServer(HeaderData headerData = null)
@@ -489,23 +489,7 @@ public class MenuManager : MonoBehaviour
             networkStreamDriver.ValueRW.RequireConnectionApproval = true;
             networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
-
-            Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-
-            ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
-            ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
-
-           
-            Entity serverSettings = ClientServerBootstrap.ServerWorld.EntityManager.CreateEntity(typeof(ServerData));
-
-            ClientServerBootstrap.ServerWorld.EntityManager.SetComponentData(serverSettings, new ServerData()
-            {
-                hash = isPassword ? AuthUtils.ComputeSha256(passwordInput.text.ToArray()) : "",
-                isPassword = isPassword,
-                isHost = true,
-                playersLimit = playerLimit.GetValue(),
-                hostNetworkID = int.MinValue,
-            });
+            ServerWorldSetUp(isPassword);
         }
         catch
         (Exception ex)
@@ -514,6 +498,37 @@ public class MenuManager : MonoBehaviour
             SceneManager.LoadScene(10);
         }
     }
+
+    private void ServerWorldSetUp(bool isPassword)
+    {
+        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
+        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
+
+
+        ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new ServerData()
+        {
+            hash = isPassword ? AuthUtils.ComputeSha256(passwordInput.text.ToArray()) : "",
+            isPassword = isPassword,
+            isHost = true,
+            playersLimit = playerLimit.GetValue(),
+            hostNetworkID = int.MinValue,
+        });   
+
+        ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new MapSettings()
+        {
+            seed = GameInfo.instance.seed,
+            widthInChunks = 100,
+            heightInChunks = 100,
+            playerRenderSize = 500,
+            maxChunksPerClient = 30
+        });     
+        ClientServerBootstrap.ServerWorld.EntityManager.CreateSingletonBuffer<LoadedChunks>();
+    }
+
+
+
+
     private void ClientWorldSetUp(World clientWorld)
     {
         var simGroup = clientWorld.GetExistingSystemManaged<SimulationSystemGroup>(); 

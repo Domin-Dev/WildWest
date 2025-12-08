@@ -16,7 +16,7 @@ public static class BuildingObjectCreator
 {
 
 
-    public static Entity CreateObjectServer(EntitiesReferences entitiesReferences, EntityCommandBuffer.ParallelWriter entityCommand, BuildingObjects buildingObject, int unfilteredChunkIndex)
+    public static Entity CreateObjectServer(EntitiesReferences entitiesReferences, ref EntityCommandBuffer.ParallelWriter entityCommand, BuildingObjects buildingObject, int unfilteredChunkIndex)
     {
         float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
         float2 worldPos = new float2(buildingObject.position.x * ClientMap.cellSize, buildingObject.position.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);

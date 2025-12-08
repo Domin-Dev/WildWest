@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+using JetBrains.Annotations;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
@@ -14,9 +15,9 @@ public struct ContainerComponent : IComponentData
     public int capacity => containerStats.capacity;
     public byte waterResistance => containerStats.waterResistance;
     public ContainerType containerType => EQHelperClient.GetContainerType(containerIndex);
+
+    public FixedBytes16 l;
 }
-
-
 
 
 

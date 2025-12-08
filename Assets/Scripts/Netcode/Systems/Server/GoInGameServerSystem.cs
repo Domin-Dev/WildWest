@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -62,7 +63,7 @@ partial struct GoInGameServerSystem : ISystem
  
 
 
-           
+            AddMapComponents(ref entityCommandBuffer,character);
             AddEquipmentEntities(ref state, ref entityCommandBuffer, character, networkId);
             
 
@@ -122,6 +123,13 @@ partial struct GoInGameServerSystem : ISystem
             CreateNewContainer(character,ref ecb,ref entities,networkID,cont.Value);
         }
     }
+   
+    private void AddMapComponents(ref EntityCommandBuffer ecb, Entity character)
+    {
+        ecb.AddBuffer<PlayerChunks>(character);
+    }
+   
+   
     private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,byte waterResistance, int capacity, int index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1)
     {
         var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
@@ -150,8 +158,6 @@ partial struct GoInGameServerSystem : ISystem
         
         entityCommandBuffer.AddComponent(e, new SendToOwner());
     }
-
-
     private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, ContainerData data)
     {
         CreateNewContainer(player,ref entityCommandBuffer,ref entities,networkID,data.stats.waterResistance,data.stats.capacity,

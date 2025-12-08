@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using TMPro;
-using Unity.Burst;
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
@@ -30,7 +29,7 @@ public partial class MapServerSystem : SystemBase
     private const int renderChunksSize = 2;
     private static int renderChunksCount => (2 * renderChunksSize + 1)*(2 * renderChunksSize + 1);
 
-    private const int maxChunkPerClient = 20;
+    private const int maxChunkPerClient = 30;
 
     private NetworkTick currentTick;
 
@@ -50,7 +49,6 @@ public partial class MapServerSystem : SystemBase
     public NativeParallelMultiHashMap<int,int> stopSending;
     public NativeParallelMultiHashMap<int,(int chunkIndex, Entity chunk)> startSending;
 
-
     public static Map Map { get { return map; } }
     #endregion
 
@@ -63,9 +61,10 @@ public partial class MapServerSystem : SystemBase
         times = new NativeParallelHashMap<(int networkID,int chunkIndex),double>(100,Allocator.Persistent);
         objectsToRemoveFromBuffer = new NativeQueue<(Entity,int)>(Allocator.Persistent); 
 
-        stopSending = new NativeParallelMultiHashMap<int,int>(100,Allocator.Persistent);
-        startSending = new NativeParallelMultiHashMap<int,(int chunkIndex, Entity chunk)>(100,Allocator.Persistent);
+        stopSending = new NativeParallelMultiHashMap<int,int>(10,Allocator.Persistent);
+        startSending = new NativeParallelMultiHashMap<int,(int chunkIndex, Entity chunk)>(10,Allocator.Persistent);
 
+        
 
         RequireForUpdate<EntitiesReferences>();
 
@@ -96,45 +95,46 @@ public partial class MapServerSystem : SystemBase
         EntityCommandBuffer.ParallelWriter ecb = entityCommandBuffer.AsParallelWriter();
 
 
-        currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-      //  ServerUnloadChunks(ref entityCommandBuffer);
-        objectsToRemoveFromBuffer.Clear();
-        stopSending.Clear();
-        startSending.Clear();
+    //     currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+    //   //  ServerUnloadChunks(ref entityCommandBuffer);
+    //     // objectsToRemoveFromBuffer.Clear();
+    //     // stopSending.Clear();
+    //     // startSending.Clear();
 
 
 
-        var job1 = new LoadChunksJob
-        {
-            loadedChunks = loadedChunks,
-            ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(true),
-            ghostOwner = SystemAPI.GetComponentTypeHandle<GhostOwner>(true),
-            entityTypeHandle = SystemAPI.GetEntityTypeHandle(),
-            ecb = ecb,
-            playerChunks = playerChunks,
-            times = times,
-            startSending = startSending.AsParallelWriter(),
-            stopSending = stopSending.AsParallelWriter(),
-            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>()
-        };
-        JobHandle jobHandle1 = job1.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk, GhostOwner, Player>().Build(), Dependency);
-        jobHandle1.Complete();
+    //     // var job1 = new LoadChunksJob
+    //     // {
+    //     //     loadedChunks = loadedChunks,
+    //     //     ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(true),
+    //     //     ghostOwner = SystemAPI.GetComponentTypeHandle<GhostOwner>(true),
+    //     //     entityTypeHandle = SystemAPI.GetEntityTypeHandle(),
+    //     //     ecb = ecb,
+    //     //     playerChunks = playerChunks,
+    //     //     times = times,
+    //     //     startSending = startSending.AsParallelWriter(),
+    //     //     stopSending = stopSending.AsParallelWriter(),
+    //     //     entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>()
+    //     // };
+    //     // JobHandle jobHandle1 = job1.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk, GhostOwner, Player>().Build(), Dependency);
+    //     // jobHandle1.Complete();
 
 
-        // var job = new ProcessMovedEntitesJob
-        // {
-        //     newChunk = SystemAPI.GetComponentTypeHandle<NewChunk>(),
-        //     ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(true),
-        //     loadedChunks = loadedChunks,
-        //     entityTypeHandle = SystemAPI.GetEntityTypeHandle(),
-        //     ecb = ecb,
-        //     objectsToRemoveFromBuffer = objectsToRemoveFromBuffer.AsParallelWriter()
-        // };
-        // var jobHandle2 = job.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk>().Build(), jobHandle1);
-        // jobHandle2.Complete();
+    //     // var job = new ProcessMovedEntitesJob
+    //     // {
+    //     //     newChunk = SystemAPI.GetComponentTypeHandle<NewChunk>(),
+    //     //     ghostChunk = SystemAPI.GetComponentTypeHandle<GhostChunk>(true),
+    //     //     loadedChunks = loadedChunks,
+    //     //     entityTypeHandle = SystemAPI.GetEntityTypeHandle(),
+    //     //     ecb = ecb,
+    //     //     objectsToRemoveFromBuffer = objectsToRemoveFromBuffer.AsParallelWriter()
+    //     // };
+    //     // var jobHandle2 = job.ScheduleParallel(SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk>().Build(), jobHandle1);
+    //     // jobHandle2.Complete();startSending
 
-        LoadChanges();
+    //     LoadChanges();
         
+    //     Debug.Log("dzila!!!! " + loadedChunks.Count);
 
         foreach ((RefRO<SendMap> send, Entity entity) in
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
@@ -160,42 +160,6 @@ public partial class MapServerSystem : SystemBase
             entityCommandBuffer.RemoveComponent<SendMap>(entity);
         }
 
-        // foreach ((RefRO<GhostChunk> chunk, RefRO<GhostOwner> networkID, Entity entity) in
-        // SystemAPI.Query<RefRO<GhostChunk>, RefRO<GhostOwner>>().WithAll<NewChunk, Player>().WithEntityAccess())
-        // {
-        //     var chunksToSend = map.GetNeighboringChunkIndexes(chunk.ValueRO.current, renderChunksSize);
-
-        //     // if (!playerChunks.ContainsKey(networkID.ValueRO.NetworkId))
-        //     //     playerChunks.Add(networkID.ValueRO.NetworkId, new NativeHashMap<int, double>(maxChunkPreClient, Allocator.Persistent));
-
-        //     // UnloadChunks(ref entityCommandBuffer, chunksToSend, networkID.ValueRO.NetworkId);
-        //     // for (int i = 0; i < chunksToSend.Count; i++)
-        //     // {
-        //     //     int index = chunksToSend[i];
-        //     //     if (PlayerHasChunk(networkID.ValueRO.NetworkId, index)) continue;
-        //     //     Entity chunkEntity;
-
-        //     //     if (!loadedChunks.TryGetValue(index, out chunkEntity))
-        //     //     {
-        //     //         if (!CreateChunk(ref entityCommandBuffer, index)) continue;
-        //     //         chunkEntity = loadedChunks[index];
-        //     //     }
-
-        //     //    // playerChunks[networkID.ValueRO.NetworkId].Add(index, (float)SystemAPI.Time.ElapsedTime);
-        //     //     entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunkEntity, true);
-        //     //     entityCommandBuffer.AppendToBuffer(chunkEntity, new ChunkServerActions()
-        //     //     {
-        //     //         networkID = networkID.ValueRO.NetworkId,
-        //     //         action = 1
-        //     //     });
-        //     // }
-        //     // entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, false);
-        // }
-
-
-
-       // entityCommandBuffer.Playback(EntityManager);
-    
 
     }
 
@@ -208,7 +172,10 @@ public partial class MapServerSystem : SystemBase
             times.Add((keyValue.Key,keyValue.Value.chunkIndex),SystemAPI.Time.ElapsedTime);
 
             if(!loadedChunks.ContainsKey(keyValue.Value.chunkIndex))
+            {
                 loadedChunks.Add(keyValue.Value.chunkIndex,keyValue.Value.chunk);    
+                Debug.Log("new chunk! " + keyValue.Value.chunk);
+            }
         }
 
         // var keys = stopSending.GetKeyArray(Allocator.Temp);
@@ -277,7 +244,6 @@ public partial class MapServerSystem : SystemBase
         // }
     #region Object transfer between chunks
 
-    [BurstCompile]
     struct ProcessMovedEntitesJob : IJobChunk
     {
         public ComponentTypeHandle<NewChunk> newChunk;
@@ -293,6 +259,7 @@ public partial class MapServerSystem : SystemBase
             var ghostChunks = chunk.GetNativeArray(ref ghostChunk);
             var entities = chunk.GetNativeArray(entityTypeHandle);
         
+        
             for (int i = 0; i < chunk.Count; i++)
             {
                 var gchunk = ghostChunks[i];
@@ -306,6 +273,7 @@ public partial class MapServerSystem : SystemBase
               
             chunk.SetComponentEnabledForAll(ref newChunk, false);
         }
+
     }
 
     struct LoadChunksJob : IJobChunk
@@ -332,6 +300,8 @@ public partial class MapServerSystem : SystemBase
             var ghostChunks = chunk.GetNativeArray(ref ghostChunk);
             var ghostOwners = chunk.GetNativeArray(ref ghostOwner);
             var entities = chunk.GetNativeArray(entityTypeHandle);
+
+
             NativeHashSet<int> ChunkToSend = new NativeHashSet<int>(renderChunksCount,Allocator.TempJob);
             NativeList<(int chunk,double time)> toRemove = new NativeList<(int,double)>(renderChunksCount,Allocator.TempJob);
             
@@ -391,12 +361,12 @@ public partial class MapServerSystem : SystemBase
             {
                 int chunkIndex = GetChunkToRemove(toRemove);
                 Entity chunk = loadedChunks[chunkIndex];
-                ecb.AppendToBuffer(unfilteredChunkIndex,chunk, new ChunkServerActions()
-                {
-                    networkID = networkID,
-                    action = 2
-                });
-                ecb.SetComponentEnabled<NewChunkServerAction>(unfilteredChunkIndex,chunk, true);
+                // ecb.AppendToBuffer(unfilteredChunkIndex,chunk, new ChunkServerActions()
+                // {
+                //     networkID = networkID,
+                //     action = 2
+                // });
+               // ecb.SetComponentEnabled<NewChunkServerAction>(unfilteredChunkIndex,chunk, true);
                 stopSending.Add(networkID,chunkIndex);
                 number--;
             }
@@ -428,6 +398,7 @@ public partial class MapServerSystem : SystemBase
             ecb.AddComponent<NewChunkServerAction>(unfilteredChunkIndex,chunkEntity);
             ecb.AddBuffer<ChunkServerActions>(unfilteredChunkIndex,chunkEntity);
             ecb.AddBuffer<ChunkObjects>(unfilteredChunkIndex,chunkEntity);
+            ecb.AddBuffer<PlayersNeedChunk>(unfilteredChunkIndex,chunkEntity);
 
             Chunk chunk = map.chunks[index];
             chunkComponent.worldPos = chunk.worldPosition;
@@ -455,7 +426,7 @@ public partial class MapServerSystem : SystemBase
                             hitPoints = tile.gridObject.hitPoints
                         };
                         ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,obj);
-                        ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ecb, obj,unfilteredChunkIndex));
+                        ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ref ecb, obj,unfilteredChunkIndex));
                     }
                 }
             }

@@ -19,6 +19,11 @@ public struct ChunkObjects : IBufferElementData
     public Entity entity;
 }
 
+public struct PlayersNeedChunk : IBufferElementData
+{
+    public Entity entity;
+}
+
 
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
