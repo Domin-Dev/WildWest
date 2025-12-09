@@ -13,7 +13,6 @@ public class ChunkAuthoring : MonoBehaviour
             AddComponent(entity, new ChunkComponent());
             AddBuffer<ChunkTiles>(entity);
             AddBuffer<BuildingObjects>(entity);
-            AddBuffer<ChunkObjects>(entity);
         }
     }
 }

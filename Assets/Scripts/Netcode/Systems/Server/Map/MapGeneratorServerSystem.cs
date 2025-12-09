@@ -10,7 +10,6 @@ using System;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapGeneratorServerSystem : SystemBase
 {
-
     protected override void OnCreate()
     {
         RequireForUpdate<GenerateMap>();
@@ -23,7 +22,7 @@ public partial class MapGeneratorServerSystem : SystemBase
         foreach (var (generateMap, e) in SystemAPI.Query<RefRO<GenerateMap>>().WithEntityAccess())
         {
             ClientServerBootstrap.ServerWorld
-                .GetExistingSystemManaged<MapServerSystem>()
+                .GetExistingSystemManaged<ChunkManagementServerSystem>()
                 .GenerateMap();
             Debug.Log("wygenerowano mape!!");
             entityCommandBuffer.DestroyEntity(e);

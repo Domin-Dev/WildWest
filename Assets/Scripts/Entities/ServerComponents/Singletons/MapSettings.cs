@@ -9,8 +9,19 @@ public struct MapSettings: IComponentData
     public int seed;
     public int widthInChunks;
     public int heightInChunks;
-    public int playerRenderSize;
+
+
+
+
+    // Server fields
+    public int playerRenderSize; 
     public int maxChunksPerClient;
+
+    public int maxLoadedChunksInTick;
+    public int loadedChunksInTickPerClient;
+
+
+    
 
 
 
@@ -40,6 +51,10 @@ public struct MapSettings: IComponentData
     {
         return new int2(chunkIndex % widthInChunks, chunkIndex / widthInChunks);
     }
-
-
+    
+    [BurstCompile]
+    public bool CheckChunkIndex(int chunkIndex)
+    {
+        return chunkIndex >= 0 && chunkIndex < widthInChunks * heightInChunks;
+    }
 }

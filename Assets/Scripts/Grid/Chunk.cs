@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public class ChunkItem
 {
@@ -15,7 +16,39 @@ public class ChunkItem
         this.worldItem = worldItem;
     }
 }
-public class Chunk
+
+
+
+public struct ServerChunk
+{
+    public NativeArray2D<ServerTile> grid;
+    public Vector2 chunkCoordinates { set; get; }
+    public Vector2 worldPosition { set; get; }
+    public int chunkIndex {private set; get; }
+    public ServerChunk(int chunkIndex,int gridSize,Vector2 chunkCoordinates, Vector2 position)
+    {
+        this.grid = new NativeArray2D<ServerTile>(gridSize,gridSize,Allocator.Persistent);
+
+        for (int i = 0; i < gridSize; i++)
+        {
+            for (int j = 0; j < gridSize; j++)
+            {
+                grid[i, j] = new ServerTile((int)chunkCoordinates.x + i, (int)chunkCoordinates.y + j);
+            }
+        }
+
+        this.chunkCoordinates = chunkCoordinates;
+        this.worldPosition = position;
+        this.chunkIndex = chunkIndex;
+    }
+
+    public void Dispose()
+    {
+        grid.Dispose();
+    }
+}
+
+public struct Chunk
 {
     public GridTile[,] grid;
     public Vector2 chunkCoordinates { set; get; }

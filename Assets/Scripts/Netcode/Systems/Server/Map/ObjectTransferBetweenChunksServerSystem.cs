@@ -10,59 +10,7 @@
 // [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 // partial struct ObjectTransferBetweenChunksServerSystem : ISystem
 // {
-//     private NativeQueue<EqiupmentEventClient> slotsToUpdate;
-//     private NetworkTick lastProcessedServerTick;
-
-//     public void OnCreate(ref SystemState state)
-//     {
-//         slotsToUpdate = new NativeQueue<EqiupmentEventClient>(Allocator.Persistent);
-//         lastProcessedServerTick = NetworkTick.Invalid;
-//     }
-
-//     public void OnDestroy(ref SystemState state)
-//     {
-//         slotsToUpdate.Dispose();
-//     }
-
-//     public void OnUpdate(ref SystemState state)
-//     {
-//         var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-//         if (lastProcessedServerTick.IsValid && !serverTick.IsNewerThan(lastProcessedServerTick))
-//             return;
-//         lastProcessedServerTick = serverTick;
-
-//         //Debug.Log("Update " + System.DateTime.Now.Second);
-//         slotsToUpdate.Clear();
-//         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-
-//         var job = new ProcessEquipmentEventsJob
-//         {
-//             SlotsToUpdate = slotsToUpdate.AsParallelWriter(),
-//             eventBuffer = SystemAPI.GetBufferTypeHandle<EquipmentEventBuffer>(true),
-//             eventCounter = SystemAPI.GetComponentTypeHandle<EquipmentEventCounter>(),
-//             container = SystemAPI.GetComponentTypeHandle<ContainerComponent>()
-//         };
-//         var query = SystemAPI.QueryBuilder()
-//                              .WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter, GhostOwnerIsLocal>().Build();
-
-//         JobHandle jobHandle = job.ScheduleParallel(query, state.Dependency);
-//         jobHandle.Complete();
-
-
-//         if(slotsToUpdate.Count > 0)
-//         {
-//             EqiupmentEventClient[] managedArray = new EqiupmentEventClient[slotsToUpdate.Count];
-//             int index = 0;
-//             while (slotsToUpdate.Count > 0)
-//                 managedArray[index++] = slotsToUpdate.Dequeue();
-//             NewEquipmentManager.instance.NewEvents(managedArray,ref entityCommandBuffer);
-//         }
-        
-//         state.Dependency = jobHandle;
-//         entityCommandBuffer.Playback(state.EntityManager);
-//         entityCommandBuffer.Dispose();
-//     }
-
+//     
 
 //     [BurstCompile]
 //     struct ProcessEquipmentEventsJob : IJobChunk

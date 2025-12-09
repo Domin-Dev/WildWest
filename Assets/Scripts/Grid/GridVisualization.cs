@@ -538,100 +538,100 @@ public class GridVisualization : MonoBehaviour
   
 
 
-    public Transform CreateMesh(Chunk chunk)
-    {
-        Transform partOfMap = new GameObject("part of map").transform;
-        Transform lines = new GameObject("Lines").transform;
-        lines.SetParent(partOfMap);
+    // public Transform CreateMesh(Chunk chunk)
+    // {
+    //     Transform partOfMap = new GameObject("part of map").transform;
+    //     Transform lines = new GameObject("Lines").transform;
+    //     lines.SetParent(partOfMap);
 
-        MeshFilter meshFilter = partOfMap.AddComponent<MeshFilter>();
-        MeshFilter linesMeshFilter = lines.AddComponent<MeshFilter>();
+    //     MeshFilter meshFilter = partOfMap.AddComponent<MeshFilter>();
+    //     MeshFilter linesMeshFilter = lines.AddComponent<MeshFilter>();
 
-        meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
-        linesMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;
-        int width = map.chunkSize;
-        int height = map.chunkSize;
-        float cellSize = map.cellSize;
+    //     meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
+    //     linesMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;
+    //     int width = map.chunkSize;
+    //     int height = map.chunkSize;
+    //     float cellSize = map.cellSize;
         
-        Mesh mesh = new Mesh();
-        Mesh linesMesh= new Mesh();
+    //     Mesh mesh = new Mesh();
+    //     Mesh linesMesh= new Mesh();
 
-       // meshFilter.transform.position = new Vector3(chunk.worldPostion.x, chunk.worldPostion.y, 10);
+    //    // meshFilter.transform.position = new Vector3(chunk.worldPostion.x, chunk.worldPostion.y, 10);
 
-        Vector3[] vertices = new Vector3[4 * (width * height)];
-        int[] triangles = new int[6 * (width * height)];
+    //     Vector3[] vertices = new Vector3[4 * (width * height)];
+    //     int[] triangles = new int[6 * (width * height)];
 
-        Vector2[] uv = new Vector2[4 * (width * height)];
-        Vector2[] linesUV = new Vector2[4 * (width * height)];
+    //     Vector2[] uv = new Vector2[4 * (width * height)];
+    //     Vector2[] linesUV = new Vector2[4 * (width * height)];
 
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                int index = x + y * width;
-                vertices[index * 4 + 0] = new Vector3( x * cellSize,       y * cellSize);
-                vertices[index * 4 + 1] = new Vector3( x * cellSize,      (y + 1) * cellSize);
-                vertices[index * 4 + 2] = new Vector3((x + 1) * cellSize, (y + 1) * cellSize);
-                vertices[index * 4 + 3] = new Vector3((x + 1) * cellSize,  y * cellSize);
+    //     for (int y = 0; y < height; y++)
+    //     {
+    //         for (int x = 0; x < width; x++)
+    //         {
+    //             int index = x + y * width;
+    //             vertices[index * 4 + 0] = new Vector3( x * cellSize,       y * cellSize);
+    //             vertices[index * 4 + 1] = new Vector3( x * cellSize,      (y + 1) * cellSize);
+    //             vertices[index * 4 + 2] = new Vector3((x + 1) * cellSize, (y + 1) * cellSize);
+    //             vertices[index * 4 + 3] = new Vector3((x + 1) * cellSize,  y * cellSize);
 
-                triangles[index * 6]     = index * 4;
-                triangles[index * 6 + 1] = index * 4 + 1;
-                triangles[index * 6 + 2] = index * 4 + 2;
+    //             triangles[index * 6]     = index * 4;
+    //             triangles[index * 6 + 1] = index * 4 + 1;
+    //             triangles[index * 6 + 2] = index * 4 + 2;
 
-                triangles[index * 6 + 3] = index * 4; 
-                triangles[index * 6 + 4] = index * 4 + 2;
-                triangles[index * 6 + 5] = index * 4 + 3;
+    //             triangles[index * 6 + 3] = index * 4; 
+    //             triangles[index * 6 + 4] = index * 4 + 2;
+    //             triangles[index * 6 + 5] = index * 4 + 3;
 
-                GridTile gridTile = new GridTile(0, 0);//= chunk.GetTileID(x, y);
-                int borders;// = //CalculateBorders(x, y, gridTile.tileID);
+    //             GridTile gridTile = new GridTile(0, 0);//= chunk.GetTileID(x, y);
+    //             int borders;// = //CalculateBorders(x, y, gridTile.tileID);
 
-                Vector2 uv11, uv00;
-
-
-                if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
-                {
-                    GridTile tile = GetTileByGridPosition(gridTile.x, gridTile.y + 1);
-                    if (tile != null && tile.GridObjectIsType<GridHole>())
-                    {
-                        GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
-                    }
-                    else
-                    {
-                        GetUVTile(gridTile, 0 + hole.waterLevel * 2, out uv00, out uv11);
-                    }
-                }
-                else
-                    GetUVTile(gridTile, out uv00, out uv11);
+    //             Vector2 uv11, uv00;
 
 
-                UVSet(uv, index, uv00, uv11);
+    //             if (gridTile.GridObjectIsType<GridHole>(out GridHole hole))
+    //             {
+    //                 GridTile tile = GetTileByGridPosition(gridTile.x, gridTile.y + 1);
+    //                 if (tile != null && tile.GridObjectIsType<GridHole>())
+    //                 {
+    //                     GetUVTile(gridTile, 1 + hole.waterLevel * 2, out uv00, out uv11);
+    //                 }
+    //                 else
+    //                 {
+    //                     GetUVTile(gridTile, 0 + hole.waterLevel * 2, out uv00, out uv11);
+    //                 }
+    //             }
+    //             else
+    //                 GetUVTile(gridTile, out uv00, out uv11);
 
-                borders = CalculateBorders(x + (int)chunk.chunkCoordinates.x, y + (int)chunk.chunkCoordinates.y, gridTile.tileID);
-                GetUVLine(borders, out uv00, out uv11);
-                UVSet(linesUV, index, uv00, uv11);
-            }
-        }
-        mesh.vertices = vertices;
-        mesh.uv = uv;
-        mesh.triangles = triangles;
 
-        linesMesh.vertices = vertices;
-        linesMesh.uv = linesUV;
-        linesMesh.triangles = triangles;
+    //             UVSet(uv, index, uv00, uv11);
 
-        MeshRenderer meshRenderer = meshFilter.AddComponent<MeshRenderer>();
-        meshRenderer.material = mapMaterial;
-        meshRenderer.material.mainTexture = mapTexture;
+    //             borders = CalculateBorders(x + (int)chunk.chunkCoordinates.x, y + (int)chunk.chunkCoordinates.y, gridTile.tileID);
+    //             GetUVLine(borders, out uv00, out uv11);
+    //             UVSet(linesUV, index, uv00, uv11);
+    //         }
+    //     }
+    //     mesh.vertices = vertices;
+    //     mesh.uv = uv;
+    //     mesh.triangles = triangles;
 
-        MeshRenderer linesMeshRenderer = linesMeshFilter.AddComponent<MeshRenderer>();
-        linesMeshRenderer.material = mapMaterial;
-        linesMeshRenderer.material.mainTexture = linesTexture;
-        linesMeshFilter.mesh = linesMesh;
+    //     linesMesh.vertices = vertices;
+    //     linesMesh.uv = linesUV;
+    //     linesMesh.triangles = triangles;
 
-        meshFilter.transform.parent = transform;
-        meshFilter.mesh = mesh;
-        return meshFilter.transform;
-    }
+    //     MeshRenderer meshRenderer = meshFilter.AddComponent<MeshRenderer>();
+    //     meshRenderer.material = mapMaterial;
+    //     meshRenderer.material.mainTexture = mapTexture;
+
+    //     MeshRenderer linesMeshRenderer = linesMeshFilter.AddComponent<MeshRenderer>();
+    //     linesMeshRenderer.material = mapMaterial;
+    //     linesMeshRenderer.material.mainTexture = linesTexture;
+    //     linesMeshFilter.mesh = linesMesh;
+
+    //     meshFilter.transform.parent = transform;
+    //     meshFilter.mesh = mesh;
+    //     return meshFilter.transform;
+    // }
     private bool IsGrass(int tileID)
     {
        return TilesUV.ContainsKey(tileID) && TilesUV[tileID].uv00second != null;
@@ -893,14 +893,14 @@ public class GridVisualization : MonoBehaviour
                 if (isFreeTile[(i - 1)/2] || isFreeTile[((i + 1) / 2)%4])
                 {
                     int newChunkIndex = GetChunkIndexByPositionXY(posXY + MyTools.directions8[i]);
-                    chunkItem = map.chunks[newChunkIndex].FindItem(posXY + MyTools.directions8[i], id, itemChunkIndex);
+           //         chunkItem = map.chunks[newChunkIndex].FindItem(posXY + MyTools.directions8[i], id, itemChunkIndex);
                     if (chunkItem != null) return chunkItem;
                 }
             }
             else
             {
                 int newChunkIndex = GetChunkIndexByPositionXY(posXY + MyTools.directions8[i]);
-                chunkItem = map.chunks[newChunkIndex].FindItem(posXY + MyTools.directions8[i], id, itemChunkIndex);
+            //    chunkItem = map.chunks[newChunkIndex].FindItem(posXY + MyTools.directions8[i], id, itemChunkIndex);
                 if (chunkItem != null) return chunkItem;
             }
         }
@@ -954,11 +954,11 @@ public class GridVisualization : MonoBehaviour
         if (newPosXY != null)
         {
             int newChunkIndex = GetChunkIndexByPositionXY((Vector2)newPosXY);
-            map.chunks[chunkIndex].MoveAllItems(posXY, GetWorldPosition((Vector2)newPosXY + new Vector2(0,0.5f)),chunkIndex,newChunkIndex);
+        //    map.chunks[chunkIndex].MoveAllItems(posXY, GetWorldPosition((Vector2)newPosXY + new Vector2(0,0.5f)),chunkIndex,newChunkIndex);
         }
         else
         {
-            map.chunks[chunkIndex].RemoveAllItems(posXY);
+        //    map.chunks[chunkIndex].RemoveAllItems(posXY);
         }
 
     }

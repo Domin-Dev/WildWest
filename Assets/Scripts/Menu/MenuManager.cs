@@ -520,14 +520,13 @@ public class MenuManager : MonoBehaviour
             seed = GameInfo.instance.seed,
             widthInChunks = 100,
             heightInChunks = 100,
-            playerRenderSize = 500,
-            maxChunksPerClient = 30
+            playerRenderSize = 2,
+            maxChunksPerClient = 30,
+            maxLoadedChunksInTick = 40,
+            loadedChunksInTickPerClient =  5
         });     
         ClientServerBootstrap.ServerWorld.EntityManager.CreateSingletonBuffer<LoadedChunks>();
     }
-
-
-
 
     private void ClientWorldSetUp(World clientWorld)
     {

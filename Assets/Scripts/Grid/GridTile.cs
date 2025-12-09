@@ -1,6 +1,34 @@
-﻿
+
 using UnityEngine;
 using System.Collections.Generic;
+
+
+
+
+
+
+public struct ServerTile
+{
+    public int tileID {private set; get; }
+    public int secondLayerID { private set; get; }
+
+    public int borders;
+    public int variant;
+    public int x, y;
+
+    public ServerTile(int x, int y)
+    {
+        this.secondLayerID = -1;
+        this.tileID = -1;
+        this.borders = 0;
+        this.variant = 0;
+        this.x = x;
+        this.y = y;
+    }
+}
+
+
+
 
 [System.Serializable]
 public class GridTile : IHitPoints

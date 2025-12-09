@@ -419,7 +419,7 @@ public partial struct CollisionSystem : ISystem
 
     public static void GhostChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
     {
-        int index = MapServerSystem.Map.GetChunkIndex(newPos.Position);
+        int index = ChunkManagementServerSystem.Map.GetChunkIndex(newPos.Position);
         var chunk = entityManager.GetComponentData<GhostChunk>(player);
         if (chunk.current != index)
         {

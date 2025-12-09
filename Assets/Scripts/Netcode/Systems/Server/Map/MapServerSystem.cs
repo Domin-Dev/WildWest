@@ -151,7 +151,7 @@ public partial class MapServerSystem : SystemBase
 
 
             Entity loaded = entityCommandBuffer.CreateEntity();
-            entityCommandBuffer.AddComponent(loaded, new MapIsLoaded() { widthInChunks = map.widthInChunks });
+            entityCommandBuffer.AddComponent(loaded, new MapIsLoaded() { widthInChunks = 100 });
             entityCommandBuffer.AddComponent(loaded, new SendRpcCommandRequest()
             {
                 TargetConnection = entity
@@ -204,8 +204,8 @@ public partial class MapServerSystem : SystemBase
    // #region Loadings Chunks
     public void GenerateMap()
     {
-        generator = new MapGenerator(GameInfo.instance.seed);
-        map = generator.StartGenerator();
+       // generator = new MapGenerator(GameInfo.instance.seed);
+        //map = generator.StartGenerator();
     }
     
 

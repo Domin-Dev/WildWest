@@ -36,9 +36,8 @@ public class MapGenerator
     {
         this.seed = seed;
         mapGeneratorSettings = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
-        Debug.Log(mapGeneratorSettings);
     }
-    public Map StartGenerator()
+    public void StartGenerator(ref ServerMap serverMap)
     {
         seed = GameInfo.instance.seed;
 
@@ -51,41 +50,38 @@ public class MapGenerator
 
         offsetRain.x = rand.Next(-100000, 100000);
         offsetRain.y = rand.Next(-100000, 100000);
-
-        GenerateMap(0.25f, gridOffset,out Map map);
-
-        return map;
+        GenerateMap(0.25f, gridOffset,ref serverMap);
     }
-    private void SetValue(Chunk chunk ,int x,int y,int index, int variant)
+    private void SetValue(ref ServerChunk chunk ,int x,int y,int index, int variant)
     {
-        chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21); 
-        chunk.grid[x,y].variant = variant;
+      //  chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21); 
+      //  chunk.grid[x,y].variant = variant;
     }
-    private void SetBuildingObject(Chunk chunk, int x, int y,int index)
+    private void SetBuildingObject(ref ServerChunk chunk, int x, int y,int index)
     {
-        chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
+       // chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
-    private void SetBuildingObject(Chunk chunk, int x, int y, int index, int variant)
+    private void SetBuildingObject(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
-        chunk.grid[x, y].SetGridObject(new GridObject(index, variant, null, new Vector2(x, y)));
+       // chunk.grid[x, y].SetGridObject(new GridObject(index, variant, null, new Vector2(x, y)));
     }
-    private void SetGridHole(Chunk chunk, int x, int y)
+    private void SetGridHole(ref ServerChunk chunk, int x, int y)
     {
-        GridTile gridTile = chunk.grid[x, y];
-        gridTile.SetSecondLayerID(-1);
-        gridTile.SetTileID(60);
-        gridTile.SetGridObject(new GridHole(60,null));
+        // GridTile gridTile = chunk.grid[x, y];
+        // gridTile.SetSecondLayerID(-1);
+        // gridTile.SetTileID(60);
+        // gridTile.SetGridObject(new GridHole(60,null));
     }
-    private void GenerateMap(float cellSize, Vector2 offset, out Map map)
+    private void GenerateMap(float cellSize, Vector2 offset, ref ServerMap map)
     {
-        map = new Map(offset, cellSize,chunkSize,widthInChunks,heightInChunks);
+        map = new ServerMap(offset, cellSize,chunkSize,widthInChunks,heightInChunks);
 
         for (int y = 0; y < heightInChunks; y++)
         {
             for (int x = 0; x < widthInChunks; x++)
             {
                 int index = x + y * widthInChunks;
-                map.chunks.Add(index, new Chunk(index,chunkSize, new Vector2(x * chunkSize,y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
+                map.chunks.Add(index, new ServerChunk(index,chunkSize, new Vector2(x * chunkSize,y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
             }
         }
 
@@ -101,8 +97,8 @@ public class MapGenerator
                 for (int x = 0; x < chunkSize; x++)
                 {
                     float value = Generate((int)item.Value.chunkCoordinates.x + x, (int)item.Value.chunkCoordinates.y + y, offset, scale);
-                    GenerateCell(item.Value, x, y,rand);
-                    if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
+                    GenerateCell(ref item.Value, x, y,rand);
+                   // if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
 
 
                     int index = -1;
@@ -124,7 +120,7 @@ public class MapGenerator
                         index = 3;
                     }
 
-                    SetValue(item.Value, x, y, index, rand.Next(6));
+                   // SetValue(item.Value, x, y, index, rand.Next(6));
                     //    if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
                     //      SetValue(item.Value, x, y, index, 0);
                     //  else
@@ -141,12 +137,12 @@ public class MapGenerator
             {
                 for (int x = 0; x < chunkSize; x++)
                 {
-                    if (item.Value.grid[x, y].GridObjectIsType<GridHole>())
-                    {
-                        int posX = x + (int)item.Value.chunkCoordinates.x;
-                        int posY = y + (int)item.Value.chunkCoordinates.y;
-                        GridVisualization.instance.PourWater(1000, new Vector2(posX, posY));
-                    }
+                    // if (item.Value.grid[x, y].GridObjectIsType<GridHole>())
+                    // {
+                    //     int posX = x + (int)item.Value.chunkCoordinates.x;
+                    //     int posY = y + (int)item.Value.chunkCoordinates.y;
+                    //     GridVisualization.instance.PourWater(1000, new Vector2(posX, posY));
+                    // }
                 }
             }
         }
@@ -169,7 +165,7 @@ public class MapGenerator
         }
         return list;
     }
-    private void GenerateCell(Chunk chunk, int x, int y, System.Random rand)
+    private void GenerateCell(ref ServerChunk chunk, int x, int y, System.Random rand)
     {
         //float value = Generate(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, offset, scale);
         int posX = x + (int)chunk.chunkCoordinates.x;
@@ -198,7 +194,7 @@ public class MapGenerator
         //}
         if (rand.Next(0, 100) <= 20)
         {
-            SetBuildingObject(chunk, x, y, 45);
+            SetBuildingObject(ref chunk, x, y, 45);
         }
         //else if (rand.Next(0, 100) <= 5)
         //{

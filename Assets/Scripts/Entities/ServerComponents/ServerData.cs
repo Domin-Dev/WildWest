@@ -17,6 +17,5 @@ public struct ServerData : IComponentData
     public bool isHost;
     public int playersLimit;
     public int hostNetworkID;
-
     public bool blackList;
 }

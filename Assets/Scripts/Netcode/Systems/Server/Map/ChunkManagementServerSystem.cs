@@ -1,86 +1,163 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
-using TMPro;
 using Unity.Burst;
-using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
-using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.NetCode;
-using Unity.Transforms;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
 
 
-// [UpdateAfter(typeof(CalculateChunksForPlayersServerSystem))]
-// [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-// [UpdateInGroup(typeof(MapSystemGroup))]
-// [RequireMatchingQueriesForUpdate]
-// partial struct ChunkManagementServerSystem : ISystem
-// {
-//     EntityQuery playersQuery;
+//[UpdateAfter(typeof(QueueRequestsServerSystem))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateInGroup(typeof(MapSystemGroup))]
+[RequireMatchingQueriesForUpdate]
+public partial class ChunkManagementServerSystem : SystemBase
+{
+    EntityQuery LoadRequests;
+    EntityQuery players;
 
-//     [BurstCompile]
-//     public void OnCreate(ref SystemState state)
-//     {
-//         playersQuery = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest>().Build();
-//         state.RequireForUpdate<MapSettings>();
-//         state.RequireForUpdate(playersQuery);
-//     }
-
-//     [BurstCompile]
-//     public void OnUpdate(ref SystemState state)
-//     {
-//         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-//         var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-//         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+    public static ServerMap Map { get { return map; } }
+    private static ServerMap map;
+    private MapGenerator generator;
 
 
-//         Debug.Log("--------dzial!!!" + playersQuery.CalculateEntityCount());
-//         state.Dependency = new CreateChunksJob()
-//         {
-//             map = mapSettings,
-//             loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
-//             entityBuffer = SystemAPI.GetSingletonEntity<LoadedChunks>(),
-//             ecb = ecb,
-//             time = SystemAPI.Time.ElapsedTime,
-//             maxIter = 1000     
-//         }
-//         .ScheduleParallel(playersQuery,state.Dependency);
-//     }
+    protected override void OnCreate()
+    {
+        LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
+        players = SystemAPI.QueryBuilder().WithAll<Player>().Build();
 
-//     [BurstCompile]
-//     public partial struct CreateChunksJob : IJobEntity
-//     {
-//         public EntityCommandBuffer.ParallelWriter ecb;
-//         public MapSettings map;
-//         public Entity entityBuffer;
-//         [ReadOnly] public double time;
-//         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
+        RequireForUpdate(LoadRequests);
+        RequireForUpdate<MapSettings>();
+    }
 
-//         [ReadOnly] public int maxIter;
 
-//         private int counter;
+    [BurstCompile]
+    public void OnDestroy(ref SystemState state)
+    {
+        map.Dispose();
+    }
+    
 
-//         [BurstCompile]
-//         public void Execute(Entity e,in LoadChunkRequest loadChunk)
-//         {
-//             if(counter >= maxIter) return;
-//             ecb.AppendToBuffer(0,entityBuffer,new LoadedChunks()
-//             {
-//                 index = loadChunk.chunk,
-//                 time =  time
-//             });
-//             ecb.DestroyEntity(0,e);
-//             counter++;
-//         }
-//     }       
-// }
+    protected override void OnUpdate()
+    {
+        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
+        var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+    
+        Debug.Log("dzialakok!!!!!!!!!!!  " + LoadRequests.CalculateEntityCount() );
+
+        Dependency = new CreateChunksJob()
+        {
+            mapSettings = mapSettings,
+            loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
+            entityBuffer = SystemAPI.GetSingletonEntity<LoadedChunks>(),
+            ecb = ecb,
+            time = SystemAPI.Time.ElapsedTime,  
+            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
+            map = map.chunks         
+        }
+        .ScheduleParallel(LoadRequests,Dependency);
+    }
+
+
+    public void GenerateMap()
+    {
+        generator = new MapGenerator(GameInfo.instance.seed);
+        generator.StartGenerator(ref map);
+    }
+
+    public void LoadMap()
+    {
+       // generator = new MapGenerator(GameInfo.instance.seed);
+       // map = generator.StartGenerator();
+    }
+
+
+
+    [BurstCompile]
+    public partial struct CreateChunksJob : IJobEntity
+    {
+        public EntityCommandBuffer.ParallelWriter ecb;
+        public MapSettings mapSettings;
+        public EntitiesReferences entitiesReferences;
+        public Entity entityBuffer;
+        public NativeHashMap<int,ServerChunk> map;
+
+
+        [ReadOnly] public double time;
+        [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
+
+
+        [BurstCompile]
+        public void Execute(Entity e,in LoadChunkRequest loadChunk, [EntityIndexInQuery] int sortKey)
+        {
+            ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
+            {
+                index = loadChunk.chunk,
+                time =  time
+            });
+
+
+            CreateChunk(loadChunk.chunk,sortKey ,out Entity entity);
+            ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
+            ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
+            {
+                networkID = loadChunk.networkID,
+                action = 1
+            });
+            ecb.DestroyEntity(sortKey,e);       
+        }
+
+        private bool CreateChunk(int index,int sortKey, out Entity entity)
+        {
+            entity = Entity.Null;
+           // if (!map.CheckChunkIndex(index)) return false;
+
+            Entity chunkEntity = ecb.Instantiate(sortKey,entitiesReferences.chunkEntity);
+            ChunkComponent chunkComponent = new ChunkComponent();
+            ecb.AddComponent<NewChunkServerAction>(sortKey,chunkEntity);
+            ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity);
+            ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
+            ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
+            ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
+
+            ServerChunk chunk = map[index];
+            chunkComponent.worldPos = chunk.worldPosition;
+            chunkComponent.index = index;
+
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    ServerTile tile = chunk.grid[j, i];
+                    ecb.AppendToBuffer(sortKey,chunkEntity,new ChunkTiles()
+                    {
+                        tileID = tile.tileID,
+                        variant = (byte)tile.variant
+                    });
+
+                    // if (tile != null)
+                    // {
+                    //     var obj = new BuildingObjects()
+                    //     {
+                    //         id = tile.gridObject.ID,
+                    //         position = new int2(tile.x, tile.y),
+                    //         variantIndex = tile.gridObject.variantIndex,
+                    //         stateIndex = tile.gridObject.stateIndex,
+                    //         hitPoints = tile.gridObject.hitPoints
+                    //     };
+                    //     ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,obj);
+                    //     ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ref ecb, obj,unfilteredChunkIndex));
+                    // }
+                }
+            }
+
+            ecb.SetComponent(sortKey,chunkEntity, chunkComponent);
+            entity = chunkEntity;
+            return true;
+        }
+    }       
+}
 
    
