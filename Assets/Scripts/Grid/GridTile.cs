@@ -25,6 +25,15 @@ public struct ServerTile
         this.x = x;
         this.y = y;
     }
+
+    public ServerTile SetTileID(int tileID,int secondLayerID, int variant = 0)
+    {
+        Debug.Log(tileID + "   ,  " + variant);
+        this.tileID = tileID;
+        this.secondLayerID = secondLayerID;
+        this.variant =variant;
+        return this;
+    }
 }
 
 

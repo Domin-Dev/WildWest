@@ -87,7 +87,6 @@ public class LoadingManager : MonoBehaviour
     }
     private async void Verification(CharacterLook? characterLook)
     {
-        Debug.Log(characterLook.HasValue);
         if (characterLook.HasValue)
         {
             Debug.Log("new Look ");

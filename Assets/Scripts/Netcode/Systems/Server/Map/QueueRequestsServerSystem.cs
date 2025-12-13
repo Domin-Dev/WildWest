@@ -8,12 +8,6 @@ using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
-using Unity.Jobs;
-using Unity.Mathematics;
-using Unity.NetCode;
-using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
 
@@ -55,9 +49,6 @@ partial struct QueueRequestsServerSystem : ISystem
         var map = SystemAPI.GetSingleton<MapSettings>();
         int playerCount = players.CalculateEntityCount();
     
-
-        Debug.Log("dkoaksokaoska");
-
         foreach ((RefRO<LoadChunkRequest> requestData, Entity entity) in SystemAPI.Query<RefRO<LoadChunkRequest>>().WithNone<QueuedRequest>().WithEntityAccess())
         {
             loadChunkRequests.Push(requestData.ValueRO,entity);

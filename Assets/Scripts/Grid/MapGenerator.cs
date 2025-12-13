@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 
-public class MapGenerator 
+public class MapGenerator
 {
     private int seed;
     [Header("Map Size( in chunks )")]
@@ -28,7 +28,7 @@ public class MapGenerator
     [Header("Chunk Settings")]
     public static int chunkSize = 10;
 
-    private static readonly Vector2 gridOffset = new Vector2(0,0); 
+    private static readonly Vector2 gridOffset = new Vector2(0, 0);
 
     private MapGeneratorSettings mapGeneratorSettings;
 
@@ -36,11 +36,6 @@ public class MapGenerator
     {
         this.seed = seed;
         mapGeneratorSettings = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
-    }
-    public void StartGenerator(ref ServerMap serverMap)
-    {
-        seed = GameInfo.instance.seed;
-
         var rand = new System.Random(seed);
         offset.x = rand.Next(-100000, 100000);
         offset.y = rand.Next(-100000, 100000);
@@ -50,20 +45,23 @@ public class MapGenerator
 
         offsetRain.x = rand.Next(-100000, 100000);
         offsetRain.y = rand.Next(-100000, 100000);
-        GenerateMap(0.25f, gridOffset,ref serverMap);
-    }
-    private void SetValue(ref ServerChunk chunk ,int x,int y,int index, int variant)
+   }
+    public void StartGenerator(ref ServerMap serverMap)
     {
-      //  chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21); 
-      //  chunk.grid[x,y].variant = variant;
+        GenerateMap(0.25f, gridOffset, ref serverMap);
     }
-    private void SetBuildingObject(ref ServerChunk chunk, int x, int y,int index)
+    private void SetValue(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
-       // chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
+        var tile =  chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21, variant); 
+        chunk.grid[x,y] = tile;
+    }
+    private void SetBuildingObject(ref ServerChunk chunk, int x, int y, int index)
+    {
+        // chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
     private void SetBuildingObject(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
-       // chunk.grid[x, y].SetGridObject(new GridObject(index, variant, null, new Vector2(x, y)));
+        // chunk.grid[x, y].SetGridObject(new GridObject(index, variant, null, new Vector2(x, y)));
     }
     private void SetGridHole(ref ServerChunk chunk, int x, int y)
     {
@@ -74,19 +72,19 @@ public class MapGenerator
     }
     private void GenerateMap(float cellSize, Vector2 offset, ref ServerMap map)
     {
-        map = new ServerMap(offset, cellSize,chunkSize,widthInChunks,heightInChunks);
+        map = new ServerMap(offset, cellSize, chunkSize, widthInChunks, heightInChunks);
 
         for (int y = 0; y < heightInChunks; y++)
         {
             for (int x = 0; x < widthInChunks; x++)
             {
                 int index = x + y * widthInChunks;
-                map.chunks.Add(index, new ServerChunk(index,chunkSize, new Vector2(x * chunkSize,y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
+                map.chunks.Add(index, new ServerChunk(index, chunkSize, new Vector2(x * chunkSize, y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
             }
         }
 
         var rand = new System.Random(seed);
-        //List<int> numerVariants = GetNumberVariants();
+      //  List<int> numerVariants = GetNumberVariants();
         List<float> chancesOfDefaultTile = GetChanceOfDefaultTile();
 
         foreach (var item in map.chunks)
@@ -97,10 +95,8 @@ public class MapGenerator
                 for (int x = 0; x < chunkSize; x++)
                 {
                     float value = Generate((int)item.Value.chunkCoordinates.x + x, (int)item.Value.chunkCoordinates.y + y, offset, scale);
-                    GenerateCell(ref item.Value, x, y,rand);
-                   // if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
-
-
+                    GenerateCell(ref item.Value, x, y, rand);
+                    // if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
                     int index = -1;
 
                     if (value >= 0.75f)
@@ -115,20 +111,21 @@ public class MapGenerator
                     {
                         index = 2;
                     }
-                    else 
+                    else
                     {
                         index = 3;
                     }
 
-                   // SetValue(item.Value, x, y, index, rand.Next(6));
-                    //    if(numerVariants[index] == 1 || rand.Next(100) / 99f < chancesOfDefaultTile[index])
-                    //      SetValue(item.Value, x, y, index, 0);
-                    //  else
-                    //   SetValue(item.Value, x, y, index,rand.Next(1, numerVariants[index]));
+
+                    SetValue(ref item.Value, x, y, index, rand.Next(6));
+                    // if (numerVariants[index] == 1 || rand.N ext(100) / 99f < chancesOfDefaultTile[index])
+                    //     SetValue(item.Value, x, y, index, 0);
+                    // else
+                    //     SetValue(item.Value, x, y, index, rand.Next(1, numerVariants[index]));
                 }
             }
 
-            
+
         }
 
         foreach (var item in map.chunks)
@@ -170,12 +167,12 @@ public class MapGenerator
         //float value = Generate(x + (int)chunk.ChunkGridPosition.x, y + (int)chunk.ChunkGridPosition.y, offset, scale);
         int posX = x + (int)chunk.chunkCoordinates.x;
         int posY = y + (int)chunk.chunkCoordinates.y;
-       
-        float rainValue = Generate(posX,posY, offsetRain, scaleRain);
-        float tempValue = Generate(posX,posY, offsetTemp, scaleTemp);
-        float heightValue = Generate(posX,posY, offsetHeight, scaleHeight);
 
-      //  if(heightValue < 0.15f) SetGridHole(chunk, x, y);
+        float rainValue = Generate(posX, posY, offsetRain, scaleRain);
+        float tempValue = Generate(posX, posY, offsetTemp, scaleTemp);
+        float heightValue = Generate(posX, posY, offsetHeight, scaleHeight);
+
+        //  if(heightValue < 0.15f) SetGridHole(chunk, x, y);
         //else if (rand.Next(0, 100) <= 2)
         //{
         //    SetBuildingObject(chunk, x, y, 5);
@@ -238,9 +235,9 @@ public class MapGenerator
 
     private float Generate(int x, int y, Vector2 offset, Vector2 scale)
     {
-        float xf = ((float)x  + offset.x )/ chunkSize * scale.x;
+        float xf = ((float)x + offset.x) / chunkSize * scale.x;
         float yf = ((float)y + offset.y) / chunkSize * scale.y;
-        float value = Mathf.PerlinNoise(xf,yf);
+        float value = Mathf.PerlinNoise(xf, yf);
         return value;
     }
     private float Generate(int x, int y, Vector2 offset, float scale)

@@ -8,7 +8,7 @@ using UnityEngine;
 
 
 
-//[UpdateAfter(typeof(QueueRequestsServerSystem))]
+[UpdateAfter(typeof(QueueRequestsServerSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
@@ -21,14 +21,22 @@ public partial class ChunkManagementServerSystem : SystemBase
     private static ServerMap map;
     private MapGenerator generator;
 
-
     protected override void OnCreate()
     {
+
         LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
         players = SystemAPI.QueryBuilder().WithAll<Player>().Build();
 
         RequireForUpdate(LoadRequests);
         RequireForUpdate<MapSettings>();
+
+        if(SystemAPI.TryGetSingleton(out MapSettings mapSettings))
+        {
+            generator = new MapGenerator(mapSettings.seed);
+            generator.StartGenerator(ref map);
+        }
+        else
+            Enabled = false;
     }
 
 
@@ -39,8 +47,8 @@ public partial class ChunkManagementServerSystem : SystemBase
     }
     
 
-    protected override void OnUpdate()
-    {
+     protected override void OnUpdate()
+     {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
@@ -54,11 +62,11 @@ public partial class ChunkManagementServerSystem : SystemBase
             entityBuffer = SystemAPI.GetSingletonEntity<LoadedChunks>(),
             ecb = ecb,
             time = SystemAPI.Time.ElapsedTime,  
-            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
-            map = map.chunks         
+            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>()
+          //  map = map.chunks.AsReadOnly()         
         }
         .ScheduleParallel(LoadRequests,Dependency);
-    }
+     }
 
 
     public void GenerateMap()
@@ -75,21 +83,21 @@ public partial class ChunkManagementServerSystem : SystemBase
 
 
 
-    [BurstCompile]
+  
     public partial struct CreateChunksJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ecb;
         public MapSettings mapSettings;
         public EntitiesReferences entitiesReferences;
         public Entity entityBuffer;
-        public NativeHashMap<int,ServerChunk> map;
+    //    [ReadOnly] public NativeHashMap<int,ServerChunk>.ReadOnly map;
 
 
         [ReadOnly] public double time;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
 
-        [BurstCompile]
+       
         public void Execute(Entity e,in LoadChunkRequest loadChunk, [EntityIndexInQuery] int sortKey)
         {
             ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
@@ -122,7 +130,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
 
-            ServerChunk chunk = map[index];
+            ServerChunk chunk = ChunkManagementServerSystem.Map.chunks[index];
             chunkComponent.worldPos = chunk.worldPosition;
             chunkComponent.index = index;
 

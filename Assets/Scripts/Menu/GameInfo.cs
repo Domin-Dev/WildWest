@@ -1,4 +1,5 @@
 
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,9 +13,12 @@ public enum Difficulty
 
 public class GameInfo : MonoBehaviour 
 {
+    [HideInInspector]public bool startGame;
 
     public string playerName;
     public string worldName;
+    public FixedString128Bytes? passHash;   
+    public int playerLimit;
     public long creationTime;
     public Difficulty difficultyLevel;
     public double playTime;

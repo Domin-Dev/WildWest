@@ -428,24 +428,22 @@ public class MenuManager : MonoBehaviour
     }
     private void RunServer(HeaderData headerData = null)
     {
-        bool isPassword = !string.IsNullOrEmpty(passwordInput.text);
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = true;
         WindowsManager.instance.SwitchBackground(false);
         
-
         if(headerData == null)
         {
             GameInfo.LoadScene(4, 0);
             GameInfo.instance.playerName = playerNameInput.text.ToString();
+            GameInfo.instance.passHash = string.IsNullOrEmpty(passwordInput.text) ? AuthUtils.ComputeSha256(passwordInput.text.ToArray()) : null;
+            GameInfo.instance.playerLimit = playerLimit.GetValue();
         }
         else
         {
             GameInfo.instance.SetValue(headerData);
             GameInfo.LoadScene(1, 0, 0.5f);
         }
-
-
 
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
@@ -456,24 +454,27 @@ public class MenuManager : MonoBehaviour
             }
         }
 
+
+        Debug.Log("Start!!!");
+
+        GameInfo.instance.startGame = true;
         World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");
         World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
-
-
-
+        GameInfo.instance.startGame = false;
 
         ClientWorldSetUp(clientWorld);
 
         if (World.DefaultGameObjectInjectionWorld == null)
-        {
             World.DefaultGameObjectInjectionWorld = serverWorld;
-        }
+        
 
-            ushort port = ushort.Parse(portInput.text);
+        ushort port = ushort.Parse(portInput.text);
 
         RefRW<NetworkStreamDriver> networkStreamDriver =
-            serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
- 
+        serverWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+
+
+         
         try
         {
             var endPoint = NetworkEndpoint.AnyIpv4.WithPort(port);
@@ -486,40 +487,42 @@ public class MenuManager : MonoBehaviour
             NetworkEndpoint networkEndpoint = NetworkEndpoint.LoopbackIpv4.WithPort(port);
             networkStreamDriver =
                 clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-            networkStreamDriver.ValueRW.RequireConnectionApproval = true;
+            networkStreamDriver.ValueRW.RequireConnectionApproval = true;    
             networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
-
-            ServerWorldSetUp(isPassword);
         }
         catch
         (Exception ex)
         {
+
             GameInfo.instance.errorMessage = ex.Message;    
             SceneManager.LoadScene(10);
         }
     }
 
-    private void ServerWorldSetUp(bool isPassword)
+
+
+    private void ServerWorldSetUp()
     {
         Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
         ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 
-
+        bool isPassword  = GameInfo.instance.passHash.HasValue;
+        
         ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new ServerData()
         {
-            hash = isPassword ? AuthUtils.ComputeSha256(passwordInput.text.ToArray()) : "",
+            hash = GameInfo.instance.passHash.Value,
             isPassword = isPassword,
             isHost = true,
-            playersLimit = playerLimit.GetValue(),
+            playersLimit = GameInfo.instance.playerLimit,
             hostNetworkID = int.MinValue,
         });   
 
         ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new MapSettings()
         {
             seed = GameInfo.instance.seed,
-            widthInChunks = 100,
-            heightInChunks = 100,
+            widthInChunks = 10,
+            heightInChunks = 10,
             playerRenderSize = 2,
             maxChunksPerClient = 30,
             maxLoadedChunksInTick = 40,
