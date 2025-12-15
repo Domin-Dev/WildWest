@@ -2,7 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.NetCode;
+using UnityEngine;
 using UnityEngine;
 
 
@@ -28,16 +28,21 @@ partial struct StartSetUpServerSystem : ISystem
                 playersLimit = math.max(1,data.playerLimit),
                 hostNetworkID = int.MinValue,
             });   
-            EntityHelper.CreateEntityWithComponent(ref ecb,new MapSettings()
-            
+            EntityHelper.CreateEntityWithComponent(ref ecb,new MapSettings()          
             {
                 seed = GameInfo.instance.seed,
-                widthInChunks = 10,
-                heightInChunks = 10,
+                newMap = true,
+                mapSizeInRegions = 2,
+                regionSizeInChunks = 5,
+                chunkSizeInTiles = 10,
+
+                mapOffset = new Vector2(0,0),
+                tileSize = 0.25f,
+
                 playerRenderSize = 2,
                 maxChunksPerClient = 30,
                 maxLoadedChunksInTick = 40,
-                loadedChunksInTickPerClient =  5
+                loadedChunksInTickPerClient =  10,
             });     
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);
             

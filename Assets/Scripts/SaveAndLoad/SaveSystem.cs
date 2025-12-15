@@ -22,6 +22,11 @@ public static class SaveSystem
     {
         return Path.Combine(worldFolder, "header.dan");
     }
+    public static string GetMapFolder(string worldName)
+    {
+        return Path.Combine(GetWorldPath(worldName),"Maps");
+    }
+
     public static string GetWorldPath(string worldName)
     {
         return Path.Combine(savesPath, worldName);
@@ -43,7 +48,6 @@ public static class SaveSystem
 
 
     #region Saves
-
     public static void Save()
     {
         Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave hostPlayer);
@@ -69,6 +73,9 @@ public static class SaveSystem
         SavePlayers(playersPath,players);
         stream.Close();
     }
+
+
+    
     public static void SaveSettings(SettingsData Data, InputActionAsset Controls)
     {
         SaveJson(Data,settingsPath);

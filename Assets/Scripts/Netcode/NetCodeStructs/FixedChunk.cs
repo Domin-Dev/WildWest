@@ -11,7 +11,7 @@ using Unity.Entities;
 [Serializable]
 [StructLayout(LayoutKind.Explicit, Size = 816)]
 [GenerateTestsForBurstCompatibility]
-public struct FixedChunk : IRpcCommand
+public struct FixedChunk 
 {
 
     [FieldOffset(0)] public float2 worldPosition;             

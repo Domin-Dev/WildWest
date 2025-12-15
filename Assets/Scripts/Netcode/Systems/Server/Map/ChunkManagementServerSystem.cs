@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
-using Unity.VisualScripting;
+using Unity.Jobs;
 using UnityEngine;
 
 
@@ -15,7 +16,6 @@ using UnityEngine;
 public partial class ChunkManagementServerSystem : SystemBase
 {
     EntityQuery LoadRequests;
-    EntityQuery players;
 
     public static ServerMap Map { get { return map; } }
     private static ServerMap map;
@@ -23,17 +23,15 @@ public partial class ChunkManagementServerSystem : SystemBase
 
     protected override void OnCreate()
     {
-
         LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
-        players = SystemAPI.QueryBuilder().WithAll<Player>().Build();
-
+   
         RequireForUpdate(LoadRequests);
         RequireForUpdate<MapSettings>();
 
         if(SystemAPI.TryGetSingleton(out MapSettings mapSettings))
         {
             generator = new MapGenerator(mapSettings.seed);
-            generator.StartGenerator(ref map);
+            if(mapSettings.newMap) generator.GenerateMap(ref map,mapSettings);
         }
         else
             Enabled = false;
@@ -45,15 +43,18 @@ public partial class ChunkManagementServerSystem : SystemBase
     {
         map.Dispose();
     }
-    
 
-     protected override void OnUpdate()
-     {
+    protected override void OnUpdate()
+    {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
     
         Debug.Log("dzialakok!!!!!!!!!!!  " + LoadRequests.CalculateEntityCount() );
+
+        var entities = LoadRequests.ToEntityArray(Allocator.TempJob);
+        var requests =LoadRequests.ToComponentDataArray<LoadChunkRequest>(Allocator.TempJob);
+
 
         Dependency = new CreateChunksJob()
         {
@@ -62,17 +63,23 @@ public partial class ChunkManagementServerSystem : SystemBase
             entityBuffer = SystemAPI.GetSingletonEntity<LoadedChunks>(),
             ecb = ecb,
             time = SystemAPI.Time.ElapsedTime,  
-            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>()
+            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
+            chunks = map.chunks.AsReadOnly(),
+            entities = entities,
+            requests = requests
           //  map = map.chunks.AsReadOnly()         
         }
-        .ScheduleParallel(LoadRequests,Dependency);
+        .Schedule(entities.Length,4,Dependency);
+
+        entities.Dispose(Dependency);
+        requests.Dispose(Dependency);
      }
 
 
     public void GenerateMap()
     {
-        generator = new MapGenerator(GameInfo.instance.seed);
-        generator.StartGenerator(ref map);
+       // generator = new MapGenerator(GameInfo.instance.seed);
+       // generator.StartGenerator(ref map);
     }
 
     public void LoadMap()
@@ -82,30 +89,34 @@ public partial class ChunkManagementServerSystem : SystemBase
     }
 
 
-
-  
-    public partial struct CreateChunksJob : IJobEntity
+    public partial struct CreateChunksJob : IJobParallelFor
     {
         public EntityCommandBuffer.ParallelWriter ecb;
         public MapSettings mapSettings;
         public EntitiesReferences entitiesReferences;
         public Entity entityBuffer;
-    //    [ReadOnly] public NativeHashMap<int,ServerChunk>.ReadOnly map;
+
+        
+        [ReadOnly] public NativeArray<Entity> entities;
+        [ReadOnly] public NativeArray<LoadChunkRequest> requests;
 
 
         [ReadOnly] public double time;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
+        [NativeDisableContainerSafetyRestriction]
+        [ReadOnly] public NativeHashMap<int,ServerChunk>.ReadOnly chunks;
 
-       
-        public void Execute(Entity e,in LoadChunkRequest loadChunk, [EntityIndexInQuery] int sortKey)
-        {
+        public void Execute(int sortKey)
+        {   
+            LoadChunkRequest loadChunk = requests[sortKey];
+            Entity e = entities[sortKey];
+
             ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
             {
                 index = loadChunk.chunk,
                 time =  time
             });
-
 
             CreateChunk(loadChunk.chunk,sortKey ,out Entity entity);
             ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
@@ -130,7 +141,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
 
-            ServerChunk chunk = ChunkManagementServerSystem.Map.chunks[index];
+            ServerChunk chunk =  chunks[index];
             chunkComponent.worldPos = chunk.worldPosition;
             chunkComponent.index = index;
 
@@ -138,7 +149,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    ServerTile tile = chunk.grid[j, i];
+                    var tile = chunk.grid[j, i];
                     ecb.AppendToBuffer(sortKey,chunkEntity,new ChunkTiles()
                     {
                         tileID = tile.tileID,

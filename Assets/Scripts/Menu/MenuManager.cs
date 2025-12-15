@@ -501,35 +501,35 @@ public class MenuManager : MonoBehaviour
 
 
 
-    private void ServerWorldSetUp()
-    {
-        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
-        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
+    // private void ServerWorldSetUp()
+    // {
+    //     Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+    //     ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = GameInfo.instance.playerName });
+    //     ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
 
-        bool isPassword  = GameInfo.instance.passHash.HasValue;
+    //     bool isPassword  = GameInfo.instance.passHash.HasValue;
         
-        ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new ServerData()
-        {
-            hash = GameInfo.instance.passHash.Value,
-            isPassword = isPassword,
-            isHost = true,
-            playersLimit = GameInfo.instance.playerLimit,
-            hostNetworkID = int.MinValue,
-        });   
+    //     ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new ServerData()
+    //     {
+    //         hash = GameInfo.instance.passHash.Value,
+    //         isPassword = isPassword,
+    //         isHost = true,
+    //         playersLimit = GameInfo.instance.playerLimit,
+    //         hostNetworkID = int.MinValue,
+    //     });   
 
-        ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new MapSettings()
-        {
-            seed = GameInfo.instance.seed,
-            widthInChunks = 10,
-            heightInChunks = 10,
-            playerRenderSize = 2,
-            maxChunksPerClient = 30,
-            maxLoadedChunksInTick = 40,
-            loadedChunksInTickPerClient =  5
-        });     
-        ClientServerBootstrap.ServerWorld.EntityManager.CreateSingletonBuffer<LoadedChunks>();
-    }
+    //     ClientServerBootstrap.ServerWorld.EntityManager.CreateSingleton(new MapSettings()
+    //     {
+    //         seed = GameInfo.instance.seed,
+    //         widthInChunks = 10,
+    //         heightInChunks = 10,
+    //         playerRenderSize = 2,
+    //         maxChunksPerClient = 30,
+    //         maxLoadedChunksInTick = 40,
+    //         loadedChunksInTickPerClient =  5
+    //     });     
+    //     ClientServerBootstrap.ServerWorld.EntityManager.CreateSingletonBuffer<LoadedChunks>();
+    // }
 
     private void ClientWorldSetUp(World clientWorld)
     {

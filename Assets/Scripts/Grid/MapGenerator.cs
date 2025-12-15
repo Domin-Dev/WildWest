@@ -46,10 +46,6 @@ public class MapGenerator
         offsetRain.x = rand.Next(-100000, 100000);
         offsetRain.y = rand.Next(-100000, 100000);
    }
-    public void StartGenerator(ref ServerMap serverMap)
-    {
-        GenerateMap(0.25f, gridOffset, ref serverMap);
-    }
     private void SetValue(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
         var tile =  chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21, variant); 
@@ -70,21 +66,22 @@ public class MapGenerator
         // gridTile.SetTileID(60);
         // gridTile.SetGridObject(new GridHole(60,null));
     }
-    private void GenerateMap(float cellSize, Vector2 offset, ref ServerMap map)
+    public void GenerateMap(ref ServerMap map,in MapSettings mapSettings)
     {
-        map = new ServerMap(offset, cellSize, chunkSize, widthInChunks, heightInChunks);
+        map = new ServerMap(mapSettings);
+        Vector2 offset = map.settings.mapOffset;
 
         for (int y = 0; y < heightInChunks; y++)
         {
             for (int x = 0; x < widthInChunks; x++)
             {
                 int index = x + y * widthInChunks;
-                map.chunks.Add(index, new ServerChunk(index, chunkSize, new Vector2(x * chunkSize, y * chunkSize), offset + new Vector2(x * chunkSize * cellSize, y * chunkSize * cellSize)));
+                map.chunks.Add(index, new ServerChunk(index, chunkSize, new Vector2(x * chunkSize, y * chunkSize), offset + new Vector2(x * chunkSize * mapSettings.tileSize, y * chunkSize * mapSettings.tileSize)));
             }
         }
 
         var rand = new System.Random(seed);
-      //  List<int> numerVariants = GetNumberVariants();
+     //  List<int> numerVariants = GetNumberVariants();
         List<float> chancesOfDefaultTile = GetChanceOfDefaultTile();
 
         foreach (var item in map.chunks)
@@ -144,6 +141,15 @@ public class MapGenerator
             }
         }
     }
+
+    private void GenerateRegion(int region, ref ServerMap map)
+    {
+        
+    }
+
+
+
+
     private List<int> GetNumberVariants()
     {
         List<int> list = new List<int>();
