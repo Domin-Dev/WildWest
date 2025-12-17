@@ -9,48 +9,34 @@ using UnityEngine;
 
 
 
-[UpdateAfter(typeof(QueueRequestsServerSystem))]
+[UpdateAfter(typeof(ChunkManagementServerSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
-public partial class ChunkManagementServerSystem : SystemBase
+public partial class StopSendingChunkServerSystem : SystemBase
 {
-    EntityQuery LoadRequests;
+    EntityQuery requests;
 
-    public static ServerMap Map { get { return map; } }
-    private static ServerMap map;
-    private MapGenerator generator;
 
+    [BurstCompile]
     protected override void OnCreate()
     {
-        LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
+        requests = SystemAPI.QueryBuilder().WithAll<StopSendingChunkRequest,ProcessInTheTick>().Build();
    
-        RequireForUpdate(LoadRequests);
+        RequireForUpdate(requests);
         RequireForUpdate<MapSettings>();
-
-        if(SystemAPI.TryGetSingleton(out MapSettings mapSettings))
-        {
-            generator = new MapGenerator(mapSettings.seed);
-            if(mapSettings.newMap) generator.GenerateMap(ref map,mapSettings);
-        }
-        else
-            Enabled = false;
     }
 
 
     [BurstCompile]
-    public void OnDestroy(ref SystemState state)
-    {
-        map.Dispose();
-    }
-
     protected override void OnUpdate()
     {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
-        var entities = LoadRequests.ToEntityArray(Allocator.TempJob);
-        var requests = LoadRequests.ToComponentDataArray<LoadChunkRequest>(Allocator.TempJob);
+    
+        var entities = this.requests.ToEntityArray(Allocator.TempJob);
+        var requestsData = this.requests.ToComponentDataArray<StopSendingChunkRequest>(Allocator.TempJob);
 
 
         Dependency = new CreateChunksJob()
@@ -85,7 +71,7 @@ public partial class ChunkManagementServerSystem : SystemBase
     }
 
 
-    public partial struct CreateChunksJob : IJobParallelFor
+    public partial struct StopSendingJob : IJobParallelFor
     {
         public EntityCommandBuffer.ParallelWriter ecb;
         public MapSettings mapSettings;

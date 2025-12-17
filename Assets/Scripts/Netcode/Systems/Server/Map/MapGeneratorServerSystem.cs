@@ -22,7 +22,7 @@ public partial class MapGeneratorServerSystem : SystemBase
         foreach (var (generateMap, e) in SystemAPI.Query<RefRO<GenerateMap>>().WithEntityAccess())
         {
             ClientServerBootstrap.ServerWorld
-                .GetExistingSystemManaged<ChunkManagementServerSystem>()
+                .GetExistingSystemManaged<StopSendingChunkServerSystem>()
                 .GenerateMap();
             Debug.Log("wygenerowano mape!!");
             entityCommandBuffer.DestroyEntity(e);

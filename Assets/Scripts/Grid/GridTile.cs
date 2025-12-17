@@ -28,7 +28,6 @@ public struct ServerTile
 
     public ServerTile SetTileID(int tileID,int secondLayerID, int variant = 0)
     {
-        Debug.Log(tileID + "   ,  " + variant);
         this.tileID = tileID;
         this.secondLayerID = secondLayerID;
         this.variant =variant;

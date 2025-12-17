@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
@@ -45,7 +48,7 @@ public class MapGenerator
 
         offsetRain.x = rand.Next(-100000, 100000);
         offsetRain.y = rand.Next(-100000, 100000);
-   }
+    }
     private void SetValue(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
         var tile =  chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21, variant); 
@@ -66,6 +69,8 @@ public class MapGenerator
         // gridTile.SetTileID(60);
         // gridTile.SetGridObject(new GridHole(60,null));
     }
+    
+    
     public void GenerateMap(ref ServerMap map,in MapSettings mapSettings)
     {
         map = new ServerMap(mapSettings);
@@ -91,7 +96,7 @@ public class MapGenerator
             {
                 for (int x = 0; x < chunkSize; x++)
                 {
-                    float value = Generate((int)item.Value.chunkCoordinates.x + x, (int)item.Value.chunkCoordinates.y + y, offset, scale);
+                   float value = 0;//Generate((int)item.Value.chunkCoordinates.x + x, (int)item.Value.chunkCoordinates.y + y, offset, scale);
                     GenerateCell(ref item.Value, x, y, rand);
                     // if (item.Value.grid[x, y].GridObjectIsType<GridHole>()) continue;
                     int index = -1;
@@ -141,10 +146,46 @@ public class MapGenerator
             }
         }
     }
-
-    private void GenerateRegion(int region, ref ServerMap map)
+   
+    [BurstCompile]
+    public static ChunkComponent GenerateRegion(int chunkIndex, in MapSettings map, NativeArray<ChunkTiles> tiles)
     {
-        
+        int2 chunkCoords = map.GetChunkCoordinates(chunkIndex);
+
+        ChunkComponent chunkComponent = new ChunkComponent()
+        {
+            index = chunkIndex,
+            worldPos = map.GetChunkEnginePos(chunkCoords)
+        };
+
+        var rand = new System.Random(map.seed);
+        Vector2 offset;
+        offset.x = rand.Next(-100000, 100000);
+        offset.y = rand.Next(-100000, 100000);
+        int2 chunkMapPosition = map.GetChunkMapPosition(chunkCoords);
+        int chunkSizeInTiles = map.chunkSizeInTiles;
+
+        for(int i = 0; i < map.tilesCount; i++)
+        {
+            float value = Generate(chunkMapPosition + map.GetTileLocalPos(i),offset,2,chunkSizeInTiles);
+            int index;
+            if (value >= 0.75f)
+            {
+                index = 21;
+            }
+            else 
+            {
+                index = 19;
+            }
+            
+
+            tiles[i] = new ChunkTiles()
+            {
+                tileID =index,
+                variant = 1
+            };
+        }
+       return chunkComponent;
     }
 
 
@@ -174,9 +215,9 @@ public class MapGenerator
         int posX = x + (int)chunk.chunkCoordinates.x;
         int posY = y + (int)chunk.chunkCoordinates.y;
 
-        float rainValue = Generate(posX, posY, offsetRain, scaleRain);
-        float tempValue = Generate(posX, posY, offsetTemp, scaleTemp);
-        float heightValue = Generate(posX, posY, offsetHeight, scaleHeight);
+  //      float rainValue = Generate(posX, posY, offsetRain, scaleRain);
+  //      float tempValue = Generate(posX, posY, offsetTemp, scaleTemp);
+  //      float heightValue = Generate(posX, posY, offsetHeight, scaleHeight);
 
         //  if(heightValue < 0.15f) SetGridHole(chunk, x, y);
         //else if (rand.Next(0, 100) <= 2)
@@ -239,19 +280,24 @@ public class MapGenerator
     //    }
     //}
 
-    private float Generate(int x, int y, Vector2 offset, Vector2 scale)
+    // private static float Generate(int x, int y, Vector2 offset, Vector2 scale)
+    // {
+    //     float xf = ((float)x + offset.x) / chunkSize * scale.x;
+    //     float yf = ((float)y + offset.y) / chunkSize * scale.y;
+    //     float value = Mathf.PerlinNoise(xf, yf);
+    //     return value;
+    // }
+    public static float Generate(int x, int y, Vector2 offset, float scale, int chunkSizeInTiles)
     {
-        float xf = ((float)x + offset.x) / chunkSize * scale.x;
-        float yf = ((float)y + offset.y) / chunkSize * scale.y;
+        float xf = ((float)x + offset.x) / chunkSizeInTiles * scale;
+        float yf = ((float)y + offset.y) / chunkSizeInTiles * scale;
         float value = Mathf.PerlinNoise(xf, yf);
         return value;
     }
-    private float Generate(int x, int y, Vector2 offset, float scale)
+
+    public static float Generate(int2 xy, Vector2 offset, float scale, int chunkSizeInTiles)
     {
-        float xf = ((float)x + offset.x) / chunkSize * scale;
-        float yf = ((float)y + offset.y) / chunkSize * scale;
-        float value = Mathf.PerlinNoise(xf, yf);
-        return value;
+        return Generate(xy.x,xy.y,offset,scale, chunkSizeInTiles);
     }
 
 

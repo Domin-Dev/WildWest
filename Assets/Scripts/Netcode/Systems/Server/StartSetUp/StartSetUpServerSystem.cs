@@ -32,7 +32,7 @@ partial struct StartSetUpServerSystem : ISystem
             {
                 seed = GameInfo.instance.seed,
                 newMap = true,
-                mapSizeInRegions = 2,
+                mapSizeInRegions = 3,
                 regionSizeInChunks = 5,
                 chunkSizeInTiles = 10,
 
@@ -42,7 +42,7 @@ partial struct StartSetUpServerSystem : ISystem
                 playerRenderSize = 2,
                 maxChunksPerClient = 30,
                 maxLoadedChunksInTick = 40,
-                loadedChunksInTickPerClient =  10,
+                loadedChunksInTickPerClient =  1,
             });     
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);
             

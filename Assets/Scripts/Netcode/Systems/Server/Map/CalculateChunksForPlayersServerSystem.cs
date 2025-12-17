@@ -49,43 +49,53 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
         public void Execute(Entity player,in GhostChunk ghostChunk, in GhostOwner owner, ref DynamicBuffer<PlayerChunks> playerChunks, [EntityIndexInQuery] int sortKey)
         {
             int networkID = owner.NetworkId; 
-            NativeHashSet<int> chunksForPlayer = new NativeHashSet<int>(map.playerRenderCount,Allocator.TempJob);
+            NativeHashMap<int,int> chunksForPlayer = new NativeHashMap<int,int>(map.playerRenderCount,Allocator.TempJob);
             NativeList<(int chunk,double time)> toRemove = new NativeList<(int,double)>(map.playerRenderCount,Allocator.TempJob);
 
             map.GetNeighboringChunkIndexes(ghostChunk.current,chunksForPlayer);
             UnloadChunks(ref playerChunks, toRemove , chunksForPlayer, player, sortKey);
-            foreach(int index in chunksForPlayer)
+            
+            foreach(var needChunk in chunksForPlayer)
             {
                 bool loaded =  false;
+
                 foreach(var chunk in loadedChunks)
                 {
-                    if(index == chunk.index)
+                    if(needChunk.Key == chunk.index)
                     {
                         loaded = true;
                         break;
                     }                
                 } 
-                Entity entity = ecb.CreateEntity(0);
+                Entity entity = ecb.CreateEntity(sortKey);
                 if(loaded)
-                    ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest(){ chunk = index, player = player});
+                    ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest(){ chunk = needChunk.Key, player = player});
                 else
                 {
-                    ecb.AddComponent(sortKey,entity, new LoadChunkRequest(){ chunk = index, player = player , priority = index + 99 , networkID = networkID});
+                    ecb.AddComponent(sortKey,entity, new LoadChunkRequest(){ chunk = needChunk.Key, player = player , priority = needChunk.Value , networkID = networkID});
                 }
             }
-           ecb.SetComponentEnabled<NewChunk>(0,player,false);
-           chunksForPlayer.Dispose();
-           toRemove.Dispose();
+            Entity chunkChange = ecb.CreateEntity(sortKey);
+            ecb.AddComponent(sortKey,chunkChange, new PlayerChangeChunkRequest()
+            {
+                player = player,
+                newChunk = ghostChunk.current,
+                lastChunk = ghostChunk.lastChunk
+            });
+
+            ecb.SetComponentEnabled<NewChunk>(0,player,false);
+            chunksForPlayer.Dispose();
+            toRemove.Dispose();
         }     
         
         [BurstCompile]
-        private void UnloadChunks(ref DynamicBuffer<PlayerChunks> playerChunks , NativeList<(int chunk,double time)> toRemove , NativeHashSet<int> neighboringChunks, Entity player,  int sortKey)
+        private void UnloadChunks(ref DynamicBuffer<PlayerChunks> playerChunks , NativeList<(int chunk,double time)> toRemove , NativeHashMap<int,int>  neighboringChunks, Entity player,  int sortKey)
         {    
             // Remove the chunks of the set that are sent to the player.        
             int chunksToLoad = neighboringChunks.Count;
             foreach( var chunk in playerChunks)
             {
-                if (neighboringChunks.Contains(chunk.index))
+                if (neighboringChunks.ContainsKey(chunk.index))
                     neighboringChunks.Remove(chunk.index); 
                 else
                     toRemove.Add((chunk.index,chunk.time));

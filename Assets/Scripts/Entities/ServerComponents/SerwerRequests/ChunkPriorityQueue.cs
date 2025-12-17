@@ -19,7 +19,6 @@ public interface IPriority
 public struct PriorityQueue<T> where T : unmanaged, IPriority
 {
     private NativeList<(T value,Entity entity)> heap;
-
     public PriorityQueue(int capacity, Allocator allocator)
     {
         heap = new NativeList<(T,Entity)>(capacity, allocator);
