@@ -33,8 +33,13 @@ public struct MapSettings: IComponentData
 
 
 
+    // limits for ticks
     public int maxLoadedChunksInTick;
     public int loadedChunksInTickPerClient;
+
+    public int maxStopRequestsInTick;
+    public int stopRequestsInTickPerClient;
+
 
 
 

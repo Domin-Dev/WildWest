@@ -39,10 +39,16 @@ partial struct StartSetUpServerSystem : ISystem
                 mapOffset = new Vector2(0,0),
                 tileSize = 0.25f,
 
-                playerRenderSize = 2,
-                maxChunksPerClient = 30,
-                maxLoadedChunksInTick = 40,
-                loadedChunksInTickPerClient =  1,
+                playerRenderSize = 1,
+                maxChunksPerClient = 12,
+
+
+                maxLoadedChunksInTick = 50,
+                loadedChunksInTickPerClient = 10,
+
+                maxStopRequestsInTick = 100,
+                stopRequestsInTickPerClient = 10,
+
             });     
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);
             

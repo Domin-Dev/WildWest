@@ -65,7 +65,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             requests = requests
           //  map = map.chunks.AsReadOnly()         
         }
-        .Schedule(entities.Length,2,Dependency);
+        .Schedule(entities.Length,3,Dependency);
 
         entities.Dispose(Dependency);
         requests.Dispose(Dependency);
@@ -105,17 +105,25 @@ public partial class ChunkManagementServerSystem : SystemBase
             LoadChunkRequest loadChunk = requests[sortKey];
             Entity e = entities[sortKey];
 
+
+            CreateChunk(loadChunk.chunkIndex,sortKey ,out Entity entity);
+
+
             ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
             {
-                index = loadChunk.chunk,
-                time =  time
+                chunkIndex = loadChunk.chunkIndex,
+                time =  time,
+                chunkEntity = entity
             });
-
-            CreateChunk(loadChunk.chunk,sortKey ,out Entity entity);
-
+            ecb.AppendToBuffer(sortKey,loadChunk.playerEntity,new PlayerChunks()
+            {
+                chunkEntity = entity,
+                chunkIndex = loadChunk.chunkIndex,
+                time = time
+            });
             ecb.AppendToBuffer(sortKey,entity,new PlayersNeedChunk()
             {
-                playerEntity = loadChunk.player,
+                playerEntity = loadChunk.playerEntity,
                 networkID = loadChunk.networkID
             });
             ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);

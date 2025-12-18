@@ -3,7 +3,7 @@ using Unity.Entities;
 
 public struct LoadedChunks: IBufferElementData
 {
-    public Entity entity; 
-    public int index;
+    public Entity chunkEntity; 
+    public int chunkIndex;
     public double time;
 }

@@ -10,22 +10,22 @@ using UnityEngine;
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
 [BurstCompile]
-partial struct CalculateChunksForPlayersServerSystem : ISystem
+partial struct GhostChangeChunkServerSystem : ISystem
 {
-    EntityQuery playersQuery;
+    EntityQuery query;
 
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        playersQuery = SystemAPI.QueryBuilder().WithAll<GhostChunk, GhostOwner, Player, PlayerChunks, NewChunk>().Build();
+        query = SystemAPI.QueryBuilder().WithAll<GhostChunk, NewChunk>().Build();
         state.RequireForUpdate<MapSettings>();
-        state.RequireForUpdate(playersQuery);
+        state.RequireForUpdate(query);
     }
     
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        if (playersQuery.IsEmpty) return;
+        if (query.IsEmpty) return;
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
@@ -36,7 +36,7 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
             loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
             ecb = ecb           
         }
-        .ScheduleParallel(playersQuery,state.Dependency);
+        .ScheduleParallel(query,state.Dependency);
     }
     [BurstCompile]
     public partial struct CalculateChunksForPlayersJob : IJobEntity

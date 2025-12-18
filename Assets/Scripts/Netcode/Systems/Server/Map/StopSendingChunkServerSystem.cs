@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using NUnit.Framework.Internal;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
 
@@ -16,144 +18,114 @@ using UnityEngine;
 public partial class StopSendingChunkServerSystem : SystemBase
 {
     EntityQuery requests;
+    BufferLookup<PlayersNeedChunk> needsChunks;
+    BufferLookup<PlayerChunks> playerChunks;
 
-
+    NativeQueue<(Entity chunk,StopSendingChunkRequest request)> toRemove;
     [BurstCompile]
     protected override void OnCreate()
     {
         requests = SystemAPI.QueryBuilder().WithAll<StopSendingChunkRequest,ProcessInTheTick>().Build();
-   
+        toRemove = new NativeQueue<(Entity chunk, StopSendingChunkRequest request)>(Allocator.Persistent);
+
         RequireForUpdate(requests);
         RequireForUpdate<MapSettings>();
+
+        needsChunks = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
+        playerChunks = SystemAPI.GetBufferLookup<PlayerChunks>();
+    }
+
+    [BurstCompile]
+    protected override void OnDestroy()
+    {
+        toRemove.Dispose();
     }
 
 
     [BurstCompile]
     protected override void OnUpdate()
     {
+        needsChunks.Update(this);
+        playerChunks.Update(this);
+
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
-        var mapSettings = SystemAPI.GetSingleton<MapSettings>();
-    
         var entities = this.requests.ToEntityArray(Allocator.TempJob);
         var requestsData = this.requests.ToComponentDataArray<StopSendingChunkRequest>(Allocator.TempJob);
 
-
-        Dependency = new CreateChunksJob()
+        var job = new StopSendingJob()
         {
-            mapSettings = mapSettings,
-            loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
-            entityBuffer = SystemAPI.GetSingletonEntity<LoadedChunks>(),
             ecb = ecb,
-            time = SystemAPI.Time.ElapsedTime,  
-            entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
+            toRemove = this.toRemove.AsParallelWriter(),
+            loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
             entities = entities,
-            requests = requests
-          //  map = map.chunks.AsReadOnly()         
+            requests = requestsData
         }
-        .Schedule(entities.Length,2,Dependency);
+        .Schedule(entities.Length,3,Dependency);
+       
+        job.Complete();
+        while(toRemove.TryDequeue(out var item))
+        {
+            var buffer = needsChunks[item.chunk];
+            for(int i =0; i < buffer.Length;i++)
+            {
+                if(buffer[i].networkID == item.request.networkID)
+                {
+                    buffer.RemoveAtSwapBack(i);
+                    break;
+                }
+            }
 
+            var chunks = playerChunks[item.request.player];
+            for(int i =0; i < chunks.Length;i++)
+            {
+                if(chunks[i].chunkIndex == item.request.chunk)
+                {
+                    chunks.RemoveAtSwapBack(i);
+                    break;
+                }
+            }
+        }
         entities.Dispose(Dependency);
-        requests.Dispose(Dependency);
+        requestsData.Dispose(Dependency);
      }
-
-
-    public void GenerateMap()
-    {
-       // generator = new MapGenerator(GameInfo.instance.seed);
-       // generator.StartGenerator(ref map);
-    }
-
-    public void LoadMap()
-    {
-       // generator = new MapGenerator(GameInfo.instance.seed);
-       // map = generator.StartGenerator();
-    }
 
 
     public partial struct StopSendingJob : IJobParallelFor
     {
         public EntityCommandBuffer.ParallelWriter ecb;
-        public MapSettings mapSettings;
-        public EntitiesReferences entitiesReferences;
-        public Entity entityBuffer;
+        public NativeQueue<(Entity chunk, StopSendingChunkRequest request)>.ParallelWriter toRemove;
 
-        
         [ReadOnly] public NativeArray<Entity> entities;
-        [ReadOnly] public NativeArray<LoadChunkRequest> requests;
-
-
-        [ReadOnly] public double time;
+        [ReadOnly] public NativeArray<StopSendingChunkRequest> requests;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
         public void Execute(int sortKey)
         {   
-            LoadChunkRequest loadChunk = requests[sortKey];
+            StopSendingChunkRequest request = requests[sortKey];
             Entity e = entities[sortKey];
+            LoadedChunks loadedChunk = new LoadedChunks();
 
-            ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
+            foreach(var chunk in loadedChunks)
             {
-                index = loadChunk.chunk,
-                time =  time
-            });
-
-            CreateChunk(loadChunk.chunk,sortKey ,out Entity entity);
-
-            ecb.AppendToBuffer(sortKey,entity,new PlayersNeedChunk()
+                if(chunk.chunkIndex == request.chunk)
+                {
+                    loadedChunk = chunk;
+                }
+            }
+            if(loadedChunk.chunkEntity != Entity.Null)
             {
-                playerEntity = loadChunk.player,
-                networkID = loadChunk.networkID
-            });
-            ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
-            ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
-            {
-                networkID = loadChunk.networkID,
-                action = 1
-            });
+                ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,loadedChunk.chunkEntity, true);
+                ecb.AppendToBuffer(sortKey,loadedChunk.chunkEntity, new ChunkServerActions()
+                {
+                    networkID = request.networkID,
+                    action = 2
+                });
+                toRemove.Enqueue((loadedChunk.chunkEntity,request));
+            }
             ecb.DestroyEntity(sortKey,e);       
         }
 
-        [BurstCompile]
-        private bool CreateChunk(int index,int sortKey, out Entity entity)
-        {
-            entity = Entity.Null;
-           // if (!map.CheckChunkIndex(index)) return false;
-
-            Entity chunkEntity = ecb.Instantiate(sortKey,entitiesReferences.chunkEntity);          
-            ecb.AddComponent<NewChunkServerAction>(sortKey,chunkEntity);
-            ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity);
-           
-            ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
-            ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
-
-            NativeArray<ChunkTiles> chunkTiles = new NativeArray<ChunkTiles>(mapSettings.tilesCount,Allocator.Temp);
-
-            ChunkComponent chunkComponent = MapGenerator.GenerateRegion(index,in mapSettings, chunkTiles);
-            foreach(ChunkTiles tile in chunkTiles)
-            {
-                ecb.AppendToBuffer(sortKey,chunkEntity,tile);
-
-                // if (tile != null)
-                // {
-                //     var obj = new BuildingObjects()
-                //     {
-                //         id = tile.gridObject.ID,
-                //         position = new int2(tile.x, tile.y),
-                //         variantIndex = tile.gridObject.variantIndex,
-                //         stateIndex = tile.gridObject.stateIndex,
-                //         hitPoints = tile.gridObject.hitPoints
-                //     };
-                //     ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,obj);
-                //     ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ref ecb, obj,unfilteredChunkIndex));
-                // }
-            }
-
-            ecb.SetComponent(sortKey,chunkEntity, chunkComponent);
-            entity = chunkEntity;
-
-            chunkTiles.Dispose();
-            return true;
-        }
     }       
 }
 
