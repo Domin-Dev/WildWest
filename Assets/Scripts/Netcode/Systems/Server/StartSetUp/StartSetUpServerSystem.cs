@@ -49,6 +49,9 @@ partial struct StartSetUpServerSystem : ISystem
                 maxStopRequestsInTick = 100,
                 stopRequestsInTickPerClient = 10,
 
+                maxStartRequestsInTick = 100,           
+                startRequestsInTickPerClient = 10,
+                
             });     
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);
             

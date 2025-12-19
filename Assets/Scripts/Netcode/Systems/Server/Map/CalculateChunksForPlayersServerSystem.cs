@@ -49,6 +49,7 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
         public void Execute(Entity player,in GhostChunk ghostChunk, in GhostOwner owner, ref DynamicBuffer<PlayerChunks> playerChunks, [EntityIndexInQuery] int sortKey)
         {
             int networkID = owner.NetworkId; 
+            // <int chunkindex, int priority request>
             NativeHashMap<int,int> chunksForPlayer = new NativeHashMap<int,int>(map.playerRenderCount,Allocator.TempJob);
             NativeList<(int chunk,double time)> toRemove = new NativeList<(int,double)>(map.playerRenderCount,Allocator.TempJob);
 
@@ -57,22 +58,38 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
             
             foreach(var needChunk in chunksForPlayer)
             {
-                bool loaded =  false;
+                Entity loaded = Entity.Null;
 
                 foreach(var chunk in loadedChunks)
                 {
                     if(needChunk.Key == chunk.chunkIndex)
                     {
-                        loaded = true;
+                        loaded = chunk.chunkEntity;
                         break;
                     }                
                 } 
+
                 Entity entity = ecb.CreateEntity(sortKey);
-                if(loaded)
-                    ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest(){ chunk = needChunk.Key, player = player});
+                if(loaded != Entity.Null)
+                {
+                    ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest()
+                    { 
+                        chunkIndex = needChunk.Key,
+                        chunkEntity = loaded,
+                        priority = needChunk.Value, 
+                        playerEntity = player,
+                        networkID = networkID
+                    });
+                }
                 else
                 {
-                    ecb.AddComponent(sortKey,entity, new LoadChunkRequest(){ chunkIndex = needChunk.Key, playerEntity = player , priority = needChunk.Value , networkID = networkID});
+                    ecb.AddComponent(sortKey,entity, new LoadChunkRequest()
+                    { 
+                        chunkIndex = needChunk.Key, 
+                        playerEntity = player,
+                        priority = needChunk.Value,
+                        networkID = networkID
+                    });
                 }
             }
             Entity chunkChange = ecb.CreateEntity(sortKey);

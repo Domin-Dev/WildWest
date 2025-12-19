@@ -25,18 +25,18 @@ partial struct GhostChangeChunkServerSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        if (query.IsEmpty) return;
-        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
-        var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+        // if (query.IsEmpty) return;
+        // var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        // var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
+        // var mapSettings = SystemAPI.GetSingleton<MapSettings>();
 
-        state.Dependency = new CalculateChunksForPlayersJob()
-        {
-            map = mapSettings,
-            loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
-            ecb = ecb           
-        }
-        .ScheduleParallel(query,state.Dependency);
+        // state.Dependency = new CalculateChunksForPlayersJob()
+        // {
+        //     map = mapSettings,
+        //     loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
+        //     ecb = ecb           
+        // }
+        // .ScheduleParallel(query,state.Dependency);
     }
     [BurstCompile]
     public partial struct CalculateChunksForPlayersJob : IJobEntity
@@ -69,7 +69,7 @@ partial struct GhostChangeChunkServerSystem : ISystem
                 } 
                 Entity entity = ecb.CreateEntity(sortKey);
                 if(loaded)
-                    ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest(){ chunk = needChunk.Key, player = player});
+                    ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest(){ chunkIndex = needChunk.Key, playerEntity = player});
                 else
                 {
                     ecb.AddComponent(sortKey,entity, new LoadChunkRequest(){ chunkIndex = needChunk.Key, playerEntity = player , priority = needChunk.Value , networkID = networkID});

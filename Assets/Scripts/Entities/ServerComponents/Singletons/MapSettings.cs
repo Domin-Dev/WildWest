@@ -40,7 +40,8 @@ public struct MapSettings: IComponentData
     public int maxStopRequestsInTick;
     public int stopRequestsInTickPerClient;
 
-
+    public int maxStartRequestsInTick;
+    public int startRequestsInTickPerClient;
 
 
 
