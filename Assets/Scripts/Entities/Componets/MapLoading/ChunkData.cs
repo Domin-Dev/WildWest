@@ -35,7 +35,7 @@ public struct ChunkTiles : IBufferElementData
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
 public struct BuildingObjects : IBufferElementData
 {
-    [GhostField] public int2 position;
+    [GhostField] public int2 globalTilePos;
     [GhostField] public int id;
     [GhostField] public short variantIndex;
     [GhostField] public short stateIndex;

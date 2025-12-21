@@ -56,7 +56,7 @@ public class MapGenerator
     }
     private void SetBuildingObject(ref ServerChunk chunk, int x, int y, int index)
     {
-        // chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
+     //   chunk.grid[x, y].SetGridObject(new GridObject(index, 0, null,new Vector2(x,y)));
     }
     private void SetBuildingObject(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
@@ -148,7 +148,7 @@ public class MapGenerator
     }
    
     [BurstCompile]
-    public static ChunkComponent GenerateRegion(int chunkIndex, in MapSettings map, NativeArray<ChunkTiles> tiles)
+    public static ChunkComponent GenerateRegion(int chunkIndex, in MapSettings map, NativeArray<ChunkTiles> tiles, NativeArray<BuildingObjects> buildingObjects)
     {
         int2 chunkCoords = map.GetChunkCoordinates(chunkIndex);
 
@@ -165,9 +165,11 @@ public class MapGenerator
         int2 chunkMapPosition = map.GetChunkMapPosition(chunkCoords);
         int chunkSizeInTiles = map.chunkSizeInTiles;
 
+
         for(int i = 0; i < map.tilesCount; i++)
         {
-            float value = Generate(chunkMapPosition + map.GetTileLocalPos(i),offset,2,chunkSizeInTiles);
+            int2 globalTilePos = chunkMapPosition + map.GetLocalTilePos(i);
+            float value = Generate(globalTilePos,offset,2,chunkSizeInTiles);
             int index;
             if (value >= 0.75f)
             {
@@ -184,6 +186,17 @@ public class MapGenerator
                 tileID =index,
                 variant = 1
             };
+
+            if(value >0.8f)
+            {    
+                buildingObjects[i] = new BuildingObjects()
+                {
+                    id = 45,
+                    globalTilePos = globalTilePos,
+                    variantIndex = 0,
+                    stateIndex = 0,
+                };
+            }
         }
        return chunkComponent;
     }

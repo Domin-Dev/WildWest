@@ -26,14 +26,16 @@ public struct MapSettings: IComponentData
     public int regionsCount => mapSizeInRegions*mapSizeInRegions;
     public int tilesCount => chunkSizeInTiles*chunkSizeInTiles;
 
-    // Server fields
+    public float chunkSizeInEnginePos => chunkSizeInTiles * tileSize;
+
+#region Chunks limits
     public int playerRenderCount => (2 * playerRenderSize + 1)*(2 * playerRenderSize + 1);
     public int playerRenderSize; 
     public int maxChunksPerClient;
 
+#endregion
 
-
-    // limits for ticks
+#region Limits for ticks
     public int maxLoadedChunksInTick;
     public int loadedChunksInTickPerClient;
 
@@ -42,7 +44,7 @@ public struct MapSettings: IComponentData
 
     public int maxStartRequestsInTick;
     public int startRequestsInTickPerClient;
-
+#endregion
 
 
     [BurstCompile]
@@ -79,8 +81,11 @@ public struct MapSettings: IComponentData
     [BurstCompile]
     public int GetChunkIndex(float2 enginePosition)
     {
-        return (int)(enginePosition.x / tileSize / chunkSizeInTiles) 
-            + (int)(enginePosition.y / tileSize / chunkSizeInTiles) * mapSizeInChunks;
+        if(enginePosition.x >= 0 && enginePosition.y >= 0)
+            return (int)(enginePosition.x / tileSize / chunkSizeInTiles) 
+                + (int)(enginePosition.y / tileSize / chunkSizeInTiles) * mapSizeInChunks;
+        else
+            return -1;
     }
     [BurstCompile]
     public int GetChunkIndex(float3 enginePosition)
@@ -113,8 +118,14 @@ public struct MapSettings: IComponentData
         return GetChunkMapPosition(GetChunkCoordinates(chunkIndex));
     }
     [BurstCompile]
-    public int2 GetTileLocalPos(int tileID)
+    public int2 GetLocalTilePos(int tileID)
     {
         return new int2(tileID % chunkSizeInTiles, tileID / chunkSizeInTiles);
+    }
+
+    [BurstCompile]
+    public int2 GetGlobalTilePos(int2 tileLocalPos,int2 chunkCoordinates)
+    {
+        return chunkCoordinates * chunkSizeInTiles + tileLocalPos;
     }
 }

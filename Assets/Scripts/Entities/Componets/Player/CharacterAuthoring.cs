@@ -142,21 +142,38 @@ public struct Thirst : IComponentData
 
 public struct GhostChunk : IComponentData
 {
+    public int spawnChunk;
     public int current;
     public int lastChunk;
+
 
     public GhostChunk StartValues()
     {
         current = int.MinValue;
         lastChunk = int.MinValue;
+        spawnChunk = int.MinValue;
         return this;
     }
-
-    public bool LastChunkIsNotNull()
+    
+    public int GetChunk()
+    {
+        if(CurrentChunkIsNull())
+            return spawnChunk;
+        else
+            return current;
+    }
+    public bool SpawnChunkIsNull()
+    {
+        return current == int.MinValue;
+    }
+    public bool CurrentChunkIsNull()
+    {
+        return current == int.MinValue;
+    }
+    public bool LastChunkIsNull()
     {
         return lastChunk == int.MinValue;
     }
-
     public void SetNewChunk(int newChunk)
     {
         lastChunk = current;

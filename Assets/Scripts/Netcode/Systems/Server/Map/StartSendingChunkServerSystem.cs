@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using NUnit.Framework.Internal;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
-using UnityEngine;
 
 
 

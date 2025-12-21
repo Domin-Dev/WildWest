@@ -115,23 +115,28 @@ public partial class ChunkManagementServerSystem : SystemBase
                 time =  time,
                 chunkEntity = entity
             });
-            ecb.AppendToBuffer(sortKey,loadChunk.playerEntity,new PlayerChunks()
+
+            if(loadChunk.playerEntity != Entity.Null)
             {
-                chunkEntity = entity,
-                chunkIndex = loadChunk.chunkIndex,
-                time = time
-            });
-            ecb.AppendToBuffer(sortKey,entity,new PlayersNeedChunk()
-            {
-                playerEntity = loadChunk.playerEntity,
-                networkID = loadChunk.networkID
-            });
-            ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
-            ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
-            {
-                networkID = loadChunk.networkID,
-                action = 1
-            });
+                ecb.AppendToBuffer(sortKey,loadChunk.playerEntity,new PlayerChunks()
+                {
+                    chunkEntity = entity,
+                    chunkIndex = loadChunk.chunkIndex,
+                    time = time
+                });
+                ecb.AppendToBuffer(sortKey,entity,new PlayersNeedChunk()
+                {
+                    playerEntity = loadChunk.playerEntity,
+                    networkID = loadChunk.networkID
+                }); 
+                ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
+                ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
+                {
+                    networkID = loadChunk.networkID,
+                    action = 1
+                });
+            }
+
             ecb.DestroyEntity(sortKey,e);       
         }
 
@@ -149,31 +154,31 @@ public partial class ChunkManagementServerSystem : SystemBase
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
 
             NativeArray<ChunkTiles> chunkTiles = new NativeArray<ChunkTiles>(mapSettings.tilesCount,Allocator.Temp);
+            NativeArray<BuildingObjects> buildingObjects = new NativeArray<BuildingObjects>(mapSettings.tilesCount,Allocator.Temp);
 
-            ChunkComponent chunkComponent = MapGenerator.GenerateRegion(index,in mapSettings, chunkTiles);
+
+
+            ChunkComponent chunkComponent = MapGenerator.GenerateRegion(index,in mapSettings, chunkTiles, buildingObjects);
             foreach(ChunkTiles tile in chunkTiles)
             {
                 ecb.AppendToBuffer(sortKey,chunkEntity,tile);
+            }
 
-                // if (tile != null)
-                // {
-                //     var obj = new BuildingObjects()
-                //     {
-                //         id = tile.gridObject.ID,
-                //         position = new int2(tile.x, tile.y),
-                //         variantIndex = tile.gridObject.variantIndex,
-                //         stateIndex = tile.gridObject.stateIndex,
-                //         hitPoints = tile.gridObject.hitPoints
-                //     };
-                //     ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,obj);
-                //     ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ref ecb, obj,unfilteredChunkIndex));
-                // }
+            foreach(BuildingObjects bObject in buildingObjects)
+            {
+                Debug.Log("new!");
+                if(bObject.id == 45)
+                {
+                ecb.AppendToBuffer(sortKey,chunkEntity,bObject);
+                ecb.AppendToBuffer<LinkedEntityGroup>(sortKey,chunkEntity,BuildingObjectCreator.CreateObjectServer(ref ecb,bObject,sortKey));
+                }
             }
 
             ecb.SetComponent(sortKey,chunkEntity, chunkComponent);
             entity = chunkEntity;
 
             chunkTiles.Dispose();
+            buildingObjects.Dispose();
             return true;
         }
     }       

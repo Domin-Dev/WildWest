@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 using System.Text;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 
 
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]

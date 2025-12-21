@@ -60,7 +60,7 @@ public static class DebugController
                         var position =  LocalTransform.FromPosition(MapServerSystem.Map.MapPositionToWorldPosition(x, y));
                         ecb.SetComponent(character, position);
                         ecb.SetComponentEnabled<IsChanged>(character, true);
-                        CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
+                      //  CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
                     }
                 }
                 entities.Dispose();

@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
-using TMPro;
+
 using Unity.Burst.Intrinsics;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
-using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
 [UpdateAfter(typeof(CollisionSystem))]
@@ -267,8 +258,8 @@ public partial class MapServerSystem : SystemBase
                 if (loadedChunks.TryGetValue(gchunk.current, out Entity e))
                     ecb.AppendToBuffer(unfilteredChunkIndex,e,new ChunkObjects(){ entity = entity});
 
-                if(gchunk.LastChunkIsNotNull())
-                    objectsToRemoveFromBuffer.Enqueue((entity,gchunk.lastChunk));
+        //        if(gchunk.LastChunkIsNotNull())
+       //             objectsToRemoveFromBuffer.Enqueue((entity,gchunk.lastChunk));
             }
               
             chunk.SetComponentEnabledForAll(ref newChunk, false);
@@ -420,13 +411,13 @@ public partial class MapServerSystem : SystemBase
                         var obj = new BuildingObjects()
                         {
                             id = tile.gridObject.ID,
-                            position = new int2(tile.x, tile.y),
+                            globalTilePos = new int2(tile.x, tile.y),
                             variantIndex = tile.gridObject.variantIndex,
                             stateIndex = tile.gridObject.stateIndex,
                             hitPoints = tile.gridObject.hitPoints
                         };
                         ecb.AppendToBuffer(unfilteredChunkIndex,chunkEntity,obj);
-                        ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(entitiesReferences,ref ecb, obj,unfilteredChunkIndex));
+                        ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,chunkEntity,BuildingObjectCreator.CreateObjectServer(ref ecb, obj,unfilteredChunkIndex));
                     }
                 }
             }

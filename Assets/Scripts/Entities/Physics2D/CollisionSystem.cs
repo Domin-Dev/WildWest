@@ -10,8 +10,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.Localization.SmartFormat.Utilities;
-using static UnityEngine.EventSystems.EventTrigger;
 
 
 
@@ -64,7 +62,6 @@ public partial struct CollisionSystem : ISystem
     ComponentLookup<Physics2D> getPhysics;
     ComponentLookup<ForceImpulse2D> getForceImpulse;
     ComponentLookup<Parent> getParent;
-
 
     BufferLookup<PhysicsChildrenBuffer> childrenBuffer;
     private float deltaTime;
@@ -234,8 +231,6 @@ public partial struct CollisionSystem : ISystem
             }
 
 
-            LocalTransform localTransform = new LocalTransform();
-
             if (destroy)
             {
                 entityCommandBuffer.AddComponent(entity, new DestroyEntityTag());
@@ -368,14 +363,14 @@ public partial struct CollisionSystem : ISystem
                 tempTransform1.z = tempTransform1.y;
 
 
-                localTransform = getPosition[entity];
+                LocalTransform localTransform = getPosition[entity];
                 localTransform.Position = tempTransform1;
-                getPosition[entity] = localTransform;
-
+                EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform, out bool chunkIsLoaded);
+                if(chunkIsLoaded)
+                    getPosition[entity] = localTransform;
             }
            
-            EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform);
-
+          
             collisions.Clear();
             potentialCollisions.Dispose();
         }
@@ -398,15 +393,18 @@ public partial struct CollisionSystem : ISystem
         hitboxes.Dispose();
     }
 
-    private void EntityChangePosition(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity entity, LocalTransform localTransform)
+    private void EntityChangePosition(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity entity, LocalTransform localTransform, out bool chunkIsLoaded)
     {
-         bool hasChanged = isChanged.HasComponent(entity);
-        if (hasChanged || alwaysUpdate.HasComponent(entity))
+        bool hasChanged = isChanged.HasComponent(entity);
+        chunkIsLoaded = true;
+        if (hasChanged || alwaysUpdate.HasComponent(entity))     
         {
             if(state.World.IsServer())
             {
                 if (state.EntityManager.HasComponent<GhostInstance>(entity) &&  SystemAPI.HasComponent<GhostChunk>(entity))
-                    GhostChangeChunk(state.EntityManager, ref entityCommandBuffer,localTransform,entity);                
+                {
+                    GhostChangeChunk(state.EntityManager, ref entityCommandBuffer,localTransform,entity, out chunkIsLoaded);   
+                }             
             }
             else if(SystemAPI.HasComponent<Player>(entity) && SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))
             {
@@ -417,15 +415,36 @@ public partial struct CollisionSystem : ISystem
     }
 
 
-    public static void GhostChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity player)
+    public void GhostChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity entity, out bool chunkIsLoaded)
     {
         int index = ChunkManagementServerSystem.Map.settings.GetChunkIndex(newPos.Position);
-        var chunk = entityManager.GetComponentData<GhostChunk>(player);
+        var chunk = entityManager.GetComponentData<GhostChunk>(entity);
+        chunkIsLoaded = true;
+
+
         if (chunk.current != index)
         {
-            chunk.SetNewChunk(index);
-            entityCommandBuffer.SetComponent(player, chunk);
-            entityCommandBuffer.SetComponentEnabled<NewChunk>(player, true);
+            var buffer = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
+
+            foreach(var loadedChunk in buffer)
+            {
+                if(loadedChunk.chunkIndex == index)
+                {
+                    chunk.SetNewChunk(index);
+                    entityCommandBuffer.SetComponent(entity, chunk);
+                    entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, true);
+                    return;
+                }
+            }
+
+            if(chunk.CurrentChunkIsNull())
+            {
+                chunk.spawnChunk = index;
+                entityCommandBuffer.SetComponent(entity, chunk);
+                entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, true);
+            }
+
+            chunkIsLoaded = false;
         }
     }
 

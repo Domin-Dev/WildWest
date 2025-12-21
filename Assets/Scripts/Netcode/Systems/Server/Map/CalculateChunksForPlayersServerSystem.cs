@@ -1,8 +1,8 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
-using UnityEngine;
 
 
 [UpdateAfter(typeof(CollisionSystem))]
@@ -53,7 +53,7 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
             NativeHashMap<int,int> chunksForPlayer = new NativeHashMap<int,int>(map.playerRenderCount,Allocator.TempJob);
             NativeList<(int chunk,double time)> toRemove = new NativeList<(int,double)>(map.playerRenderCount,Allocator.TempJob);
 
-            map.GetNeighboringChunkIndexes(ghostChunk.current,chunksForPlayer);
+            map.GetNeighboringChunkIndexes(ghostChunk.GetChunk(),chunksForPlayer);
             UnloadChunks(ref playerChunks, toRemove , chunksForPlayer,networkID , player, sortKey);
             
             foreach(var needChunk in chunksForPlayer)
@@ -92,13 +92,14 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
                     });
                 }
             }
-            Entity chunkChange = ecb.CreateEntity(sortKey);
-            ecb.AddComponent(sortKey,chunkChange, new PlayerChangeChunkRequest()
-            {
-                player = player,
-                newChunk = ghostChunk.current,
-                lastChunk = ghostChunk.lastChunk
-            });
+
+            //Entity chunkChange = ecb.CreateEntity(sortKey);
+            // ecb.AddComponent(sortKey,chunkChange, new PlayerChangeChunkRequest()
+            // {
+            //     player = player,
+            //     newChunk = ghostChunk.current,
+            //     lastChunk = ghostChunk.lastChunk
+            // });
 
             ecb.SetComponentEnabled<NewChunk>(0,player,false);
             chunksForPlayer.Dispose();
@@ -120,7 +121,6 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
             // Check the number of loaded chunks per player
             int number = toRemove.Length + chunksToLoad - map.maxChunksPerClient;
             int prio = 0;
-            Debug.Log(number + "   to remove" );
             while (number > 0 && toRemove.Length > 0)
             {
                 int chunkIndex = GetChunkToRemove(toRemove);
@@ -151,5 +151,60 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
         } 
     }       
 
+    public partial struct CalculateChunksForBulletsJob : IJobEntity
+    {
+        public EntityCommandBuffer.ParallelWriter ecb;
+        public MapSettings map;
+        [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
+        [BurstCompile]
+        public void Execute(Entity player,in GhostChunk ghostChunk,in Velocity2D velocity2D,in Bullet bullet, [EntityIndexInQuery] int sortKey)
+        {
+            
+            
+        }    
+    public static void RequestNextChunks2D(
+        float2 origin,
+        float2 dir,
+        int chunkCount,
+        float chunkSize,NativeQueue<int2>.ParallelWriter requests)
+    {
+        int2 chunk = (int2)math.floor(origin / chunkSize);
+        int2 step = new int2(
+            dir.x > 0 ? 1 : -1,
+            dir.y > 0 ? 1 : -1
+        );
+
+        float2 tDelta = new float2(
+            math.abs(chunkSize / dir.x),
+            math.abs(chunkSize / dir.y)
+        );
+
+        float2 nextBoundary = (chunk + math.max(step,float2.zero)) * chunkSize;
+        float2 tMax = new float2(
+            (nextBoundary.x - origin.x) / dir.x,
+            (nextBoundary.y - origin.y) / dir.y
+        );
+
+        if (math.abs(dir.x) < 1e-6f) tMax.x = float.MaxValue;
+        if (math.abs(dir.y) < 1e-6f) tMax.y = float.MaxValue;
+
+        requests.Enqueue(chunk);
+        for (int i = 0; i < chunkCount; i++)
+        {
+            if (tMax.x < tMax.y)
+            {
+                chunk.x += step.x;
+                tMax.x += tDelta.x;
+            }
+            else
+            {
+                chunk.y += step.y;
+                tMax.y += tDelta.y;
+            }
+
+            requests.Enqueue(chunk);
+        }
+    }
+    }
 }
