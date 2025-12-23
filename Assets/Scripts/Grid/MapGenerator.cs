@@ -148,7 +148,7 @@ public class MapGenerator
     }
    
     [BurstCompile]
-    public static ChunkComponent GenerateRegion(int chunkIndex, in MapSettings map, NativeArray<ChunkTiles> tiles, NativeArray<BuildingObjects> buildingObjects)
+    public static ChunkComponent GenerateRegion(int chunkIndex, in MapSettings map, NativeArray<ChunkTiles> tiles, NativeList<BuildingObjects> buildingObjects)
     {
         int2 chunkCoords = map.GetChunkCoordinates(chunkIndex);
 
@@ -189,13 +189,13 @@ public class MapGenerator
 
             if(value >0.8f)
             {    
-                buildingObjects[i] = new BuildingObjects()
+                buildingObjects.Add(new BuildingObjects()
                 {
                     id = 45,
                     globalTilePos = globalTilePos,
                     variantIndex = 0,
                     stateIndex = 0,
-                };
+                });
             }
         }
        return chunkComponent;

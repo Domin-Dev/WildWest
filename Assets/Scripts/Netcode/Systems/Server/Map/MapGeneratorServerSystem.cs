@@ -24,7 +24,6 @@ public partial class MapGeneratorServerSystem : SystemBase
             ClientServerBootstrap.ServerWorld
                 .GetExistingSystemManaged<ChunkManagementServerSystem>()
                 .GenerateMap();
-            Debug.Log("wygenerowano mape!!");
             entityCommandBuffer.DestroyEntity(e);
         }
         entityCommandBuffer.Playback(this.EntityManager);

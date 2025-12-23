@@ -1,11 +1,9 @@
-using Game.Client.Map;
-using NUnit.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
@@ -64,6 +62,14 @@ public partial struct CollisionSystem : ISystem
     ComponentLookup<Parent> getParent;
 
     BufferLookup<PhysicsChildrenBuffer> childrenBuffer;
+
+
+
+    DynamicBuffer<LoadedChunks> loadedChunks;
+
+    MapSettings map;
+
+
     private float deltaTime;
     private float timer;
 
@@ -74,6 +80,8 @@ public partial struct CollisionSystem : ISystem
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId, NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+    
+
         entityQueryBuilder.Dispose();
 
 
@@ -140,6 +148,11 @@ public partial struct CollisionSystem : ISystem
         UpdateEntityMap(ref state, entityArray, physics, transforms);
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         NativeHashMap<int, float> collisions = new NativeHashMap<int, float>(50, Allocator.TempJob);
+        if(state.World.IsServer())
+        {
+            loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
+            map = SystemAPI.GetSingleton<MapSettings>();
+        }
 
         for (int i = 0; i < entityArray.Length; i++)
         {
@@ -366,6 +379,7 @@ public partial struct CollisionSystem : ISystem
                 LocalTransform localTransform = getPosition[entity];
                 localTransform.Position = tempTransform1;
                 EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform, out bool chunkIsLoaded);
+               
                 if(chunkIsLoaded)
                     getPosition[entity] = localTransform;
             }
@@ -417,16 +431,14 @@ public partial struct CollisionSystem : ISystem
 
     public void GhostChangeChunk(EntityManager entityManager,ref EntityCommandBuffer entityCommandBuffer, LocalTransform newPos, Entity entity, out bool chunkIsLoaded)
     {
-        int index = ChunkManagementServerSystem.Map.settings.GetChunkIndex(newPos.Position);
+        int index = ChunkManagementServerSystem.Map.settings.GetChunkIndexFromEnginePosition(newPos.Position);
         var chunk = entityManager.GetComponentData<GhostChunk>(entity);
         chunkIsLoaded = true;
 
 
         if (chunk.current != index)
         {
-            var buffer = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
-
-            foreach(var loadedChunk in buffer)
+            foreach(var loadedChunk in loadedChunks)
             {
                 if(loadedChunk.chunkIndex == index)
                 {
@@ -436,12 +448,25 @@ public partial struct CollisionSystem : ISystem
                     return;
                 }
             }
-
+            Debug.Log("wait!!");
             if(chunk.CurrentChunkIsNull())
             {
                 chunk.spawnChunk = index;
                 entityCommandBuffer.SetComponent(entity, chunk);
                 entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, true);
+            }
+            if(entityManager.HasComponent<DestroyAtTick>(entity))
+            {
+                if(map.CheckChunkIndex(index))
+                {
+                    var destoryTimer = entityManager.GetComponentData<DestroyAtTick>(entity);
+                    destoryTimer.tick.Add(1);
+                    entityCommandBuffer.SetComponent(entity,destoryTimer);
+                }
+                else
+                {
+                    entityCommandBuffer.AddComponent<DestroyEntityTag>(entity);
+                }
             }
 
             chunkIsLoaded = false;

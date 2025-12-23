@@ -8,16 +8,20 @@ using UnityEngine;
 public class BulletAuthoring : MonoBehaviour
 {
     [SerializeField] private float speed;
+    [SerializeField] private float range;
     [SerializeField] private int damage;
-    [SerializeField] private float destroyAfterTime;
     public class Baker : Baker<BulletAuthoring>
     {
         public override void Bake(BulletAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new Bullet() { speed = authoring.speed, damage = authoring.damage });
+            AddComponent(entity, new Bullet() { 
+                speed = authoring.speed, 
+                damage = authoring.damage,
+                range = authoring.range 
+            });
             AddComponent(entity, new NewBullet());
-            AddComponent(entity, new DestroyOnTimer() {value = authoring.destroyAfterTime});
+            AddComponent(entity, new DestroyOnTimer() { value = authoring.range / authoring.speed });
        }
     }
 }
@@ -27,6 +31,7 @@ public class BulletAuthoring : MonoBehaviour
 public struct Bullet : IComponentData
 {
     public float speed;
+    public float range;
     public int damage;
 }
 

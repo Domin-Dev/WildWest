@@ -14,6 +14,16 @@ public struct ChunkComponent : IComponentData
     [GhostField] public float2 worldPos;
 }
 
+
+public struct ChunkTimestamp : IComponentData
+{
+    public double timestamp;
+}
+
+
+
+
+
 public struct ChunkObjects : IBufferElementData
 {
     public Entity entity;
@@ -36,7 +46,7 @@ public struct ChunkTiles : IBufferElementData
 public struct BuildingObjects : IBufferElementData
 {
     [GhostField] public int2 globalTilePos;
-    [GhostField] public int id;
+    [GhostField] public int  id;
     [GhostField] public short variantIndex;
     [GhostField] public short stateIndex;
 

@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[BurstCompile]
 public struct MapSettings: IComponentData
 {
     public bool newMap;
@@ -47,6 +48,14 @@ public struct MapSettings: IComponentData
 #endregion
 
 
+
+    [BurstCompile]
+    public bool CheckChunkIndex(int chunkIndex)
+    {
+        return chunkIndex >= 0 && chunkIndex < chunksCount;
+    }
+
+    
     [BurstCompile]
     public void GetNeighboringChunkIndexes(int chunkIndex,NativeHashMap<int,int> indexes)
     {
@@ -73,13 +82,14 @@ public struct MapSettings: IComponentData
     {
         return (int)(chunkCoordinates.x / mapSizeInRegions) + (int)(chunkCoordinates.y / mapSizeInRegions) * mapSizeInChunks;
     }
+
     [BurstCompile]
-    public bool CheckChunkIndex(int chunkIndex)
+    public int GetChunkIndexFromCoordinates(int2 coordinates)
     {
-        return chunkIndex >= 0 && chunkIndex < chunksCount;
+        return coordinates.x + coordinates.y * mapSizeInChunks;
     }
     [BurstCompile]
-    public int GetChunkIndex(float2 enginePosition)
+    public int GetChunkIndexFromEnginePosition(float2 enginePosition)
     {
         if(enginePosition.x >= 0 && enginePosition.y >= 0)
             return (int)(enginePosition.x / tileSize / chunkSizeInTiles) 
@@ -88,9 +98,9 @@ public struct MapSettings: IComponentData
             return -1;
     }
     [BurstCompile]
-    public int GetChunkIndex(float3 enginePosition)
+    public int GetChunkIndexFromEnginePosition(float3 enginePosition)
     {
-        return GetChunkIndex(MyTools.ConvertFloat(enginePosition));
+        return GetChunkIndexFromEnginePosition(MyTools.ConvertFloat(enginePosition));
     }
     [BurstCompile]
     public float3 MapPositionToWorldPosition(int x, int y)

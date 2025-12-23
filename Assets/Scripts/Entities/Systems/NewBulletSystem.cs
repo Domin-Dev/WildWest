@@ -25,12 +25,13 @@ partial struct NewBulletSystem : ISystem
         {
             if(!newbullet.ValueRO.isOnServer)
             {
-                entityCommandBuffer.RemoveComponent<NewBullet>(entity);
                 HybridManager.instance.SetEntity(entity, new Vector3(pos.ValueRO.Position.x, pos.ValueRO.Position.y, 100f));
             }
 
+
             float3 v3 = pos.ValueRO.Right();
             velocity.ValueRW.Value = new float2(v3.x,v3.y) * bullet.ValueRO.speed;
+            entityCommandBuffer.RemoveComponent<NewBullet>(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

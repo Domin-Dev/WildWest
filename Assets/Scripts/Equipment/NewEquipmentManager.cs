@@ -122,7 +122,6 @@ public class NewEquipmentManager : MonoBehaviour
     {
         selectedSlot = slotPosition;
         selectedItem = itemStats;
-        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
 
 
@@ -135,7 +134,6 @@ public class NewEquipmentManager : MonoBehaviour
     public void ClearSelection()
     {
         selectedItem = null;
-        Debug.Log("<Color=red>" + selectedItem + " " + (selectedItem is ItemWithBar));
 
         selectedSlot = SlotPosition.NullSlot;
     }

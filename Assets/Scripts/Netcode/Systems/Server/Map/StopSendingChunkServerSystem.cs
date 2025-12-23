@@ -10,6 +10,7 @@ using Unity.Jobs;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
+[BurstCompile]
 public partial class StopSendingChunkServerSystem : SystemBase
 {
     EntityQuery requests;

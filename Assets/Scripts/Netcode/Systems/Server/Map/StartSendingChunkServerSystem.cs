@@ -9,6 +9,7 @@ using Unity.Jobs;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
+[BurstCompile]
 public partial class StartSendingChunkServerSystem : SystemBase
 {
     EntityQuery requests;
@@ -57,6 +58,8 @@ public partial class StartSendingChunkServerSystem : SystemBase
             Entity e = entities[sortKey];
 
 
+
+            ecb.SetComponent(sortKey,request.chunkEntity, new ChunkTimestamp(){ timestamp = time });
             ecb.AppendToBuffer(sortKey,request.playerEntity,new PlayerChunks()
             {
                 chunkEntity = request.chunkEntity,

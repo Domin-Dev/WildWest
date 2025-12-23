@@ -106,7 +106,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             Entity e = entities[sortKey];
 
 
-            CreateChunk(loadChunk.chunkIndex,sortKey ,out Entity entity);
+            CreateChunk(loadChunk.chunkIndex,sortKey,out Entity entity);
 
 
             ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
@@ -144,19 +144,15 @@ public partial class ChunkManagementServerSystem : SystemBase
         private bool CreateChunk(int index,int sortKey, out Entity entity)
         {
             entity = Entity.Null;
-           // if (!map.CheckChunkIndex(index)) return false;
-
             Entity chunkEntity = ecb.Instantiate(sortKey,entitiesReferences.chunkEntity);          
             ecb.AddComponent<NewChunkServerAction>(sortKey,chunkEntity);
-            ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity);
-           
+            ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity); 
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
+            ecb.AddComponent(sortKey,chunkEntity, new ChunkTimestamp(){ timestamp = time });
 
             NativeArray<ChunkTiles> chunkTiles = new NativeArray<ChunkTiles>(mapSettings.tilesCount,Allocator.Temp);
-            NativeArray<BuildingObjects> buildingObjects = new NativeArray<BuildingObjects>(mapSettings.tilesCount,Allocator.Temp);
-
-
+            NativeList<BuildingObjects> buildingObjects = new NativeList<BuildingObjects>(mapSettings.tilesCount,Allocator.Temp);
 
             ChunkComponent chunkComponent = MapGenerator.GenerateRegion(index,in mapSettings, chunkTiles, buildingObjects);
             foreach(ChunkTiles tile in chunkTiles)
@@ -165,14 +161,11 @@ public partial class ChunkManagementServerSystem : SystemBase
             }
 
             foreach(BuildingObjects bObject in buildingObjects)
-            {
-                Debug.Log("new!");
-                if(bObject.id == 45)
-                {
+            {      
                 ecb.AppendToBuffer(sortKey,chunkEntity,bObject);
                 ecb.AppendToBuffer<LinkedEntityGroup>(sortKey,chunkEntity,BuildingObjectCreator.CreateObjectServer(ref ecb,bObject,sortKey));
-                }
             }
+
 
             ecb.SetComponent(sortKey,chunkEntity, chunkComponent);
             entity = chunkEntity;
