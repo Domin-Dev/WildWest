@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -21,13 +22,19 @@ public partial class ChunkManagementServerSystem : SystemBase
     private static ServerMap map;
     private MapGenerator generator;
 
+
+    public NativeParallelHashMap<int,LoadedChunks> loadedChunks;
+    public NativeQueue<LoadedChunks> chunksToWrite;
     protected override void OnCreate()
     {
         LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
-   
+        loadedChunks = new NativeParallelHashMap<int, LoadedChunks>(10,Allocator.Persistent);
+        chunksToWrite = new NativeQueue<LoadedChunks>(Allocator.Persistent);
+
+
         RequireForUpdate(LoadRequests);
         RequireForUpdate<MapSettings>();
-
+        
         if(SystemAPI.TryGetSingleton(out MapSettings mapSettings))
         {
             generator = new MapGenerator(mapSettings.seed);
@@ -42,6 +49,8 @@ public partial class ChunkManagementServerSystem : SystemBase
     public void OnDestroy(ref SystemState state)
     {
         map.Dispose();
+        loadedChunks.Dispose();
+        chunksToWrite.Dispose();
     }
 
     protected override void OnUpdate()
@@ -53,7 +62,7 @@ public partial class ChunkManagementServerSystem : SystemBase
         var requests = LoadRequests.ToComponentDataArray<LoadChunkRequest>(Allocator.TempJob);
 
 
-        Dependency = new CreateChunksJob()
+        var job = new CreateChunksJob()
         {
             mapSettings = mapSettings,
             loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(),
@@ -62,10 +71,16 @@ public partial class ChunkManagementServerSystem : SystemBase
             time = SystemAPI.Time.ElapsedTime,  
             entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
             entities = entities,
-            requests = requests
-          //  map = map.chunks.AsReadOnly()         
+            requests = requests,
+            chunksToWrite = chunksToWrite.AsParallelWriter()    
         }
         .Schedule(entities.Length,3,Dependency);
+        job.Complete();
+
+        while(chunksToWrite.TryDequeue(out var chunk))
+        {
+            loadedChunks.TryAdd(chunk.chunkIndex,chunk);
+        }
 
         entities.Dispose(Dependency);
         requests.Dispose(Dependency);
@@ -91,12 +106,11 @@ public partial class ChunkManagementServerSystem : SystemBase
         public MapSettings mapSettings;
         public EntitiesReferences entitiesReferences;
         public Entity entityBuffer;
+        public NativeQueue<LoadedChunks>.ParallelWriter chunksToWrite;
 
-        
+
         [ReadOnly] public NativeArray<Entity> entities;
         [ReadOnly] public NativeArray<LoadChunkRequest> requests;
-
-
         [ReadOnly] public double time;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
@@ -104,39 +118,39 @@ public partial class ChunkManagementServerSystem : SystemBase
         {   
             LoadChunkRequest loadChunk = requests[sortKey];
             Entity e = entities[sortKey];
-
-
-            CreateChunk(loadChunk.chunkIndex,sortKey,out Entity entity);
-
-
-            ecb.AppendToBuffer(sortKey,entityBuffer,new LoadedChunks()
+            if(mapSettings.CheckChunkIndex(loadChunk.chunkIndex))
             {
-                chunkIndex = loadChunk.chunkIndex,
-                time =  time,
-                chunkEntity = entity
-            });
-
-            if(loadChunk.playerEntity != Entity.Null)
-            {
-                ecb.AppendToBuffer(sortKey,loadChunk.playerEntity,new PlayerChunks()
+                
+                CreateChunk(loadChunk.chunkIndex,sortKey,out Entity entity);
+                var loadedChunk = new LoadedChunks()
                 {
-                    chunkEntity = entity,
                     chunkIndex = loadChunk.chunkIndex,
-                    time = time
-                });
-                ecb.AppendToBuffer(sortKey,entity,new PlayersNeedChunk()
+                    time =  time,
+                    chunkEntity = entity
+                };
+                chunksToWrite.Enqueue(loadedChunk,sortKey);
+                ecb.AppendToBuffer(sortKey,entityBuffer,loadedChunk);
+                if(loadChunk.playerEntity != Entity.Null)
                 {
-                    playerEntity = loadChunk.playerEntity,
-                    networkID = loadChunk.networkID
-                }); 
-                ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
-                ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
-                {
-                    networkID = loadChunk.networkID,
-                    action = 1
-                });
+                    ecb.AppendToBuffer(sortKey,loadChunk.playerEntity,new PlayerChunks()
+                    {
+                        chunkEntity = entity,
+                        chunkIndex = loadChunk.chunkIndex,
+                        time = time
+                    });
+                    ecb.AppendToBuffer(sortKey,entity,new PlayersNeedChunk()
+                    {
+                        playerEntity = loadChunk.playerEntity,
+                        networkID = loadChunk.networkID
+                    }); 
+                    ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,entity, true);
+                    ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
+                    {
+                        networkID = loadChunk.networkID,
+                        action = 1
+                    });
+                }
             }
-
             ecb.DestroyEntity(sortKey,e);       
         }
 

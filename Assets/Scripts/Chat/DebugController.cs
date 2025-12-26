@@ -51,18 +51,28 @@ public static class DebugController
                 var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
                 var query = entityManager.CreateEntityQuery(typeof(PlayerName));
                 var entities = query.ToEntityArray(Allocator.Temp);
+                var mapQuery = entityManager.CreateEntityQuery(typeof(MapSettings));
+                MapSettings map = mapQuery.GetSingleton<MapSettings>();
+
 
                 foreach (var entity in entities)
                 {
                     if(entity == e)
                     {
                         var character = entityManager.GetComponentData<LinkedCharacter>(e).entity;
-                        var position =  LocalTransform.FromPosition(MapServerSystem.Map.MapPositionToWorldPosition(x, y));
+                        GhostChunk ghostChunk = entityManager.GetComponentData<GhostChunk>(character);
+
+                        var position =  LocalTransform.FromPosition(map.MapPositionToWorldPosition(x, y));
                         ecb.SetComponent(character, position);
+                        ghostChunk.SetNewChunk();
+                        ecb.SetComponent(character,ghostChunk);
                         ecb.SetComponentEnabled<IsChanged>(character, true);
-                      //  CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
+
+                       // CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
                     }
                 }
+
+                mapQuery.Dispose();
                 entities.Dispose();
                 query.Dispose();
             }
@@ -279,7 +289,5 @@ public static class DebugController
         },false,false));
         return commandList;
     }
-
-
 
 }

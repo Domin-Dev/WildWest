@@ -13,7 +13,6 @@ using Unity.Transforms;
 [BurstCompile]
 partial struct CalculateChunksForBulletsServerSystem : ISystem
 {
-
     EntityQuery bulletsQuery;
 
     [BurstCompile]
@@ -59,7 +58,8 @@ partial struct CalculateChunksForBulletsServerSystem : ISystem
             while(chunks.TryDequeue(out int2 chunk))
             {
                 int chunkIndex = map.GetChunkIndexFromCoordinates(chunk);
-                if(map.CheckChunkIndex(chunkIndex)) break;
+                if(!map.CheckChunkCoordinates(chunk)) break;
+
                 bool isLoaded = false;
                 foreach(LoadedChunks item in loadedChunks)
                 {

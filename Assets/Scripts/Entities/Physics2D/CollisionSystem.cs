@@ -448,7 +448,6 @@ public partial struct CollisionSystem : ISystem
                     return;
                 }
             }
-            Debug.Log("wait!!");
             if(chunk.CurrentChunkIsNull())
             {
                 chunk.spawnChunk = index;

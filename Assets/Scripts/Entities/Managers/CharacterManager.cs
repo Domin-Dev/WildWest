@@ -28,13 +28,13 @@ public class CharacterManager : MonoBehaviour
         else
             Destroy(this);
 
-        EquipmentManager.instance.UpdateItemInHand += UpdateItemInHand;
+       // EquipmentManager.instance.UpdateItemInHand += UpdateItemInHand;
     }
 
 
     private void OnDestroy()
     {
-        EquipmentManager.instance.UpdateItemInHand -= UpdateItemInHand;
+      //  EquipmentManager.instance.UpdateItemInHand -= UpdateItemInHand;
     }
     private void UpdateItemInHand(object sender, ItemStatsArgs e)
     {

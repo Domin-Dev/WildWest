@@ -1,8 +1,8 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine;
 
 
 [UpdateAfter(typeof(CollisionSystem))]
@@ -10,35 +10,39 @@ using Unity.NetCode;
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
 [BurstCompile]
-partial struct CalculateChunksForPlayersServerSystem : ISystem
+public partial class CalculateChunksForPlayersServerSystem : SystemBase
 {
     EntityQuery playersQuery;
 
+    private ChunkManagementServerSystem chunkManagerSystem;
+
     [BurstCompile]
-    public void OnCreate(ref SystemState state)
+    protected override void OnCreate()
     {
         playersQuery = SystemAPI.QueryBuilder().WithAll<GhostChunk, GhostOwner, Player, PlayerChunks, NewChunk>().Build();
-
-        state.RequireForUpdate<MapSettings>();
-        state.RequireForUpdate(playersQuery);
+        chunkManagerSystem = World.GetExistingSystemManaged<ChunkManagementServerSystem>();
+       
+        RequireForUpdate<MapSettings>();
+        RequireForUpdate(playersQuery);
     }
     
     [BurstCompile]
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
         if (playersQuery.IsEmpty) return;
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged).AsParallelWriter();
+        var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged).AsParallelWriter();
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
         var loadedChunks =  SystemAPI.GetSingletonBuffer<LoadedChunks>();
 
-        state.Dependency = new CalculateChunksForPlayersJob()
+        Dependency = new CalculateChunksForPlayersJob()
         {
             map = mapSettings,
             loadedChunks = loadedChunks,
-            ecb = ecb           
+            ecb = ecb,
+            loadedChunksMap = chunkManagerSystem.loadedChunks.AsReadOnly()          
         }
-        .ScheduleParallel(playersQuery,state.Dependency);
+        .ScheduleParallel(playersQuery,Dependency);
     }
     [BurstCompile]
     public partial struct CalculateChunksForPlayersJob : IJobEntity
@@ -46,6 +50,9 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
         public EntityCommandBuffer.ParallelWriter ecb;
         public MapSettings map;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
+
+        [ReadOnly] public NativeParallelHashMap<int,LoadedChunks>.ReadOnly loadedChunksMap;
+
 
         [BurstCompile]
         public void Execute(Entity player,in GhostChunk ghostChunk, in GhostOwner owner, ref DynamicBuffer<PlayerChunks> playerChunks, [EntityIndexInQuery] int sortKey)
@@ -55,25 +62,34 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
             NativeHashMap<int,int> chunksForPlayer = new NativeHashMap<int,int>(map.playerRenderCount,Allocator.TempJob);
             NativeList<(int chunk,double time)> toRemove = new NativeList<(int,double)>(map.playerRenderCount,Allocator.TempJob);
 
-            map.GetNeighboringChunkIndexes(ghostChunk.GetChunk(),chunksForPlayer);
+            map.GetNeighboringChunkIndexes(ghostChunk.GetChunk(),chunksForPlayer);  
             UnloadChunks(ref playerChunks, toRemove , chunksForPlayer,networkID , player, sortKey);
             
             foreach(var needChunk in chunksForPlayer)
             {
                 Entity loaded = Entity.Null;
-
-                foreach(var chunk in loadedChunks)
+                foreach(var i in loadedChunksMap)
                 {
-                    if(needChunk.Key == chunk.chunkIndex)
-                    {
-                        loaded = chunk.chunkEntity;
-                        break;
-                    }                
-                } 
+                    Debug.Log(i.Key + " " + i.Value.chunkEntity);
+                }
+                
+                if(loadedChunksMap.TryGetValue(needChunk.Key,out var loadedChunk))
+                {
+                    loaded = loadedChunk.chunkEntity;
+                }
+                // foreach(var chunk in loadedChunks)
+                // {
+                //     if(needChunk.Key == chunk.chunkIndex)
+                //     {
+                //         loaded = chunk.chunkEntity;
+                //         break;
+                //     }                
+                // } 
 
                 Entity entity = ecb.CreateEntity(sortKey);
                 if(loaded != Entity.Null)
                 {
+
                     ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest()
                     { 
                         chunkIndex = needChunk.Key,
@@ -102,8 +118,7 @@ partial struct CalculateChunksForPlayersServerSystem : ISystem
             //     newChunk = ghostChunk.current,
             //     lastChunk = ghostChunk.lastChunk
             // });
-
-            ecb.SetComponentEnabled<NewChunk>(0,player,false);
+            ecb.SetComponentEnabled<NewChunk>(sortKey,player,false);
             chunksForPlayer.Dispose();
             toRemove.Dispose();
         }     

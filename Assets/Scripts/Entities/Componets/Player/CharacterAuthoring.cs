@@ -146,6 +146,9 @@ public struct GhostChunk : IComponentData
     public int current;
     public int lastChunk;
 
+    public Entity currentChunkEntity;
+    public Entity lastChunkEntity;
+
 
     public GhostChunk StartValues()
     {
@@ -174,7 +177,7 @@ public struct GhostChunk : IComponentData
     {
         return lastChunk == int.MinValue;
     }
-    public void SetNewChunk(int newChunk)
+    public void SetNewChunk(int newChunk = int.MinValue)
     {
         lastChunk = current;
         current = newChunk;

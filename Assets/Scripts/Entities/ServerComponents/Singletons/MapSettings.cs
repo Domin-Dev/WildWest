@@ -22,7 +22,7 @@ public struct MapSettings: IComponentData
     public float2 mapOffset;
 
 
-    public int mapSizeInChunks => mapSizeInRegions * regionSizeInChunks;
+    public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;
     public int chunksCount => mapSizeInChunks*mapSizeInChunks;
     public int regionsCount => mapSizeInRegions*mapSizeInRegions;
     public int tilesCount => chunkSizeInTiles*chunkSizeInTiles;
@@ -52,7 +52,14 @@ public struct MapSettings: IComponentData
     [BurstCompile]
     public bool CheckChunkIndex(int chunkIndex)
     {
+        Debug.Log(chunksCount + "jz");
         return chunkIndex >= 0 && chunkIndex < chunksCount;
+    }
+
+    [BurstCompile]
+    public bool CheckChunkCoordinates(int2 chunkCoordinates)
+    {
+        return chunkCoordinates.x >= 0 && chunkCoordinates.y >= 0  && chunkCoordinates.x < mapSizeInChunks && chunkCoordinates.y < mapSizeInChunks;
     }
 
     
@@ -64,10 +71,14 @@ public struct MapSettings: IComponentData
         {
             for (int x = -playerRenderSize; x <= playerRenderSize; x++)
             {
-                if (pos.x + x >= 0 && pos.y + y >= 0 && pos.x + x < mapSizeInChunks && pos.y + y < mapSizeInChunks)
+                int newX = pos.x + x;
+                int newY = pos.y + y;
+
+                if (newX >= 0 && newY >= 0 && newX < mapSizeInChunks && newY < mapSizeInChunks)
                 {
+                    int index = chunkIndex + x + y * mapSizeInChunks;
                     int prio = math.abs(y) + math.abs(x);
-                    indexes.Add(chunkIndex + x + y * mapSizeInChunks,prio);
+                    indexes.Add(index,prio);
                 }
             }
         }
