@@ -11,6 +11,7 @@ public class ChunkAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new ChunkComponent());
+            AddComponent(entity, new NewChunk());
             AddBuffer<ChunkTiles>(entity);
             AddBuffer<BuildingObjects>(entity);
         }

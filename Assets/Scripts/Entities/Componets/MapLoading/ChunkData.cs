@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,12 +21,14 @@ public struct ChunkTimestamp : IComponentData
 }
 
 
-
-
-
 public struct ChunkObjects : IBufferElementData
 {
     public Entity entity;
+
+    public ChunkObjects(Entity entity)
+    {
+        this.entity = entity;
+    }
 }
 public struct PlayersNeedChunk : IBufferElementData
 {

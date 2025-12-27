@@ -158,6 +158,17 @@ public struct GhostChunk : IComponentData
         return this;
     }
     
+
+    public int GetLastChunk()
+    {
+        if(LastChunkIsNull() && !SpawnChunkIsNull())
+        {
+            int spawn = spawnChunk;
+            spawnChunk = int.MinValue;
+            return spawn;
+        }
+        return lastChunk;
+    }
     public int GetChunk()
     {
         if(CurrentChunkIsNull())

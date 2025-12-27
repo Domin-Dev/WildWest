@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -17,6 +18,9 @@ partial struct QueueRequestsServerSystem : ISystem
     private PriorityQueue<LoadChunkRequest> loadChunkRequests;
     private PriorityQueue<StopSendingChunkRequest> stopSendingRequests;
     private PriorityQueue<StartSendingChunkRequest> startSendingRequests;
+
+
+    private NativeHashSet<int> lastLoadChunkRequests;
 
     private int playerCount;
 
@@ -37,10 +41,12 @@ partial struct QueueRequestsServerSystem : ISystem
         state.RequireAnyForUpdate(entityQueries);
 
 
-        loadChunkRequests = new PriorityQueue<LoadChunkRequest>(256, Allocator.Persistent);
-        stopSendingRequests = new PriorityQueue<StopSendingChunkRequest>(256,Allocator.Persistent);
-        startSendingRequests = new PriorityQueue<StartSendingChunkRequest>(256,Allocator.Persistent);
+        loadChunkRequests = new PriorityQueue<LoadChunkRequest>(128, Allocator.Persistent);
+        stopSendingRequests = new PriorityQueue<StopSendingChunkRequest>(128,Allocator.Persistent);
+        startSendingRequests = new PriorityQueue<StartSendingChunkRequest>(128,Allocator.Persistent);
         
+        lastLoadChunkRequests = new NativeHashSet<int>(256,Allocator.Persistent);
+
         entityQueries.Dispose();
     }
 
@@ -50,6 +56,8 @@ partial struct QueueRequestsServerSystem : ISystem
     {
         loadChunkRequests.Dispose();
         stopSendingRequests.Dispose();
+        startSendingRequests.Dispose();
+        lastLoadChunkRequests.Dispose();
     }
 
     [BurstCompile]
@@ -63,6 +71,13 @@ partial struct QueueRequestsServerSystem : ISystem
         // Load Requests 
         foreach ((RefRO<LoadChunkRequest> requestData, Entity entity) in SystemAPI.Query<RefRO<LoadChunkRequest>>().WithNone<QueuedRequest>().WithEntityAccess())
         {
+            if(lastLoadChunkRequests.Contains(requestData.ValueRO.chunkIndex))
+            {
+                ecb.DestroyEntity(entity);
+                continue;
+            }
+
+            lastLoadChunkRequests.Add(requestData.ValueRO.chunkIndex);
             loadChunkRequests.Push(requestData.ValueRO,entity);
             ecb.AddComponent<QueuedRequest>(entity);
         }

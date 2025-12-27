@@ -22,6 +22,7 @@ public struct MapSettings: IComponentData
     public float2 mapOffset;
 
 
+    public float mapSizeInEngine => mapSizeInChunks * chunkSizeInEnginePos;
     public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;
     public int chunksCount => mapSizeInChunks*mapSizeInChunks;
     public int regionsCount => mapSizeInRegions*mapSizeInRegions;
@@ -52,7 +53,6 @@ public struct MapSettings: IComponentData
     [BurstCompile]
     public bool CheckChunkIndex(int chunkIndex)
     {
-        Debug.Log(chunksCount + "jz");
         return chunkIndex >= 0 && chunkIndex < chunksCount;
     }
 
@@ -102,7 +102,7 @@ public struct MapSettings: IComponentData
     [BurstCompile]
     public int GetChunkIndexFromEnginePosition(float2 enginePosition)
     {
-        if(enginePosition.x >= 0 && enginePosition.y >= 0)
+        if(enginePosition.x >= 0 && enginePosition.y >= 0 && enginePosition.x < mapSizeInEngine &&  enginePosition.y < mapSizeInEngine)
             return (int)(enginePosition.x / tileSize / chunkSizeInTiles) 
                 + (int)(enginePosition.y / tileSize / chunkSizeInTiles) * mapSizeInChunks;
         else

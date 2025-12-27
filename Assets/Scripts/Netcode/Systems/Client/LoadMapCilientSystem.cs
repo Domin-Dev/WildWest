@@ -23,7 +23,6 @@ partial struct LoadMapCilientSystem : ISystem
         foreach ((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(SystemAPI.GetSingletonEntity<LoadMap>());
-            Debug.Log("load map!");
 
             Entity rpcEntity = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent(rpcEntity, new NewPlayerJoinRPC() 

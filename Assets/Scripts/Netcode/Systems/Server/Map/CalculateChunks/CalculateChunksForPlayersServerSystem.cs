@@ -68,28 +68,14 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
             foreach(var needChunk in chunksForPlayer)
             {
                 Entity loaded = Entity.Null;
-                foreach(var i in loadedChunksMap)
-                {
-                    Debug.Log(i.Key + " " + i.Value.chunkEntity);
-                }
                 
                 if(loadedChunksMap.TryGetValue(needChunk.Key,out var loadedChunk))
-                {
                     loaded = loadedChunk.chunkEntity;
-                }
-                // foreach(var chunk in loadedChunks)
-                // {
-                //     if(needChunk.Key == chunk.chunkIndex)
-                //     {
-                //         loaded = chunk.chunkEntity;
-                //         break;
-                //     }                
-                // } 
+                
 
                 Entity entity = ecb.CreateEntity(sortKey);
                 if(loaded != Entity.Null)
                 {
-
                     ecb.AddComponent(sortKey,entity, new StartSendingChunkRequest()
                     { 
                         chunkIndex = needChunk.Key,
@@ -111,14 +97,6 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
                 }
             }
 
-            //Entity chunkChange = ecb.CreateEntity(sortKey);
-            // ecb.AddComponent(sortKey,chunkChange, new PlayerChangeChunkRequest()
-            // {
-            //     player = player,
-            //     newChunk = ghostChunk.current,
-            //     lastChunk = ghostChunk.lastChunk
-            // });
-            ecb.SetComponentEnabled<NewChunk>(sortKey,player,false);
             chunksForPlayer.Dispose();
             toRemove.Dispose();
         }     
