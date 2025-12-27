@@ -25,7 +25,7 @@ partial struct StartSetUpServerSystem : ISystem
                 hash = data.passHash.HasValue ? data.passHash.Value : "",
                 isPassword =  data.passHash.HasValue,
                 isHost = true,
-                playersLimit = math.max(1,data.playerLimit),
+                playersLimit = math.max(8,data.playerLimit),
                 hostNetworkID = int.MinValue,
             });   
             EntityHelper.CreateEntityWithComponent(ref ecb,new MapSettings()          

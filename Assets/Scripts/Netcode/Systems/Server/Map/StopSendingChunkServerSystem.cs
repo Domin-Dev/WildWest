@@ -87,6 +87,7 @@ public partial class StopSendingChunkServerSystem : SystemBase
      }
 
 
+    [BurstCompile]
     public partial struct StopSendingJob : IJobParallelFor
     {
         public EntityCommandBuffer.ParallelWriter ecb;
@@ -96,6 +97,7 @@ public partial class StopSendingChunkServerSystem : SystemBase
         [ReadOnly] public NativeArray<StopSendingChunkRequest> requests;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
+        [BurstCompile]
         public void Execute(int sortKey)
         {   
             StopSendingChunkRequest request = requests[sortKey];

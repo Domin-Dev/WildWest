@@ -13,6 +13,7 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup),OrderFirst = true)]
 [RequireMatchingQueriesForUpdate]
+[BurstCompile]
 public partial class NewChunkServerSystem : SystemBase
 {
     EntityQuery query;
@@ -27,13 +28,7 @@ public partial class NewChunkServerSystem : SystemBase
         RequireForUpdate<MapSettings>();    
     }
 
-
     [BurstCompile]
-    protected override void OnDestroy()
-    {
-        
-    }
-
     protected override void OnUpdate()
     {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
