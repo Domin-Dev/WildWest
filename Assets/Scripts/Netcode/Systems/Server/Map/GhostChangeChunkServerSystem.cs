@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEditor;
 using UnityEngine;
 
 
@@ -75,22 +76,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         .ScheduleParallel(query,Dependency);
         job.Complete();
 
-
-        while(sendGhostsToPlayers.TryDequeue(out var pair))
-        {
-            var players = playersNeedChunk[pair.chunk];
-            foreach (var player in players)
-            {
-                var element =  new RelevantGhostForConnection()
-                {
-                    Connection = player.networkID,
-                    Ghost = pair.ghostID
-                };
-                ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
-            } 
-        }
        
-       while(entitiesToRemove.TryDequeue(out var pair))
+        while(entitiesToRemove.TryDequeue(out var pair))
         {
             var buffer = chunkObjects[pair.chunk];
             int ghostID = -1;
@@ -112,6 +99,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                 var players = playersNeedChunk[pair.chunk];
                 foreach (var player in players)
                 {
+                    if(player.playerEntity == pair.entity) continue;
+                    
                     var element =  new RelevantGhostForConnection()
                     {
                         Connection = player.networkID,
@@ -121,6 +110,20 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                         ghostRelevancy.ValueRW.GhostRelevancySet.Remove(element);
                 } 
             }
+        }
+    
+        while(sendGhostsToPlayers.TryDequeue(out var pair))
+        {
+            var players = playersNeedChunk[pair.chunk];
+            foreach (var player in players)
+            {
+                var element =  new RelevantGhostForConnection()
+                {
+                    Connection = player.networkID,
+                    Ghost = pair.ghostID
+                };
+                ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
+            } 
         }
     }
 
@@ -152,7 +155,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
             {
                 if(loadedChunks.TryGetValue(current,out var chunk))
                 {
-                    ecb.AppendToBuffer(sortKey,chunk.chunkEntity, new ChunkObjects(chunk.chunkEntity,ghostID)); 
+                    ecb.AppendToBuffer(sortKey,chunk.chunkEntity, new ChunkObjects(entity,ghostID)); 
                     ecb.SetComponentEnabled<NewChunk>(sortKey,entity,false);
                     sendGhostsToPlayers.Enqueue((chunk.chunkEntity,ghostID));
                 }

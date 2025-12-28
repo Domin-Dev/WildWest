@@ -24,12 +24,10 @@ public partial class ChunkManagementServerSystem : SystemBase
 
 
     public NativeParallelHashMap<int,LoadedChunks> loadedChunks;
-    //public NativeQueue<LoadedChunks> chunksToWrite;
     protected override void OnCreate()
     {
         LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
         loadedChunks = new NativeParallelHashMap<int, LoadedChunks>(10,Allocator.Persistent);
-       //chunksToWrite = new NativeQueue<LoadedChunks>(Allocator.Persistent);
 
 
         RequireForUpdate(LoadRequests);
@@ -50,7 +48,6 @@ public partial class ChunkManagementServerSystem : SystemBase
     {
         map.Dispose();
         loadedChunks.Dispose();
-       // chunksToWrite.Dispose();
     }
 
     protected override void OnUpdate()
@@ -72,15 +69,10 @@ public partial class ChunkManagementServerSystem : SystemBase
             entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
             entities = entities,
             requests = requests,
-      //      chunksToWrite = chunksToWrite.AsParallelWriter()    
         }
         .Schedule(entities.Length,3,Dependency);
         job.Complete();
 
-        // while(chunksToWrite.TryDequeue(out var chunk))
-        // {
-        //     loadedChunks.TryAdd(chunk.chunkIndex,chunk);
-        // }
 
         entities.Dispose();
         requests.Dispose();
@@ -106,8 +98,6 @@ public partial class ChunkManagementServerSystem : SystemBase
         public MapSettings mapSettings;
         public EntitiesReferences entitiesReferences;
         public Entity entityBuffer;
-   //     public NativeQueue<LoadedChunks>.ParallelWriter chunksToWrite;
-
 
         [ReadOnly] public NativeArray<Entity> entities;
         [ReadOnly] public NativeArray<LoadChunkRequest> requests;

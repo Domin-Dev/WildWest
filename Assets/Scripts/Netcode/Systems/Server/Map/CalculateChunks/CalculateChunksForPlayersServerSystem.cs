@@ -120,7 +120,7 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
             {
                 int chunkIndex = GetChunkToRemove(toRemove);
                 var entity = ecb.CreateEntity(sortKey);
-                ecb.AddComponent(sortKey,entity, new StopSendingChunkRequest(){ chunk = chunkIndex,priority = prio,networkID = networkID , player = player});
+                ecb.AddComponent(sortKey,entity, new StopSendingChunkRequest(){ chunkIndex = chunkIndex,priority = prio,networkID = networkID , playerEntity = player});
                 number--;
                 prio++;
             }

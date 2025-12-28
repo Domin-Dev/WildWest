@@ -10,7 +10,7 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]
-partial struct QueueRequestsServerSystem : ISystem
+public partial class QueueRequestsServerSystem : SystemBase
 {
 
     EntityQuery players; 
@@ -21,24 +21,28 @@ partial struct QueueRequestsServerSystem : ISystem
 
 
     private NativeHashSet<int> lastLoadChunkRequests;
+    private NativeParallelMultiHashMap<int,int> playersChunks;
 
     private int playerCount;
 
+    ChunkManagementServerSystem chunkManagerSystem;
+
     [BurstCompile]
-    public void OnCreate(ref SystemState state)
+    protected override void OnCreate()
     {
         EntityQuery LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest>().Build();
         EntityQuery stopRequests = SystemAPI.QueryBuilder().WithAll<StopSendingChunkRequest>().Build();
         EntityQuery startRequests = SystemAPI.QueryBuilder().WithAll<StartSendingChunkRequest>().Build();
+        chunkManagerSystem = World.GetExistingSystemManaged<ChunkManagementServerSystem>();
 
 
         players = SystemAPI.QueryBuilder().WithAll<Player>().Build();
-        state.RequireForUpdate<MapSettings>();
+        RequireForUpdate<MapSettings>();
         NativeArray<EntityQuery> entityQueries = new NativeArray<EntityQuery>(3,Allocator.Temp);
         entityQueries[0] = LoadRequests;
         entityQueries[1] = stopRequests;
         entityQueries[2] = startRequests;
-        state.RequireAnyForUpdate(entityQueries);
+        RequireAnyForUpdate(entityQueries);
 
 
         loadChunkRequests = new PriorityQueue<LoadChunkRequest>(128, Allocator.Persistent);
@@ -46,25 +50,29 @@ partial struct QueueRequestsServerSystem : ISystem
         startSendingRequests = new PriorityQueue<StartSendingChunkRequest>(128,Allocator.Persistent);
         
         lastLoadChunkRequests = new NativeHashSet<int>(256,Allocator.Persistent);
+        playersChunks = new NativeParallelMultiHashMap<int, int>(512,Allocator.Persistent);
+
 
         entityQueries.Dispose();
     }
 
 
     [BurstCompile]
-    public void OnDestroy(ref SystemState state)
+    protected override void OnDestroy()
     {
         loadChunkRequests.Dispose();
         stopSendingRequests.Dispose();
         startSendingRequests.Dispose();
+
         lastLoadChunkRequests.Dispose();
+        playersChunks.Dispose();
     }
 
     [BurstCompile]
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+        var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
         var map = SystemAPI.GetSingleton<MapSettings>();
         playerCount = players.CalculateEntityCount();
     
@@ -73,19 +81,50 @@ partial struct QueueRequestsServerSystem : ISystem
         {
             if(lastLoadChunkRequests.Contains(requestData.ValueRO.chunkIndex))
             {
-                ecb.DestroyEntity(entity);
-                continue;
+                var values = playersChunks.GetValuesForKey(requestData.ValueRO.networkID);
+                bool playerHasChunk = false;
+                foreach(int chunk in values)
+                {
+                    if(chunk == requestData.ValueRO.chunkIndex)
+                    {
+                        playerHasChunk = true;
+                        break;
+                    }
+                }
+                values.Dispose();
+                if(!playerHasChunk && chunkManagerSystem.loadedChunks.TryGetValue(requestData.ValueRO.chunkIndex,out var loaded))
+                {
+                    var newRequest = ecb.CreateEntity();
+                    ecb.AddComponent(newRequest,new StartSendingChunkRequest(requestData.ValueRO,loaded.chunkEntity));
+                    ecb.DestroyEntity(entity);
+                    continue;
+                }
+                
+                if(playerHasChunk)
+                {
+                    ecb.DestroyEntity(entity);
+                    continue;
+                }
             }
 
+            playersChunks.Add(requestData.ValueRO.networkID,requestData.ValueRO.chunkIndex);
             lastLoadChunkRequests.Add(requestData.ValueRO.chunkIndex);
+
             loadChunkRequests.Push(requestData.ValueRO,entity);
             ecb.AddComponent<QueuedRequest>(entity);
         }
-         ProcessRequests(ecb,ref loadChunkRequests,map.loadedChunksInTickPerClient,map.maxLoadedChunksInTick);    
+        ProcessRequests(ecb,ref loadChunkRequests,map.loadedChunksInTickPerClient,map.maxLoadedChunksInTick);    
         
         //Stop Requests
         foreach ((RefRO<StopSendingChunkRequest> requestData, Entity entity) in SystemAPI.Query<RefRO<StopSendingChunkRequest>>().WithNone<QueuedRequest>().WithEntityAccess())
         {
+            if(!lastLoadChunkRequests.Contains(requestData.ValueRO.chunkIndex))
+            {
+                ecb.DestroyEntity(entity);
+                continue;
+            }
+
+            playersChunks.Remove(requestData.ValueRO.networkID,requestData.ValueRO.chunkIndex);
             stopSendingRequests.Push(requestData.ValueRO,entity);
             ecb.AddComponent<QueuedRequest>(entity);
         }
@@ -93,7 +132,16 @@ partial struct QueueRequestsServerSystem : ISystem
    
         //Start Requests
         foreach ((RefRO<StartSendingChunkRequest> requestData, Entity entity) in SystemAPI.Query<RefRO<StartSendingChunkRequest>>().WithNone<QueuedRequest>().WithEntityAccess())
-        {
+        {        
+            if(!lastLoadChunkRequests.Contains(requestData.ValueRO.chunkIndex))
+            {
+                var newRequest = ecb.CreateEntity();
+                ecb.AddComponent(newRequest,new LoadChunkRequest(requestData.ValueRO));
+                ecb.DestroyEntity(entity);
+                continue;
+            }
+
+            playersChunks.Add(requestData.ValueRO.networkID,requestData.ValueRO.chunkIndex);
             startSendingRequests.Push(requestData.ValueRO,entity);
             ecb.AddComponent<QueuedRequest>(entity);
         }

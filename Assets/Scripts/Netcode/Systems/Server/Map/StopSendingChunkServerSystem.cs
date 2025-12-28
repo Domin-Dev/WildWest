@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.NetCode;
 
 
 
@@ -16,6 +17,7 @@ public partial class StopSendingChunkServerSystem : SystemBase
     EntityQuery requests;
     BufferLookup<PlayersNeedChunk> needsChunks;
     BufferLookup<PlayerChunks> playerChunks;
+    BufferLookup<ChunkObjects> chunkObjectsRO;
 
     NativeQueue<(Entity chunk,StopSendingChunkRequest request)> toRemove;
     [BurstCompile]
@@ -29,6 +31,7 @@ public partial class StopSendingChunkServerSystem : SystemBase
 
         needsChunks = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         playerChunks = SystemAPI.GetBufferLookup<PlayerChunks>();
+        chunkObjectsRO = SystemAPI.GetBufferLookup<ChunkObjects>(true);
     }
 
     [BurstCompile]
@@ -43,11 +46,14 @@ public partial class StopSendingChunkServerSystem : SystemBase
     {
         needsChunks.Update(this);
         playerChunks.Update(this);
+        chunkObjectsRO.Update(this);
 
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
         var entities = this.requests.ToEntityArray(Allocator.TempJob);
         var requestsData = this.requests.ToComponentDataArray<StopSendingChunkRequest>(Allocator.TempJob);
+        var ghostRelevancy  = SystemAPI.GetSingletonRW<GhostRelevancy>();
+
 
         var job = new StopSendingJob()
         {
@@ -62,6 +68,22 @@ public partial class StopSendingChunkServerSystem : SystemBase
         job.Complete();
         while(toRemove.TryDequeue(out var item))
         {
+            var ghosts = chunkObjectsRO[item.chunk];
+            foreach(var ghost in ghosts)
+            {
+                if(ghost.entity == item.request.playerEntity)
+                    continue;
+                    
+                var connection = new RelevantGhostForConnection()
+                {
+                    Connection = item.request.networkID,
+                    Ghost = ghost.ghostID
+                };
+
+                if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(connection))
+                    ghostRelevancy.ValueRW.GhostRelevancySet.Remove(connection);
+            }
+            
             var buffer = needsChunks[item.chunk];
             for(int i =0; i < buffer.Length;i++)
             {
@@ -72,10 +94,10 @@ public partial class StopSendingChunkServerSystem : SystemBase
                 }
             }
 
-            var chunks = playerChunks[item.request.player];
+            var chunks = playerChunks[item.request.playerEntity];
             for(int i =0; i < chunks.Length;i++)
             {
-                if(chunks[i].chunkIndex == item.request.chunk)
+                if(chunks[i].chunkIndex == item.request.chunkIndex)
                 {
                     chunks.RemoveAtSwapBack(i);
                     break;
@@ -106,11 +128,12 @@ public partial class StopSendingChunkServerSystem : SystemBase
 
             foreach(var chunk in loadedChunks)
             {
-                if(chunk.chunkIndex == request.chunk)
+                if(chunk.chunkIndex == request.chunkIndex)
                 {
                     loadedChunk = chunk;
                 }
             }
+
             if(loadedChunk.chunkEntity != Entity.Null)
             {
                 ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,loadedChunk.chunkEntity, true);

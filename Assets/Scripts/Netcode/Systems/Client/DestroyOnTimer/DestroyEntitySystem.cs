@@ -17,7 +17,7 @@ public partial class DestroyEntitySystem : SystemBase
     [BurstCompile]
     protected override void OnCreate()
     {
-        RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        RequireForUpdate<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
         RequireForUpdate<NetworkTime>();
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
@@ -31,7 +31,7 @@ public partial class DestroyEntitySystem : SystemBase
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
         var current = networkTime.ServerTick;    
-        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        var ecbSingleton = SystemAPI.GetSingleton<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
 
 

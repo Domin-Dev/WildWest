@@ -195,11 +195,6 @@ public struct GhostChunk : IComponentData
     }
 }
 
-
-public struct InterestArea : IComponentData
-{
-    public float radius;
-}
 public struct PlayerSourceConnection : IComponentData {
     public Entity value;
 }

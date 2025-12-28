@@ -39,8 +39,7 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection,new LinkedCharacter() { entity = character }); 
             entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.playerPosition.x, playerSave.playerPosition.y, playerSave.playerPosition.y)));
             entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.characterLook });
-            entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId });
-            entityCommandBuffer.AddComponent(character, new InterestArea() { radius = 8f });
+            entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId }); 
             entityCommandBuffer.SetComponent(character, new Player()
             {
                 speed = 1f,

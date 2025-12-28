@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.NetCode;
 
 
 
@@ -14,22 +15,33 @@ public partial class StartSendingChunkServerSystem : SystemBase
 {
     EntityQuery requests;
 
+    BufferLookup<ChunkObjects> chunkObjectsRO;
+
     [BurstCompile]
     protected override void OnCreate()
     {
         requests = SystemAPI.QueryBuilder().WithAll<StartSendingChunkRequest,ProcessInTheTick>().Build();
+        chunkObjectsRO = SystemAPI.GetBufferLookup<ChunkObjects>(true);
+
+
         RequireForUpdate(requests);
         RequireForUpdate<MapSettings>();
     }
 
+    [BurstCompile]
+    protected override void OnDestroy()
+    {
+    }
 
     [BurstCompile]
     protected override void OnUpdate()
     {
+        chunkObjectsRO.Update(this);
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
         var entities = this.requests.ToEntityArray(Allocator.TempJob);
         var requestsData = this.requests.ToComponentDataArray<StartSendingChunkRequest>(Allocator.TempJob);
+        var ghostRelevancy  = SystemAPI.GetSingletonRW<GhostRelevancy>();
 
         Dependency = new StartSendingJob()
         {
@@ -40,6 +52,20 @@ public partial class StartSendingChunkServerSystem : SystemBase
         }
         .Schedule(entities.Length,5,Dependency);
        
+        foreach(var item in requestsData)
+        {
+            var buffer = chunkObjectsRO[item.chunkEntity];
+            foreach(var element in buffer)
+            {
+                var ghost = new RelevantGhostForConnection()
+                {
+                    Connection = item.networkID,
+                    Ghost = element.ghostID
+                };
+                ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(ghost,0);
+            }
+        }
+
 
         entities.Dispose(Dependency);
         requestsData.Dispose(Dependency);
@@ -56,8 +82,6 @@ public partial class StartSendingChunkServerSystem : SystemBase
         {   
             StartSendingChunkRequest request = requests[sortKey];
             Entity e = entities[sortKey];
-
-
 
             ecb.SetComponent(sortKey,request.chunkEntity, new ChunkTimestamp(){ timestamp = time });
             ecb.AppendToBuffer(sortKey,request.playerEntity,new PlayerChunks()

@@ -11,5 +11,13 @@ public struct LoadChunkRequest : IComponentData, IPriority
     public int chunkIndex;    
     public int priority;
     int IPriority.priority => priority;
+
+    public LoadChunkRequest(StartSendingChunkRequest request)
+    {
+        this.playerEntity = request.playerEntity;
+        this.networkID = request.networkID;
+        this.chunkIndex = request.chunkIndex;
+        this.priority = request.priority;
+    }
 }
 
