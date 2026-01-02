@@ -147,7 +147,6 @@ public struct GhostChunk : IComponentData
     public int lastChunk;
 
     public Entity currentChunkEntity;
-    public Entity lastChunkEntity;
 
 
     public GhostChunk StartValues()
@@ -157,8 +156,20 @@ public struct GhostChunk : IComponentData
         spawnChunk = int.MinValue;
         return this;
     }
+
+    public GhostChunk(GhostChunk ghostChunk)
+    {
+        this.current = ghostChunk.current;
+        this.spawnChunk = ghostChunk.spawnChunk;
+        this.lastChunk = ghostChunk.lastChunk;
+        this.currentChunkEntity = ghostChunk.currentChunkEntity;
+    }
     
 
+    public void SetChunkEntity(Entity entity)
+    {
+        this.currentChunkEntity = entity;
+    }
     public int GetLastChunk()
     {
         if(LastChunkIsNull() && !SpawnChunkIsNull())

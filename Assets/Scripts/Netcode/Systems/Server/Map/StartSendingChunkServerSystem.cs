@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.NetCode;
+using UnityEngine;
 
 
 
@@ -102,6 +103,7 @@ public partial class StartSendingChunkServerSystem : SystemBase
                 networkID = request.networkID,
                 action = 1
             });
+            Debug.Log("chunk send!!! " + request.networkID + " | " + request.chunkIndex);
             ecb.DestroyEntity(sortKey,e);       
         }
     }       

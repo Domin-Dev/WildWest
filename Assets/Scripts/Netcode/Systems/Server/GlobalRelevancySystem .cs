@@ -14,7 +14,6 @@ using UnityEngine.Rendering.VirtualTexturing;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct GlobalRelevancySystem : ISystem
 {
-    static GhostRelevancy ghostRelevancy;
 
     private const int maxChunkEventsBufferPreClient = 50;
     private const int cutoffBorder = 100000;
@@ -22,7 +21,7 @@ public partial struct GlobalRelevancySystem : ISystem
     {
         var gh = SystemAPI.GetSingletonRW<GhostRelevancy>();
         gh.ValueRW.GhostRelevancyMode = GhostRelevancyMode.SetIsRelevant;
-        ghostRelevancy = gh.ValueRO;
+        // gh.ValueRW.DefaultRelevancyQuery = SystemAPI.QueryBuilder().WithAny<Player,Bullet>().Build();
         NetCodeConnectionEventListener.OnClientDisconnected += OnClientDisconnected;
     }
 
@@ -33,6 +32,7 @@ public partial struct GlobalRelevancySystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        var ghostRelevancy = SystemAPI.GetSingletonRW<GhostRelevancy>();
 
         foreach ((RefRO<GhostOwner> ghostOwner,RefRO<GhostInstance> ghost, Entity entity)
         in SystemAPI.Query<RefRO<GhostOwner>, RefRO<GhostInstance>>().WithAll<SendToOwner>().WithEntityAccess())
@@ -43,7 +43,7 @@ public partial struct GlobalRelevancySystem : ISystem
                 Ghost = ghost.ValueRO.ghostId,
                 Connection = ghostOwner.ValueRO.NetworkId
             };
-            ghostRelevancy.GhostRelevancySet.Add(key, 0);
+            ghostRelevancy.ValueRW.GhostRelevancySet.Add(key, 0);
             entityCommandBuffer.RemoveComponent<SendToOwner>(entity);
         }
 
@@ -59,9 +59,26 @@ public partial struct GlobalRelevancySystem : ISystem
                 switch(action.action)
                 {
                     case 1:
+                        var key = new RelevantGhostForConnection()
+                        {
+                            Ghost =  ghost.ValueRO.ghostId,
+                            Connection = action.networkID
+                        };
+                        ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(key, 0);
+
+                        foreach(var l in ghostRelevancy.ValueRW.GhostRelevancySet)
+                        {
+                            Debug.Log(l.Key.Ghost + " " + l.Key.Connection);
+                        }
                         StartStreamingChunks(ref state,action, ghost.ValueRO.ghostId, entity);
                         break;
                     case 2:
+                        var key2 = new RelevantGhostForConnection()
+                        {
+                            Ghost =  ghost.ValueRO.ghostId,
+                            Connection = action.networkID
+                        };
+                        ghostRelevancy.ValueRW.GhostRelevancySet.Remove(key2);
                         StopStreamingChunks(ref state,action, ghost.ValueRO.ghostId, entity);
                         break;
                 }
@@ -77,13 +94,7 @@ public partial struct GlobalRelevancySystem : ISystem
 
     private void StartStreamingChunks(ref SystemState state,ChunkServerActions action,int ghostID, Entity entity)
     {
-        var key = new RelevantGhostForConnection()
-        {
-            Ghost = ghostID,
-            Connection = action.networkID
-        };
-        if(!ghostRelevancy.GhostRelevancySet.ContainsKey(key))
-            ghostRelevancy.GhostRelevancySet.Add(key, 0);
+        Debug.Log("Start!!! " + action.networkID);
         CreateNewChunkEvent(ref state,action.networkID, new ChunkEvents()
         {
             value = SystemAPI.GetComponent<ChunkComponent>(entity).index,
@@ -118,12 +129,6 @@ public partial struct GlobalRelevancySystem : ISystem
     }
     private void StopStreamingChunks(ref SystemState state, ChunkServerActions action, int ghostID, Entity entity)
     {
-        var key = new RelevantGhostForConnection()
-        {
-            Ghost = ghostID,
-            Connection = action.networkID
-        };
-        ghostRelevancy.GhostRelevancySet.Remove(key);
         CreateNewChunkEvent(ref state, action.networkID, new ChunkEvents()
         {
             value = SystemAPI.GetComponent<ChunkComponent>(entity).index,
@@ -133,36 +138,36 @@ public partial struct GlobalRelevancySystem : ISystem
 
     public static void OnClientDisconnected(int connectionId)
     {
-        var keysToRemove = new NativeList<RelevantGhostForConnection>(Allocator.Temp);
+        // var keysToRemove = new NativeList<RelevantGhostForConnection>(Allocator.Temp);
 
-        foreach (var kvp in ghostRelevancy.GhostRelevancySet)
-        {
-            if (kvp.Key.Connection == connectionId)
-            {
-                keysToRemove.Add(kvp.Key);
-            }
-        }
-        foreach (var key in keysToRemove)
-        {
-            ghostRelevancy.GhostRelevancySet.Remove(key);
-        }
-        keysToRemove.Dispose();
+        // foreach (var kvp in ghostRelevancy.GhostRelevancySet)
+        // {
+        //     if (kvp.Key.Connection == connectionId)
+        //     {
+        //         keysToRemove.Add(kvp.Key);
+        //     }
+        // }
+        // foreach (var key in keysToRemove)
+        // {
+        //     ghostRelevancy.GhostRelevancySet.Remove(key);
+        // }
+        // keysToRemove.Dispose();
     }
     public static void OnGhostDestroyed(int ghostID)
     {
-        var keysToRemove = new NativeList<RelevantGhostForConnection>(Allocator.Temp);
-        foreach (var kvp in ghostRelevancy.GhostRelevancySet)
-        {
-            if (kvp.Key.Ghost == ghostID)
-            {
-                keysToRemove.Add(kvp.Key);
-            }
-        }
-        foreach (var key in keysToRemove)
-        {
-            ghostRelevancy.GhostRelevancySet.Remove(key);
-        }
-        keysToRemove.Dispose();
+        // var keysToRemove = new NativeList<RelevantGhostForConnection>(Allocator.Temp);
+        // foreach (var kvp in ghostRelevancy.GhostRelevancySet)
+        // {
+        //     if (kvp.Key.Ghost == ghostID)
+        //     {
+        //         keysToRemove.Add(kvp.Key);
+        //     }
+        // }
+        // foreach (var key in keysToRemove)
+        // {
+        //     ghostRelevancy.GhostRelevancySet.Remove(key);
+        // }
+        // keysToRemove.Dispose();
     }
 
 }

@@ -91,6 +91,7 @@ partial struct CharacterAimSystem : ISystem
             {
                 if (lastAction.HasValue && lastAction.Value.tick != NetworkTick.Invalid)
                 {
+                    //Debug.Log(cooldownEndTick + " " + lastAction.Value.tick);
                     isOnCooldown = lastAction.Value.tick.IsNewerThan(cooldownEndTick);
                 }
                 else
@@ -169,11 +170,11 @@ partial struct CharacterAimSystem : ISystem
                             bulletComp.isOnServer = true;
                             entityCommandBuffer.SetComponent(bullet, bulletComp);
                         }
-                        else
-                        {
+                        
                             var newCooldownTargetTick = currentTick;
 
                             //23u
+                            //28u
                             newCooldownTargetTick.Add(28u);
                             curTargetTicks.ability = newCooldownTargetTick;
 
@@ -184,7 +185,7 @@ partial struct CharacterAimSystem : ISystem
                             curTargetTicks.Tick = nextTick;
 
                             playerAspect.cooldownTargetTick.AddCommandData(curTargetTicks);
-                        }
+                        
                     }
 
 

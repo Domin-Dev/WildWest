@@ -76,7 +76,9 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         .ScheduleParallel(query,Dependency);
         job.Complete();
 
-       
+
+
+
         while(entitiesToRemove.TryDequeue(out var pair))
         {
             var buffer = chunkObjects[pair.chunk];
@@ -110,6 +112,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                         ghostRelevancy.ValueRW.GhostRelevancySet.Remove(element);
                 } 
             }
+
         }
     
         while(sendGhostsToPlayers.TryDequeue(out var pair))
@@ -145,8 +148,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         public NativeQueue<(Entity chunk, int ghostID)>.ParallelWriter sendGhostsToPlayers;
         public NativeQueue<(Entity chunk,Entity entity)>.ParallelWriter entitiesToRemove;
 
-        public void Execute(Entity entity,in GhostInstance ghostInstance,in GhostChunk ghostChunk,[EntityIndexInQuery] int sortKey)
-        {       
+        public void Execute(Entity entity,in GhostInstance ghostInstance,GhostChunk ghostChunk,[EntityIndexInQuery] int sortKey)
+        {    
             int current = ghostChunk.GetChunk();
             int last = ghostChunk.GetLastChunk();
             int ghostID = ghostInstance.ghostId;
@@ -158,7 +161,12 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                     ecb.AppendToBuffer(sortKey,chunk.chunkEntity, new ChunkObjects(entity,ghostID)); 
                     ecb.SetComponentEnabled<NewChunk>(sortKey,entity,false);
                     sendGhostsToPlayers.Enqueue((chunk.chunkEntity,ghostID));
+                    ghostChunk.SetChunkEntity(chunk.chunkEntity);
                 }
+            }
+            else
+            {
+                ghostChunk.SetChunkEntity(Entity.Null);
             }
 
             if(last >= 0)

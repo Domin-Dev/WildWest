@@ -14,11 +14,15 @@ using UnityEngine.UIElements;
 public partial class DestroyEntitySystem : SystemBase
 {
 
+
+    private BufferLookup<ChunkObjects> chunkObjects;
+
     [BurstCompile]
     protected override void OnCreate()
     {
         RequireForUpdate<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
         RequireForUpdate<NetworkTime>();
+        chunkObjects = SystemAPI.GetBufferLookup<ChunkObjects>();
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
        .WithAll<DestroyEntityTag,Simulate>();
@@ -30,6 +34,7 @@ public partial class DestroyEntitySystem : SystemBase
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
+        chunkObjects.Update(this);
         var current = networkTime.ServerTick;    
         var ecbSingleton = SystemAPI.GetSingleton<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
@@ -44,7 +49,20 @@ public partial class DestroyEntitySystem : SystemBase
                 if (SystemAPI.HasComponent<GhostChunk>(entity))
                 {
                     var ghostChunk = SystemAPI.GetComponentRO<GhostChunk>(entity);
-                    
+
+                    if(SystemAPI.Exists(ghostChunk.ValueRO.currentChunkEntity))
+                    {
+                        var buffer = chunkObjects[ghostChunk.ValueRO.currentChunkEntity];
+                        for(int i = 0; i < buffer.Length; i++)
+                        {
+                            Debug.Log(buffer[i].entity + " " + buffer[i].entity.Index);
+                            if(buffer[i].entity == entity)
+                            {
+                                buffer.RemoveAtSwapBack(i);
+                                break;
+                            }
+                        }
+                    }
                 }
                 
                 ecb.DestroyEntity(entity);

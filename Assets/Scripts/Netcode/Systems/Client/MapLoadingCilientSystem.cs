@@ -65,8 +65,9 @@ public partial class MapLoadingClientSystem : SystemBase
        Entities
        .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
        {
-           if (events.IsEmpty) return;
-           while (true)
+           if(!events.IsEmpty)
+           {
+            while (true)
            {
                bool isEvent = false;
                for (int i = 0; i < events.Length; i++)
@@ -94,7 +95,8 @@ public partial class MapLoadingClientSystem : SystemBase
                }
                if (!isEvent) break; 
            }
-           ecb.SetComponent(e, counter);
+            ecb.SetComponent(e, counter);
+           }
        })
        .WithoutBurst().Run();
 

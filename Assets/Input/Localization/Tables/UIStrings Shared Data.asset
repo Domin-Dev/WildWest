@@ -205,6 +205,14 @@ MonoBehaviour:
     m_Key: GameMenu_Title
     m_Metadata:
       m_Items: []
+  - m_Id: 38512484499763200
+    m_Key: New Entry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38512487989424128
+    m_Key: New Entry 1
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
