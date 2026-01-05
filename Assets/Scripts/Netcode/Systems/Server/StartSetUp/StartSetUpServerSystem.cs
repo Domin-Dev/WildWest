@@ -51,6 +51,9 @@ partial struct StartSetUpServerSystem : ISystem
 
                 maxStartRequestsInTick = 100,           
                 startRequestsInTickPerClient = 10,
+
+                maxUpdateChunkTimeRequestsInTick = 400,
+                updateChunkTimeRequestsInTickPerClient = 30,
                 
             });     
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);

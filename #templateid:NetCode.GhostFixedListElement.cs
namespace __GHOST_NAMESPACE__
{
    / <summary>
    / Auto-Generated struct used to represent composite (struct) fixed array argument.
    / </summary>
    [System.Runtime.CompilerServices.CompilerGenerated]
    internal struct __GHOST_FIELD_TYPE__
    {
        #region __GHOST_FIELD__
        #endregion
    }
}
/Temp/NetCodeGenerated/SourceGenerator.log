@@ -53516,3 +53516,8 @@ Total: 73347.12737 msec
 [Info]Timing:
 Total: 27504.336714 msec
 
+[Info]Begin Processing assembly Assembly-CSharp-Editor
+[Info]End Processing assembly Assembly-CSharp-Editor.
+[Info]Timing:
+Total: 26.198061 msec
+

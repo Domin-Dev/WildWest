@@ -109,7 +109,11 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
             foreach( var chunk in playerChunks)
             {
                 if (neighboringChunks.ContainsKey(chunk.chunkIndex))
+                {
                     neighboringChunks.Remove(chunk.chunkIndex); 
+                    var entity = ecb.CreateEntity(sortKey);
+                    ecb.AddComponent(sortKey,entity, new UpdateChunkTimestampRequest(){ chunkIndex = chunk.chunkIndex,chunkEntity = chunk.chunkEntity, playerEntity = player});
+                }
                 else
                     toRemove.Add((chunk.chunkIndex,chunk.time));
             }

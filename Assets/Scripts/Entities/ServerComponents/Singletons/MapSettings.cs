@@ -46,6 +46,9 @@ public struct MapSettings: IComponentData
 
     public int maxStartRequestsInTick;
     public int startRequestsInTickPerClient;
+
+    public int maxUpdateChunkTimeRequestsInTick;
+    public int updateChunkTimeRequestsInTickPerClient;
 #endregion
 
 

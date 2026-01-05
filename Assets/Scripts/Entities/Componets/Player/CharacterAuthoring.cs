@@ -43,7 +43,7 @@ public class CharacterAuthoring : MonoBehaviour
 
 
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+[GhostComponent(PrefabType = GhostPrefabType.All)]
 public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
