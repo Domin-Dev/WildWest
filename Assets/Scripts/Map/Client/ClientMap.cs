@@ -77,7 +77,7 @@ namespace Game.Client.Map
             get
             {
                  var chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
-                 int2 pos = ChunkIndexToMapPosition(chunkComponent.index);
+                 int2 pos = ChunkIndexToMapPosition(chunkComponent.chunkIndex);
                  return this[pos.x + x, pos.y + y];  
             }
         }
@@ -114,7 +114,7 @@ namespace Game.Client.Map
         public int2 LocalChunkPosToMapPos(Entity chunk, int x, int y)
         {
             var chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
-            int2 pos = ChunkIndexToMapPosition(chunkComponent.index);
+            int2 pos = ChunkIndexToMapPosition(chunkComponent.chunkIndex);
             return new int2(x + pos.x, y + pos.y);
         }
         public int2 ChunkIndexToChunkCoordinates(int chunkIndex)

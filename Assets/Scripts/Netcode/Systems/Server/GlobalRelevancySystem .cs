@@ -97,7 +97,7 @@ public partial struct GlobalRelevancySystem : ISystem
         Debug.Log("Start!!! " + action.networkID);
         CreateNewChunkEvent(ref state,action.networkID, new ChunkEvents()
         {
-            value = SystemAPI.GetComponent<ChunkComponent>(entity).index,
+            value = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
             flags = 1
         });
     }
@@ -131,7 +131,7 @@ public partial struct GlobalRelevancySystem : ISystem
     {
         CreateNewChunkEvent(ref state, action.networkID, new ChunkEvents()
         {
-            value = SystemAPI.GetComponent<ChunkComponent>(entity).index,
+            value = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
             flags = 2
         });
     }

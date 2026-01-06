@@ -30,27 +30,12 @@ public struct MapSettings: IComponentData
 
     public float chunkSizeInEnginePos => chunkSizeInTiles * tileSize;
 
-#region Chunks limits
+    #region Chunks limits
     public int playerRenderCount => (2 * playerRenderSize + 1)*(2 * playerRenderSize + 1);
     public int playerRenderSize; 
     public int maxChunksPerClient;
 
-#endregion
-
-#region Limits for ticks
-    public int maxLoadedChunksInTick;
-    public int loadedChunksInTickPerClient;
-
-    public int maxStopRequestsInTick;
-    public int stopRequestsInTickPerClient;
-
-    public int maxStartRequestsInTick;
-    public int startRequestsInTickPerClient;
-
-    public int maxUpdateChunkTimeRequestsInTick;
-    public int updateChunkTimeRequestsInTickPerClient;
-#endregion
-
+    #endregion
 
 
     [BurstCompile]
@@ -64,8 +49,6 @@ public struct MapSettings: IComponentData
     {
         return chunkCoordinates.x >= 0 && chunkCoordinates.y >= 0  && chunkCoordinates.x < mapSizeInChunks && chunkCoordinates.y < mapSizeInChunks;
     }
-
-    
     [BurstCompile]
     public void GetNeighboringChunkIndexes(int chunkIndex,NativeHashMap<int,int> indexes)
     {
@@ -96,7 +79,6 @@ public struct MapSettings: IComponentData
     {
         return (int)(chunkCoordinates.x / mapSizeInRegions) + (int)(chunkCoordinates.y / mapSizeInRegions) * mapSizeInChunks;
     }
-
     [BurstCompile]
     public int GetChunkIndexFromCoordinates(int2 coordinates)
     {
@@ -146,7 +128,6 @@ public struct MapSettings: IComponentData
     {
         return new int2(tileID % chunkSizeInTiles, tileID / chunkSizeInTiles);
     }
-
     [BurstCompile]
     public int2 GetGlobalTilePos(int2 tileLocalPos,int2 chunkCoordinates)
     {

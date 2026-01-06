@@ -154,8 +154,9 @@ public class MapGenerator
 
         ChunkComponent chunkComponent = new ChunkComponent()
         {
-            index = chunkIndex,
-            worldPos = map.GetChunkEnginePos(chunkCoords)
+            chunkIndex = chunkIndex,
+            worldPos = map.GetChunkEnginePos(chunkCoords),
+            regionIndex = map.GetRegion(chunkCoords)
         };
 
         var rand = new System.Random(map.seed);

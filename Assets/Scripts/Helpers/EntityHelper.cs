@@ -20,6 +20,23 @@ public static class EntityHelper
         return entity;
     }
 
+
+    public static Entity CreateEntityWithComponent<T>(EntityCommandBuffer entityCommandBuffer, T component = default) where T : unmanaged, IComponentData
+    {
+        Entity entity = entityCommandBuffer.CreateEntity();
+        entityCommandBuffer.AddComponent(entity, component); 
+        return entity;
+    }
+
+    public static Entity CreateEntityWithBuffer<T>(EntityCommandBuffer entityCommandBuffer) where T : unmanaged, IBufferElementData
+    {
+        Entity entity = entityCommandBuffer.CreateEntity();
+        entityCommandBuffer.AddBuffer<T>(entity);
+        return entity;
+    }
+
+
+
     public static Entity CreateEntityWithComponent<T>(EntityManager entityManager, T component = default) where T : unmanaged, IComponentData
     {
         Entity entity = entityManager.CreateEntity();

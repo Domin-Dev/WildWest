@@ -262,7 +262,7 @@ public partial class MapServerSystem : SystemBase
        //             objectsToRemoveFromBuffer.Enqueue((entity,gchunk.lastChunk));
             }
               
-            chunk.SetComponentEnabledForAll(ref newChunk, false);
+           // chunk.SetComponentEnabledForAll(ref newChunk, false);
         }
 
     }
@@ -393,7 +393,7 @@ public partial class MapServerSystem : SystemBase
 
             Chunk chunk = map.chunks[index];
             chunkComponent.worldPos = chunk.worldPosition;
-            chunkComponent.index = index;
+            chunkComponent.chunkIndex = index;
 
             for (int i = 0; i < 10; i++)
             {

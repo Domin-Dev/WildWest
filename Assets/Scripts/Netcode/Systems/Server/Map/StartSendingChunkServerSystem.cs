@@ -103,7 +103,6 @@ public partial class StartSendingChunkServerSystem : SystemBase
                 networkID = request.networkID,
                 action = 1
             });
-            Debug.Log("chunk send!!! " + request.networkID + " | " + request.chunkIndex);
             ecb.DestroyEntity(sortKey,e);       
         }
     }       

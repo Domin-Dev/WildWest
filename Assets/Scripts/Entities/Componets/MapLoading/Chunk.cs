@@ -10,8 +10,9 @@ using Unity.NetCode;
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
 public struct ChunkComponent : IComponentData
 {
-    [GhostField] public int index;
+    [GhostField] public int chunkIndex;
     [GhostField] public float2 worldPos;
+    [GhostField] public int regionIndex;
 }
 
 
@@ -32,12 +33,12 @@ public struct ChunkObjects : IBufferElementData
         this.ghostID = ghostID;
     }
 }
+
 public struct PlayersNeedChunk : IBufferElementData
 {
     public Entity playerEntity;
     public int networkID;
 }
-
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
 public struct ChunkTiles : IBufferElementData
@@ -59,5 +60,7 @@ public struct BuildingObjects : IBufferElementData
 }
 
 public struct NewChunk : IComponentData, IEnableableComponent{}
+
+public struct ChunkIsDirty : IComponentData, IEnableableComponent{}
 
 

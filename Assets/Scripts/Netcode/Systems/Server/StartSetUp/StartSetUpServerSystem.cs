@@ -1,7 +1,9 @@
+using System.Reflection.Emit;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using UnityEngine;
 
@@ -41,8 +43,15 @@ partial struct StartSetUpServerSystem : ISystem
 
                 playerRenderSize = 1,
                 maxChunksPerClient = 12,
-
-
+            });     
+            EntityHelper.CreateEntityWithComponent(ref ecb,new UnloadingSettings()
+            {
+                loadedChunksPerPlayer = 15,
+                chunkUnloadingPeriod = 10,
+                maxIdleChunkTime = 10,
+            });
+            EntityHelper.CreateEntityWithComponent(ecb, new TickLimitsConfig()
+            {
                 maxLoadedChunksInTick = 50,
                 loadedChunksInTickPerClient = 10,
 
@@ -54,8 +63,17 @@ partial struct StartSetUpServerSystem : ISystem
 
                 maxUpdateChunkTimeRequestsInTick = 400,
                 updateChunkTimeRequestsInTickPerClient = 30,
-                
-            });     
+
+                maxUnloadedChunksInTick = 50,
+                unloadedChunksInTickPerClient = 5,
+            });
+            EntityHelper.CreateEntityWithComponent(ecb, new SavesConfig()
+            {
+                savePeriod = 10,
+                savedChunksInTickPerClient = 5,
+                maxSavedChunksInTick = 50
+            });
+
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);
             
             ecb.Playback(state.EntityManager);

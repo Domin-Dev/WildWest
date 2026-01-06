@@ -104,10 +104,10 @@ public partial class MapLoadingClientSystem : SystemBase
         {
             Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects) =>
             {
-                if(chunksToLoad.Contains(chunk.index))
+                if(chunksToLoad.Contains(chunk.chunkIndex))
                 {
-                    clientMap.AddChunk(chunk.index, e);
-                    chunksToLoad.Remove(chunk.index);
+                    clientMap.AddChunk(chunk.chunkIndex, e);
+                    chunksToLoad.Remove(chunk.chunkIndex);
 
                     foreach (var item in buildingObjects)
                     {

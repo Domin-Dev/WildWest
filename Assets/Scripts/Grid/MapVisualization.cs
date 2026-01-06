@@ -96,7 +96,7 @@ public class MapVisualization : MonoBehaviour
         //Debug.Log("liczba : " + clientMap.chunksToRender.Count);
         while (clientMap.GetNextChunk(out Entity? chunk) && chunk.HasValue)
         {
-            clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),entityManager.GetComponentData<ChunkComponent>(chunk.Value).index);
+            clientMap.AddNewRenderedChunk(CreateMesh(chunk.Value),entityManager.GetComponentData<ChunkComponent>(chunk.Value).chunkIndex);
         }
     }
     //

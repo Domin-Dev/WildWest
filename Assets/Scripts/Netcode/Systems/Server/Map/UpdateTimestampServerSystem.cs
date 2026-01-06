@@ -33,7 +33,7 @@ public partial class UpdateTimestampServerSystem : SystemBase
         chunksToUpdate = new NativeParallelMultiHashMap<Entity, int>(256,Allocator.Persistent);
 
         RequireForUpdate(requests);
-        RequireForUpdate<MapSettings>();
+        RequireForUpdate<TickLimitsConfig>();
     }
 
     [BurstCompile]
@@ -47,7 +47,7 @@ public partial class UpdateTimestampServerSystem : SystemBase
     {
         playerChunksRW.Update(this);
 
-        var mapSettings = SystemAPI.GetSingleton<MapSettings>(); 
+        var tickLimits = SystemAPI.GetSingleton<TickLimitsConfig>(); 
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged);
       
@@ -56,7 +56,7 @@ public partial class UpdateTimestampServerSystem : SystemBase
 
         double time = SystemAPI.Time.ElapsedTime;
 
-        int requestsInTheTick = Math.Min(playerCount * mapSettings.updateChunkTimeRequestsInTickPerClient,mapSettings.maxUpdateChunkTimeRequestsInTick);
+        int requestsInTheTick = Math.Min(playerCount * tickLimits.updateChunkTimeRequestsInTickPerClient,tickLimits.maxUpdateChunkTimeRequestsInTick);
         foreach ((RefRO<UpdateChunkTimestampRequest> requestData, Entity entity) in SystemAPI.Query<RefRO<UpdateChunkTimestampRequest>>().WithEntityAccess())
         {
             if(requestsInTheTick == 0) break;

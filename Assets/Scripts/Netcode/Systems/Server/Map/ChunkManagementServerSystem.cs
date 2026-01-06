@@ -115,10 +115,8 @@ public partial class ChunkManagementServerSystem : SystemBase
                 var loadedChunk = new LoadedChunks()
                 {
                     chunkIndex = loadChunk.chunkIndex,
-                    time =  time,
                     chunkEntity = entity
                 };
-               // chunksToWrite.Enqueue(loadedChunk,sortKey);
                 ecb.AppendToBuffer(sortKey,entityBuffer,loadedChunk);
                 if(loadChunk.playerEntity != Entity.Null)
                 {
@@ -148,7 +146,10 @@ public partial class ChunkManagementServerSystem : SystemBase
         private bool CreateChunk(int index,int sortKey, out Entity entity)
         {
             entity = Entity.Null;
-            Entity chunkEntity = ecb.Instantiate(sortKey,entitiesReferences.chunkEntity);          
+            Entity chunkEntity = ecb.Instantiate(sortKey,entitiesReferences.chunkEntity);     
+            ecb.AddComponent<ChunkIsDirty>(sortKey,chunkEntity);
+            ecb.SetComponentEnabled<ChunkIsDirty>(sortKey,chunkEntity,false);
+
             ecb.AddComponent<NewChunkServerAction>(sortKey,chunkEntity);
             ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity); 
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
