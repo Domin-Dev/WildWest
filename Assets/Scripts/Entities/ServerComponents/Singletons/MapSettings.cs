@@ -24,6 +24,10 @@ public struct MapSettings: IComponentData
 
     public float mapSizeInEngine => mapSizeInChunks * chunkSizeInEnginePos;
     public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;
+
+    
+    
+    public int chunksCountInRegion => regionSizeInChunks * regionSizeInChunks;
     public int chunksCount => mapSizeInChunks*mapSizeInChunks;
     public int regionsCount => mapSizeInRegions*mapSizeInRegions;
     public int tilesCount => chunkSizeInTiles*chunkSizeInTiles;
@@ -77,8 +81,22 @@ public struct MapSettings: IComponentData
     [BurstCompile]
     public int GetRegion(int2 chunkCoordinates)
     {
-        return (int)(chunkCoordinates.x / mapSizeInRegions) + (int)(chunkCoordinates.y / mapSizeInRegions) * mapSizeInChunks;
+        return (int)(chunkCoordinates.x / regionSizeInChunks) + (int)(chunkCoordinates.y / regionSizeInChunks) * mapSizeInRegions;
     }
+
+    [BurstCompile]
+    public int GetRegionChunkIndex(int2 chunkCoordinates)
+    {
+        return (int)(chunkCoordinates.x % regionSizeInChunks) + (int)(chunkCoordinates.y % regionSizeInChunks) * regionSizeInChunks;
+    }
+   
+    [BurstCompile]
+    public int GetRegionChunkIndex(int chunkIndex)
+    {
+        return GetRegionChunkIndex(GetChunkCoordinates(chunkIndex));
+    }
+   
+   
     [BurstCompile]
     public int GetChunkIndexFromCoordinates(int2 coordinates)
     {
@@ -123,6 +141,9 @@ public struct MapSettings: IComponentData
     {
         return GetChunkMapPosition(GetChunkCoordinates(chunkIndex));
     }
+    
+    
+    
     [BurstCompile]
     public int2 GetLocalTilePos(int tileID)
     {

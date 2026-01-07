@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Mathematics;
+﻿using System.Runtime.InteropServices;
 
-[System.Serializable]
-public class TileData
+[StructLayout(LayoutKind.Sequential, Pack = 1)]
+public struct TileData
 {
     public int tileID;
     public byte variant;
 
-    public TileData(ChunkTiles chunkTiles)
+    public TileData(ChunkTiles tiles)
     {
-        this.tileID = chunkTiles.tileID;
-        this.variant = chunkTiles.variant;
+        this.tileID = tiles.tileID;
+        this.variant = tiles.variant;
     }
 }

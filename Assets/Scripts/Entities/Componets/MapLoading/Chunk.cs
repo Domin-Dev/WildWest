@@ -47,6 +47,8 @@ public struct ChunkTiles : IBufferElementData
     [GhostField] public byte variant;
 }
 
+
+
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
 public struct BuildingObjects : IBufferElementData
 {
@@ -62,5 +64,3 @@ public struct BuildingObjects : IBufferElementData
 public struct NewChunk : IComponentData, IEnableableComponent{}
 
 public struct ChunkIsDirty : IComponentData, IEnableableComponent{}
-
-

@@ -43,8 +43,10 @@ public static class SaveSystem
     {
         return Path.Combine(GetPlayersFolderByWorldName(worldFolder), playerName + ".dat");
     }
-
-
+    public static string GetRegionsPath(string worldName)
+    {
+        return Path.Combine(GetWorldPath(worldName),"Regions");
+    }
 
 
     #region Saves

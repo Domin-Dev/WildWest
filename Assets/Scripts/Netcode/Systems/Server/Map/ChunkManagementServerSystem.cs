@@ -148,7 +148,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             entity = Entity.Null;
             Entity chunkEntity = ecb.Instantiate(sortKey,entitiesReferences.chunkEntity);     
             ecb.AddComponent<ChunkIsDirty>(sortKey,chunkEntity);
-            ecb.SetComponentEnabled<ChunkIsDirty>(sortKey,chunkEntity,false);
+            ecb.SetComponentEnabled<ChunkIsDirty>(sortKey,chunkEntity,true);
 
             ecb.AddComponent<NewChunkServerAction>(sortKey,chunkEntity);
             ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity); 

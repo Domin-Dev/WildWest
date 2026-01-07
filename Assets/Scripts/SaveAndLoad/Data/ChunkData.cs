@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Collections;
-using Unity.Mathematics;
+﻿
 
-[System.Serializable]
-public class ChunkData
+using System;
+using Unity.Collections;
+
+
+public struct ChunkData : IDisposable
 {
+    public int localChunkIndex;
     public int chunkIndex;
-    public TileData[] tiles;
+    public NativeArray<TileData> tiles;
+    public NativeArray<BuildingObjectData> objects;
+
+    public void Dispose()
+    {
+        tiles.Dispose();
+        objects.Dispose();
+    }
 }

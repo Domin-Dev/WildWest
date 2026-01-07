@@ -65,11 +65,6 @@ public partial struct GlobalRelevancySystem : ISystem
                             Connection = action.networkID
                         };
                         ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(key, 0);
-
-                        foreach(var l in ghostRelevancy.ValueRW.GhostRelevancySet)
-                        {
-                            Debug.Log(l.Key.Ghost + " " + l.Key.Connection);
-                        }
                         StartStreamingChunks(ref state,action, ghost.ValueRO.ghostId, entity);
                         break;
                     case 2:
@@ -94,7 +89,6 @@ public partial struct GlobalRelevancySystem : ISystem
 
     private void StartStreamingChunks(ref SystemState state,ChunkServerActions action,int ghostID, Entity entity)
     {
-        Debug.Log("Start!!! " + action.networkID);
         CreateNewChunkEvent(ref state,action.networkID, new ChunkEvents()
         {
             value = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
