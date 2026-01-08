@@ -13,7 +13,7 @@ public struct ChunkData : IDisposable
 
     public void Dispose()
     {
-        tiles.Dispose();
-        objects.Dispose();
+        if(tiles.IsCreated) tiles.Dispose();
+        if(objects.IsCreated) objects.Dispose();
     }
 }
