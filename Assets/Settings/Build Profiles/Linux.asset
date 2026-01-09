@@ -37,8 +37,6 @@ MonoBehaviour:
   - m_enabled: 1
     m_path: Assets/SceneDependencyCache/Scenes/Game/EntitiesSubScene.unity
   - m_enabled: 1
-    m_path: Assets/SceneDependencyCache/Scenes/Settings.unity
-  - m_enabled: 1
     m_path: Assets/SceneDependencyCache/Scenes/Dashboard.unity
   - m_enabled: 1
     m_path: Assets/SceneDependencyCache/Scenes/ErrorMessage.unity
@@ -117,6 +115,7 @@ MonoBehaviour:
     - line: '|   androidStartInFullscreen: 1'
     - line: '|   androidRenderOutsideSafeArea: 1'
     - line: '|   androidUseSwappy: 1'
+    - line: '|   androidDisplayOptions: 1'
     - line: '|   androidBlitType: 0'
     - line: '|   androidResizeableActivity: 0'
     - line: '|   androidDefaultWindowWidth: 1920'
@@ -133,6 +132,7 @@ MonoBehaviour:
     - line: '|   muteOtherAudioSources: 0'
     - line: '|   Prepare IOS For Recording: 0'
     - line: '|   Force IOS Speakers When Recording: 0'
+    - line: '|   audioSpatialExperience: 0'
     - line: '|   deferSystemGesturesMode: 0'
     - line: '|   hideHomeButton: 0'
     - line: '|   submitAnalytics: 1'
@@ -192,6 +192,10 @@ MonoBehaviour:
     - line: '|   preloadedAssets:'
     - line: '|   - {fileID: 11400000, guid: 4136b315a1b1b214fa816a19cacf0838, type:
         2}'
+    - line: '|   - {fileID: 11400000, guid: 56c9b07e1ec112547bcb5c1cbc1f5abb, type:
+        2}'
+    - line: '|   - {fileID: -944628639613478452, guid: b2abce9a486c7eb4cb2b066d23212adc,
+        type: 3}'
     - line: '|   metroInputSource: 0'
     - line: '|   wsaTransparentSwapchain: 0'
     - line: '|   m_HolographicPauseOnTrackingLoss: 1'
@@ -585,7 +589,7 @@ MonoBehaviour:
     - line: '|   m_BuildTargetBatching:'
     - line: '|   - m_BuildTarget: Standalone'
     - line: '|     m_StaticBatching: 1'
-    - line: '|     m_DynamicBatching: 0'
+    - line: '|     m_DynamicBatching: 1'
     - line: '|   m_BuildTargetShaderSettings: []'
     - line: '|   m_BuildTargetGraphicsJobs: []'
     - line: '|   m_BuildTargetGraphicsJobMode: []'
@@ -1004,6 +1008,7 @@ MonoBehaviour:
     - line: '|   androidVulkanDenyFilterList: []'
     - line: '|   androidVulkanAllowFilterList: []'
     - line: '|   androidVulkanDeviceFilterListAsset: {instanceID: 0}'
+    - line: '|   d3d12DeviceFilterListAsset: {instanceID: 0}'
     - line: '| '
   references:
     version: 2

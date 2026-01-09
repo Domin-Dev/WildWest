@@ -14,6 +14,7 @@ public static class ChunkSaveIOThread
     private static Thread thread;
     private static bool running;
     private static AutoResetEvent signal = new AutoResetEvent(false);
+    private const int startOffset = 32;
 
 
     private static string regionsPath;
@@ -83,7 +84,7 @@ public static class ChunkSaveIOThread
                 chunks.Clear();
             }
 
-           // ReadChunk(0,1);
+            //ReadChunk(0,1);
         }
     }
 
@@ -91,11 +92,7 @@ public static class ChunkSaveIOThread
     {
         try
         {
-            const int startOffset = 32;
-            string regionName = Path.Combine(regionsPath,$"Region{regionIndex}");
-            string pathCurrent =  $"{regionName}.bin";
-            string pathTmp = $"{regionName}.tmp";
-            string pathBak = $"{regionName}.old";
+            GetPaths(regionIndex,out string pathBak,out string pathTmp,out string pathCurrent);
 
             if(!File.Exists(pathCurrent))
             {        
@@ -115,56 +112,12 @@ public static class ChunkSaveIOThread
             using var writer = new BinaryWriter(ms);
             using var reader = new BinaryReader(ms);
 
-
-            
-            if(file.Length > 0)
+            if(!ValidateFile(file,ms,pathCurrent,pathBak))
             {
-                using(var br = new BinaryReader(file,Encoding.Default, leaveOpen: true))
-                {  
-                    file.Seek(0,SeekOrigin.Begin);
-                    byte[] checkSum = br.ReadBytes(startOffset);
-                    var compressed = br.ReadBytes((int)file.Length - 32); 
-                    foreach(var k in checkSum)
-                        Debug.Log(k);
-
-                    Debug.Log("spane!!!");
-                    foreach(var k in ComputeSHA256(compressed))
-                        Debug.Log(k);  
-
-                    if(!AreEqual(checkSum,ComputeSHA256(compressed)))
-                    {
-                        if (File.Exists(pathBak))
-                        {
-                            file.Close();
-                            File.Replace(pathBak, pathCurrent,null);
-                            WriteChunk(regionIndex,chunks);
-                        }
-                        throw new Exception("file is damaged");
-                    }
-
-                    Debug.Log("dzia!!");
-                    try
-                    {
-                        writer.Write(Decompress(compressed));
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.Log("file is damaged");
-                        if (File.Exists(pathBak))
-                        {
-                            file.Close();
-                            File.Replace(pathBak, pathCurrent,null);
-                            WriteChunk(regionIndex,chunks);
-                        }
-                        throw new Exception("file is damaged");
-                    }
-
-                    Debug.Log("dzia!kokok!");
-                    ms.Flush();
-                }
+                WriteChunk(regionIndex,chunks);
+                return;
             }
-        
-   
+
             if (ms.Length < sizeof(int) * chunksCountInRegion * 2)        
             {
                 ms.Seek(0,SeekOrigin.Begin);
@@ -219,6 +172,9 @@ public static class ChunkSaveIOThread
                 ms.Seek(chunkOffset.offset, SeekOrigin.Begin);
                 writer.Write(chunkBytes);
             }
+
+
+
             ms.Flush();
             ms.Seek(0,SeekOrigin.Begin);
             file.Seek(0,SeekOrigin.Begin);
@@ -237,20 +193,40 @@ public static class ChunkSaveIOThread
             Debug.LogError(e.Message);
         }
     }
-   private static ChunkData? ReadChunk(int region,int localChunkIndex)
+   private static ChunkData? ReadChunk(int regionIndex,int localChunkIndex)
     {
         try
         {
-            string path = Path.Combine(regionsPath,$"Region{region}.bin");
-            if(!File.Exists(path)) return null;
+            GetPaths(regionIndex,out string pathBak,out string pathTmp,out string pathCurrent);
 
-            using var file = File.Open(path,FileMode.Open,FileAccess.Read);
-            using var br = new BinaryReader(file, System.Text.Encoding.Default, leaveOpen: true);
+            if(!File.Exists(pathCurrent))
+            {        
+                if (File.Exists(pathBak))
+                {
+                    File.Move(pathBak, pathCurrent);
+                }
+                else
+                    return null;
+            }
 
-             (int offset,int size)[] offsets = new (int offset,int size)[chunksCountInRegion];
+            using var file = File.Open(pathCurrent,FileMode.Open,FileAccess.Read);
+
+            using var ms = new MemoryStream();
+            using var writer = new BinaryWriter(ms);
+            using var reader = new BinaryReader(ms);
+
+            if(!ValidateFile(file,ms,pathCurrent,pathBak))
+            {
+                return ReadChunk(regionIndex,localChunkIndex);;
+            }
+            file.Close();
+
+
+            ms.Seek(0,SeekOrigin.Begin);
+            (int offset,int size)[] offsets = new (int offset,int size)[chunksCountInRegion];
             for (int i = 0; i < chunksCountInRegion; i++)
             {
-                offsets[i] = (br.ReadInt32(),br.ReadInt32());
+                offsets[i] = (reader.ReadInt32(),reader.ReadInt32());
             }
 
             
@@ -258,26 +234,15 @@ public static class ChunkSaveIOThread
             if(offsetAndSize.offset == 0)
                 return null;
 
-            file.Seek(offsetAndSize.offset,SeekOrigin.Begin);
+            ms.Seek(offsetAndSize.offset,SeekOrigin.Begin);
             
-
             ChunkData chunk = new ChunkData();
-            chunk.chunkIndex = br.ReadInt32(); 
-            int len = br.ReadInt32(); 
-            chunk.tiles = NativeArraySerializer.FromBytes<TileData>(br.ReadBytes(len * Marshal.SizeOf<TileData>()),Allocator.Persistent);
-            len = br.ReadInt32(); 
-            chunk.objects = NativeArraySerializer.FromBytes<BuildingObjectData>(br.ReadBytes(len * Marshal.SizeOf<BuildingObjectData>()),Allocator.Persistent);
+            chunk.chunkIndex = reader.ReadInt32(); 
+            int len = reader.ReadInt32(); 
+            chunk.tiles = NativeArraySerializer.FromBytes<TileData>(reader.ReadBytes(len * Marshal.SizeOf<TileData>()),Allocator.Persistent);
+            len = reader.ReadInt32(); 
+            chunk.objects = NativeArraySerializer.FromBytes<BuildingObjectData>(reader.ReadBytes(len * Marshal.SizeOf<BuildingObjectData>()),Allocator.Persistent);
            
-            foreach(var item in chunk.tiles)
-            {
-                Debug.Log(item.tileID);
-            }
-            Debug.Log("space!!");
-            foreach(var item in chunk.objects)
-            {
-                Debug.Log(item.id);
-            }
-
             return chunk;
         }
         catch (IOException e)
@@ -325,7 +290,6 @@ public static class ChunkSaveIOThread
         using var sha = SHA256.Create();
         return sha.ComputeHash(data);
     }
-
     private static bool AreEqual(byte[] a, byte[] b)
     {
         if (a == null || b == null) return false;
@@ -336,5 +300,56 @@ public static class ChunkSaveIOThread
                 return false;
 
         return true;
+    }
+
+    private static bool ValidateFile(FileStream file,MemoryStream ms,string pathCurrent, string pathBak)
+    {
+        if(file.Length > 0)
+        {
+            using(var br = new BinaryReader(file,Encoding.Default, leaveOpen: true))
+            {  
+                file.Seek(0,SeekOrigin.Begin);
+                byte[] checkSum = br.ReadBytes(startOffset);
+                var compressed = br.ReadBytes((int)file.Length - 32); 
+                if(!AreEqual(checkSum,ComputeSHA256(compressed)))
+                {
+                    if (File.Exists(pathBak))
+                    {
+                        file.Close();
+                        File.Replace(pathBak, pathCurrent,null);
+                        return false;
+                    }
+                    throw new Exception("file is damaged");
+                }
+
+                try
+                {
+                    using(var bw = new BinaryWriter(ms,Encoding.Default,true))
+                    {   
+                        bw.Write(Decompress(compressed));
+                    }
+                }
+                catch (Exception e)
+                {
+                    if (File.Exists(pathBak))
+                    {
+                        file.Close();
+                        File.Replace(pathBak, pathCurrent,null);
+                        return false;
+                    }
+                    throw new Exception("file is damaged");
+                }
+                ms.Flush();
+            }
+        }
+        return true;
+    }
+
+    private static void GetPaths(int regionIndex,out string pathBak, out string pathTmp, out string pathCurrent)
+    {
+        string regionName = Path.Combine(regionsPath,$"Region{regionIndex}");
+        pathCurrent =  $"{regionName}.bin";
+        pathTmp = $"{regionName}.tmp";
+        pathBak = $"{regionName}.old";
     }
 }

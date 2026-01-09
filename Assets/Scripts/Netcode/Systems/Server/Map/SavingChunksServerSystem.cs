@@ -1,13 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
-using Unity.Mathematics;
 using Unity.NetCode;
-using UnityEditor.Tilemaps;
-using UnityEngine;
-
-
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
