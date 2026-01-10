@@ -5,6 +5,7 @@ using System;
 using Unity.Collections;
 using System;
 using System.Runtime.InteropServices;
+using Unity.Profiling.LowLevel.Unsafe;
 
 public static class NativeArraySerializer
 {
@@ -39,7 +40,7 @@ public static class NativeArraySerializer
         return new NativeArray<T>(managed, allocator);
     }
 
-    private static byte[] StructToBytes<T>(T str) where T : struct
+    public static byte[] StructToBytes<T>(T str) where T : struct
     {
         int size = Marshal.SizeOf<T>();
         byte[] arr = new byte[size];
@@ -52,7 +53,7 @@ public static class NativeArraySerializer
         return arr;
     }
 
-    private static T BytesToStruct<T>(byte[] arr) where T : struct
+    public static T BytesToStruct<T>(byte[] arr) where T : struct
     {
         int size = Marshal.SizeOf<T>();
         IntPtr ptr = Marshal.AllocHGlobal(size);

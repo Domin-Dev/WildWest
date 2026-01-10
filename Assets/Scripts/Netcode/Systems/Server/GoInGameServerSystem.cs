@@ -30,20 +30,20 @@ partial struct GoInGameServerSystem : ISystem
             var networkId = state.EntityManager.GetComponentData<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
             Entity character = entityCommandBuffer.Instantiate(SystemAPI.GetSingleton<EntitiesReferences>().characterEntity);
-            PlayerSave playerSave = LoadSystem.LoadPlayerSave(requestRPC.playerName.ToString());
+            PlayerSave? playerSave = LoadSystem.LoadPlayerSave(requestRPC.playerName.ToString());
 
             if (playerSave == null)
                 GetDefaultPlayerSave(requestRPC, ref playerSave);
 
 
             entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection,new LinkedCharacter() { entity = character }); 
-            entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.playerPosition.x, playerSave.playerPosition.y, playerSave.playerPosition.y)));
-            entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.characterLook });
+            entityCommandBuffer.SetComponent(character, LocalTransform.FromPosition(new float3(playerSave.Value.playerPosition.x, playerSave.Value.playerPosition.y, playerSave.Value.playerPosition.y)));
+            entityCommandBuffer.SetComponent(character, new PlayerLook() { look = playerSave.Value.characterLook });
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId }); 
             entityCommandBuffer.SetComponent(character, new Player()
             {
                 speed = 1f,
-                playerName = playerSave.playerName
+                playerName = playerSave.Value.playerName
             });
 
 
@@ -51,7 +51,7 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent(character, new ServerChunkEventCounter() { index = uint.MaxValue });
 
             if (SystemAPI.HasComponent<Host>(rpcCommandRequest.ValueRO.SourceConnection) ||
-                playerSave.isAdmin)
+                playerSave.Value.isAdmin)
                 entityCommandBuffer.AddComponent<Admin>(rpcCommandRequest.ValueRO.SourceConnection);
 
 
@@ -66,11 +66,11 @@ partial struct GoInGameServerSystem : ISystem
             AddEquipmentEntities(ref state, ref entityCommandBuffer, character, networkId);
             
 
-            entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
-            entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
-            entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });
-
-
+            entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.Value.health });
+            entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.Value.hunger });
+            entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.Value.thirst });    
+            entityCommandBuffer.AddComponent<ToSave>(character);
+            entityCommandBuffer.SetComponentEnabled<ToSave>(character,true);
 
             //entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
@@ -96,16 +96,18 @@ partial struct GoInGameServerSystem : ISystem
         SystemAPI.GetSingletonRW<GhostRelevancy>().ValueRW.GhostRelevancySet.TryAdd(key, 0);
     }
 
-    private void GetDefaultPlayerSave(GoInGameRequestRPC requestRPC,ref PlayerSave playerSave)
+    private void GetDefaultPlayerSave(GoInGameRequestRPC requestRPC,ref PlayerSave? playerSave)
     {
-        playerSave = new PlayerSave();
-        playerSave.playerName = requestRPC.playerName;
-        playerSave.characterLook = requestRPC.characterLook;
-        playerSave.playerPosition = float2.zero;
-        playerSave.health = 100;
-        playerSave.thirst = 100;
-        playerSave.hunger = 100;
-        playerSave.isAdmin = false;
+        playerSave = new PlayerSave()
+        {
+            playerName = requestRPC.playerName,
+            characterLook = requestRPC.characterLook,
+            playerPosition = float2.zero,
+            health = 100,
+            thirst = 100,
+            hunger = 100,
+            isAdmin = false
+        };
     }
 
     private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer ecb, Entity character, int networkID)

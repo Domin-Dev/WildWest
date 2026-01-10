@@ -4,12 +4,12 @@ using System;
 using Unity.Collections;
 
 
-public struct ChunkData : IDisposable
+public struct ChunkSave : IDisposable
 {
     public int localChunkIndex;
     public int chunkIndex;
-    public NativeArray<TileData> tiles;
-    public NativeArray<BuildingObjectData> objects;
+    public NativeArray<TileSave> tiles;
+    public NativeArray<BuildingObjectSave> objects;
 
     public void Dispose()
     {

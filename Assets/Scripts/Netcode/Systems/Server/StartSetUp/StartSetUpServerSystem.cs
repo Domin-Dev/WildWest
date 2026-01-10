@@ -14,6 +14,7 @@ partial struct StartSetUpServerSystem : ISystem
         Debug.Log((GameInfo.instance == null)  + " " + GameInfo.instance?.startGame);
         if(GameInfo.instance != null && GameInfo.instance.startGame)
         {
+            Debug.Log("jzkzoaaaaaaaaaaaaa");
             GameInfo data = GameInfo.instance;
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
@@ -67,7 +68,8 @@ partial struct StartSetUpServerSystem : ISystem
             {
                 savePeriod = 10,
                 savedChunksInTickPerClient = 5,
-                maxSavedChunksInTick = 50
+                maxSavedChunksInTick = 50,
+                defragmentationLimit = 0.6f
             });
 
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);

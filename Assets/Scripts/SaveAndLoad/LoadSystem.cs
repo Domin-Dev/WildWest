@@ -65,7 +65,7 @@ public static class LoadSystem
 
         return headerData;
     }
-    public static PlayerSave LoadPlayerSave(string worldName,string playerName)
+    public static PlayerSave? LoadPlayerSave(string worldName,string playerName)
     {
         if(worldName == string.Empty) return null;
 
@@ -76,12 +76,12 @@ public static class LoadSystem
         if (!File.Exists(path) || new FileInfo(path).Length == 0) return null;
         FileStream fileStream = new FileStream(path, FileMode.Open);
 
-        PlayerSave playerSave = formatter.Deserialize(fileStream) as PlayerSave;
+        PlayerSave? playerSave = formatter.Deserialize(fileStream) as PlayerSave?;
 
         fileStream.Close();
         return playerSave;
     }
-    public static PlayerSave LoadPlayerSave(string playerName)
+    public static PlayerSave? LoadPlayerSave(string playerName)
     {
        return LoadPlayerSave(GameInfo.instance.worldName,playerName);
     }

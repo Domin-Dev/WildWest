@@ -25,14 +25,14 @@ partial struct VerifyingNewPlayersSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, PlayerVerificationRPC commandRpc, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, PlayerVerificationRPC>().WithEntityAccess())
         {
-            PlayerSave playerSave = LoadSystem.LoadPlayerSave(commandRpc.playerName.ToString());
+            PlayerSave? playerSave = LoadSystem.LoadPlayerSave(commandRpc.playerName.ToString());
             bool isSave = playerSave != null;
 
             var answer = new AnswerPlayerVerificationRPC();
             answer.playerDataIsOnServer = isSave;
             if (isSave)
             {
-                answer.characterLook = playerSave.characterLook;
+                answer.characterLook = playerSave.Value.characterLook;
             }
 
 

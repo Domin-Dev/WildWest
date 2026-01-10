@@ -15,4 +15,9 @@ public struct SavesConfig: IComponentData
     public int savePeriod;
     public int maxSavedChunksInTick;
     public int savedChunksInTickPerClient;
+
+    /// <summary>
+    /// it defines the maximum amount of unused space allowed in the file. 0.3 => 30% max unused
+    /// </summary>
+    public float defragmentationLimit;
 }

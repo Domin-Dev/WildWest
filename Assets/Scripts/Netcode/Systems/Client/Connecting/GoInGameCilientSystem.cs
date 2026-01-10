@@ -16,6 +16,8 @@ partial struct GoInGameCilientSystem : ISystem
             .WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
+
+
     }
 
     public void OnUpdate(ref SystemState state)

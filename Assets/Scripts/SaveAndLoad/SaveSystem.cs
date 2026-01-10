@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -50,9 +50,23 @@ public static class SaveSystem
 
 
     #region Saves
+
+
+    public static void CreateFolders()
+    {
+        string folderPath = GetWorldPath(GameInfo.instance.worldName);
+        Debug.Log(folderPath);
+        if(!Directory.Exists(savesPath))
+            Directory.CreateDirectory(savesPath);
+
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+    }
+
+
     public static void Save()
     {
-        Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave hostPlayer);
+        Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave? hostPlayer);
         BinaryFormatter formatter = new BinaryFormatter();
         string folderPath = GetWorldPath(GameInfo.instance.worldName);
 
@@ -65,17 +79,16 @@ public static class SaveSystem
         FileStream stream = new FileStream(worldPath, FileMode.Create);
         formatter.Serialize(stream, new PlayerSave());
 
-        SaveHeader(folderPath, hostPlayer);
+        SaveHeader(folderPath, hostPlayer.Value);
 
 
 
-        string playersPath = GetPlayersFolder(folderPath);
-        if (!Directory.Exists(playersPath))
-            Directory.CreateDirectory(playersPath);
-        SavePlayers(playersPath,players);
+      //  string playersPath = GetPlayersFolder(folderPath);
+      //  if (!Directory.Exists(playersPath))
+      //      Directory.CreateDirectory(playersPath);
+      //  SavePlayers(playersPath,players);
         stream.Close();
     }
-
 
     
     public static void SaveSettings(SettingsData Data, InputActionAsset Controls)
@@ -93,10 +106,6 @@ public static class SaveSystem
         File.WriteAllText(path, data);
     }
     #endregion
-
-
-
-
 
     private static void SaveHeader(string folderPath, PlayerSave playerSave)
     {
@@ -130,7 +139,7 @@ public static class SaveSystem
             stream.Close();
         }
     }
-    private static Dictionary<string,PlayerSave> GetPlayers(out PlayerSave hostPlayer)
+    private static Dictionary<string,PlayerSave> GetPlayers(out PlayerSave? hostPlayer)
     {
         hostPlayer = null;
         var world = ClientServerBootstrap.ServerWorld;

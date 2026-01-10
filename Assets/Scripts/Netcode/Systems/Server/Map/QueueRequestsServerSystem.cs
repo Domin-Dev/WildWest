@@ -166,7 +166,6 @@ public partial class QueueRequestsServerSystem : SystemBase
             }
 
             bool chunkIsIdle = true;
-            Debug.Log("dz " +  requestData.ValueRO.chunkIndex);
             foreach(var chunkPlayer in playersChunks)
             {
                 if(chunkPlayer.Value == requestData.ValueRO.chunkIndex)

@@ -10,6 +10,9 @@ using Unity.Collections;
 
 public static class AuthUtils
 {
+
+
+    
     public static FixedString128Bytes ComputeSha256(char[] input)
     {
         using (SHA256 sha256 = SHA256.Create())

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 using Unity.Collections;
 using Unity.Mathematics;
 
 [System.Serializable]
-public class PlayerSave
+public struct PlayerSave
 {
     public FixedString128Bytes playerName;
     public CharacterLook characterLook;

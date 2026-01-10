@@ -63,4 +63,4 @@ public struct BuildingObjects : IBufferElementData
 
 public struct NewChunk : IComponentData, IEnableableComponent{}
 
-public struct ChunkIsDirty : IComponentData, IEnableableComponent{}
+public struct ToSave : IComponentData, IEnableableComponent{}

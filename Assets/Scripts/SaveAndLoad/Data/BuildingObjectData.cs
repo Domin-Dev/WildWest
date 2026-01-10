@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
 [StructLayout(LayoutKind.Sequential, Pack = 1)]
-public struct BuildingObjectData
+public struct BuildingObjectSave
 {
     public int x;
     public int y;
@@ -11,7 +11,7 @@ public struct BuildingObjectData
 
     public float hitPoints;
     public float maxHitPoints;
-    public BuildingObjectData(BuildingObjects objects)
+    public BuildingObjectSave(BuildingObjects objects)
     {
         this.x = objects.globalTilePos.x;
         this.y = objects.globalTilePos.y;
