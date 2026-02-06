@@ -39,11 +39,16 @@ public class WindowsManager : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
+
+    void OnLevelWasLoaded(int level)
+    {
+        SwitchBackground(false);
+    }
+
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.Escape) && !ChatManager.instance.isChatting) 
         {
-
             if (escScene == -1)
                 CloseOpenWindows();
             else
@@ -118,7 +123,7 @@ public class WindowsManager : MonoBehaviour
     }
     public void SwitchBackground(bool value)
     {
-        blackBackground.SetActive(value);
+        blackBackground?.SetActive(value);
     }
 }
 

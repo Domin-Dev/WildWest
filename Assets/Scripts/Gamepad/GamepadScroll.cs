@@ -88,7 +88,6 @@ public class GamepadScroll : MonoBehaviour
                     {
                         if (EventSystem.current.currentSelectedGameObject == btn.gameObject)
                         {
-                            Debug.Log("DZIALA!!!!!!!!11");
                             indexSelected = i;
                             if (somethingWasVisible && j > 0)
                             {

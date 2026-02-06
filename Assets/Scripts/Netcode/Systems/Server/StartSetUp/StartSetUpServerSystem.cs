@@ -11,7 +11,6 @@ partial struct StartSetUpServerSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        Debug.Log((GameInfo.instance == null)  + " " + GameInfo.instance?.startGame);
         if(GameInfo.instance != null && GameInfo.instance.startGame)
         {
             Debug.Log("jzkzoaaaaaaaaaaaaa");
@@ -66,7 +65,7 @@ partial struct StartSetUpServerSystem : ISystem
             });
             EntityHelper.CreateEntityWithComponent(ecb, new SavesConfig()
             {
-                savePeriod = 10,
+                savePeriod = 20,
                 savedChunksInTickPerClient = 5,
                 maxSavedChunksInTick = 50,
                 defragmentationLimit = 0.6f

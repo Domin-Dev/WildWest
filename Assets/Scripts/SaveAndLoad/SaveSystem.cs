@@ -109,24 +109,24 @@ public static class SaveSystem
 
     private static void SaveHeader(string folderPath, PlayerSave playerSave)
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        string headerPath = GetHeaderPath(folderPath);
-        FileStream stream = new FileStream(headerPath, FileMode.Create);
-        HeaderData headerData = new HeaderData();
-        headerData.playerName = playerSave.playerName;
-        headerData.difficulty = GameInfo.instance.difficultyLevel;
-        headerData.playTime = GameInfo.instance.playTime;
+       // BinaryFormatter formatter = new BinaryFormatter();
+        // string headerPath = GetHeaderPath(folderPath);
+        // FileStream stream = new FileStream(headerPath, FileMode.Create);
+        // HeaderData headerData = new HeaderData();
+        // headerData.playerName = playerSave.playerName;
+        // headerData.difficulty = GameInfo.instance.difficultyLevel;
+        // headerData.playTime = GameInfo.instance.playTime;
 
 
-        headerData.characterLook = playerSave.characterLook;
-        headerData.worldName = GameInfo.instance.worldName; 
-        headerData.seed = GameInfo.instance.seed;   
+        // headerData.characterLook = playerSave.characterLook;
+        // headerData.worldName = GameInfo.instance.worldName; 
+        // headerData.seed = GameInfo.instance.seed;   
 
-        headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        headerData.creationTime = GameInfo.instance.creationTime;
+        // headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+        // headerData.creationTime = GameInfo.instance.creationTime;
 
-        formatter.Serialize(stream, headerData);
-        stream.Close();
+        // formatter.Serialize(stream, headerData);
+        // stream.Close();
     }   
     private static void SavePlayers(string folderPath, Dictionary<string, PlayerSave> players)
     {

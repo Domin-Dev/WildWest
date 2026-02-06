@@ -35,7 +35,7 @@ public class WorldRow : MonoBehaviour
         play.onClick.AddListener(() => MenuManager.instance.Load(worldName));
 
 
-        worldName = header.worldName;
+        worldName = header.worldName.ToString();
         worldNameText.text = worldName;
 
         saveTime.text = DateTimeOffset.FromUnixTimeSeconds(header.saveTime).DateTime.ToLocalTime().ToString();
@@ -43,11 +43,11 @@ public class WorldRow : MonoBehaviour
         Material mat = new Material(materialIcon);
         headIcon.material = mat;
         
-        mat.SetColor("_SkinColor", MyTools.GetColorFromFloat3(header.characterLook.skinColor));
-        mat.SetColor("_HairColor", MyTools.GetColorFromFloat3(header.characterLook.hairColor));
-        mat.SetInt("_HairIndex", header.characterLook.hairIndex);
-        mat.SetInt("_BeardIndex", header.characterLook.beardndex);
-        mat.SetInt("_PaintingsIndex", header.characterLook.faceDetailsIndex);
+        // mat.SetColor("_SkinColor", MyTools.GetColorFromFloat3(header.characterLook.skinColor));
+        // mat.SetColor("_HairColor", MyTools.GetColorFromFloat3(header.characterLook.hairColor));
+        // mat.SetInt("_HairIndex", header.characterLook.hairIndex);
+        // mat.SetInt("_BeardIndex", header.characterLook.beardndex);
+        // mat.SetInt("_PaintingsIndex", header.characterLook.faceDetailsIndex);
 
         difficulty.text = header.difficulty.ToString();
 
@@ -57,11 +57,11 @@ public class WorldRow : MonoBehaviour
 
 
         headIcon.SetMaterialDirty();
-        if (header.characterLook.faceDetailsIndex == 9)
-        {
-            coverSprite = UIAssetsManager.instance.ironBarsUI;
-            background = UIAssetsManager.instance.blackFrameUI;
-        }
+       // if (header.characterLook.faceDetailsIndex == 9)
+      //  {
+         //   coverSprite = UIAssetsManager.instance.ironBarsUI;
+          //  background = UIAssetsManager.instance.blackFrameUI;
+      //  }
         CheckBadges(h, ref background, coverSprite);
 
         if (background != null) SetBackground(background);

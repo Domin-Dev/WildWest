@@ -5,24 +5,23 @@ using System.IO;
 using System.Runtime.InteropServices;
 using Unity.Collections;
 
-public class SavingRegion : SavingBase<int, ChunkSave, int>
+public class RegionSaver : DoubleIndexedDataSaver<ChunkSave,int,int>
 {
     private int chunksCountInRegion;
     private int offsetsSize => sizeof(int) * chunksCountInRegion * 2;
     private float defragmentationLimit;
 
-
-    public SavingRegion(string regionsPath,int chunksCountInRegion,float defragmentationLimit) : base(regionsPath)
+    public RegionSaver(string regionsPath,int chunksCountInRegion,float defragmentationLimit) : base(regionsPath,"dat")
     {
         this.chunksCountInRegion = chunksCountInRegion;
         this.defragmentationLimit = defragmentationLimit + 1;
     }
-    public override void GetFiles(int value, out string pathBak, out string pathTmp, out string pathCurrent)
+    protected override void GetFiles(int value, out string pathBak, out string pathTmp, out string pathCurrent)
     {
         string file = Path.Combine(directoryPath,$"Region{value}");
-        GetPaths(file,"bin",out pathBak, out pathTmp, out pathCurrent);
+        GetPaths(file,out pathBak, out pathTmp, out pathCurrent);
     }
-    public override void Writing(MemoryStream ms, BinaryReader reader, BinaryWriter writer, int fileIndex, params ChunkSave[] chunks)
+    protected override void Writing(MemoryStream ms, BinaryReader reader, BinaryWriter writer, int fileIndex, params ChunkSave[] chunks)
     {
         if (ms.Length < offsetsSize)        
             WriteChunkOffsets(ms,writer);
@@ -81,7 +80,7 @@ public class SavingRegion : SavingBase<int, ChunkSave, int>
             Defragmentation(offsets,ms,reader,writer);
         }
     }
-    public override bool Reading(MemoryStream ms, BinaryReader reader, int fileIndex, int localChunkIndex, out ChunkSave data)
+    protected override bool Reading(MemoryStream ms, BinaryReader reader, int fileIndex, int localChunkIndex, out ChunkSave data)
     {
         data = default;
         ms.Seek(0,SeekOrigin.Begin);
@@ -102,15 +101,10 @@ public class SavingRegion : SavingBase<int, ChunkSave, int>
         data.objects = NativeArraySerializer.FromBytes<BuildingObjectSave>(reader.ReadBytes(len * Marshal.SizeOf<BuildingObjectSave>()),Allocator.Persistent);
         return true;
     }
-    public override bool Reading(MemoryStream ms, BinaryReader reader, int fileIndex, out ChunkSave data)
+    protected override bool Reading(MemoryStream ms, BinaryReader reader, int fileIndex, out ChunkSave data)
     {
         throw new System.NotImplementedException();
     }
-
-
-    
-    
-    
     private void Defragmentation((int offset,int size)[] offsets,MemoryStream ms,BinaryReader readerMS, BinaryWriter writerMS)
     {
         ms.Seek(0,SeekOrigin.Begin);
@@ -149,6 +143,4 @@ public class SavingRegion : SavingBase<int, ChunkSave, int>
         }
         ms.Flush();
     }
-
-
 }

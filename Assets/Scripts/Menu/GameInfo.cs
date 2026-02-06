@@ -1,4 +1,5 @@
 
+using System;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -61,13 +62,24 @@ public class GameInfo : MonoBehaviour
     public void SetValue(HeaderData data)
     {
         playerName = data.playerName.ToString();
-        worldName = data.worldName;
+        worldName = data.worldName.ToString();
         creationTime = data.creationTime;
         difficultyLevel = data.difficulty;
         playTime = data.playTime;
         seed = data.seed;
     }
 
+    public HeaderData GetHeader()
+    {
+        HeaderData headerData = new HeaderData();
+        headerData.playerName = playerName;
+        headerData.difficulty = difficultyLevel;
+        headerData.playTime = playTime;
+        headerData.worldName = worldName; 
+        headerData.seed = seed;   
+        headerData.creationTime = creationTime;
+        return headerData;
+    }
     void Awake()
     {
         if (instance == null)

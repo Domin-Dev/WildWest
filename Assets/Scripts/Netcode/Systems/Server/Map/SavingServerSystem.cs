@@ -17,13 +17,14 @@ public partial class SavingServerSystem : SystemBase
     EntityQuery playerQuery;
     NetworkTick nextUpdate;
 
-    private static  NativeList<(int region,ChunkSave chunk)> chunksToSaveRW;    
-    public static  NativeList<(int region,ChunkSave chunk)> chunksToSaveRO;   
+    private static NativeList<(int region,ChunkSave chunk)> chunksToSaveRW;    
+    public static NativeList<(int region,ChunkSave chunk)> chunksToSaveRO;   
     
-    private static  NativeList<PlayerSave> playersToSaveRW;   
-    public static  NativeList<PlayerSave> playersToSaveRO;   
+    private static NativeList<PlayerSave> playersToSaveRW;   
+    public static NativeList<PlayerSave> playersToSaveRO;   
 
-
+    private static HeaderData? headerDataRW;
+    public static HeaderData? headerDataRO;
 
 
 
@@ -41,13 +42,10 @@ public partial class SavingServerSystem : SystemBase
         playersToSaveRW = new NativeList<PlayerSave>(16,Allocator.Persistent);
         playersToSaveRO = new NativeList<PlayerSave>(16,Allocator.Persistent);
 
-
         RequireForUpdate<SavesConfig>();
-
         if(SystemAPI.TryGetSingleton<MapSettings>(out var map) && SystemAPI.TryGetSingleton<SavesConfig>(out var config) )
             SaveIOThread.Start(map.chunksCountInRegion,config.defragmentationLimit);
     }
-
 
     [BurstCompile]
     protected override void OnDestroy()
@@ -56,7 +54,6 @@ public partial class SavingServerSystem : SystemBase
         chunksToSaveRO.Dispose();
         chunksToSaveRW.Dispose();
     }
-
 
 
     [BurstCompile]
@@ -113,7 +110,8 @@ public partial class SavingServerSystem : SystemBase
             playersToSaveRW.Add(playerSave);
             ecb.SetComponentEnabled<ToSave>(entity,false);
         }
-
+        
+        headerDataRW = GameInfo.instance.GetHeader();
         Swap();
     }
 
@@ -133,6 +131,9 @@ public partial class SavingServerSystem : SystemBase
     {
         SawpContainers(ref chunksToSaveRO,ref chunksToSaveRW);
         SawpContainers(ref playersToSaveRO,ref playersToSaveRW);
+        if(headerDataRO == null)
+            headerDataRO = headerDataRW;
+        
     }
     
     [BurstCompile]

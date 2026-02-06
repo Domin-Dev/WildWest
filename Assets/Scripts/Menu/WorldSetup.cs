@@ -51,6 +51,7 @@ public class WorldSetup : MonoBehaviour
             {
                 GameInfo.instance.creationTime = DateTimeOffset.Now.ToUnixTimeSeconds();
                 GameInfo.instance.worldName = worldName;
+                Starter.CreateSinglePlayerWorld();
                 GenerateWorld();
             }
         });

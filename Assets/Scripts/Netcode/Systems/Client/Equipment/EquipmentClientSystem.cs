@@ -50,7 +50,7 @@ partial struct EquipmentClientSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var serverTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-        if (lastProcessedServerTick.IsValid && !serverTick.IsNewerThan(lastProcessedServerTick))
+        if (lastProcessedServerTick.IsValid && serverTick.IsValid &&  !serverTick.IsNewerThan(lastProcessedServerTick))
             return;
         lastProcessedServerTick = serverTick;
 

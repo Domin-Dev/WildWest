@@ -37,26 +37,26 @@ public static class WorldManager
 
     public static bool ChangeName(string oldName, string newName)
     {
-        if(oldName == newName) return true;
-        string oldPath = Path.Combine(SaveSystem.savesPath, oldName);
-        string newPath = Path.Combine(SaveSystem.savesPath, newName);
-        if (Directory.Exists(oldPath) && !Directory.Exists(newPath))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
+        // if(oldName == newName) return true;
+        // string oldPath = Path.Combine(SaveSystem.savesPath, oldName);
+        // string newPath = Path.Combine(SaveSystem.savesPath, newName);
+        // if (Directory.Exists(oldPath) && !Directory.Exists(newPath))
+        // {
+        //     BinaryFormatter formatter = new BinaryFormatter();
 
-            FileStream fileStream = new FileStream(SaveSystem.GetHeaderPath(oldPath), FileMode.Open);
-            HeaderData headerData = formatter.Deserialize(fileStream) as HeaderData;
-            fileStream.Close();
+        //     FileStream fileStream = new FileStream(SaveSystem.GetHeaderPath(oldPath), FileMode.Open);
+        //     HeaderData headerData = formatter.Deserialize(fileStream) as HeaderData;
+        //     fileStream.Close();
 
-            headerData.worldName = newName;
+        //     headerData.worldName = newName;
 
-            fileStream = new FileStream(SaveSystem.GetHeaderPath(oldPath), FileMode.Create);
-            formatter.Serialize(fileStream, headerData);    
-            fileStream.Close();
+        //     fileStream = new FileStream(SaveSystem.GetHeaderPath(oldPath), FileMode.Create);
+        //     formatter.Serialize(fileStream, headerData);    
+        //     fileStream.Close();
 
-            Directory.Move(oldPath, newPath);
-            return true;
-        }
+        //     Directory.Move(oldPath, newPath);
+        //     return true;
+        // }
         return false;
     }
 }

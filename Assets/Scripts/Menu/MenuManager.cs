@@ -219,14 +219,14 @@ public class MenuManager : MonoBehaviour
     }
     public void Load(string worldName)
     {
-        HeaderData data = LoadSystem.LoadHeader(worldName);
-        if (data == null) return;
+        //HeaderData data = LoadSystem.LoadHeader(worldName);
+        //if (data == null) return;
 
-        CloseWindows();
-        if (isSingleplayerList)
-            LoadSingleplayer(data);
-        else
-            LoadMultiplayer(data);
+        // CloseWindows();
+        // if (isSingleplayerList)
+        //     LoadSingleplayer(data);
+        // else
+        //     LoadMultiplayer(data);
     }
 
 
@@ -272,7 +272,7 @@ public class MenuManager : MonoBehaviour
 
         
         if(isSingleplayerList)
-            buttonNewWorld.onClick.AddListener(() => RunServer());
+            buttonNewWorld.onClick.AddListener(OpenWorldSetUp);
         else
             buttonNewWorld.onClick.AddListener(OpenServerSettings);
 
@@ -362,26 +362,6 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
-    private void OnButtonConnect()
-    {
-
-        switch (connectionMode.value)
-        {
-            case 0:
-                Join();
-                break;
-            case 1:
-                RunServer();
-                break;
-            case 2:
-                //RunServer();
-                //Join();
-                break;
-            default:
-                Debug.LogError("Error: Unknown connection mode", gameObject);
-                break;
-        }
-    }
     private void OnButtonCreateGame()
     {
         GameInfo.instance.isMultiplayer = false;
@@ -426,7 +406,25 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Pr�ba po��czenia");
         ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
-    private void RunServer(HeaderData headerData = null)
+    
+
+
+    public void OpenWorldSetUp()
+    {
+        Debug.Log("setip!!!!");
+        GameInfo.LoadScene(4, 1);
+    }
+
+    public void CreateoWrld()
+    {
+        GameInfo.LoadScene(4, 0);
+        GameInfo.instance.playerName = playerNameInput.text.ToString();
+        GameInfo.instance.passHash = string.IsNullOrEmpty(passwordInput.text) ? AuthUtils.ComputeSha256(passwordInput.text.ToArray()) : null;
+        GameInfo.instance.playerLimit = playerLimit.GetValue();
+    }
+
+    
+    public void RunServer(HeaderData? headerData = null)
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = true;
@@ -441,7 +439,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            GameInfo.instance.SetValue(headerData);
+            GameInfo.instance.SetValue(headerData.Value);
             GameInfo.LoadScene(1, 0, 0.5f);
         }
 

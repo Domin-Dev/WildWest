@@ -7,15 +7,13 @@ using Unity.Collections;
 using Unity.Mathematics;
 
 [System.Serializable]
-public class HeaderData
+public struct HeaderData
 {
+    public FixedString128Bytes worldName;
     public FixedString128Bytes playerName;
     public Difficulty difficulty;
-
     public int seed;
-    public string worldName;
     public long creationTime;
     public long saveTime;
     public double playTime;
-    public CharacterLook characterLook;
 }

@@ -15,24 +15,16 @@ public static class LoadSystem
     public static List<HeaderData> LoadHeaders()
     {
         List<HeaderData> headers = new List<HeaderData>();
-        Debug.Log(SaveSystem.savesPath);
         if (!Directory.Exists(SaveSystem.savesPath)) return null;
-
         var files = Directory.GetDirectories(SaveSystem.savesPath);
-        BinaryFormatter formatter = new BinaryFormatter();
 
         foreach (var file in files)
         {
             try
             {
                 string path = SaveSystem.GetHeaderPath(file);
-                if (!File.Exists(path) || new FileInfo(path).Length == 0) continue;
-                FileStream fileStream = new FileStream(path, FileMode.Open);
-                HeaderData data = formatter.Deserialize(fileStream) as HeaderData;
-
-                if(data == null) continue;  
-                headers.Add(data);
-                fileStream.Close();
+                if(!File.Exists(path) || new FileInfo(path).Length == 0) continue;
+                if()
             }
             catch (Exception ex)
             {
@@ -42,19 +34,19 @@ public static class LoadSystem
 
         return headers;
     }
-    public static HeaderData LoadHeader(string worldName)
+    public static HeaderData? LoadHeader(string worldName)
     {
         string worldPath = SaveSystem.GetWorldPath(worldName);
         if (!Directory.Exists(worldPath)) return null;
         BinaryFormatter formatter = new BinaryFormatter();
-        HeaderData headerData = null;
+        HeaderData? headerData = null;
 
         try
         {
             string path = SaveSystem.GetHeaderPath(worldPath);
             if (!File.Exists(path) || new FileInfo(path).Length == 0) return null; 
             FileStream fileStream = new FileStream(path, FileMode.Open);
-            headerData = formatter.Deserialize(fileStream) as HeaderData;
+            headerData = formatter.Deserialize(fileStream) as HeaderData?;
             fileStream.Close();
         }
         catch (Exception ex)

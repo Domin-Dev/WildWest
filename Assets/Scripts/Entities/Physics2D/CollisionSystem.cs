@@ -417,7 +417,9 @@ public partial struct CollisionSystem : ISystem
             {
                 if (state.EntityManager.HasComponent<GhostInstance>(entity) &&  SystemAPI.HasComponent<GhostChunk>(entity))
                 {
-                    GhostChangeChunk(state.EntityManager, ref entityCommandBuffer,localTransform,entity, out chunkIsLoaded);   
+                    GhostChangeChunk(state.EntityManager, ref entityCommandBuffer,localTransform,entity, out chunkIsLoaded);
+                    if(state.EntityManager.HasComponent<ToSave>(entity)) 
+                        state.EntityManager.SetComponentEnabled<ToSave>(entity,true); 
                 }             
             }
             else if(SystemAPI.HasComponent<Player>(entity) && SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))

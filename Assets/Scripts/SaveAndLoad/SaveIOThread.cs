@@ -6,8 +6,11 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using NUnit.Framework;
 using Unity.Collections;
 using Unity.Transforms;
+using Unity.VisualScripting;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -24,21 +27,23 @@ public static class SaveIOThread
     private static string playersPath;
 
 
-    private static SavingRegion savingRegion;
-    private static SavingPlayer savingPlayer;
+    private static RegionSaver regionSaver;
+    private static IndexedDataSaver<PlayerSave,string> playerSaver;
+    private static DataSaver<HeaderData> headerSaver;
 
     public static void Start(int chunksCountInRegion,float defragmentationLimit)
     {
         if (running) return;
 
-        Debug.Log("dzkoaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        Debug.Log("world name - " + GameInfo.instance.worldName);
         if(GameInfo.instance != null && !string.IsNullOrEmpty(GameInfo.instance.worldName))
         {
             string workName = GameInfo.instance?.worldName;
             SaveSystem.CreateFolders();
 
-            savingRegion = new SavingRegion(SaveSystem.GetRegionsPath(workName),chunksCountInRegion,defragmentationLimit);
-            savingPlayer = new SavingPlayer(SaveSystem.GetPlayersFolderByWorldName(workName));
+            regionSaver = new RegionSaver(SaveSystem.GetRegionsPath(workName),chunksCountInRegion,defragmentationLimit);
+            playerSaver = new IndexedDataSaver<PlayerSave,string>(SaveSystem.GetPlayersFolderByWorldName(workName));
+            headerSaver = new DataSaver<HeaderData>(SaveSystem.GetWorldPath(GameInfo.instance.worldName),"header","dan");
         }
         else 
             return;
@@ -62,27 +67,21 @@ public static class SaveIOThread
     {
         signal.Set();
     }
-
     private static void Loop()
     {
         while (running)
         {
             signal.WaitOne(); 
 
+            Debug.Log("saving!!");
             ChunkSaving();
             PlayerSaving();
+            HeaderSaving();
 
-
-            savingRegion.StartReading(0,0,out var data);
-
-            foreach(var i in data.tiles)
-            {
-                Debug.Log(i.tileID);
-            }
+            bool value = playerSaver.StartReading("Player",out var data);
+            Debug.Log(value + " "+ data.playerName.ToString() + "  " + data.thirst + "  " + data.playerPosition);
         }
     }
-
-
     private static void ChunkSaving()
     {
         List<ChunkSave> chunks = new List<ChunkSave>();
@@ -99,7 +98,7 @@ public static class SaveIOThread
                     chunks.Add(data.chunk);
                 }
             }
-            savingRegion.StartWriting(region,chunks.ToArray());
+            regionSaver.StartWriting(region,chunks.ToArray());
             foreach(var data in chunks)
             {
                 data.Dispose();
@@ -109,19 +108,25 @@ public static class SaveIOThread
     }
     private static void PlayerSaving()
     {
-        while(SavingServerSystem.playersToSaveRO.Length > 0)
+        foreach(var player in SavingServerSystem.playersToSaveRO)
         {
-            foreach(var player in SavingServerSystem.playersToSaveRO)
-            {
-                savingPlayer.StartWriting(player.playerName.ToString(),player);
-            }
+            playerSaver.StartWriting(player.playerName.ToString(),player);
+        }
+        SavingServerSystem.playersToSaveRO.Clear();
+    }
+    private static void HeaderSaving()
+    {
+        if(SavingServerSystem.headerDataRO.HasValue)
+        {
+            HeaderData headerData = SavingServerSystem.headerDataRO.Value;
+            headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            headerSaver.StartWriting(headerData);
+            SavingServerSystem.headerDataRO = null;
         }
     }
-
-
-   
-   
-
-   
-
+    public static bool TryLoadHeader(out HeaderData headerData)
+    {
+        return headerSaver.StartReading(out headerData);
+    }
 }
+

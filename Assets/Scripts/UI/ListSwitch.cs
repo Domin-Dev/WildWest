@@ -43,10 +43,7 @@ public class ListSwitch : BaseSwitch
 
     private void ChangSwitchText(int e)
     {
-        Debug.Log("new!!!" + tab[e]);
-     
         if(tab != null)
             text.text = tab[e];
-        Debug.Log(text.text);
     }
 }
