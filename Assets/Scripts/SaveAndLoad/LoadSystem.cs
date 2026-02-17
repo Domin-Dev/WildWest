@@ -1,30 +1,28 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Localization.Settings;
-
 
 public static class LoadSystem
 { 
-    public static List<HeaderData> LoadHeaders()
+    public static List<(HeaderSave header, PlayerSave playerData)> LoadHeaders()
     {
-        List<HeaderData> headers = new List<HeaderData>();
-        if (!Directory.Exists(SaveSystem.savesPath)) return null;
-        var files = Directory.GetDirectories(SaveSystem.savesPath);
+        List<(HeaderSave,PlayerSave)> headers = new List<(HeaderSave,PlayerSave)>();
+        if (!Directory.Exists(SavePaths.savesPath)) return null;
+        var files = Directory.GetDirectories(SavePaths.savesPath);
 
         foreach (var file in files)
         {
             try
             {
-                string path = SaveSystem.GetHeaderPath(file);
-                if(!File.Exists(path) || new FileInfo(path).Length == 0) continue;
-                if()
+                string worldName = Path.GetFileName(file);
+                if(SaveIOThread.TryLoadHeader(worldName,out HeaderSave header))
+                {
+                    if(SaveIOThread.TryLoadPlayer(header.playerName.ToString(),worldName,out PlayerSave playerData,out var containers))
+                    {
+                        headers.Add((header,playerData));
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -33,49 +31,6 @@ public static class LoadSystem
         }
 
         return headers;
-    }
-    public static HeaderData? LoadHeader(string worldName)
-    {
-        string worldPath = SaveSystem.GetWorldPath(worldName);
-        if (!Directory.Exists(worldPath)) return null;
-        BinaryFormatter formatter = new BinaryFormatter();
-        HeaderData? headerData = null;
-
-        try
-        {
-            string path = SaveSystem.GetHeaderPath(worldPath);
-            if (!File.Exists(path) || new FileInfo(path).Length == 0) return null; 
-            FileStream fileStream = new FileStream(path, FileMode.Open);
-            headerData = formatter.Deserialize(fileStream) as HeaderData?;
-            fileStream.Close();
-        }
-        catch (Exception ex)
-        {
-            Debug.Log(ex);
-        }
-        
-
-        return headerData;
-    }
-    public static PlayerSave? LoadPlayerSave(string worldName,string playerName)
-    {
-        if(worldName == string.Empty) return null;
-
-        string path = SaveSystem.GetPlayerDataPath(worldName, playerName);
-        Debug.Log(path);
-        BinaryFormatter formatter = new BinaryFormatter();
-
-        if (!File.Exists(path) || new FileInfo(path).Length == 0) return null;
-        FileStream fileStream = new FileStream(path, FileMode.Open);
-
-        PlayerSave? playerSave = formatter.Deserialize(fileStream) as PlayerSave?;
-
-        fileStream.Close();
-        return playerSave;
-    }
-    public static PlayerSave? LoadPlayerSave(string playerName)
-    {
-       return LoadPlayerSave(GameInfo.instance.worldName,playerName);
     }
     public static T LoadJson<T>(string path) where T : class
     {
@@ -89,8 +44,6 @@ public static class LoadSystem
         }
         return Data;
     }
-   
-
     public static string LoadText(string path) 
     {
         if (File.Exists(path))
@@ -99,16 +52,11 @@ public static class LoadSystem
         }
         return null;
     }
-
-
     public static void LoadSettings(out string controls, out SettingsData settings)
     {
-        controls = LoadText(SaveSystem.controlsPath);
-        settings = LoadJson<SettingsData>(SaveSystem.settingsPath);
+        controls = LoadText(SavePaths.controlsPath);
+        settings = LoadJson<SettingsData>(SavePaths.settingsPath);
     }
-
-
-
 }
 
 

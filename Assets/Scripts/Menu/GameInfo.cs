@@ -59,7 +59,7 @@ public class GameInfo : MonoBehaviour
         instance.nextScene = 1;
     }
 
-    public void SetValue(HeaderData data)
+    public void SetValue(HeaderSave data)
     {
         playerName = data.playerName.ToString();
         worldName = data.worldName.ToString();
@@ -69,9 +69,9 @@ public class GameInfo : MonoBehaviour
         seed = data.seed;
     }
 
-    public HeaderData GetHeader()
+    public HeaderSave GetHeader()
     {
-        HeaderData headerData = new HeaderData();
+        HeaderSave headerData = new HeaderSave();
         headerData.playerName = playerName;
         headerData.difficulty = difficultyLevel;
         headerData.playTime = playTime;

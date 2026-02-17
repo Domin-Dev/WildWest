@@ -18,7 +18,10 @@ public class DragItem : MonoBehaviour, IPointerDownHandler, IGetSlotPosition
     }
     public SlotPosition GetSlotPosition()
     {
-        return parent.GetComponent<DropSlot>().GetSlotPosition();
+        if(parent != null)
+            return parent.GetComponent<DropSlot>().GetSlotPosition();
+        else
+            return default;
     }
 
     private void OnDestroy()

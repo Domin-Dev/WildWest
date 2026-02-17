@@ -16,8 +16,9 @@ public struct ContainerComponent : IComponentData
     public byte waterResistance => containerStats.waterResistance;
     public ContainerType containerType => EQHelperClient.GetContainerType(containerIndex);
 
-    public FixedBytes16 l;
 }
+
+
 
 
 

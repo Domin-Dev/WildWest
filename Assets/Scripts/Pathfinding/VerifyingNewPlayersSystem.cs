@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -24,18 +25,14 @@ partial struct VerifyingNewPlayersSystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, PlayerVerificationRPC commandRpc, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, PlayerVerificationRPC>().WithEntityAccess())
-        {
-            PlayerSave? playerSave = LoadSystem.LoadPlayerSave(commandRpc.playerName.ToString());
-            bool isSave = playerSave != null;
-
+        {      
+            bool isSave = SaveIOThread.TryLoadPlayer(commandRpc.playerName.ToString(),out PlayerSave playerSave, out var containers);
             var answer = new AnswerPlayerVerificationRPC();
             answer.playerDataIsOnServer = isSave;
             if (isSave)
             {
-                answer.characterLook = playerSave.Value.characterLook;
+                answer.characterLook = playerSave.characterLook;
             }
-
-
 
             RPCHelper.SendRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection,answer);
             entityCommandBuffer.DestroyEntity(entity);           

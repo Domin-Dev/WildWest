@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
+using UnityEngine;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -23,8 +23,13 @@ public partial class SavingServerSystem : SystemBase
     private static NativeList<PlayerSave> playersToSaveRW;   
     public static NativeList<PlayerSave> playersToSaveRO;   
 
-    private static HeaderData? headerDataRW;
-    public static HeaderData? headerDataRO;
+    private static NativeList<(FixedString128Bytes playerName,ContainerSave container)> containersToSaveRW;   
+    public static NativeList<(FixedString128Bytes playerName,ContainerSave container)> containersToSaveRO;   
+
+    private static HeaderSave? headerDataRW;
+    public static HeaderSave? headerDataRO;
+
+
 
 
 
@@ -42,9 +47,19 @@ public partial class SavingServerSystem : SystemBase
         playersToSaveRW = new NativeList<PlayerSave>(16,Allocator.Persistent);
         playersToSaveRO = new NativeList<PlayerSave>(16,Allocator.Persistent);
 
+        containersToSaveRW = new NativeList<(FixedString128Bytes playerName, ContainerSave container)>(64,Allocator.Persistent);
+        containersToSaveRO = new NativeList<(FixedString128Bytes playerName, ContainerSave container)>(64,Allocator.Persistent);
+
+        headerDataRO = null;
+        headerDataRW = null;
+
         RequireForUpdate<SavesConfig>();
-        if(SystemAPI.TryGetSingleton<MapSettings>(out var map) && SystemAPI.TryGetSingleton<SavesConfig>(out var config) )
-            SaveIOThread.Start(map.chunksCountInRegion,config.defragmentationLimit);
+        if(SystemAPI.TryGetSingleton<MapSettings>(out var map) && SystemAPI.TryGetSingleton<SavesConfig>(out var config))
+        {
+            SaveIOThread.Create(map.chunksCountInRegion,config.defragmentationLimit);
+            var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+            SetTimer(currentTick,config.savePeriod);
+        }
     }
 
     [BurstCompile]
@@ -53,6 +68,12 @@ public partial class SavingServerSystem : SystemBase
         SaveIOThread.Stop();
         chunksToSaveRO.Dispose();
         chunksToSaveRW.Dispose();
+
+        playersToSaveRO.Dispose();
+        playersToSaveRW.Dispose();
+
+        containersToSaveRO.Dispose();
+        containersToSaveRW.Dispose();
     }
 
 
@@ -66,11 +87,16 @@ public partial class SavingServerSystem : SystemBase
 
         var settings = SystemAPI.GetSingleton<SavesConfig>();
         SetTimer(currentTick,settings.savePeriod);
+        Debug.Log("zapisywanei!!!!!!!!!!!!!!");
+        Save();
+    }
 
-
+    public void Save()
+    {
         var map = SystemAPI.GetSingleton<MapSettings>();
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged);
+        var playersList = SystemAPI.GetSingletonBuffer<PlayersList>(true);
 
         foreach ((RefRO<ChunkComponent> chunkComp,DynamicBuffer<ChunkTiles> tiles,DynamicBuffer<BuildingObjects> buildingObjects, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<ChunkTiles>,DynamicBuffer<BuildingObjects>>().WithAll<ToSave>().WithNone<NewChunk>().WithEntityAccess())
         {
@@ -92,7 +118,39 @@ public partial class SavingServerSystem : SystemBase
             }));
             ecb.SetComponentEnabled<ToSave>(entity,false);
         }
+    
+        foreach ((RefRO<GhostOwner> owner,RefRO<ContainerComponent> containerComponent,DynamicBuffer<InventorySlot> slots,DynamicBuffer<ItemBarData> barData, Entity entity) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<ContainerComponent>,DynamicBuffer<InventorySlot>,DynamicBuffer<ItemBarData>>().WithAll<ToSave>().WithEntityAccess())
+        {
+            NativeArray<SlotSave> slotsArray = new NativeArray<SlotSave>(containerComponent.ValueRO.capacity,Allocator.Persistent);
+            NativeArray<BarDataSave> itemBarData = new NativeArray<BarDataSave>(containerComponent.ValueRO.capacity,Allocator.Persistent);
+        
+            for(int i = 0; i < slotsArray.Length; i++)
+            {
+                slotsArray[i] = new SlotSave(){ itemId = -1};
+                itemBarData[i] = new BarDataSave(){ value = -1};
+            }
+            foreach(var slot in slots)
+                slotsArray[slot.slot] = new SlotSave(slot);
 
+            foreach(var data in barData)
+                itemBarData[data.slot] = new BarDataSave(data);
+
+            foreach(var player in playersList)
+            {
+                if(player.networkID == owner.ValueRO.NetworkId)
+                {
+                    containersToSaveRW.Add((player.playerName,new ContainerSave()
+                    {
+                        containerIndex = containerComponent.ValueRO.containerIndex,
+                        capacity = containerComponent.ValueRO.capacity,
+                        slots = slotsArray,
+                        barData = itemBarData
+                    }));
+                }
+            } 
+            ecb.SetComponentEnabled<ToSave>(entity,false);
+        }
+        
         foreach ((RefRO<Player> player,RefRO<PlayerSourceConnection> connection,RefRO<Health> health,RefRO<Hunger> hunger, RefRO<Thirst> thirst, RefRO<PlayerLook> look,RefRO<LocalTransform> pos,Entity entity) in 
         SystemAPI.Query<RefRO<Player>,RefRO<PlayerSourceConnection>,RefRO<Health>,RefRO<Hunger>, RefRO<Thirst>,RefRO<PlayerLook>,RefRO<LocalTransform>>().WithAll<ToSave>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
@@ -115,6 +173,7 @@ public partial class SavingServerSystem : SystemBase
         Swap();
     }
 
+
     [BurstCompile]
     private  void SetTimer(NetworkTick currentTick,int time)
     {
@@ -129,15 +188,16 @@ public partial class SavingServerSystem : SystemBase
     [BurstCompile]
     private void Swap()
     {
-        SawpContainers(ref chunksToSaveRO,ref chunksToSaveRW);
-        SawpContainers(ref playersToSaveRO,ref playersToSaveRW);
+        SwapContainers(ref chunksToSaveRO,ref chunksToSaveRW);
+        SwapContainers(ref playersToSaveRO,ref playersToSaveRW);
+        SwapContainers(ref containersToSaveRO,ref containersToSaveRW);
         if(headerDataRO == null)
             headerDataRO = headerDataRW;
         
     }
     
     [BurstCompile]
-    private void SawpContainers<T>(ref NativeList<T> RO,ref NativeList<T> RW) where T : unmanaged
+    private void SwapContainers<T>(ref NativeList<T> RO,ref NativeList<T> RW) where T : unmanaged
     {
         if(RO.IsEmpty && RW.Length > 0)
         {

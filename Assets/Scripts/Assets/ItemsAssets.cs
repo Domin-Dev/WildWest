@@ -347,7 +347,7 @@ public class ItemsAsset : MonoBehaviour
         {
             foreach(var i in item.tags)
             {
-                if(tag != null) tags.Add(i.tag.localizedString.GetLocalizedString());
+                if(i != null) tags.Add(i.tag.localizedString.GetLocalizedString());
             }
         }
         return tags.ToArray();

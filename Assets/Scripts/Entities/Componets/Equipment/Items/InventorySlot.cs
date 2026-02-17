@@ -14,6 +14,17 @@ public struct InventorySlot : IBufferElementData, IGetSlot
     [GhostField] public MyColor color;
     [GhostField] public Quality quality; 
 
+
+    public InventorySlot(SlotSave save,int slot)
+    {
+        this.slot = slot;
+        this.itemId = save.itemId;
+        this.quantity = save.quantity;
+        this.wetness = save.wetness;
+        this.color = save.color;
+        this.quality = save.quality;
+    }
+
     public override string ToString()
     {
         return $"Slot:{slot} ItemID:{itemId} Quantity:{quantity}";

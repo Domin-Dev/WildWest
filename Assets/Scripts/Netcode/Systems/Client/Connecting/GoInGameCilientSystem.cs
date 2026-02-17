@@ -40,7 +40,8 @@ partial struct GoInGameCilientSystem : ISystem
 
                 PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
                 LocalPlayerLook look = SystemAPI.GetSingleton<LocalPlayerLook>();
-                GameInfo.instance.playerName = playerName.ToString();
+                if(!GameInfo.instance.isHost)
+                    GameInfo.instance.playerName = playerName.ToString();
                 entityCommandBuffer.AddComponent(rpcEntity, new GoInGameRequestRPC()
                 {
                     playerName = playerName.name,

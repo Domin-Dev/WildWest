@@ -13,88 +13,32 @@ using UnityEngine.InputSystem;
 
 public static class SaveSystem
 {
-
-    public static string savesPath { get { return Path.Combine(Application.persistentDataPath, "Saves"); } }
-    public static string settingsPath = Application.persistentDataPath + "/settings.json"; 
-    public static string controlsPath = Application.persistentDataPath + "/controls.json"; 
-
-    public static string GetHeaderPath(string worldFolder)
-    {
-        return Path.Combine(worldFolder, "header.dan");
-    }
-    public static string GetMapFolder(string worldName)
-    {
-        return Path.Combine(GetWorldPath(worldName),"Maps");
-    }
-
-    public static string GetWorldPath(string worldName)
-    {
-        return Path.Combine(savesPath, worldName);
-    }
-    public static string GetPlayersFolderByWorldName(string worldName)
-    {
-        return GetPlayersFolder(GetWorldPath(worldName));
-    }
-    public static string GetPlayersFolder(string worldPath)
-    {
-        return Path.Combine(worldPath, "Players");
-    }
-    public static string GetPlayerDataPath(string worldFolder,string playerName)
-    {
-        return Path.Combine(GetPlayersFolderByWorldName(worldFolder), playerName + ".dat");
-    }
-    public static string GetRegionsPath(string worldName)
-    {
-        return Path.Combine(GetWorldPath(worldName),"Regions");
-    }
-
-
-    #region Saves
-
-
     public static void CreateFolders()
     {
-        string folderPath = GetWorldPath(GameInfo.instance.worldName);
-        Debug.Log(folderPath);
-        if(!Directory.Exists(savesPath))
-            Directory.CreateDirectory(savesPath);
+        string folderPath = SavePaths.GetWorldPath(GameInfo.instance.worldName);
+        if(!Directory.Exists(SavePaths.savesPath))
+            Directory.CreateDirectory(SavePaths.savesPath);
 
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
     }
-
-
     public static void Save()
     {
-        Dictionary<string, PlayerSave> players = GetPlayers(out PlayerSave? hostPlayer);
-        BinaryFormatter formatter = new BinaryFormatter();
-        string folderPath = GetWorldPath(GameInfo.instance.worldName);
-
-        if(!Directory.Exists(savesPath))
-            Directory.CreateDirectory(savesPath);
-
-        if (!Directory.Exists(folderPath))
-            Directory.CreateDirectory(folderPath);
-        string worldPath = Path.Combine(folderPath, "world.dust");
-        FileStream stream = new FileStream(worldPath, FileMode.Create);
-        formatter.Serialize(stream, new PlayerSave());
-
-        SaveHeader(folderPath, hostPlayer.Value);
-
-
-
-      //  string playersPath = GetPlayersFolder(folderPath);
-      //  if (!Directory.Exists(playersPath))
-      //      Directory.CreateDirectory(playersPath);
-      //  SavePlayers(playersPath,players);
-        stream.Close();
-    }
-
-    
+          Debug.Log("stop!!");
+        SaveIOThread.Stop();
+        World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SavingServerSystem>().Save();
+         Debug.Log("start!!");
+        SaveIOThread.Start();
+                 Debug.Log("stop!!");
+        SaveIOThread.Stop();
+    }  
+   
+   
+   
     public static void SaveSettings(SettingsData Data, InputActionAsset Controls)
     {
-        SaveJson(Data,settingsPath);
-        SaveJson(Controls.SaveBindingOverridesAsJson(), controlsPath);
+        SaveJson(Data,SavePaths.settingsPath);
+        SaveJson(Controls.SaveBindingOverridesAsJson(), SavePaths.controlsPath);
     }
     public static void SaveJson(object data, string path)
     {
@@ -104,94 +48,5 @@ public static class SaveSystem
     public static void SaveJson(string data, string path)
     {
         File.WriteAllText(path, data);
-    }
-    #endregion
-
-    private static void SaveHeader(string folderPath, PlayerSave playerSave)
-    {
-       // BinaryFormatter formatter = new BinaryFormatter();
-        // string headerPath = GetHeaderPath(folderPath);
-        // FileStream stream = new FileStream(headerPath, FileMode.Create);
-        // HeaderData headerData = new HeaderData();
-        // headerData.playerName = playerSave.playerName;
-        // headerData.difficulty = GameInfo.instance.difficultyLevel;
-        // headerData.playTime = GameInfo.instance.playTime;
-
-
-        // headerData.characterLook = playerSave.characterLook;
-        // headerData.worldName = GameInfo.instance.worldName; 
-        // headerData.seed = GameInfo.instance.seed;   
-
-        // headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-        // headerData.creationTime = GameInfo.instance.creationTime;
-
-        // formatter.Serialize(stream, headerData);
-        // stream.Close();
-    }   
-    private static void SavePlayers(string folderPath, Dictionary<string, PlayerSave> players)
-    {
-        BinaryFormatter formatter = new BinaryFormatter();
-        foreach (var item in players)
-        {
-            string path = Path.Combine(folderPath, item.Key + ".dat");
-            FileStream stream = new FileStream(path, FileMode.Create);
-            formatter.Serialize(stream, item.Value);
-            stream.Close();
-        }
-    }
-    private static Dictionary<string,PlayerSave> GetPlayers(out PlayerSave? hostPlayer)
-    {
-        hostPlayer = null;
-        var world = ClientServerBootstrap.ServerWorld;
-        var entityManager = world.EntityManager;
-        var query = entityManager.CreateEntityQuery(typeof(Player), typeof(Simulate));
-
-        var queryNetworkID = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamConnection));
-        var array = queryNetworkID.ToEntityArray(Allocator.Temp);
-        int hostID = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<NetworkId>(array[0]).Value;
-
-
-        var players = query.ToEntityArray(Unity.Collections.Allocator.Temp);
-        Dictionary<string,PlayerSave> playersToSave = new Dictionary<string, PlayerSave>();
-
-        foreach (var entity in players)
-        {
-            PlayerSave playerSave = new PlayerSave();
-
-            var playerData = entityManager.GetComponentData<Player>(entity);
-            var source = entityManager.GetComponentData<PlayerSourceConnection>(entity);      
-
-            var playerLook = entityManager.GetComponentData<PlayerLook>(entity);
-            var pos = entityManager.GetComponentData<LocalTransform>(entity);
-
-            var health = entityManager.GetComponentData<Health>(entity);
-            var hunger = entityManager.GetComponentData<Hunger>(entity);
-            var thirst = entityManager.GetComponentData<Thirst>(entity);
-
-
-            playerSave.isAdmin = entityManager.HasComponent<Admin>(source.value);
-
-            playerSave.playerName = playerData.playerName;
-            playerSave.characterLook = playerLook.look;
-            playerSave.playerPosition = new float2(pos.Position.x,pos.Position.y);
-
-            playerSave.health = health.Value;
-            playerSave.hunger = hunger.Value;
-            playerSave.thirst = thirst.Value;
-
-
-
-            if (entityManager.GetComponentData<GhostOwner>(entity).NetworkId == hostID)
-            {
-                hostPlayer = playerSave;
-            }
-            playersToSave.TryAdd(playerSave.playerName.ToString(),playerSave);
-        }
-
-        array.Dispose();
-        query.Dispose();
-        queryNetworkID.Dispose();
-        players.Dispose();
-        return playersToSave;
     }
 }

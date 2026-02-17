@@ -14,4 +14,5 @@ public struct PlayerSave
     public int thirst;
 
     public bool isAdmin;
+    
 }

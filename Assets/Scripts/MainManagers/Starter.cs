@@ -9,9 +9,64 @@ using UnityEngine.SceneManagement;
 
 public static class Starter
 {
-    public static void RunServer(HeaderData? headerData = null, ushort port = 7979)
+
+    public static void CreateSinglePlayerWorld()
+    {
+        GameInfo.instance.playerName = "Player";
+        RunServer(null,false);
+    }
+    public static void LoadSingleplayerWorld(HeaderSave headerData)
+    {
+        Debug.Log("loading!!!");
+        GameInfo.instance.playerName = "Player";
+        RunServer(headerData,false);
+    }
+    
+    public static void Join(string playerName,string adressIP,ushort port = 7979)
     {
         GameInfo.instance.isMultiplayer = true;
+        GameInfo.instance.isHost = false;
+        WindowsManager.instance.SwitchBackground(false);
+        GameInfo.LoadScene(2, 0);
+        
+        for (int i = World.All.Count - 1; i >= 0; i--)
+        {
+            World world = World.All[i];
+            if (world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
+            {
+                World.All[i].Dispose();
+            }
+        }
+
+        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
+        ClientWorldSetUp(clientWorld);
+
+
+        if (World.DefaultGameObjectInjectionWorld == null)
+            World.DefaultGameObjectInjectionWorld = clientWorld;
+        
+        NetworkEndpoint networkEndpoint = NetworkEndpoint.Parse(adressIP, port);
+        RefRW<NetworkStreamDriver> networkStreamDriver =
+            clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
+        networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
+
+        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
+        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerName });
+        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
+    }
+    
+    
+    private static void ClientWorldSetUp(World clientWorld)
+    {
+        var simGroup = clientWorld.GetExistingSystemManaged<SimulationSystemGroup>(); 
+        var mapLoadingSystem = clientWorld.GetOrCreateSystemManaged<MapLoadingClientSystem>();
+
+        simGroup.AddSystemToUpdateList(mapLoadingSystem);
+        simGroup.SortSystems();
+    }
+    private static void RunServer(HeaderSave? headerData = null,bool isMultiplayer = true, ushort port = 7979)
+    {
+        GameInfo.instance.isMultiplayer = isMultiplayer;
         GameInfo.instance.isHost = true;
         WindowsManager.instance.SwitchBackground(false);
         
@@ -67,21 +122,5 @@ public static class Starter
             GameInfo.instance.errorMessage = ex.Message;    
             SceneManager.LoadScene(10);
         }
-    }
-
-
-    public static void CreateSinglePlayerWorld()
-    {
-        GameInfo.instance.playerName = "Player";
-        RunServer();
-    }
-
-    private static void ClientWorldSetUp(World clientWorld)
-    {
-        var simGroup = clientWorld.GetExistingSystemManaged<SimulationSystemGroup>(); 
-        var mapLoadingSystem = clientWorld.GetOrCreateSystemManaged<MapLoadingClientSystem>();
-
-        simGroup.AddSystemToUpdateList(mapLoadingSystem);
-        simGroup.SortSystems();
     }
 }

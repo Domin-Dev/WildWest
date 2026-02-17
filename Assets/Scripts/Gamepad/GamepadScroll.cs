@@ -50,7 +50,6 @@ public class GamepadScroll : MonoBehaviour
     }
     private void CheckButtons(Vector2 value)
     {
-        Debug.Log(EventSystem.current.currentSelectedGameObject);
 
         List<CanvasGroup> elements = new List<CanvasGroup>();
         for (int i = 0; i < scrollRect.content.childCount; i++)

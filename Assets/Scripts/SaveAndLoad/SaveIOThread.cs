@@ -1,19 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
-using NUnit.Framework;
 using Unity.Collections;
-using Unity.Transforms;
 using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public static class SaveIOThread
 {
@@ -26,28 +16,32 @@ public static class SaveIOThread
 
     private static string playersPath;
 
-
     private static RegionSaver regionSaver;
-    private static IndexedDataSaver<PlayerSave,string> playerSaver;
-    private static DataSaver<HeaderData> headerSaver;
+    private static PlayerSaver playerSaver;
+    private static DataSaver<HeaderSave> headerSaver;
 
-    public static void Start(int chunksCountInRegion,float defragmentationLimit)
+    public static void Create(int chunksCountInRegion,float defragmentationLimit)
     {
         if (running) return;
 
         Debug.Log("world name - " + GameInfo.instance.worldName);
         if(GameInfo.instance != null && !string.IsNullOrEmpty(GameInfo.instance.worldName))
         {
-            string workName = GameInfo.instance?.worldName;
+            string worldName = GameInfo.instance?.worldName;
             SaveSystem.CreateFolders();
 
-            regionSaver = new RegionSaver(SaveSystem.GetRegionsPath(workName),chunksCountInRegion,defragmentationLimit);
-            playerSaver = new IndexedDataSaver<PlayerSave,string>(SaveSystem.GetPlayersFolderByWorldName(workName));
-            headerSaver = new DataSaver<HeaderData>(SaveSystem.GetWorldPath(GameInfo.instance.worldName),"header","dan");
+            regionSaver = new RegionSaver(SavePaths.GetRegionsPath(worldName),chunksCountInRegion,defragmentationLimit);
+            playerSaver = new PlayerSaver(SavePaths.GetPlayersFolderByWorldName(worldName));
+            headerSaver = new DataSaver<HeaderSave>(SavePaths.GetWorldPath(GameInfo.instance.worldName),SavePaths.headerFileName,SavePaths.headerExtension);
         }
         else 
             return;
 
+        Start();
+    }
+    public static void Start()
+    {
+        if(running) return;
 
         running = true;
         thread = new Thread(Loop)
@@ -59,10 +53,14 @@ public static class SaveIOThread
     }
     public static void Stop()
     {
+        if(!running) return;
+
         running = false;
         signal.Set();
         thread?.Join();
     }
+
+
     public static void Notify()
     {
         signal.Set();
@@ -72,14 +70,10 @@ public static class SaveIOThread
         while (running)
         {
             signal.WaitOne(); 
-
             Debug.Log("saving!!");
             ChunkSaving();
             PlayerSaving();
             HeaderSaving();
-
-            bool value = playerSaver.StartReading("Player",out var data);
-            Debug.Log(value + " "+ data.playerName.ToString() + "  " + data.thirst + "  " + data.playerPosition);
         }
     }
     private static void ChunkSaving()
@@ -108,25 +102,89 @@ public static class SaveIOThread
     }
     private static void PlayerSaving()
     {
-        foreach(var player in SavingServerSystem.playersToSaveRO)
+        List<ContainerSave> containerSaves = new List<ContainerSave>(); 
+        while (SavingServerSystem.containersToSaveRO.Length > 0)
         {
-            playerSaver.StartWriting(player.playerName.ToString(),player);
+            int last = SavingServerSystem.containersToSaveRO.Length - 1;
+            FixedString128Bytes player = SavingServerSystem.containersToSaveRO[last].playerName;
+            for(int i = last; i >= 0; i--)
+            {
+                var data = SavingServerSystem.containersToSaveRO[i];
+                if(data.playerName == player)
+                {
+                    SavingServerSystem.containersToSaveRO.RemoveAt(i);
+                    containerSaves.Add(data.container);
+                }
+            }
+            bool saved = false;
+            for(int i = 0; i < SavingServerSystem.playersToSaveRO.Length; i--)
+            {
+                var data =SavingServerSystem.playersToSaveRO[i];
+                if(data.playerName == player)
+                {
+                    playerSaver.StartWriting(player.ToString(),new[]{data},containerSaves.ToArray());
+                    SavingServerSystem.playersToSaveRO.RemoveAtSwapBack(i);
+                    saved = true;
+                    break;
+                }
+            }
+
+            if(!saved)
+                playerSaver.StartWriting(player.ToString(),null,containerSaves.ToArray());
+
+            foreach(var data in containerSaves)
+                data.Dispose();  
+            containerSaves.Clear();
         }
+
+
+        foreach(var player in SavingServerSystem.playersToSaveRO)
+            playerSaver.StartWriting(player.playerName.ToString(),new[]{player},null);
+        
         SavingServerSystem.playersToSaveRO.Clear();
     }
     private static void HeaderSaving()
     {
         if(SavingServerSystem.headerDataRO.HasValue)
         {
-            HeaderData headerData = SavingServerSystem.headerDataRO.Value;
+            HeaderSave headerData = SavingServerSystem.headerDataRO.Value;
             headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            Debug.Log("play time ! " + headerData.playTime);
             headerSaver.StartWriting(headerData);
             SavingServerSystem.headerDataRO = null;
         }
     }
-    public static bool TryLoadHeader(out HeaderData headerData)
+
+    public static bool TryLoadHeader(string worldName,out HeaderSave headerData)
     {
-        return headerSaver.StartReading(out headerData);
+        return new DataSaver<HeaderSave>(SavePaths.GetWorldPath(worldName),SavePaths.headerFileName,SavePaths.headerExtension).StartReading(out headerData);
+    }
+    public static bool SaveHeader(string worldName,HeaderSave headerData)
+    {
+        return new DataSaver<HeaderSave>(SavePaths.GetWorldPath(worldName),SavePaths.headerFileName,SavePaths.headerExtension).StartWriting(headerData);
+    }    
+    public static bool TryLoadHeader(out HeaderSave headerData)
+    {
+        headerData = default;
+        if(headerSaver != null)
+            return headerSaver.StartReading(out headerData);
+        return false;
+    }
+   
+    public static bool TryLoadPlayer(string playerName, string worldName, out PlayerSave playerData, out ContainerSave[] containers)
+    {
+        bool value = new PlayerSaver(SavePaths.GetPlayersFolderByWorldName(worldName),SavePaths.playerDataExtension).
+            StartReading(playerName,out var player,out containers);
+        if(value) 
+            playerData = player[0];
+        else
+            playerData = default;
+
+        return value;
+    }
+    public static bool TryLoadPlayer(string playerName, out PlayerSave playerData,out ContainerSave[] containers)
+    {
+        return TryLoadPlayer(playerName,GameInfo.instance.worldName,out playerData,out containers);
     }
 }
 

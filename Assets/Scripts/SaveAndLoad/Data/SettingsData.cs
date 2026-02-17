@@ -1,5 +1,6 @@
 ﻿
 
+
 [System.Serializable]
 public class SettingsData
 {

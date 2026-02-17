@@ -130,6 +130,7 @@ public class MenuManager : MonoBehaviour
         /////////////////////////////////////////
         confirmationYes.onClick.AddListener(() =>
         {
+            Debug.Log("usowanie!!  " + worldName);
             WorldManager.RemoveWorld(worldName);
             OpenWorldList();
         });
@@ -148,7 +149,7 @@ public class MenuManager : MonoBehaviour
             }
         });
         //////////////////////////////////////////
-        buttonConnet.onClick.AddListener(Join);
+        buttonConnet.onClick.AddListener(() => Starter.Join(playerNameInput.text,adressIPInput.text,ushort.Parse(portInput.text)));
         buttonBackConnectToIP.onClick.AddListener(CloseWindows);
         adressIPInput.onValueChanged.AddListener((x) => { if (CheckIP(x)) ErrorTurnOff(); });
         portInput.onValueChanged.AddListener((x) => { if (CheckPORT(x)) ErrorTurnOff(); });
@@ -209,6 +210,7 @@ public class MenuManager : MonoBehaviour
         OpenWindow(confirmationRemoveWindow, confirmationNo);
         confirmationText.StringReference.Arguments = new object[] { $"<Color=#5b3138>{worldName}</Color>"};
         confirmationText.RefreshString();
+        this.worldName = worldName;
     }
     public void Edit(string worldName)
     {
@@ -219,22 +221,16 @@ public class MenuManager : MonoBehaviour
     }
     public void Load(string worldName)
     {
-        //HeaderData data = LoadSystem.LoadHeader(worldName);
-        //if (data == null) return;
+        if (!SaveIOThread.TryLoadHeader(worldName,out HeaderSave data)) return;
 
-        // CloseWindows();
-        // if (isSingleplayerList)
-        //     LoadSingleplayer(data);
-        // else
-        //     LoadMultiplayer(data);
+        CloseWindows();
+        if (isSingleplayerList)
+            Starter.LoadSingleplayerWorld(data);
+        else
+            LoadMultiplayer(data);
     }
 
-
-    private void LoadSingleplayer(HeaderData data)
-    {
-        RunServer(data);
-    }
-    private void LoadMultiplayer(HeaderData data)
+    private void LoadMultiplayer(HeaderSave data)
     {
         OpenServerSettings();
         buttonHostServer.onClick.RemoveAllListeners();
@@ -276,15 +272,15 @@ public class MenuManager : MonoBehaviour
         else
             buttonNewWorld.onClick.AddListener(OpenServerSettings);
 
-        List<HeaderData> headers = LoadSystem.LoadHeaders()?.OrderByDescending(s => s.saveTime).ToList();
+        List<(HeaderSave header, PlayerSave playerData)> headers = LoadSystem.LoadHeaders()?.OrderByDescending(s => s.header.saveTime).ToList();
 
         if (headers != null)
         {
-            foreach (HeaderData header in headers)
+            foreach (var header in headers)
             {
                 GameObject gameObject = Instantiate(worldRow, worldList.transform);
                 WorldRow row = gameObject.GetComponent<WorldRow>();
-                row.SetWorld(header, UIAssetsManager.instance.UIHeadMaterial);
+                row.SetWorld(header.header,header.playerData, UIAssetsManager.instance.UIHeadMaterial);
             }
         }
 
@@ -367,47 +363,6 @@ public class MenuManager : MonoBehaviour
         GameInfo.instance.isMultiplayer = false;
         GameInfo.LoadScene(2, 1);
     }
-    private void Join()
-    {
-        GameInfo.instance.isMultiplayer = true;
-        GameInfo.instance.isHost = false;
-        WindowsManager.instance.SwitchBackground(false);
-        GameInfo.LoadScene(2, 0);
-        
-        for (int i = World.All.Count - 1; i >= 0; i--)
-        {
-            World world = World.All[i];
-            if (world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
-            {
-                World.All[i].Dispose();
-            }
-        }
-
-        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
-        ClientWorldSetUp(clientWorld);
-
-
-        if (World.DefaultGameObjectInjectionWorld == null)
-        {
-            World.DefaultGameObjectInjectionWorld = clientWorld;
-        }
-
-        ushort port = ushort.Parse(portInput.text);
-        string ip = adressIPInput.text;
-
-        NetworkEndpoint networkEndpoint = NetworkEndpoint.Parse(ip, port);
-        RefRW<NetworkStreamDriver> networkStreamDriver =
-            clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
-        networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
-
-
-        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerNameInput.text.ToString() });
-        Debug.Log("Pr�ba po��czenia");
-        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
-    }
-    
-
 
     public void OpenWorldSetUp()
     {
@@ -424,7 +379,7 @@ public class MenuManager : MonoBehaviour
     }
 
     
-    public void RunServer(HeaderData? headerData = null)
+    public void RunServer(HeaderSave? headerData = null)
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = true;

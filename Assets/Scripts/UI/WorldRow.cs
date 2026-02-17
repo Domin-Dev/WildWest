@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,29 +25,32 @@ public class WorldRow : MonoBehaviour
 
 
     private string worldName;
-    public void SetWorld(HeaderData header, Material materialIcon)
+    public void SetWorld(HeaderSave header, PlayerSave playerSave, Material materialIcon)
     {
         Sprite background = null;
         Sprite coverSprite = null;
 
+        worldName = header.worldName.ToString();
+        worldNameText.text = worldName;
+
+
+        
         remove.onClick.AddListener(() => MenuManager.instance.Confirmation(worldName));
         edit.onClick.AddListener(() => MenuManager.instance.Edit(worldName));
         play.onClick.AddListener(() => MenuManager.instance.Load(worldName));
 
 
-        worldName = header.worldName.ToString();
-        worldNameText.text = worldName;
 
         saveTime.text = DateTimeOffset.FromUnixTimeSeconds(header.saveTime).DateTime.ToLocalTime().ToString();
 
         Material mat = new Material(materialIcon);
         headIcon.material = mat;
         
-        // mat.SetColor("_SkinColor", MyTools.GetColorFromFloat3(header.characterLook.skinColor));
-        // mat.SetColor("_HairColor", MyTools.GetColorFromFloat3(header.characterLook.hairColor));
-        // mat.SetInt("_HairIndex", header.characterLook.hairIndex);
-        // mat.SetInt("_BeardIndex", header.characterLook.beardndex);
-        // mat.SetInt("_PaintingsIndex", header.characterLook.faceDetailsIndex);
+        mat.SetColor("_SkinColor", MyTools.GetColorFromFloat3(playerSave.characterLook.skinColor));
+        mat.SetColor("_HairColor", MyTools.GetColorFromFloat3(playerSave.characterLook.hairColor));
+        mat.SetInt("_HairIndex", playerSave.characterLook.hairIndex);
+        mat.SetInt("_BeardIndex", playerSave.characterLook.beardndex);
+        mat.SetInt("_PaintingsIndex", playerSave.characterLook.faceDetailsIndex);
 
         difficulty.text = header.difficulty.ToString();
 
@@ -57,11 +60,11 @@ public class WorldRow : MonoBehaviour
 
 
         headIcon.SetMaterialDirty();
-       // if (header.characterLook.faceDetailsIndex == 9)
-      //  {
-         //   coverSprite = UIAssetsManager.instance.ironBarsUI;
-          //  background = UIAssetsManager.instance.blackFrameUI;
-      //  }
+        if (playerSave.characterLook.faceDetailsIndex == 9)
+        {
+            coverSprite = UIAssetsManager.instance.ironBarsUI;
+            background = UIAssetsManager.instance.blackFrameUI;
+        }
         CheckBadges(h, ref background, coverSprite);
 
         if (background != null) SetBackground(background);

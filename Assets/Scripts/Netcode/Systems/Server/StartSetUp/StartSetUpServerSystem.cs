@@ -13,7 +13,6 @@ partial struct StartSetUpServerSystem : ISystem
     {
         if(GameInfo.instance != null && GameInfo.instance.startGame)
         {
-            Debug.Log("jzkzoaaaaaaaaaaaaa");
             GameInfo data = GameInfo.instance;
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
@@ -71,7 +70,8 @@ partial struct StartSetUpServerSystem : ISystem
                 defragmentationLimit = 0.6f
             });
 
-            EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ref ecb);
+            EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);
+            EntityHelper.CreateEntityWithBuffer<PlayersList>(ecb);
             
             ecb.Playback(state.EntityManager);
             ecb.Dispose();

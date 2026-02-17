@@ -2,7 +2,6 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using System;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 
 public abstract class DoubleIndexedDataSaver<Data,FileIndex,ReadingIndex> : IndexedDataSaver<Data,FileIndex> where Data : unmanaged
 {
@@ -31,3 +30,5 @@ public abstract class DoubleIndexedDataSaver<Data,FileIndex,ReadingIndex> : Inde
         return false;
     }
 }
+
+

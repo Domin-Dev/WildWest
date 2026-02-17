@@ -27,6 +27,8 @@ public partial struct NetCodeConnectionEventListener : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         var connectionEventsForClient = SystemAPI.GetSingleton<NetworkStreamDriver>().ConnectionEventsForTick;
         var serverData = SystemAPI.GetSingletonRW<ServerData>();
+        var playersList = SystemAPI.GetSingletonBuffer<PlayersList>(false);
+
 
         foreach (var evt in connectionEventsForClient)
         {
@@ -52,6 +54,16 @@ public partial struct NetCodeConnectionEventListener : ISystem
                         }
                     }
 
+                    for(int i =0; i < playersList.Length; i++)
+                    {
+                        if(playersList[i].networkID == evt.Id.Value)
+                        {
+                            playersList.RemoveAtSwapBack(i);
+                            break;
+                        }
+                    }    
+
+
                     RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerLeftRPC()
                     { 
                         messageTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
@@ -68,8 +80,6 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     var connection = state.EntityManager.GetComponentData<NetworkStreamConnection>(evt.ConnectionEntity);
                     var driver = SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRO;
                     var remoteEP = driver.GetRemoteEndPoint(connection);
-
-                    Debug.Log(remoteEP.Address);
 
 
                     if (serverData.ValueRO.isHost && remoteEP.IsLoopback && serverData.ValueRO.hostNetworkID < 0)

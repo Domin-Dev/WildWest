@@ -11,7 +11,6 @@ using System.Runtime.InteropServices;
 public class DataSaver<Data> : DataSaverRoot where Data : unmanaged
 {
     protected string fileName;
-
     public DataSaver(string directoryPath,string fileName,string extension = "dat") : base(directoryPath,extension)
     {
         this.fileName = fileName;    
@@ -33,7 +32,7 @@ public class DataSaver<Data> : DataSaverRoot where Data : unmanaged
         data = NativeArraySerializer.BytesToStruct<Data>(reader.ReadBytes(Marshal.SizeOf<Data>()));
         return true;
     }
-    public void StartWriting(params Data[] data)
+    public bool StartWriting(params Data[] data)
     {
         try
         {
@@ -47,8 +46,7 @@ public class DataSaver<Data> : DataSaverRoot where Data : unmanaged
 
             if(!ValidateFile(file,ms,pathCurrent,pathBak))
             {
-                StartWriting(data);
-                return;
+                return StartWriting(data);
             }
             Writing(ms,reader,writer,data);
 
@@ -59,13 +57,19 @@ public class DataSaver<Data> : DataSaverRoot where Data : unmanaged
             var compressed = Compress(reader.ReadBytes((int)ms.Length));      
             fileWriter.Write(HashMD5(compressed));
             fileWriter.Write(compressed);  
+            
+            if(file.Position < file.Length)
+                file.SetLength(file.Position);
+                
             file.Flush();
             File.Replace(pathTmp,pathCurrent,pathBak);
+            return true;
         }
         catch(Exception e)
         {
             Debug.LogError(e.Message);
         }
+        return false;
     }   
     public bool StartReading(out Data data)
     {
@@ -75,6 +79,7 @@ public class DataSaver<Data> : DataSaverRoot where Data : unmanaged
             GetFiles(out string pathBak,out string pathTmp,out string pathCurrent);
             if(!CheckReadFiles(pathBak,pathCurrent)) return false;
         
+            Debug.Log(pathCurrent);
             using var file = File.Open(pathCurrent,FileMode.Open,FileAccess.Read, FileShare.Read);
             using var ms = new MemoryStream();
             using var reader = new BinaryReader(ms);

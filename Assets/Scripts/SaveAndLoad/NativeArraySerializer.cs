@@ -1,65 +1,46 @@
 
 using Unity.Collections;
 using System;
-
 using Unity.Collections;
 using System;
 using System.Runtime.InteropServices;
-using Unity.Profiling.LowLevel.Unsafe;
+using UnityEngine;
+using Unity.Collections.LowLevel.Unsafe;
 
 public static class NativeArraySerializer
 {
-    public static byte[] ToBytes<T>(NativeArray<T> array) where T : struct
+    public static byte[] ToBytes<T>(NativeArray<T> array) where T : unmanaged
     {
-        T[] managed = array.ToArray();
-        int size = Marshal.SizeOf<T>() * managed.Length;
-        byte[] bytes = new byte[size];
-
-        for (int i = 0; i < managed.Length; i++)
-        {
-            byte[] elementBytes = StructToBytes(managed[i]);
-            Buffer.BlockCopy(elementBytes, 0, bytes, i * elementBytes.Length, elementBytes.Length);
-        }
-        return bytes;
+        Debug.Log(MemoryMarshal.AsBytes(array.AsSpan()).Length);
+        return MemoryMarshal.AsBytes(array.AsSpan()).ToArray();
     }
-
     public static NativeArray<T> FromBytes<T>(byte[] bytes, Allocator allocator) where T : struct
     {
-        int sizeOfT = Marshal.SizeOf<T>();
-        int count = bytes.Length / sizeOfT;
+        int size = UnsafeUtility.SizeOf<T>();
+        if (bytes.Length % size != 0)
+            throw new ArgumentException("Invalid byte array length.");
 
-        T[] managed = new T[count];
-
-        for (int i = 0; i < count; i++)
-        {
-            byte[] elementBytes = new byte[sizeOfT];
-            Buffer.BlockCopy(bytes, i * sizeOfT, elementBytes, 0, sizeOfT);
-            managed[i] = BytesToStruct<T>(elementBytes);
-        }
-
-        return new NativeArray<T>(managed, allocator);
+        int count = bytes.Length / size;
+        var array = new NativeArray<T>(count, allocator, NativeArrayOptions.UninitializedMemory);
+        MemoryMarshal.Cast<byte, T>(bytes).CopyTo(array);
+        return array;  
     }
 
-    public static byte[] StructToBytes<T>(T str) where T : struct
+    public static byte[] StructToBytes<T>(T value) where T : struct
     {
-        int size = Marshal.SizeOf<T>();
-        byte[] arr = new byte[size];
-
-        IntPtr ptr = Marshal.AllocHGlobal(size);
-        Marshal.StructureToPtr(str, ptr, true);
-        Marshal.Copy(ptr, arr, 0, size);
-        Marshal.FreeHGlobal(ptr);
-
-        return arr;
+        int size = UnsafeUtility.SizeOf<T>();
+        byte[] buffer = new byte[size];
+        MemoryMarshal.Write(buffer, ref value);
+        return buffer;
     }
 
-    public static T BytesToStruct<T>(byte[] arr) where T : struct
+    public static T BytesToStruct<T>(ReadOnlySpan<byte> span) where T : struct
     {
-        int size = Marshal.SizeOf<T>();
-        IntPtr ptr = Marshal.AllocHGlobal(size);
-        Marshal.Copy(arr, 0, ptr, size);
-        T str = Marshal.PtrToStructure<T>(ptr);
-        Marshal.FreeHGlobal(ptr);
-        return str;
+        if (span.Length < UnsafeUtility.SizeOf<T>())
+            throw new ArgumentException("Buffer too small.");
+
+        return MemoryMarshal.Read<T>(span);
     }
+
+
 }

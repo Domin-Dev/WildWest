@@ -19,7 +19,7 @@ public abstract class DataSaverRoot
             if(!Directory.Exists(directoryPath)) 
         Directory.CreateDirectory(directoryPath);
     }
-    protected void GetPaths(string fileName,out string pathBak,out string pathTmp,out string pathCurrent)
+    protected virtual void GetPaths(string fileName,out string pathBak,out string pathTmp,out string pathCurrent)
     {
         pathCurrent = fileName + "." + extension;
         pathTmp = fileName + ".tmp";
@@ -67,6 +67,7 @@ public abstract class DataSaverRoot
                     {
                         file.Close();
                         File.Replace(pathBak, pathCurrent,null);
+                        Debug.Log("bladkkkkkk!!!");
                         return false;
                     }
                     throw new Exception("file is damaged");
@@ -85,6 +86,7 @@ public abstract class DataSaverRoot
                     {
                         file.Close();
                         File.Replace(pathBak, pathCurrent,null);
+                        Debug.Log("blad!!!");
                         return false;
                     }
                     throw new Exception("file is damaged");
@@ -127,4 +129,5 @@ public abstract class DataSaverRoot
 
         return true;
     }
+
 }

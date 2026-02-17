@@ -16,7 +16,6 @@ partial struct EventsServerSystem : ISystem
     {
         state.RequireForUpdate<EquipmentEvent>();
     }
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -24,16 +23,16 @@ partial struct EventsServerSystem : ISystem
         foreach ((RefRO<EquipmentEvent> eventData,Entity entity)
         in SystemAPI.Query<RefRO<EquipmentEvent>>().WithEntityAccess())
         {
-            CreateNewEquipmentEvent(ref state,eventData.ValueRO);
+            CreateNewEquipmentEvent(ref state,entityCommandBuffer,eventData.ValueRO);
             entityCommandBuffer.DestroyEntity(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    public void CreateNewEquipmentEvent(ref SystemState state,EquipmentEvent equipmentEvent)
+    public void CreateNewEquipmentEvent(ref SystemState state,EntityCommandBuffer ecb,EquipmentEvent equipmentEvent)
     {
-        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<GhostOwner> ghostOwner, RefRO<ContainerComponent> container, RefRW<ServerEquipmentEventCounter> counter, RefRO<EquipmentEventCounter> clientCounter)
-        in SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>, RefRO<GhostOwner>, RefRO<ContainerComponent>, RefRW<ServerEquipmentEventCounter>, RefRO<EquipmentEventCounter>>())
+        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<GhostOwner> ghostOwner, RefRO<ContainerComponent> container, RefRW<ServerEquipmentEventCounter> counter, RefRO<EquipmentEventCounter> clientCounter, Entity entity)
+        in SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>, RefRO<GhostOwner>, RefRO<ContainerComponent>, RefRW<ServerEquipmentEventCounter>, RefRO<EquipmentEventCounter>>().WithEntityAccess())
         {
             if (ghostOwner.ValueRO.NetworkId == equipmentEvent.networkID && container.ValueRO.containerIndex == equipmentEvent.containerIndex)
             {
@@ -41,6 +40,7 @@ partial struct EventsServerSystem : ISystem
                 events.Add(equipmentEventBuffer);
                 counter.ValueRW.index++;
                 ClearBuffer(events, clientCounter.ValueRO.index);
+                ecb.SetComponentEnabled<ToSave>(entity,true);
             }
         }
     }

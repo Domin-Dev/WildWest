@@ -7,7 +7,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 
 [System.Serializable]
-public struct HeaderData
+public struct HeaderSave
 {
     public FixedString128Bytes worldName;
     public FixedString128Bytes playerName;
