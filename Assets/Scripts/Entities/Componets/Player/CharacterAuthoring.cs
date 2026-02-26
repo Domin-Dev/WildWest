@@ -21,12 +21,17 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Character());
             AddComponent(entity, new Player() { speed = 1f });
             AddComponent(entity, new NewPlayerTag());
-            AddComponent(entity, new PlayerInput());
+            AddComponent(entity, new PlayerInput()
+            {
+                sightDirection = new float2(float.MinValue,float.MinValue)
+            });
             AddComponent(entity, new PlayerInputSync());
             AddComponent(entity, new ItemInHandInput() { itemInHand = int.MinValue });
             AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
 
+
+            AddComponent(entity, new AimRotation());
 
 
             AddComponent(entity, new Health());
@@ -43,7 +48,7 @@ public class CharacterAuthoring : MonoBehaviour
 
 
 
-[GhostComponent(PrefabType = GhostPrefabType.All)]
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
@@ -53,6 +58,11 @@ public struct PlayerInput : IInputComponentData
     [GhostField(Quantization = 0)] public InputEvent leftButton;
     [GhostField(Quantization = 0)] public NetworkTick dataTick;
 
+
+    public bool SightDirectionIsEmpty()
+    {
+        return sightDirection.x == float.MinValue && sightDirection.y == float.MinValue;
+    }
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
@@ -104,7 +114,6 @@ public struct Player : IComponentData
 public struct Character : IComponentData
 {
     public bool isMove;
-
     public float startAnim;
 
     public int directionHead;
@@ -209,6 +218,17 @@ public struct GhostChunk : IComponentData
 public struct PlayerSourceConnection : IComponentData {
     public Entity value;
 }
+
+
+
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToNonOwner)]
+public struct AimRotation : IComponentData
+{
+    [GhostField] public float angle;
+}
+
+
 
 
 

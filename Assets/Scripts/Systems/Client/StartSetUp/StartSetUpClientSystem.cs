@@ -13,7 +13,6 @@ partial struct StartSetUpClientSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        Debug.Log((GameInfo.instance == null)  + " " + GameInfo.instance?.startGame);
         if(GameInfo.instance != null && GameInfo.instance.startGame)
         {
             GameInfo data = GameInfo.instance;

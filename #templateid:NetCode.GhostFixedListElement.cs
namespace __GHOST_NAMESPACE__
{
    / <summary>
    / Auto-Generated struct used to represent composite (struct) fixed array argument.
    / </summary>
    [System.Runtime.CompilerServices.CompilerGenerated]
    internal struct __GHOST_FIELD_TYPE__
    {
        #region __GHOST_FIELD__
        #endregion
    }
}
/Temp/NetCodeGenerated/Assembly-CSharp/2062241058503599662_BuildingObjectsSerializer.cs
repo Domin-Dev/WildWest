@@ -43,8 +43,8 @@ namespace Assembly_CSharp_Generated
         /// </summary>
         internal struct Snapshot
         {
-            public int position_x;
-            public int position_y;
+            public int globalTilePos_x;
+            public int globalTilePos_y;
             public int id;
             public int variantIndex;
             public int stateIndex;
@@ -71,8 +71,8 @@ namespace Assembly_CSharp_Generated
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void CopyToSnapshotGenerated(in GhostSerializerState serializerState, ref Snapshot snapshot, ref BuildingObjects component)
         {
-                snapshot.position_x = (int) component.position.x;
-                snapshot.position_y = (int) component.position.y;
+                snapshot.globalTilePos_x = (int) component.globalTilePos.x;
+                snapshot.globalTilePos_y = (int) component.globalTilePos.y;
                 snapshot.id = (int) component.id;
                 snapshot.variantIndex = (int) component.variantIndex;
                 snapshot.stateIndex = (int) component.stateIndex;
@@ -85,8 +85,8 @@ namespace Assembly_CSharp_Generated
         static void CopyFromSnapshotGenerated(in GhostDeserializerState deserializerState, ref BuildingObjects component,
             float snapshotInterpolationFactor, float snapshotInterpolationFactorRaw, ref Snapshot snapshotBefore, ref Snapshot snapshotAfter)
         {
-                component.position.x = (int) snapshotBefore.position_x;
-                component.position.y = (int) snapshotBefore.position_y;
+                component.globalTilePos.x = (int) snapshotBefore.globalTilePos_x;
+                component.globalTilePos.y = (int) snapshotBefore.globalTilePos_y;
                 component.id = (int) snapshotBefore.id;
                 component.variantIndex = (short) snapshotBefore.variantIndex;
                 component.stateIndex = (short) snapshotBefore.stateIndex;
@@ -98,8 +98,8 @@ namespace Assembly_CSharp_Generated
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void RestoreFromBackupGenerated(ref BuildingObjects component, ref BuildingObjects backup)
         {
-            component.position.x = backup.position.x;
-            component.position.y = backup.position.y;
+            component.globalTilePos.x = backup.globalTilePos.x;
+            component.globalTilePos.y = backup.globalTilePos.y;
             component.id = backup.id;
             component.variantIndex = backup.variantIndex;
             component.stateIndex = backup.stateIndex;
@@ -112,8 +112,8 @@ namespace Assembly_CSharp_Generated
         static void PredictDeltaGenerated(ref Snapshot snapshot, ref Snapshot baseline1, ref Snapshot baseline2,
             ref GhostDeltaPredictor predictor)
         {
-            snapshot.position_x = predictor.PredictInt(snapshot.position_x, baseline1.position_x, baseline2.position_x);
-            snapshot.position_y = predictor.PredictInt(snapshot.position_y, baseline1.position_y, baseline2.position_y);
+            snapshot.globalTilePos_x = predictor.PredictInt(snapshot.globalTilePos_x, baseline1.globalTilePos_x, baseline2.globalTilePos_x);
+            snapshot.globalTilePos_y = predictor.PredictInt(snapshot.globalTilePos_y, baseline1.globalTilePos_y, baseline2.globalTilePos_y);
             snapshot.id = predictor.PredictInt(snapshot.id, baseline1.id, baseline2.id);
             snapshot.variantIndex = predictor.PredictInt(snapshot.variantIndex, baseline1.variantIndex, baseline2.variantIndex);
             snapshot.stateIndex = predictor.PredictInt(snapshot.stateIndex, baseline1.stateIndex, baseline2.stateIndex);
@@ -125,8 +125,8 @@ namespace Assembly_CSharp_Generated
             [NoAlias]IntPtr changeMaskData, int startOffset)
         {
             uint changeMask = 0;
-            changeMask = (snapshot.position_x != baseline.position_x) ? 1u : 0;
-            changeMask |= (snapshot.position_y != baseline.position_y) ? (1u<<1) : 0;
+            changeMask = (snapshot.globalTilePos_x != baseline.globalTilePos_x) ? 1u : 0;
+            changeMask |= (snapshot.globalTilePos_y != baseline.globalTilePos_y) ? (1u<<1) : 0;
             changeMask |= (snapshot.id != baseline.id) ? (1u<<2) : 0;
             changeMask |= (snapshot.variantIndex != baseline.variantIndex) ? (1u<<3) : 0;
             changeMask |= (snapshot.stateIndex != baseline.stateIndex) ? (1u<<4) : 0;
@@ -143,9 +143,9 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = GhostComponentSerializer.CopyFromChangeMask(changeMaskData, startOffset, ChangeMaskBits);
             if ((changeMask & (1 << 0)) != 0)
-                writer.WritePackedIntDelta(snapshot.position_x, baseline.position_x, compressionModel);
+                writer.WritePackedIntDelta(snapshot.globalTilePos_x, baseline.globalTilePos_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedIntDelta(snapshot.position_y, baseline.position_y, compressionModel);
+                writer.WritePackedIntDelta(snapshot.globalTilePos_y, baseline.globalTilePos_y, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedIntDelta(snapshot.id, baseline.id, compressionModel);
             if ((changeMask & (1 << 3)) != 0)
@@ -164,12 +164,12 @@ namespace Assembly_CSharp_Generated
             ref DataStreamWriter writer, in StreamCompressionModel compressionModel)
         {
             uint changeMask = 0;
-            changeMask = (snapshot.position_x != baseline.position_x) ? 1u : 0;
+            changeMask = (snapshot.globalTilePos_x != baseline.globalTilePos_x) ? 1u : 0;
             if ((changeMask & (1 << 0)) != 0)
-                writer.WritePackedIntDelta(snapshot.position_x, baseline.position_x, compressionModel);
-            changeMask |= (snapshot.position_y != baseline.position_y) ? (1u<<1) : 0;
+                writer.WritePackedIntDelta(snapshot.globalTilePos_x, baseline.globalTilePos_x, compressionModel);
+            changeMask |= (snapshot.globalTilePos_y != baseline.globalTilePos_y) ? (1u<<1) : 0;
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedIntDelta(snapshot.position_y, baseline.position_y, compressionModel);
+                writer.WritePackedIntDelta(snapshot.globalTilePos_y, baseline.globalTilePos_y, compressionModel);
             changeMask |= (snapshot.id != baseline.id) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedIntDelta(snapshot.id, baseline.id, compressionModel);
@@ -196,13 +196,13 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = GhostComponentSerializer.CopyFromChangeMask(changeMaskData, startOffset, ChangeMaskBits);
             if ((changeMask & (1 << 0)) != 0)
-                snapshot.position_x = reader.ReadPackedIntDelta(baseline.position_x, compressionModel);
+                snapshot.globalTilePos_x = reader.ReadPackedIntDelta(baseline.globalTilePos_x, compressionModel);
             else
-                snapshot.position_x = baseline.position_x;
+                snapshot.globalTilePos_x = baseline.globalTilePos_x;
             if ((changeMask & (1 << 1)) != 0)
-                snapshot.position_y = reader.ReadPackedIntDelta(baseline.position_y, compressionModel);
+                snapshot.globalTilePos_y = reader.ReadPackedIntDelta(baseline.globalTilePos_y, compressionModel);
             else
-                snapshot.position_y = baseline.position_y;
+                snapshot.globalTilePos_y = baseline.globalTilePos_y;
             if ((changeMask & (1 << 2)) != 0)
                 snapshot.id = reader.ReadPackedIntDelta(baseline.id, compressionModel);
             else
@@ -232,9 +232,9 @@ namespace Assembly_CSharp_Generated
         {
             var errors = GhostComponentSerializer.ConvertToUnsafeList(errorsList, errorsCount);
             int errorIndex = 0;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.position.x - backup.position.x));
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.globalTilePos.x - backup.globalTilePos.x));
             ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.position.y - backup.position.y));
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.globalTilePos.y - backup.globalTilePos.y));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.id - backup.id));
             ++errorIndex;
@@ -253,11 +253,11 @@ namespace Assembly_CSharp_Generated
             var nameCount = 0;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".position.x");
+            names.Append((FixedString512Bytes)".globalTilePos.x");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".position.y");
+            names.Append((FixedString512Bytes)".globalTilePos.y");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));

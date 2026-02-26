@@ -79,14 +79,12 @@ public class DataSaver<Data> : DataSaverRoot where Data : unmanaged
             GetFiles(out string pathBak,out string pathTmp,out string pathCurrent);
             if(!CheckReadFiles(pathBak,pathCurrent)) return false;
         
-            Debug.Log(pathCurrent);
             using var file = File.Open(pathCurrent,FileMode.Open,FileAccess.Read, FileShare.Read);
             using var ms = new MemoryStream();
             using var reader = new BinaryReader(ms);
 
             if(!ValidateFile(file,ms,pathCurrent,pathBak)) 
             {
-                Debug.Log("przywracanie backup!");
                 return StartReading(out data);
             }
             file.Close();

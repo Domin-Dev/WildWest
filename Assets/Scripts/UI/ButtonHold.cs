@@ -28,8 +28,6 @@ public class ButtonHold : Button
         {
             InputManager.input.UI.Submit.started -= ButtonIsPressed;
             InputManager.input.UI.Submit.canceled -= Release;
-            Debug.Log("brak111");
-
         }
     }
 

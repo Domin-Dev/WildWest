@@ -397,7 +397,7 @@ namespace Assembly_CSharp_Generated
                     ChangeMaskBits = 5,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
-                    SendToOwner = SendToOwnerType.SendToOwner,
+                    SendToOwner = SendToOwnerType.All,
                     VariantHash = 686507675498549308,
                     SerializationStrategyIndex = -1,
                     SerializesEnabledBit = 0,

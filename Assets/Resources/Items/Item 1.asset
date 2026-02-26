@@ -18,11 +18,8 @@ MonoBehaviour:
   ID: 30
   icon: {fileID: -788020699, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags: []
-  x: 0
-  modules: []
-  crafingIngredients: []
+  crafingIngredients:
+  - itemID: 0
+    number: 0
   craftTables: ffffffff
   numberItem: 1
-  references:
-    version: 2
-    RefIds: []

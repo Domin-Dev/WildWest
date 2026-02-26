@@ -35,11 +35,8 @@ partial struct OnEquipClientSystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<EQOnEquipClient> onEquip , Entity entity) in SystemAPI.Query<RefRO<EQOnEquipClient>>().WithEntityAccess())
         {
-             Debug.Log("jest rpc!!!!");
             foreach ((RefRW<Hands> hands,RefRW<Character> character, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRW<Character>>().WithAll<GhostOwnerIsLocal>().WithEntityAccess())
             {
-                 Debug.Log("jest goot!!!!  " + onEquip.ValueRO.slotPosition);
-
                 if(EQHelper.TryGetBufferIndex(slots,playerContainersLookup,player, onEquip.ValueRO.slotPosition, out InventorySlot? slot, out int bufferIndex))
                 {
                     var tag = ItemsAsset.instance.GetTagType<GarmentTag>(slot.Value.itemId,out Item item);
@@ -47,7 +44,6 @@ partial struct OnEquipClientSystem : ISystem
                     { 
                         var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(character.ValueRO.head);  
                         Color? color = slot.Value.color.ConvertToUnityColor();
-                        Debug.Log("dzial!!!!!!!!!!!!!!!!!!!!");
                         HeroEditor.SetMaterialTexture2D(sprite,tag.texturePropertyName, (item as Garment).texture);
                         if(color.HasValue)
                             HeroEditor.SetMaterialColor(sprite,tag.colorPropertyName,color.Value);

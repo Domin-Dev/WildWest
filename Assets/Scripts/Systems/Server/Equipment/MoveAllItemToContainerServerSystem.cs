@@ -48,7 +48,6 @@ partial struct MoveAllItemToContainerServerSystem : ISystem
 
 
 
-             Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
             if (selectedSlot.ValueRO.targetContainer < 0)
             {
                 if (EQHelper.TryGetBufferIndex(slotsLookup, playerContainersLookup, player, command.ValueRO.from, out InventorySlot? slot, out int bufferindex))

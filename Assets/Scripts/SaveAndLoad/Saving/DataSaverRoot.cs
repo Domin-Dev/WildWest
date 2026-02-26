@@ -67,7 +67,6 @@ public abstract class DataSaverRoot
                     {
                         file.Close();
                         File.Replace(pathBak, pathCurrent,null);
-                        Debug.Log("bladkkkkkk!!!");
                         return false;
                     }
                     throw new Exception("file is damaged");
@@ -86,7 +85,6 @@ public abstract class DataSaverRoot
                     {
                         file.Close();
                         File.Replace(pathBak, pathCurrent,null);
-                        Debug.Log("blad!!!");
                         return false;
                     }
                     throw new Exception("file is damaged");

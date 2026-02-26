@@ -284,7 +284,6 @@ public static class DebugController
                 CommandBase commandBase = commandList[i] as CommandBase;
                 text += $"/<Color=#{ChatManager.instance.highlightColor.ToHexString()}>{commandBase.commandId}</Color> {commandBase.commandFormat} - {commandBase.commandDescription}\n";
             }
-            Debug.Log("dzial!! " + text);
             return text;
         },false,false));
         return commandList;

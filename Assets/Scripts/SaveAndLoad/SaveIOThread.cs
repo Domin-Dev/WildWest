@@ -23,8 +23,6 @@ public static class SaveIOThread
     public static void Create(int chunksCountInRegion,float defragmentationLimit)
     {
         if (running) return;
-
-        Debug.Log("world name - " + GameInfo.instance.worldName);
         if(GameInfo.instance != null && !string.IsNullOrEmpty(GameInfo.instance.worldName))
         {
             string worldName = GameInfo.instance?.worldName;
@@ -70,7 +68,6 @@ public static class SaveIOThread
         while (running)
         {
             signal.WaitOne(); 
-            Debug.Log("saving!!");
             ChunkSaving();
             PlayerSaving();
             HeaderSaving();
@@ -149,7 +146,6 @@ public static class SaveIOThread
         {
             HeaderSave headerData = SavingServerSystem.headerDataRO.Value;
             headerData.saveTime = DateTimeOffset.Now.ToUnixTimeSeconds();
-            Debug.Log("play time ! " + headerData.playTime);
             headerSaver.StartWriting(headerData);
             SavingServerSystem.headerDataRO = null;
         }

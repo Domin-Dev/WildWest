@@ -12,8 +12,6 @@ partial struct VariableSynchronizationServerSystem : ISystem
     {
         state.RequireForUpdate<PlayerInput>();
     }
-
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abd30ee0214cf6a45b2d76765a4615b1, type: 3}
-  m_Name: NetcodeConfig
+  m_Name: NetcodeConfig 1
   m_EditorClassIdentifier: 
   IsGlobalConfig: 1
   EnableClientServerBootstrap: 1
   ClientServerTickRate:
-    SimulationTickRate: 50
+    SimulationTickRate: 30
     PredictedFixedStepSimulationTickRatio: 1
-    NetworkTickRate: 50
+    NetworkTickRate: 30
     MaxSimulationStepsPerFrame: 1
     MaxSimulationStepBatchSize: 4
     TargetFrameRateMode: 0

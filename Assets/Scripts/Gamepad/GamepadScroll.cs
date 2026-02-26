@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,7 +50,6 @@ public class GamepadScroll : MonoBehaviour
     }
     private void CheckButtons(Vector2 value)
     {
-
         List<CanvasGroup> elements = new List<CanvasGroup>();
         for (int i = 0; i < scrollRect.content.childCount; i++)
             elements.Add(scrollRect.content.GetChild(i).GetComponent<CanvasGroup>());
@@ -101,7 +100,6 @@ public class GamepadScroll : MonoBehaviour
             item.interactable = visible;
         }
 
-        Debug.Log(EventSystem.current.currentSelectedGameObject);
     }
     private void Update()
     {

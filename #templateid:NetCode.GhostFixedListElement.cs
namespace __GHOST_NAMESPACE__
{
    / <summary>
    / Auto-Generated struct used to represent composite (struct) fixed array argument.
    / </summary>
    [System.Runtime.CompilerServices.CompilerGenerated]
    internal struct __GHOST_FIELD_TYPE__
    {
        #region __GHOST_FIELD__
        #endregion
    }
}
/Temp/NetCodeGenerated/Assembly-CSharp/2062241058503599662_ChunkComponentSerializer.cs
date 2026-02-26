@@ -42,12 +42,13 @@ namespace Assembly_CSharp_Generated
         /// </summary>
         internal struct Snapshot
         {
-            public int index;
+            public int chunkIndex;
             public float worldPos_x;
             public float worldPos_y;
+            public int regionIndex;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 2;
+        private const int ChangeMaskBits = 3;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -66,9 +67,10 @@ namespace Assembly_CSharp_Generated
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void CopyToSnapshotGenerated(in GhostSerializerState serializerState, ref Snapshot snapshot, ref ChunkComponent component)
         {
-                snapshot.index = (int) component.index;
+                snapshot.chunkIndex = (int) component.chunkIndex;
                 snapshot.worldPos_x = component.worldPos.x;
                 snapshot.worldPos_y = component.worldPos.y;
+                snapshot.regionIndex = (int) component.regionIndex;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.CopyFromSnapshotGenerated"/>
@@ -76,17 +78,19 @@ namespace Assembly_CSharp_Generated
         static void CopyFromSnapshotGenerated(in GhostDeserializerState deserializerState, ref ChunkComponent component,
             float snapshotInterpolationFactor, float snapshotInterpolationFactorRaw, ref Snapshot snapshotBefore, ref Snapshot snapshotAfter)
         {
-                component.index = (int) snapshotBefore.index;
+                component.chunkIndex = (int) snapshotBefore.chunkIndex;
                 component.worldPos = new float2(snapshotBefore.worldPos_x, snapshotBefore.worldPos_y);
+                component.regionIndex = (int) snapshotBefore.regionIndex;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.RestoreFromBackupGenerated"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void RestoreFromBackupGenerated(ref ChunkComponent component, ref ChunkComponent backup)
         {
-            component.index = backup.index;
+            component.chunkIndex = backup.chunkIndex;
             component.worldPos.x = backup.worldPos.x;
             component.worldPos.y = backup.worldPos.y;
+            component.regionIndex = backup.regionIndex;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.PredictDeltaGenerated"/>
@@ -94,7 +98,8 @@ namespace Assembly_CSharp_Generated
         static void PredictDeltaGenerated(ref Snapshot snapshot, ref Snapshot baseline1, ref Snapshot baseline2,
             ref GhostDeltaPredictor predictor)
         {
-            snapshot.index = predictor.PredictInt(snapshot.index, baseline1.index, baseline2.index);
+            snapshot.chunkIndex = predictor.PredictInt(snapshot.chunkIndex, baseline1.chunkIndex, baseline2.chunkIndex);
+            snapshot.regionIndex = predictor.PredictInt(snapshot.regionIndex, baseline1.regionIndex, baseline2.regionIndex);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.CalculateChangeMaskGenerated"/>
@@ -103,10 +108,11 @@ namespace Assembly_CSharp_Generated
             [NoAlias]IntPtr changeMaskData, int startOffset)
         {
             uint changeMask = 0;
-            changeMask = (snapshot.index != baseline.index) ? 1u : 0;
+            changeMask = (snapshot.chunkIndex != baseline.chunkIndex) ? 1u : 0;
             changeMask |= (snapshot.worldPos_x != baseline.worldPos_x) ? (1u<<1) : 0;
             changeMask |= (snapshot.worldPos_y != baseline.worldPos_y) ? (1u<<1) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 2);
+            changeMask |= (snapshot.regionIndex != baseline.regionIndex) ? (1u<<2) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 3);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -117,11 +123,13 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = GhostComponentSerializer.CopyFromChangeMask(changeMaskData, startOffset, ChangeMaskBits);
             if ((changeMask & (1 << 0)) != 0)
-                writer.WritePackedIntDelta(snapshot.index, baseline.index, compressionModel);
+                writer.WritePackedIntDelta(snapshot.chunkIndex, baseline.chunkIndex, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.worldPos_x, baseline.worldPos_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.worldPos_y, baseline.worldPos_y, compressionModel);
+            if ((changeMask & (1 << 2)) != 0)
+                writer.WritePackedIntDelta(snapshot.regionIndex, baseline.regionIndex, compressionModel);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -130,16 +138,19 @@ namespace Assembly_CSharp_Generated
             ref DataStreamWriter writer, in StreamCompressionModel compressionModel)
         {
             uint changeMask = 0;
-            changeMask = (snapshot.index != baseline.index) ? 1u : 0;
+            changeMask = (snapshot.chunkIndex != baseline.chunkIndex) ? 1u : 0;
             if ((changeMask & (1 << 0)) != 0)
-                writer.WritePackedIntDelta(snapshot.index, baseline.index, compressionModel);
+                writer.WritePackedIntDelta(snapshot.chunkIndex, baseline.chunkIndex, compressionModel);
             changeMask |= (snapshot.worldPos_x != baseline.worldPos_x) ? (1u<<1) : 0;
             changeMask |= (snapshot.worldPos_y != baseline.worldPos_y) ? (1u<<1) : 0;
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.worldPos_x, baseline.worldPos_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.worldPos_y, baseline.worldPos_y, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 2);
+            changeMask |= (snapshot.regionIndex != baseline.regionIndex) ? (1u<<2) : 0;
+            if ((changeMask & (1 << 2)) != 0)
+                writer.WritePackedIntDelta(snapshot.regionIndex, baseline.regionIndex, compressionModel);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 3);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -150,9 +161,9 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = GhostComponentSerializer.CopyFromChangeMask(changeMaskData, startOffset, ChangeMaskBits);
             if ((changeMask & (1 << 0)) != 0)
-                snapshot.index = reader.ReadPackedIntDelta(baseline.index, compressionModel);
+                snapshot.chunkIndex = reader.ReadPackedIntDelta(baseline.chunkIndex, compressionModel);
             else
-                snapshot.index = baseline.index;
+                snapshot.chunkIndex = baseline.chunkIndex;
             if ((changeMask & (1 << 1)) != 0)
                 snapshot.worldPos_x = reader.ReadPackedFloatDelta(baseline.worldPos_x, compressionModel);
             else
@@ -161,6 +172,10 @@ namespace Assembly_CSharp_Generated
                 snapshot.worldPos_y = reader.ReadPackedFloatDelta(baseline.worldPos_y, compressionModel);
             else
                 snapshot.worldPos_y = baseline.worldPos_y;
+            if ((changeMask & (1 << 2)) != 0)
+                snapshot.regionIndex = reader.ReadPackedIntDelta(baseline.regionIndex, compressionModel);
+            else
+                snapshot.regionIndex = baseline.regionIndex;
         }
 
 #if UNITY_EDITOR || NETCODE_DEBUG
@@ -170,9 +185,11 @@ namespace Assembly_CSharp_Generated
         {
             var errors = GhostComponentSerializer.ConvertToUnsafeList(errorsList, errorsCount);
             int errorIndex = 0;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.index - backup.index));
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.chunkIndex - backup.chunkIndex));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.worldPos, backup.worldPos));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.regionIndex - backup.regionIndex));
             ++errorIndex;
         }
 
@@ -181,11 +198,15 @@ namespace Assembly_CSharp_Generated
             var nameCount = 0;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".index");
+            names.Append((FixedString512Bytes)".chunkIndex");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".worldPos");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".regionIndex");
             ++nameCount;
             return nameCount;
         }
@@ -329,7 +350,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 17627838338810177770,
+                    GhostFieldsHash = 4321598702592082872,
                     ComponentType = ComponentType.ReadWrite<ChunkComponent>(),
                     ComponentSize = UnsafeUtility.SizeOf<ChunkComponent>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -337,7 +358,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 2,
+                    ChangeMaskBits = 3,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.All,

@@ -46,7 +46,6 @@ partial struct PlayerInputSystem : ISystem
 
         if (InputManager.i.playerList.triggered && !ChatManager.instance.isChatting)
         {
-            Debug.Log("new tab!");
             WindowsManager.instance.LoadScene(9);
         }
 

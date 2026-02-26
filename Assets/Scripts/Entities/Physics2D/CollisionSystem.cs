@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -108,8 +109,36 @@ public partial struct CollisionSystem : ISystem
             entityMap.Dispose();
         }
     }
+
+
+    // public void OnUpdate(ref SystemState state)
+    // {
+    //     UpdateLookups(ref state);
+    //     EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+    //     var speed = SystemAPI.Time.DeltaTime * 4;
+    //     if(state.World.IsServer())
+    //     {
+    //         loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
+    //         map = SystemAPI.GetSingleton<MapSettings>();
+    //     }
+
+    //     foreach (var (input, trans, e) in SystemAPI.Query<RefRO<PlayerInput>, RefRW<LocalTransform>>().WithAll<Simulate>().WithEntityAccess())
+    //     {
+    //         var moveInput = new float2(input.ValueRO.movementDirection.x, input.ValueRO.movementDirection.y);
+    //         moveInput = math.normalizesafe(moveInput) * speed;
+    //         trans.ValueRW.Position += new float3(moveInput.x, moveInput.y,0);
+
+    //         EntityChangePosition(ref state,ref entityCommandBuffer,e,trans.ValueRO,out bool isloaded);
+    //     }
+    //     entityCommandBuffer.Playback(state.EntityManager);
+    //     entityCommandBuffer.Dispose();
+    // }
+
+
+
     public void OnUpdate(ref SystemState state)
     {
+        
         UpdateLookups(ref state);
 
         if (state.World.Flags == WorldFlags.GameServer)
@@ -131,7 +160,8 @@ public partial struct CollisionSystem : ISystem
             {
                 velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
-                if (shouldBeChanged) state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
+                if (shouldBeChanged) 
+                    state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
             }
         }
 
@@ -148,6 +178,7 @@ public partial struct CollisionSystem : ISystem
         UpdateEntityMap(ref state, entityArray, physics, transforms);
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         NativeHashMap<int, float> collisions = new NativeHashMap<int, float>(50, Allocator.TempJob);
+      
         if(state.World.IsServer())
         {
             loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
@@ -407,7 +438,7 @@ public partial struct CollisionSystem : ISystem
         hitboxes.Dispose();
     }
 
-    private void EntityChangePosition(ref SystemState state, ref EntityCommandBuffer entityCommandBuffer, Entity entity, LocalTransform localTransform, out bool chunkIsLoaded)
+    private void EntityChangePosition(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer, Entity entity, LocalTransform localTransform, out bool chunkIsLoaded)
     {
         bool hasChanged = isChanged.HasComponent(entity);
         chunkIsLoaded = true;

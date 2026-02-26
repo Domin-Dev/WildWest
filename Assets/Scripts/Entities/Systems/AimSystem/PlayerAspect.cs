@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine.Experimental.GlobalIllumination;
 
 
 
@@ -13,12 +14,13 @@ using Unity.Transforms;
 public readonly partial struct PlayerAspect : IAspect
 {
     private readonly DynamicBuffer<CooldownTargetTick> _cooldownTargetTick;
-    public readonly RefRW<PlayerInput> playerInputSync;
+    public readonly RefRO<PlayerInput> playerInputSync;
     public readonly RefRW<Hands> hands;
     public readonly RefRW<Character> character;
     public readonly RefRW<Player> player;
     private readonly DynamicBuffer<InputBufferData<PlayerInput>> inputPlayer;
 
+    public readonly RefRW<AimRotation> aimRotation;
 
     private readonly RefRO<GhostOwner> _ghostOwner;
    

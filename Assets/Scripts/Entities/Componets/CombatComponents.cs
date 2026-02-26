@@ -54,7 +54,7 @@ public struct DestroyEntityTag : IComponentData{ }
 public struct CooldownTargetTick : ICommandData
 {
    [SerializeField] public NetworkTick Tick { get; set; }
-    [SerializeField] public NetworkTick ability { get; set; }
+   [SerializeField] public NetworkTick ability { get; set; }
 }
 
 

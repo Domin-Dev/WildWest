@@ -45,7 +45,7 @@ public class HybridManager : MonoBehaviour
         cameraPos.x = pos.Position.x;
         cameraPos.y = pos.Position.y;
 
-        Debug.Log(pos);
+
 
         virtualCamera.transform.position = cameraPos;
         Camera.main.transform.position = cameraPos;

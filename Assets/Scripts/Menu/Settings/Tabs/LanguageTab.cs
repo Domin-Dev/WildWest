@@ -46,7 +46,6 @@ public class LanguageTab : SettingsTab
             button.GetComponentInChildren<TextMeshProUGUI>().text =
                 $"{language.Identifier.CultureInfo.DisplayName} [ {language.Identifier.CultureInfo.NativeName} ]";
             languages.Add(code,button);
-            Debug.Log(code + " !!");
         }
     }
     private void SetSettings(SettingsData settings)
@@ -55,7 +54,6 @@ public class LanguageTab : SettingsTab
     }
     private void SetLanguage(string code)
     {
-        Debug.Log("new !!!!!!!!!!!!!! " + code);
         SetUp();
         if (!string.IsNullOrEmpty(selected))
         {

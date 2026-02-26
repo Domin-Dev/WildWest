@@ -172,7 +172,6 @@ public class DebugManager : MonoBehaviour
         );
         if (query.IsEmpty)
         {
-            Debug.Log("nie ma polaczenia!!!");
             return;
         }
 

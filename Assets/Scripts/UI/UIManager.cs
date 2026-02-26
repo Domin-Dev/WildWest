@@ -704,8 +704,6 @@ public class UIManager : MonoBehaviour
         if (e.lastSlot >= 0)
         {
             if (mainItemBar.childCount == 1) return;
-
-            Debug.Log(mainItemBar.childCount);
             Transform last = mainItemBar.GetChild(e.lastSlot);
             last.GetComponent<Image>().sprite = unSelected;
             lastSlotUI = last.GetComponent<RectTransform>();

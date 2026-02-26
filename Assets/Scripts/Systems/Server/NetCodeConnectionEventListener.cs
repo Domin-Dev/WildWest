@@ -111,9 +111,6 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     }
                 break;
             }
-
-
-            UnityEngine.Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.ToFixedString()}!");
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

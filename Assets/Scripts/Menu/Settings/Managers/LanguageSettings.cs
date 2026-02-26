@@ -31,8 +31,6 @@ public class LanguageSettings : Settings
     {
         localeManager.ChangeLocale(code);
         settingsData.language = code;
-
-        Debug.Log(settingsData.language);
     }
 
     #endregion

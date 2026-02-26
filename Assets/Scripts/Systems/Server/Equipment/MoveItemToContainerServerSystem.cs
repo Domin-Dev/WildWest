@@ -47,7 +47,6 @@ partial struct MoveItemToContainerServerSystem : ISystem
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
 
-            Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
             if (selectedSlot.ValueRO.targetContainer < 0)
             {
                 if (EQHelper.TryGetBufferIndex(slotsLookup, playerContainersLookup, player, command.ValueRO.from, out InventorySlot? slot, out int bufferindex))
@@ -68,7 +67,6 @@ partial struct MoveItemToContainerServerSystem : ISystem
             {
 
             }
-            Debug.Log("<Color=cyan>" + "move to container!");
 
             entityCommandBuffer.DestroyEntity(entity);
         }

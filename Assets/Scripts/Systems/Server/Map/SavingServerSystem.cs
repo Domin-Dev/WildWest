@@ -87,7 +87,6 @@ public partial class SavingServerSystem : SystemBase
 
         var settings = SystemAPI.GetSingleton<SavesConfig>();
         SetTimer(currentTick,settings.savePeriod);
-        Debug.Log("zapisywanei!!!!!!!!!!!!!!");
         Save();
     }
 

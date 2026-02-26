@@ -35,10 +35,8 @@ public static class LoadSystem
     public static T LoadJson<T>(string path) where T : class
     {
         T Data = null;
-        Debug.Log("null jest");
         if (File.Exists(path))
         {
-            Debug.Log("exist!");
             string json = File.ReadAllText(path);
             Data = JsonUtility.FromJson<T>(json);
         }

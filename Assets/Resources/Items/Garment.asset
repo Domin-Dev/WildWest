@@ -18,13 +18,17 @@ MonoBehaviour:
   ID: 136
   icon: {fileID: 685533193, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags: []
-  x: 0
-  modules: []
-  crafingIngredients: []
+  crafingIngredients:
+  - itemID: 0
+    number: 0
   craftTables: 
   numberItem: 1
+  durability: 0
   texture: {fileID: 0}
   sprites: []
-  references:
-    version: 2
-    RefIds: []
+  garmentStats:
+    armor: 0
+    movementSpeed: 0
+    insulation: 0
+    waterResistance: 0
+    aesthetic: 0

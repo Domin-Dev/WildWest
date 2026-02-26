@@ -58,6 +58,7 @@ public partial class StartSendingChunkServerSystem : SystemBase
             var buffer = chunkObjectsRO[item.chunkEntity];
             foreach(var element in buffer)
             {
+                Debug.Log("start sending!  " + element.entity);
                 var ghost = new RelevantGhostForConnection()
                 {
                     Connection = item.networkID,

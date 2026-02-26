@@ -7,11 +7,11 @@ using UnityEngine;
 
 
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateInGroup(typeof(GhostSimulationSystemGroup))]
 [UpdateAfter(typeof(CollisionSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-partial struct PlayersInputsServiceClientSystem : ISystem
-{
+ partial struct PlayersInputsServiceClientSystem : ISystem
+  {
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkId>();

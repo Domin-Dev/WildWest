@@ -21,7 +21,6 @@ public class PlayerSaver : IndexedDataSaver<PlayerSave, ContainerSave, string>
             ContainerSave container;
             container.containerIndex = reader.ReadInt32();
             container.capacity = reader.ReadInt32();
-            Debug.Log("pojemnosc  -  " + container.capacity + "  " + container.containerIndex);
             container.slots = NativeArraySerializer.FromBytes<SlotSave>(reader.ReadBytes(UnsafeUtility.SizeOf<SlotSave>() * container.capacity),Allocator.Persistent);
             container.barData = NativeArraySerializer.FromBytes<BarDataSave>(reader.ReadBytes(UnsafeUtility.SizeOf<BarDataSave>() * container.capacity),Allocator.Persistent);
             containers.Add(container);
@@ -79,16 +78,10 @@ public class PlayerSaver : IndexedDataSaver<PlayerSave, ContainerSave, string>
                         if(container.containerIndex < 0 ) 
                             continue;
 
-                        Debug.Log("zapisywanie  - " +  container.capacity  + "   " + container.containerIndex );
-                        Debug.Log(ms.Length);
                         writer.Write(container.containerIndex);
-                        Debug.Log(ms.Length);
                         writer.Write(container.capacity);
-                        Debug.Log(ms.Length + " " + container.slots.Length);
                         writer.Write(NativeArraySerializer.ToBytes(container.slots));
-                        Debug.Log(ms.Length + " " + container.barData.Length);
                         writer.Write(NativeArraySerializer.ToBytes(container.barData));
-                        Debug.Log(ms.Length);
                         counter++;
                     }
                 }

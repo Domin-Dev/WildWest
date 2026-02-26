@@ -783,11 +783,11 @@ MonoBehaviour:
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0
-  GhostGroup: 1
+  GhostGroup: 0
   UsePreSerialization: 0
   UseSingleBaseline: 0
   RollbackPredictedSpawnedGhostState: 0
-  RollbackPredictionOnStructuralChanges: 1
+  RollbackPredictionOnStructuralChanges: 0
 --- !u!114 &-493113525944133890
 MonoBehaviour:
   m_ObjectHideFlags: 0

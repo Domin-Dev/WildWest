@@ -56,11 +56,7 @@ public class MainSettingsManager : MonoBehaviour
         bool settingsEmpty = settings == null;
         if (settingsEmpty) settings = new SettingsData();
   
-
-        Debug.Log(settingsEmpty);
-
         localeManager = this.AddComponent<LocaleManager>();
-
         videoSettings = new VideoSettings();
         videoSettings.SetUp(settings,settingsEmpty);
         audioSettings = new AudioSettings();

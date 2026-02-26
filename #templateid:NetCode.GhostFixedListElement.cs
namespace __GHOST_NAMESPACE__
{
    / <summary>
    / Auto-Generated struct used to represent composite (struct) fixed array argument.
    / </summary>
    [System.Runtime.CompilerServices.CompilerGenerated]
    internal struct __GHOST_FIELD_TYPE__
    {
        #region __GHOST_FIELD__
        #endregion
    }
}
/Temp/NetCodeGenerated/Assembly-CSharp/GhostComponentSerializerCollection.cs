@@ -219,40 +219,6 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
-                DisplayName = "Bullet",
-                Component = ComponentType.ReadWrite<Bullet>(),
-                Hash = 10237261704927524668,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.AllClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
-                DisplayName = "ChunkEvents",
-                Component = ComponentType.ReadWrite<ChunkEvents>(),
-                Hash = 5138059294602664420,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.AllClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
                 DisplayName = "ChunkComponent",
                 Component = ComponentType.ReadWrite<ChunkComponent>(),
                 Hash = 13647115872473700180,
@@ -290,6 +256,40 @@ namespace Assembly_CSharp.Generated
                 DisplayName = "BuildingObjects",
                 Component = ComponentType.ReadWrite<BuildingObjects>(),
                 Hash = 13954076973311546972,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.AllClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
+                DisplayName = "Bullet",
+                Component = ComponentType.ReadWrite<Bullet>(),
+                Hash = 10237261704927524668,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.AllClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
+                DisplayName = "ChunkEvents",
+                Component = ComponentType.ReadWrite<ChunkEvents>(),
+                Hash = 5138059294602664420,
                 SelfIndex = -1,
                 SerializerIndex = -1,
                 PrefabType = GhostPrefabType.All,
@@ -547,10 +547,10 @@ namespace Assembly_CSharp.Generated
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ItemInHandInputItemInHandInputInputBufferDataGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_EquipmentEventBufferGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_InventorySlotGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkEventsGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkComponentGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkTilesGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_BuildingObjectsGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkEventsGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_PlayerInputSyncGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ItemInHandInputSyncGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_PlayerLookGhostComponentSerializer.GetState(ref state));
