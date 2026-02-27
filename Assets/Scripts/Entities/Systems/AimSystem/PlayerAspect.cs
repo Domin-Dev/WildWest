@@ -19,9 +19,8 @@ public readonly partial struct PlayerAspect : IAspect
     public readonly RefRW<Character> character;
     public readonly RefRW<Player> player;
     private readonly DynamicBuffer<InputBufferData<PlayerInput>> inputPlayer;
-
     public readonly RefRW<AimRotation> aimRotation;
-
+    public readonly RefRW<Cooldown> cooldown;
     private readonly RefRO<GhostOwner> _ghostOwner;
    
     public int networkId => _ghostOwner.ValueRO.NetworkId;

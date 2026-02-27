@@ -32,13 +32,12 @@ public class CharacterAuthoring : MonoBehaviour
 
 
             AddComponent(entity, new AimRotation());
+            AddComponent(entity, new Cooldown());
 
 
             AddComponent(entity, new Health());
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
-
-
 
             AddBuffer<PlayerContainers>(entity);
             AddBuffer<CooldownTargetTick>(entity);
@@ -222,13 +221,24 @@ public struct PlayerSourceConnection : IComponentData {
 
 
 
+
+// Player Actions
+
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToNonOwner)]
 public struct AimRotation : IComponentData
 {
     [GhostField] public float angle;
 }
 
+[GhostComponent(SendTypeOptimization = GhostSendType.OnlyPredictedClients)]
+public struct Cooldown : IComponentData
+{
+    public NetworkTick cooldownTick;
+}
 
+
+
+ 
 
 
 
