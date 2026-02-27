@@ -89,7 +89,7 @@ partial struct PlayerInputSystem : ISystem
 
 
 
-            playerInput.ValueRW.dataTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+          //  playerInput.ValueRW.dataTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
             //var inputBuffer = state.EntityManager.GetBuffer<InputBufferData<PlayerInput>>(entity);
 
 

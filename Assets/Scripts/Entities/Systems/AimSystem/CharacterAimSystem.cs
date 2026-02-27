@@ -2,6 +2,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -258,7 +259,8 @@ using UnityEngine;
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         deltaTime = SystemAPI.Time.DeltaTime;
         var currentTick = networkTime.ServerTick;
-        //Debug.Log("kkkk "+ currentTick.TickIndexForValidTick + " " + state.World.IsServer() +  "  " + networkTime.IsFirstTimeFullyPredictingTick);
+        //Debug.Log("kkkk "+ currentTick.TickIndexForValidTick + " " + currentTick.i);
+     
         if(!networkTime.IsFirstTimeFullyPredictingTick) return;
     
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
@@ -270,14 +272,13 @@ using UnityEngine;
             LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(playerAspect.hands.ValueRO.main);
             
 
-            float rot = playerAspect.aimRotation.ValueRO.angle;      
+            float rot = playerAspect.aimRotation.ValueRO.angle;   
+
             for (var i = 1u; i <= networkTime.SimulationStepBatchSize; i++)
             {
                 var testTick = currentTick;
                 testTick.Subtract((uint)networkTime.SimulationStepBatchSize - i);   
-                
-                 if(state.World.IsServer())
-                     testTick.Add(1u);
+            
 
         
                 if(testTick.IsValid && playerAspect.input.GetDataAtTick(testTick, out var input))
@@ -288,16 +289,27 @@ using UnityEngine;
                         continue;
 
                     CalculateNextRotation(ref rot, direction);
-
-                    
+ 
+                    Debug.Log("tickk "+ currentTick.TickIndexForValidTick);
+                    Debug.Log("ffff " +  testTick.TickIndexForValidTick + " " + state.World.IsServer());
                     testTick.Subtract(1);
                     if (playerAspect.input.GetDataAtTick(testTick, out var input2))
                     {
                         uint counter2 = input2.InternalInput.rightButton.Count;
                         if(counter2 - input.InternalInput.rightButton.Count != 0)
-                            Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );       
-                    }
-
+                        {  
+                            // if(state.World.IsServer())
+                            // {
+                            //     Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );       
+                            // }
+                            // else
+                            // {
+                                testTick.Add(1u);
+                                Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );       
+                           // }
+                        }
+                    }   
+                  // Debug.Log(state.World.Unmanaged.IsServer()+ " - " + currentTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );                     
                 }
             }
 
