@@ -15,12 +15,17 @@ using UnityEngine;
 
     private float deltaTime;
     private double last;
+
+    private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
+
     public void OnCreate(ref SystemState state)
     {
         last = 0;
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();  
+
+        playerNeedChunkLookup = state.GetBufferLookup<PlayersNeedChunk>(true);
     }
 
 
@@ -260,12 +265,13 @@ using UnityEngine;
         
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-
         
         deltaTime = SystemAPI.Time.DeltaTime;
         var currentTick = networkTime.ServerTick;
         if(!networkTime.IsFirstTimeFullyPredictingTick) return;
     
+        playerNeedChunkLookup.Update(ref state);
+
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.main);
@@ -285,7 +291,6 @@ using UnityEngine;
                     CalculateNextRotation(ref rot, direction,0.5f);
  
 
-
                     if(!playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick))
                     {
                         testTick.Subtract(1);
@@ -296,7 +301,7 @@ using UnityEngine;
                             {  
                                 testTick.Add(1u);
                                //  Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );     
-                                testTick.Add(20u);
+                                testTick.Add(10u);
                                 playerAspect.cooldown.ValueRW.cooldownTick = testTick;
 
 
@@ -306,17 +311,14 @@ using UnityEngine;
                                         LocalTransform localItem = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.itemInHand);
                                         LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.main);
                                           
-                                        UpdateAimSystem(rot, ref localSideHand, ref localItem, ref localMain, playerAspect.hands);
+                                      
                                         CharacterHandsSystem.GetHandsRotation(rot,ref localSideHand, ref localItem, ref localMain,playerAspect.hands);
-
 
 
                                         state.EntityManager.SetComponentData(playerAspect.hands.ValueRO.main, localMain);
                                         World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
 
-                                        
-
-
+                                    
                                         LocalToWorld point = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.aimPoint);
                                         LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.itemInHand);
 
@@ -329,7 +331,6 @@ using UnityEngine;
                                         entityCommandBuffer.SetComponent(bullet, lt);
 
 
-
                                         if (state.World.Flags == WorldFlags.GameServer)
                                         {
                                             entityCommandBuffer.AddComponent(bullet, new GhostChunk().StartValues());
@@ -339,31 +340,19 @@ using UnityEngine;
                                             NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
                                             bulletComp.isOnServer = true;
                                             entityCommandBuffer.SetComponent(bullet, bulletComp);
+
+
+                                            SendEventsToClients(ref state,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk());
                                         }
-                                    
+                                        else
+                                        {
+                                            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new PlayerActionRPC()
+                                            {
+                                                networkID = playerAspect.networkId
+                                            });
+                                        }
+                                            
                                 }
-
-                                LocalToWorld aimpoint = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.aimPoint);
-
-
-                                // if (hands.ValueRW.actionStatus != 0)
-                                // {
-                                //     transform.Position = hands.ValueRO.targetPosition;
-                                //     transform.Rotation = hands.ValueRO.targetRotation;
-                                // }
-
-                               // SetActionStatus(ref state, 2, hands, transform.Rotation, math.normalize(math.mul(addedRotation, transform.Rotation)), transform.Position, transform.Position - new float3(0.06f, 0, 0));
-
-                                if (state.World.Flags != WorldFlags.GameServer)
-                                {
-                                    Sounds.instance.Shot();
-                                    EntitySpawner.instance.SpawnEntityPrefab(2, aimpoint.Position, aimpoint.Rotation);
-                                    EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity);
-                                    EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation);
-                                }
-
-
-                                continue; 
                             }
                         }
                     }
@@ -371,14 +360,14 @@ using UnityEngine;
                 }
             }
 
-
             playerAspect.aimRotation.ValueRW.angle = rot;
         }
-    
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
  
+
+
 
     private void CalculateNextRotation(ref float currentAngle, Vector2 direction, float maxStep = 0.02f)
     {
@@ -397,7 +386,32 @@ using UnityEngine;
         );
     }
 
+    private void SendEventsToClients(ref SystemState state,EntityCommandBuffer ecb,int networkID, int chunkIndex)
+    {
+        var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>();
+        Entity chunk = Entity.Null; 
+        foreach(var chunkTmp in loadedChunks)
+        {
+            if(chunkTmp.chunkIndex == chunkIndex)
+                chunk = chunkTmp.chunkEntity;
+        }
+        if(chunk == Entity.Null) return;
 
+        var players = playerNeedChunkLookup[chunk];
+        PlayerActionRPC playerActionRPC = new PlayerActionRPC()
+        {
+           networkID = networkID
+        };
+        
+        foreach(var player in players)
+        {
+            if(player.networkID != networkID)
+            {
+                var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player.playerEntity).value;
+                RPCHelper.SendRpc<PlayerActionRPC>(ecb,connection,playerActionRPC);
+            }
+        }
+    }
 
     private void SetActionStatus(ref SystemState state,int index, RefRW<Hands> hands, quaternion lastRot, quaternion targetRot,float3 lastPos, float3 targetPos)
     {
@@ -410,72 +424,6 @@ using UnityEngine;
         hands.ValueRW.targetRotation = targetRot;
 
         hands.ValueRW.actionStatus = index;
-    }
-    private void UpdateAimSystem(float2 direction,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands)
-    {
-        direction = math.normalize(direction);
-        float angle = math.atan2(direction.y, direction.x);
-
-
-    //     float delta = math.atan2(
-    //         math.sin(angle - currentAngle),
-    //         math.cos(angle - currentAngle)
-    //     );
-
-    //     float maxStep = 0.01f;
-
-    //     delta = math.clamp(delta, -maxStep, maxStep);
-
-    //     currentAngle += delta;
-    //         currentAngle = math.atan2(
-    //     math.sin(currentAngle),
-    //     math.cos(currentAngle)
-    // );
-
-        quaternion mainTargetRotation;
-        quaternion sideTargetRotation;
-
-        if (math.abs(angle) > leftSide)
-        {
-            if (hands.ValueRO.rotated)
-            {
-                localMain = localMain.RotateX(math.radians(180));
-                hands.ValueRW.rotated = false;
-                var p = localItem.Position;
-                p.z = -0.0001f;
-                localItem.Position = p;
-            }
-
-            sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
-            angle = -angle;
-            mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
-        }
-        else
-        {
-            if (!hands.ValueRO.rotated)
-            {
-                localMain = localMain.RotateX(math.radians(-180));
-                hands.ValueRW.rotated = true;
-                var p = localItem.Position;
-                p.z = 0.0001f;
-                localItem.Position = p;
-            }
-            sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
-            mainTargetRotation = quaternion.Euler(0, 0, angle);
-        }
-
-
-
-        // localMain.Rotation = mainTargetRotation;
-        // localSideHand.Rotation = sideTargetRotation;
-
-      //  Quaternion.RotateTowards(,)
-
-        localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, deltaTime * 20);
-        localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, deltaTime * 8f);
-
-        if (direction.y > 0) localMain.Position.z = 0.0011f;
-        else localMain.Position.z = -0.001f;
     }
 
     private float GetActionTime(int index)
@@ -520,32 +468,13 @@ using UnityEngine;
         }
         state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.mainhand, localTransform);
     }
-    private void UpdateDirectionIndex(float2 dir, RefRW<Character> character, ref SystemState state)
-    {
-        int newDirIndex = PlayersInputsServiceClientSystem.GetDirectionIndex(dir);
-        if (newDirIndex != character.ValueRO.directionHead)
-        {
-            character.ValueRW.directionHead = newDirIndex;
-            SetDirection(character.ValueRO.head, newDirIndex, ref state);
-            if (!character.ValueRO.isMove)
-            {
-                SetDirection(character.ValueRO.body, newDirIndex, ref state);
-                character.ValueRW.directionBody = newDirIndex;
-            }
-        }
-    }
-    public static void SetDirection(Entity entity, int newIndex, ref SystemState state)
-    {
-        if (state.EntityManager.HasComponent<SpriteRenderer>(entity))
-        {
-            SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(entity);
-            MaterialPropertyBlock materialProperty = new MaterialPropertyBlock();
-            spriteRenderer.GetPropertyBlock(materialProperty);
-            materialProperty.SetInt("_Direction", newIndex);
-            spriteRenderer.SetPropertyBlock(materialProperty);
-        }
-    }
+
 }
+
+
+
+
+
 
 
 //[BurstCompile]

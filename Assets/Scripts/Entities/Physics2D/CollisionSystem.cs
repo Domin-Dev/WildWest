@@ -556,7 +556,7 @@ public partial struct CollisionSystem : ISystem
                         PlayerIsDead(ref state,ref entityCommandBuffer,player);
                         ChatManager.instance.Print(SystemAPI.GetComponent<PlayerName>(connection.value).name + "was killed");
                     }
-                    RPCHelper.SendRpc(ref entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
+                    RPCHelper.SendRpc(entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
                 }
                 else if(SystemAPI.GetSingleton<NetworkId>().Value == bulletOwner)
                 {
@@ -608,7 +608,7 @@ public partial struct CollisionSystem : ISystem
         entityCommandBuffer.SetComponent(player, health);
 
         var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player);
-        RPCHelper.SendRpc(ref entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
+        RPCHelper.SendRpc(entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
     }
     private void UpdateLookups(ref SystemState state)
     {

@@ -103,9 +103,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                 foreach (var player in players)
                 {
                     if(player.playerEntity == pair.entity) continue;
-                    
-                     Debug.Log("stop sending ! " + player.playerEntity);
-
                     var element =  new RelevantGhostForConnection()
                     {
                         Connection = player.networkID,
@@ -123,7 +120,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
             var players = playersNeedChunk[pair.chunk];
             foreach (var player in players)
             {
-                Debug.Log("start sending ! " + player.playerEntity);
                 var element =  new RelevantGhostForConnection()
                 {
                     Connection = player.networkID,
@@ -131,11 +127,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                 };
                 ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
             } 
-        }
-
-        foreach(var i in ghostRelevancy.ValueRO.GhostRelevancySet)
-        {
-            Debug.Log(i.Key.Ghost + " " + i.Key.Connection);
         }
     }
 

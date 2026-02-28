@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -57,7 +58,7 @@ using UnityEngine;
         head.Position = new float3(0, CharacterAnimationSystem.headOffsetY, 0);
 
         character.ValueRW.directionBody = character.ValueRO.directionHead;
-        CharacterAimSystem.SetDirection(character.ValueRO.body, character.ValueRO.directionHead, ref state);
+        CharacterHandsSystem.SetDirection(character.ValueRO.body, character.ValueRO.directionHead, ref state);
 
         state.EntityManager.SetComponentData<LocalTransform>(character.ValueRO.body, body);
         state.EntityManager.SetComponentData<LocalTransform>(character.ValueRO.headParent, head);
@@ -71,12 +72,17 @@ using UnityEngine;
 
     public static int GetDirectionIndex(float2 dir)
     {
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        angle += 180;
+        float angleRad = Mathf.Atan2(dir.y, dir.x);
+        return GetDirectionIndex(angleRad);
+    }
+    public static int GetDirectionIndex(float angleRad)
+    {
+        angleRad = angleRad * Mathf.Rad2Deg;
+        angleRad += 180;
 
-        if (angle >= 20 && angle <= 160) return 0;
-        else if (angle > 160 && angle < 200) return 2;
-        else if (angle >= 200 && angle <= 340) return 1;
+        if (angleRad >= 20 && angleRad <= 160) return 0;
+        else if (angleRad > 160 && angleRad < 200) return 2;
+        else if (angleRad >= 200 && angleRad <= 340) return 1;
         else return 3;
     }
 
@@ -86,7 +92,7 @@ using UnityEngine;
         if (newDirIndex != character.ValueRO.directionBody)
         {
             character.ValueRW.directionBody = newDirIndex;
-            CharacterAimSystem.SetDirection(character.ValueRO.body, newDirIndex, ref state);
+            CharacterHandsSystem.SetDirection(character.ValueRO.body, newDirIndex, ref state);
         }
     }
 }

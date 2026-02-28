@@ -34,7 +34,7 @@ partial struct VerifyingNewPlayersSystem : ISystem
                 answer.characterLook = playerSave.characterLook;
             }
 
-            RPCHelper.SendRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection,answer);
+            RPCHelper.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection,answer);
             entityCommandBuffer.DestroyEntity(entity);           
         }
 

@@ -5,7 +5,7 @@ using Unity.NetCode;
 
 public static class RPCHelper
 {  
-    public static void SendRpc<T>(ref EntityCommandBuffer ecb, Entity connectionEntity, in T rpcCommand)
+    public static void SendRpc<T>(EntityCommandBuffer ecb, Entity connectionEntity, in T rpcCommand)
         where T : unmanaged, IRpcCommand
     {
         Entity rpcEntity = ecb.CreateEntity();
@@ -58,7 +58,7 @@ public static class RPCHelper
             messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             senderIsServer = true
         };
-        SendRpc(ref ecb, client, rpc);
+        SendRpc(ecb, client, rpc);
     }
     private static void DisconnectAllClients(World serverWorld)
     {

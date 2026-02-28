@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +13,6 @@ using UnityEngine.Experimental.GlobalIllumination;
 
 public readonly partial struct PlayerAspect : IAspect
 {
-    private readonly DynamicBuffer<CooldownTargetTick> _cooldownTargetTick;
     public readonly RefRO<PlayerInput> playerInputSync;
     public readonly RefRW<Hands> hands;
     public readonly RefRW<Character> character;
@@ -22,9 +21,13 @@ public readonly partial struct PlayerAspect : IAspect
     public readonly RefRW<AimRotation> aimRotation;
     public readonly RefRW<Cooldown> cooldown;
     private readonly RefRO<GhostOwner> _ghostOwner;
+
+
+    public readonly RefRO<GhostChunk> ghostChunk;
+
+
    
     public int networkId => _ghostOwner.ValueRO.NetworkId;
-    public DynamicBuffer<CooldownTargetTick> cooldownTargetTick => _cooldownTargetTick;
     public DynamicBuffer<InputBufferData<PlayerInput>> input => inputPlayer;
 }
 

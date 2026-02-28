@@ -33,7 +33,7 @@ partial struct GetPlayerListServerSystem : ISystem
             {
                 PlayerList playerList = playerLists[i];
                 playerList.max = (short)playerLists.Length;
-                RPCHelper.SendRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, playerList);
+                RPCHelper.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, playerList);
             }
 
             entityCommandBuffer.DestroyEntity(entity);
