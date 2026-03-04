@@ -112,7 +112,6 @@ public partial class MapLoadingClientSystem : SystemBase
                     foreach (var item in buildingObjects)
                     {
                        ecb.AppendToBuffer<LinkedEntityGroup>(e,BuildingObjectCreator.CreateObject(entitiesReferences,EntityManager,ecb,item));
-
                     }
                 }
             }).WithoutBurst().Run();

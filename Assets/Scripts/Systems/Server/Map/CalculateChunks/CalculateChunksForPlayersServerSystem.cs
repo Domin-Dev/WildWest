@@ -26,6 +26,7 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
         RequireForUpdate(playersQuery);
     }
     
+
     [BurstCompile]
     protected override void OnUpdate()
     {
@@ -40,10 +41,12 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
             map = mapSettings,
             loadedChunks = loadedChunks,
             ecb = ecb,
-            loadedChunksMap = chunkManagerSystem.loadedChunks.AsReadOnly()          
+            loadedChunksMap = ChunkManagementServerSystem.loadedChunks.AsReadOnly()          
         }
         .ScheduleParallel(playersQuery,Dependency);
     }
+    
+
     [BurstCompile]
     public partial struct CalculateChunksForPlayersJob : IJobEntity
     {

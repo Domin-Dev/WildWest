@@ -699,7 +699,6 @@ public class GridVisualization : MonoBehaviour
             Variant variant = ((VariantItem)item).objectVariants[gridTile.gridObject.variantIndex].variants[gridTile.gridObject.stateIndex];
             Vector2 mainPos = gridTile.gridObject.mainPosition;
             GetTileByGridPosition(mainPos)?.SetGridObject(null);
-            Debug.Log(variant);
             for (int i = 0; i < variant.objectPoints.Length; i++)
             {
                 GetTileByGridPosition(mainPos + variant.objectPoints[i])?.SetGridObject(null);

@@ -11,7 +11,6 @@ public static class NativeArraySerializer
 {
     public static byte[] ToBytes<T>(NativeArray<T> array) where T : unmanaged
     {
-        Debug.Log(MemoryMarshal.AsBytes(array.AsSpan()).Length);
         return MemoryMarshal.AsBytes(array.AsSpan()).ToArray();
     }
     public static NativeArray<T> FromBytes<T>(byte[] bytes, Allocator allocator) where T : struct

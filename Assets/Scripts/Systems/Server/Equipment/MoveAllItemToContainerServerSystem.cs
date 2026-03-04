@@ -45,24 +45,29 @@ partial struct MoveAllItemToContainerServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
+            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player,command.ValueRO.from.containerIndex);
 
 
 
-            if (selectedSlot.ValueRO.targetContainer < 0)
+            if(containerFrom.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity))
             {
-                if (EQHelper.TryGetBufferIndex(slotsLookup, playerContainersLookup, player, command.ValueRO.from, out InventorySlot? slot, out int bufferindex))
+                if (selectedSlot.ValueRO.targetContainer < 0 )
                 {
-                    List<int> containers = EQHelper.GetPlayerContainers(ref state, playerContainersLookup, player, slot.Value.itemId);
-                    containers.Remove(command.ValueRO.from.containerIndex);
-                    var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player,slot.Value, containers.ToArray());
-                    var events = EQHelper.MoveItems(ref state,ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup, command.ValueRO.from, player, items);
-                    EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
+                    if (EQHelper.TryGetBufferIndex(slotsLookup, playerContainersLookup, player, command.ValueRO.from, out InventorySlot? slot, out int bufferindex))
+                    {
+                        List<int> containers = EQHelper.GetPlayerContainers(ref state, playerContainersLookup, player, slot.Value.itemId);
+                        containers.Remove(command.ValueRO.from.containerIndex);
+                        var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player,slot.Value, containers.ToArray());
+                        var events = EQHelper.MoveItems(ref state,ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup, command.ValueRO.from, player, items);
+                        EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
+                    }
+                }
+                else
+                {
+                    
                 }
             }
-            else
-            {
 
-            }
             entityCommandBuffer.DestroyEntity(entity);
         }
 

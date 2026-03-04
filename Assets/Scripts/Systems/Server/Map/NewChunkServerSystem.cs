@@ -35,7 +35,7 @@ public partial class NewChunkServerSystem : SystemBase
         var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
         foreach ((RefRO<ChunkComponent> chunkComponent, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>>().WithAll<NewChunk,Simulate>().WithNone<QueuedRequest>().WithEntityAccess())
         {
-            chunkManagerSystem.loadedChunks.TryAdd(chunkComponent.ValueRO.chunkIndex,new LoadedChunks()
+            ChunkManagementServerSystem.loadedChunks.TryAdd(chunkComponent.ValueRO.chunkIndex,new LoadedChunks()
             {
                 chunkEntity = entity,
                 chunkIndex = chunkComponent.ValueRO.chunkIndex,

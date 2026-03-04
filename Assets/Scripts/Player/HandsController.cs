@@ -359,7 +359,7 @@ public class HandsController : MonoBehaviour
     public void SetAttackVector(Vector3 Angle, Vector3 position)
     {       
         canAttack = false;
-        Timer.Create(setTime, () => { canAttack = true; return false; });
+        Timer.Create(setTime, () => { canAttack = true; return true; });
         attackItem = fliper;
         
         attackAngle = hand.localEulerAngles - Angle;  

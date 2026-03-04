@@ -33,21 +33,15 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
     private void OnEnable()
     {
         Debug.Log("need key!");
         if(InputManager.i != null)  InputManager.i.debugStats.performed += OpenDebugStats;
     }
-
-
-
     private void OnDisable()
     {
         if (InputManager.i != null) InputManager.i.debugStats.performed -= OpenDebugStats;
     }
-
-
     private void OpenDebugStats(UnityEngine.InputSystem.InputAction.CallbackContext obj)
     {
         var scene = SceneManager.GetSceneByBuildIndex(DebugUIIndex);
@@ -56,7 +50,6 @@ public class GameManager : MonoBehaviour
         else
             SceneManager.UnloadSceneAsync(DebugUIIndex);
     }
-
     private void OnValue(object s, EventArgs e)
     {
         Debug.Log("dziala");

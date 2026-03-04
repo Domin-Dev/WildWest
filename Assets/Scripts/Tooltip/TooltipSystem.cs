@@ -39,7 +39,7 @@ public class TooltipSystem : MonoBehaviour
         ShowBase(() => {
             current.displayingObj = displayingObj; 
             current.tooltip.SetText(content, header, headerColor); 
-            return false;
+            return true;
         });
     }
     public static void Show(SlotPosition slotPosition, ItemStats itemStats, bool showInstant = false)
@@ -64,7 +64,7 @@ public class TooltipSystem : MonoBehaviour
                 current.displayingObj = tooltipInfo.displayingObj; 
                 current.tooltip.SetText(tooltipInfo.content,tooltipInfo.header, tooltipInfo.headerColor);
             }
-            return false;
+            return true;
         });
     }
     

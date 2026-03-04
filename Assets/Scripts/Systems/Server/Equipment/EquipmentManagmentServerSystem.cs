@@ -36,6 +36,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             SlotPosition from =  command.ValueRO.from;
+           
             if(command.ValueRO.from.IsNullSlot())
                 from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
 
@@ -44,7 +45,8 @@ partial struct EquipmentManagmentServerSystem : ISystem
             var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.ValueRO.to.containerIndex);
 
             List<EquipmentEvent> events = new List<EquipmentEvent>();
-            if (containerFrom.HasValue && containerTo.HasValue)
+            if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && 
+            !SystemAPI.HasComponent<ServerContainer>(containerTo.Value.entity))
             {
                 var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
                     containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, from.slotIndex, command.ValueRO.value);

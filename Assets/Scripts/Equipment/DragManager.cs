@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -69,7 +69,6 @@ public class DragManager : MonoBehaviour
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
 
 
-            Debug.Log(itemStats + " " + (itemStats is ItemWithBar));
 
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
@@ -77,7 +76,6 @@ public class DragManager : MonoBehaviour
         else
         {
             ItemStats item = SlotSelected(dropSlot, eventData,true);
-            Debug.Log( " <Color=green> " + item?.ToString());
             if (item != null)
             {
                 SlotPosition slotPosition = dropSlot.GetSlotPosition();

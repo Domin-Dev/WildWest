@@ -22,6 +22,8 @@ public class ContainerData
 public class EquipmentConfigData : ScriptableObject
 {
     public List<ContainerData> containers;
-
     public LocalizedString defaultContainerName;
+
+    public int itemInHand_ContainerIndex;
+    public int hotBar_ContainerIndex;
 }

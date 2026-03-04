@@ -62,19 +62,22 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent(character, new NewChunk());
             entityCommandBuffer.SetComponentEnabled<NewChunk>(character, true);
             entityCommandBuffer.AddComponent(character, new SendToOwner());
- 
+            entityCommandBuffer.AddBuffer<GhostChildren>(character);
 
 
             AddMapComponents(ref entityCommandBuffer,character);
-            AddEquipmentEntities(ref state, ref entityCommandBuffer, character, networkId,containers);
-            
+            AddEquipmentEntities(ref state, ref entityCommandBuffer, character, rpcCommandRequest.ValueRO.SourceConnection, networkId,containers);
+
+
+
+
             entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
             entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
             entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });    
             entityCommandBuffer.AddComponent<ToSave>(character);
             entityCommandBuffer.SetComponentEnabled<ToSave>(character,true);
 
-            //entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
+            entityCommandBuffer.AppendToBuffer(rpcCommandRequest.ValueRO.SourceConnection, new LinkedEntityGroup() { Value = character });
 
             Entity confirmation = entityCommandBuffer.CreateEntity();
             entityCommandBuffer.AddComponent<YouAreInGameRPC>(confirmation);
@@ -112,7 +115,7 @@ partial struct GoInGameServerSystem : ISystem
         };
     }
 
-    private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer ecb, Entity character, int networkID, ContainerSave[] containerSaves)
+    private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer ecb, Entity character,Entity connection, int networkID, ContainerSave[] containerSaves)
     {
         var entities = SystemAPI.GetSingleton<EntitiesReferences>();
         ecb.AddComponent<ContainerSettings>(character, new ContainerSettings() {
@@ -132,7 +135,7 @@ partial struct GoInGameServerSystem : ISystem
                         containerSave = save;
                 }
             }
-            CreateNewContainer(character,ref ecb,ref entities,networkID,cont.Value,containerSave);
+            CreateNewContainer(ref state,character, connection,ref ecb,ref entities,networkID,cont.Value.stats,containerSave);
         }
 
         if(containerSaves != null)
@@ -147,29 +150,25 @@ partial struct GoInGameServerSystem : ISystem
         ecb.AddBuffer<PlayerChunks>(character);
     }
     
-    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,byte waterResistance, int capacity, int index, MandatoryProperties mandatory = MandatoryProperties.none, int mandatoryData = -1,ContainerSave? containerSave = null)
+    private void CreateNewContainer(ref SystemState state,Entity player,Entity connection,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,ContainerStats stats,ContainerSave? containerSave = null)
     {
         var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
         entityCommandBuffer.SetComponent(e, new ContainerComponent() {
-            containerStats = new ContainerStats()
-            { 
-                capacity = capacity,
-                containerIndex = index,
-                mandatoryProperties = mandatory,
-                mandatoryData = mandatoryData,
-                waterResistance = waterResistance
-            }
+            containerStats = stats
         });
+        if(stats.serverContainer)
+            entityCommandBuffer.AddComponent<ServerContainer>(e);
 
         entityCommandBuffer.AddComponent(e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
-        entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = index});
+        entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = stats.containerIndex});
         
-        
-        entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(capacity + 1);
-        entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(capacity + 1);
-        entityCommandBuffer.AddComponent(e, new SendToOwner());
+        entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(stats.capacity + 1);
+        entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(stats.capacity + 1);
+        entityCommandBuffer.AppendToBuffer(connection, new LinkedEntityGroup() { Value = e });
+        entityCommandBuffer.AddComponent(e,new ContainerPlayer(){ player = player});
 
+        
         if(containerSave != null)
         {
             for(int i = 0; i < containerSave.Value.slots.Length;i++)
@@ -186,10 +185,5 @@ partial struct GoInGameServerSystem : ISystem
                 }
             }
         }
-    }
-    private void CreateNewContainer(Entity player,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID, ContainerData data,ContainerSave? containerSave = null)
-    {
-        CreateNewContainer(player,ref entityCommandBuffer,ref entities,networkID,data.stats.waterResistance,data.stats.capacity,
-        data.stats.containerIndex,data.stats.mandatoryProperties,data.stats.mandatoryData,containerSave);
     }
 }

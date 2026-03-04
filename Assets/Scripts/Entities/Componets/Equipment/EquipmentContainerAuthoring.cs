@@ -16,10 +16,10 @@ public class EquipmentContainerAuthoring : MonoBehaviour
 
             AddComponent(entity, new ToSave());
             SetComponentEnabled<ToSave>(entity,false);
-
+            
             AddBuffer<InventorySlot>(entity);
             AddBuffer<ItemBarData>(entity);
-            
+
             AddBuffer<EquipmentEventBuffer>(entity);
         }
     }

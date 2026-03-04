@@ -34,10 +34,6 @@ partial struct OnEquipServerSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
-        playerContainersLookup.Update(ref state);
-        slotsLookup.Update(ref state);
-        barsLookup.Update(ref state);
-
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         
         foreach ((RefRO<EQOnEquip> command, Entity entity) in

@@ -35,6 +35,10 @@ public struct InventorySlot : IBufferElementData, IGetSlot
         wetness = math.clamp(newValue + wetness, 0.0f, 100.0f);
     }
 
+    public void SetSlot(int slot)
+    {
+        this.slot = slot;
+    }
     public int GetSlot() { return slot; }
 }
 

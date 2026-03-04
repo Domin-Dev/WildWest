@@ -301,12 +301,14 @@ using UnityEngine;
                             {  
                                 testTick.Add(1u);
                                //  Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );     
-                                testTick.Add(10u);
+                                testTick.Add(5u);
                                 playerAspect.cooldown.ValueRW.cooldownTick = testTick;
 
 
                                 if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
                                 {
+                                        World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
+
                                         LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.side);
                                         LocalTransform localItem = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.itemInHand);
                                         LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.main);
@@ -316,18 +318,23 @@ using UnityEngine;
 
 
                                         state.EntityManager.SetComponentData(playerAspect.hands.ValueRO.main, localMain);
-                                        World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
 
                                     
                                         LocalToWorld point = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.aimPoint);
                                         LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.itemInHand);
 
-
+                                        //World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
+ 
                                     
                                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                                         entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
                                         Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + "<Color=#00ff00>  Position! " + point.Position + " " + quaternion.Euler(0, 0, rot));
-                                        LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(quaternion.Euler(0, 0, rot));
+                                       
+                                        Unity.Mathematics.Random random = new Unity.Mathematics.Random(testTick.TickIndexForValidTick);
+                                        float spread = 10f * Mathf.Deg2Rad;
+
+                                        Debug.Log(random.NextFloat(-spread,spread));
+                                        LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(quaternion.Euler(0, 0, rot + random.NextFloat(-spread,spread)));
                                         entityCommandBuffer.SetComponent(bullet, lt);
 
 
@@ -335,12 +342,10 @@ using UnityEngine;
                                         {
                                             entityCommandBuffer.AddComponent(bullet, new GhostChunk().StartValues());
                                             entityCommandBuffer.AddComponent(bullet, new NewChunk());
-                    
                                             entityCommandBuffer.AddComponent(bullet, new EntityToHide());
                                             NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
                                             bulletComp.isOnServer = true;
                                             entityCommandBuffer.SetComponent(bullet, bulletComp);
-
 
                                             SendEventsToClients(ref state,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk());
                                         }
@@ -385,7 +390,6 @@ using UnityEngine;
         math.cos(currentAngle)
         );
     }
-
     private void SendEventsToClients(ref SystemState state,EntityCommandBuffer ecb,int networkID, int chunkIndex)
     {
         var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>();
@@ -412,7 +416,6 @@ using UnityEngine;
             }
         }
     }
-
     private void SetActionStatus(ref SystemState state,int index, RefRW<Hands> hands, quaternion lastRot, quaternion targetRot,float3 lastPos, float3 targetPos)
     {
         hands.ValueRW.lastRotation = lastRot;
@@ -425,7 +428,6 @@ using UnityEngine;
 
         hands.ValueRW.actionStatus = index;
     }
-
     private float GetActionTime(int index)
     {
         switch (index)

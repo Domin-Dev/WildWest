@@ -62,7 +62,6 @@ public class VariantItemEditor : ItemEditor
         Debug.Log($"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}");
         if (!AssetDatabase.IsValidFolder($"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}"))
         {
-            Debug.Log("Tworzehhhhnie");
             AssetDatabase.CreateFolder($"{MyTools.buildingObjectsSpritesPath}", $"{variantItem.name}_{variantItem.ID}");
             AssetDatabase.Refresh();
            // AssetDatabase.fol

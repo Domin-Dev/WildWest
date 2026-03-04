@@ -17,13 +17,14 @@ public partial class StartSendingChunkServerSystem : SystemBase
     EntityQuery requests;
 
     BufferLookup<ChunkObjects> chunkObjectsRO;
+    BufferLookup<GhostChildren> childrenRO;
 
     [BurstCompile]
     protected override void OnCreate()
     {
         requests = SystemAPI.QueryBuilder().WithAll<StartSendingChunkRequest,ProcessInTheTick>().Build();
         chunkObjectsRO = SystemAPI.GetBufferLookup<ChunkObjects>(true);
-
+        childrenRO = SystemAPI.GetBufferLookup<GhostChildren>(true);
 
         RequireForUpdate(requests);
         RequireForUpdate<MapSettings>();
@@ -38,6 +39,8 @@ public partial class StartSendingChunkServerSystem : SystemBase
     protected override void OnUpdate()
     {
         chunkObjectsRO.Update(this);
+        childrenRO.Update(this);
+        
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
         var entities = this.requests.ToEntityArray(Allocator.TempJob);
@@ -64,7 +67,22 @@ public partial class StartSendingChunkServerSystem : SystemBase
                     Connection = item.networkID,
                     Ghost = element.ghostID
                 };
+
                 ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(ghost,0);
+
+                if(childrenRO.HasBuffer(element.entity))
+                {
+                    var children = childrenRO[element.entity];
+                    foreach(var child in children)
+                    {
+                        ghost = new RelevantGhostForConnection()
+                        {
+                            Connection = item.networkID,
+                            Ghost = child.ghostID
+                        };
+                        ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(ghost,0);
+                    }
+                }
             }
         }
 

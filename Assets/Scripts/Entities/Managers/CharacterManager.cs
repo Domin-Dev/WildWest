@@ -52,17 +52,17 @@ public class CharacterManager : MonoBehaviour
         {
             Entity entity = entities[0];
 
-            ItemInHandInput itemInHandInput = entityManager.GetComponentData<ItemInHandInput>(entity);
-            if (itemInHandInput.itemInHand != id)
-            {
-                ItemInHandInputSync itemInHandInputSync = entityManager.GetComponentData<ItemInHandInputSync>(entity);
+            //ItemInHandInput itemInHandInput = entityManager.GetComponentData<ItemInHandInput>(entity);
+            // if (itemInHandInput.itemInHand != id)
+            // {
+            //   //  ItemInHandInputSync itemInHandInputSync = entityManager.GetComponentData<ItemInHandInputSync>(entity);
 
-                itemInHandInput.itemInHand = id;
-                itemInHandInputSync.itemInHand = id;
+            //     itemInHandInput.itemInHand = id;
+            //     itemInHandInputSync.itemInHand = id;
 
-                entityManager.SetComponentData(entity, itemInHandInputSync);
-                entityManager.SetComponentData(entity, itemInHandInput);
-            }
+            //     entityManager.SetComponentData(entity, itemInHandInputSync);
+            //     entityManager.SetComponentData(entity, itemInHandInput);
+            // }
         }
         entityQuery.Dispose();
         entities.Dispose();

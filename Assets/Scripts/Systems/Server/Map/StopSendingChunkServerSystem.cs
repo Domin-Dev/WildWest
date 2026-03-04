@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.NetCode;
-
+using UnityEngine;
 
 
 
@@ -18,6 +18,8 @@ public partial class StopSendingChunkServerSystem : SystemBase
     BufferLookup<PlayersNeedChunk> needsChunks;
     BufferLookup<PlayerChunks> playerChunks;
     BufferLookup<ChunkObjects> chunkObjectsRO;
+    BufferLookup<GhostChildren> childrenRO;
+
 
     NativeQueue<(Entity chunk,StopSendingChunkRequest request)> toRemove;
     [BurstCompile]
@@ -27,11 +29,12 @@ public partial class StopSendingChunkServerSystem : SystemBase
         toRemove = new NativeQueue<(Entity chunk, StopSendingChunkRequest request)>(Allocator.Persistent);
 
         RequireForUpdate(requests);
-        RequireForUpdate<MapSettings>();
+        RequireForUpdate<MapSettings>();                       
 
         needsChunks = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         playerChunks = SystemAPI.GetBufferLookup<PlayerChunks>();
         chunkObjectsRO = SystemAPI.GetBufferLookup<ChunkObjects>(true);
+        childrenRO = SystemAPI.GetBufferLookup<GhostChildren>(true);
     }
 
     [BurstCompile]
@@ -47,6 +50,7 @@ public partial class StopSendingChunkServerSystem : SystemBase
         needsChunks.Update(this);
         playerChunks.Update(this);
         chunkObjectsRO.Update(this);
+        childrenRO.Update(this);
 
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
@@ -82,6 +86,23 @@ public partial class StopSendingChunkServerSystem : SystemBase
 
                 if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(connection))
                     ghostRelevancy.ValueRW.GhostRelevancySet.Remove(connection);
+
+
+                if(childrenRO.HasBuffer(ghost.entity))
+                {
+                    var children = childrenRO[ghost.entity];
+                    foreach(var child in children)
+                    {
+                        connection = new RelevantGhostForConnection()
+                        {
+                            Connection = item.request.networkID,
+                            Ghost = child.ghostID
+                        };
+                        Debug.Log("stop!!! " + connection.Connection + "  " + connection.Ghost);
+                        if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(connection))
+                            ghostRelevancy.ValueRW.GhostRelevancySet.Remove(connection);
+                    }
+                }
             }
             
             var buffer = needsChunks[item.chunk];

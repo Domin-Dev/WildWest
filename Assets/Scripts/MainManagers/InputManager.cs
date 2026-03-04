@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,8 @@ public class InputManager : MonoBehaviour
 
 
 
+
+
     public InputAction moveAllTheItems { private set; get; }
     public InputAction moveTheItem { private set; get; }
 
@@ -18,10 +21,20 @@ public class InputManager : MonoBehaviour
     public InputAction playerList { private set; get; }
     public InputAction chat { private set; get; }
     public InputAction equipment { private set; get; }
+
+
     public InputAction move { private set; get; }
+    public InputAction sideAction { private set; get; }
+    public InputAction mainAction { private set; get; }
+
+    
+    
     public InputAction previousSlot { private set; get; }
     public InputAction nextSlot { private set; get; }
+
+
     public List<InputAction> slots { private set; get; }
+
 
 
     public InputAction debugStats { private set; get; }
@@ -50,24 +63,45 @@ public class InputManager : MonoBehaviour
         playerList = action.FindAction("PlayerList");
         chat = action.FindAction("Chat");
         equipment = action.FindAction("Equipment");
+
+
         move = action.FindAction("Move");
+        mainAction = action.FindAction("MainAction");
+        sideAction = action.FindAction("SideAction");
+
         previousSlot = action.FindAction("PreviousSlot");
         nextSlot = action.FindAction("NextSlot");
         slots = new List<InputAction>();
-        for (int i = 0; i < 10; i++)
+        for (int i = 1; i < 10; i++)
         {
             slots.Add(action.FindAction($"Slot{i}"));
         }
+        slots.Add(action.FindAction($"Slot0"));
+
         debugStats = action.FindAction("DebugStats");
-
-
-
 
 
         previousSlot.performed += PreviousSlot_performed;
         moveTheItem.performed += PlayerList_performed;
 
         move.performed += Move_performed;
+    }
+
+    public int GetNextSlotInHand(int currentSlot)
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            if(slots[i].triggered)
+                return i;
+        }
+
+        if(previousSlot.triggered)
+            return (currentSlot - 1 + 10) % 10;
+
+        if(nextSlot.triggered)
+            return (currentSlot + 1) % 10;   
+
+        return currentSlot;
     }
 
     private void PreviousSlot_performed(InputAction.CallbackContext obj)

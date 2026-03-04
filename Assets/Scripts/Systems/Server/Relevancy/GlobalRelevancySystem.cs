@@ -21,7 +21,6 @@ public partial struct GlobalRelevancySystem : ISystem
     {
         var gh = SystemAPI.GetSingletonRW<GhostRelevancy>();
         gh.ValueRW.GhostRelevancyMode = GhostRelevancyMode.SetIsRelevant;
-        // gh.ValueRW.DefaultRelevancyQuery = SystemAPI.QueryBuilder().WithAny<Player,Bullet>().Build();
         NetCodeConnectionEventListener.OnClientDisconnected += OnClientDisconnected;
     }
 

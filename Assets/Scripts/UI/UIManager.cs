@@ -7,6 +7,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,6 +51,7 @@ public class UIManager : MonoBehaviour
     [Header("Equipment UI")]
     [SerializeField] private Transform mainItemBar;
     [SerializeField] private Transform equipment;
+    [SerializeField] private TextMeshProUGUI itemInHandPopup;
     [Space]
     [SerializeField] private GameObject itemSlot;
     [SerializeField] private GameObject greyIcon;
@@ -126,6 +128,7 @@ public class UIManager : MonoBehaviour
         LoadRecipes();
         colors = uISettings.GetColors();
         properties = uISettings.GetProperties();
+        itemInHandPopup.gameObject.SetActive(false);
     }
     private void Update()
     {
@@ -134,6 +137,14 @@ public class UIManager : MonoBehaviour
     public void FixedUpdate()
     {
         MultiCraft();
+    }
+    public void OnEnable()
+    {
+        NewEquipmentManager.onNewSlotInHand += UpdateSlotInHand;
+    }
+    public void OnDisable()
+    {
+        NewEquipmentManager.onNewSlotInHand -= UpdateSlotInHand;
     }
 
     private int i = 0;
@@ -158,27 +169,27 @@ public class UIManager : MonoBehaviour
         barGrid = new EquipmentGrid(mainItemBar, 0);
         clothesGrid = new EquipmentGrid(equipmentClothes, 2);
     }
+
     public void SetUpUIEquipment(EquipmentManager eqManager)
     { 
-        eqManager.UpdateSelectedSlotInBar += UpdateSelectedSlot;
+        // eqManager.UpdateSelectedSlotInBar += UpdateSelectedSlot;
 
 
-        eqManager.CreateItemUI += CreateItemUI;
-        eqManager.MoveItemUI += MoveItemUI;
-        eqManager.RemoveItemUI += RemoveItemUI;
-        eqManager.UpdateItemCount += UpdateItemCount;
-        eqManager.UpdateDragItemCount += UpdateDragItemCount;
-        eqManager.RemoveDragItemUI += RemoveDragItemUI;
-        eqManager.MoveMainBarItem += MoveMainBarItem;
-        eqManager.CreateMainBarItem += CreateMainBarItem;
-        eqManager.RemoveMainBarItem += RemoveMainBarItem;
-        eqManager.UpdateMainBarItemCount += UpdateMainBarItemCount;
-        eqManager.UpdateItemBar += UpdateItemLifeBar;
-        eqManager.TurnPlaceholder += TurnPlaceholder;
+        // eqManager.CreateItemUI += CreateItemUI;
+        // eqManager.MoveItemUI += MoveItemUI;
+        // eqManager.RemoveItemUI += RemoveItemUI;
+        // eqManager.UpdateItemCount += UpdateItemCount;
+        // eqManager.UpdateDragItemCount += UpdateDragItemCount;
+        // eqManager.RemoveDragItemUI += RemoveDragItemUI;
+        // eqManager.MoveMainBarItem += MoveMainBarItem;
+        // eqManager.CreateMainBarItem += CreateMainBarItem;
+        // eqManager.RemoveMainBarItem += RemoveMainBarItem;
+        // eqManager.UpdateMainBarItemCount += UpdateMainBarItemCount;
+        // eqManager.UpdateItemBar += UpdateItemLifeBar;
+        // eqManager.TurnPlaceholder += TurnPlaceholder;
 
-        LoadClothesSlots(clothesGrid);
+      //  LoadClothesSlots(clothesGrid);
     }
-
     public void LoadSlotsContainer(ItemStats[] items)
     {
         containerGrid.gridTransform.gameObject.SetActive(true);
@@ -699,37 +710,23 @@ public class UIManager : MonoBehaviour
         }
         isHold = false;
     }
-    private void UpdateSelectedSlot(object sender, UpdateSelectedSlotInBarArgs e)
-    {
-        if (e.lastSlot >= 0)
-        {
-            if (mainItemBar.childCount == 1) return;
-            Transform last = mainItemBar.GetChild(e.lastSlot);
-            last.GetComponent<Image>().sprite = unSelected;
-            lastSlotUI = last.GetComponent<RectTransform>();
-        }
-
-        Transform current = mainItemBar.GetChild(e.currentSlot);
-        current.GetComponent<Image>().sprite = selected;
-        if(lastSlotUI != null) lastSlotUI.localScale = new Vector3(buttonScale, buttonScale,1);
-        currentSlotUI = current.GetComponent<RectTransform>();
-    }
     private RectTransform lastSlotUI;
     private RectTransform currentSlotUI;
     private void UpdateButtonSize()
     {
-        if(lastSlotUI != null && lastSlotUI.localScale.x != buttonScale)
-        {
-            float scale = math.lerp(lastSlotUI.localScale.x, buttonScale,Time.deltaTime * speedUnselecting);
-            lastSlotUI.localScale = new Vector3(scale, scale,1);
-        }
+        // if(lastSlotUI != null && lastSlotUI.localScale.x != buttonScale)
+        // {
+        //     float scale = math.lerp(lastSlotUI.localScale.x, buttonScale,Time.deltaTime * speedUnselecting);
+        //     lastSlotUI.localScale = new Vector3(scale, scale,1);
+        // }
 
-        if (currentSlotUI != null && currentSlotUI.sizeDelta.x != selectedButtonScale)
-        {
-            float scale = math.lerp(currentSlotUI.localScale.x, selectedButtonScale, Time.deltaTime * speedSelecting);
-            currentSlotUI.localScale = new Vector3(scale, scale,1);
-        }
+        // if (currentSlotUI != null && currentSlotUI.sizeDelta.x != selectedButtonScale)
+        // {
+        //     float scale = math.lerp(currentSlotUI.localScale.x, selectedButtonScale, Time.deltaTime * speedSelecting);
+        //     currentSlotUI.localScale = new Vector3(scale, scale,1);
+        // }
     }
+
 
     private void LoadClothesSlots(EquipmentGrid grid)
     {
@@ -1077,7 +1074,7 @@ public class UIManager : MonoBehaviour
             {
                 SelectItem(id);
                 isHold = true;
-                return false;
+                return true;
             });
         }
         else
@@ -1152,7 +1149,7 @@ public class UIManager : MonoBehaviour
                 item.gameObject.SetActive(false);
                 return true;
             });
-            return false;
+            return true;
         });
     }
     private void SetCollectItem(int itemID, int itemCount , Transform obj)
@@ -1165,8 +1162,7 @@ public class UIManager : MonoBehaviour
 
 
 
-    #region  ContainersFuncs
-
+    #region  Containers Funcs
 
     public Transform CreateUIContainer(ContainerType type)
     {
@@ -1247,6 +1243,58 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
+
+    #region  Slot In Hand Funcs
+    Timer itemInHandPopupTimer;
+
+    public void UpdateSlotInHand((int lastSlot,int newSlot) slotIndex,IReadOnlyItemStats itemStats)
+    {
+        if(itemInHandPopupTimer != null)
+            itemInHandPopupTimer.Cancel();
+
+        if(slotIndex.lastSlot != slotIndex.newSlot)
+        {
+            Transform last = mainItemBar.GetChild(slotIndex.lastSlot);
+            last.GetComponent<Image>().sprite = unSelected;
+            Sounds.instance.Hammer();
+            if(itemStats != null && ItemsAsset.instance.TryGetItem(itemStats.itemID,out var item))
+            {
+                itemInHandPopup.gameObject.SetActive(true);
+                itemInHandPopup.text = item.name;
+                var canvasGroup = itemInHandPopup.GetComponent<CanvasGroup>();
+
+                itemInHandPopupTimer = Timer.Create(0.3f,() =>
+                {
+                    canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, 0, Time.deltaTime * 7f);
+                    if (canvasGroup.alpha < 0.1f)
+                    {
+                        return true;
+                    }
+                    return false;
+                },() =>
+                {
+                    canvasGroup.alpha = 1;
+                    canvasGroup.gameObject.SetActive(false);
+                });
+
+            }
+            else
+            {
+                itemInHandPopup.gameObject.SetActive(false);
+            }
+        }
+        Transform current = mainItemBar.GetChild(slotIndex.newSlot);
+        current.GetComponent<Image>().sprite = selected;
+        
+        // if(lastSlotUI != null) lastSlotUI.localScale = new Vector3(buttonScale, buttonScale,1);
+        // currentSlotUI = current.GetComponent<RectTransform>();
+    }
+    
+    #endregion
+
+
+
+
 }
 
 

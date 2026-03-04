@@ -82,15 +82,15 @@ partial struct NewPlayerSystem : ISystem
 
             if (state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity) && state.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(entity))
             {
-                ItemInHandInput itemInHandInput = state.EntityManager.GetComponentData<ItemInHandInput>(entity);
-                ItemInHandInputSync itemInHandInputSync = state.EntityManager.GetComponentData<ItemInHandInputSync>(entity);
+              //  ItemInHandInput itemInHandInput = state.EntityManager.GetComponentData<ItemInHandInput>(entity);
+            //   //  ItemInHandInputSync itemInHandInputSync = state.EntityManager.GetComponentData<ItemInHandInputSync>(entity);
 
-                int id = EquipmentManager.instance.GetItemInHand();
-                itemInHandInput.itemInHand = id;
-                itemInHandInputSync.itemInHand = id;
+            //     int id = EquipmentManager.instance.GetItemInHand();
+            //  //  itemInHandInput.itemInHand = id;
+            //     itemInHandInputSync.itemInHand = id;
 
-                entityCommandBuffer.SetComponent(entity, itemInHandInput);
-                entityCommandBuffer.SetComponent(entity, itemInHandInputSync);
+            //     entityCommandBuffer.SetComponent(entity, itemInHandInput);
+            //     entityCommandBuffer.SetComponent(entity, itemInHandInputSync);
             }
 
             var physicsChildren = SystemAPI.GetBuffer<PhysicsChildrenBuffer>(entity);

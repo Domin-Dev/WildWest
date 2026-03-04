@@ -2,7 +2,19 @@
 using System;
 using UnityEngine;
 
-public class ItemStats
+
+
+
+public interface IReadOnlyItemStats
+{
+    public int itemID { get; }
+    public Quality quality { get; }
+    public int quantity { get; }
+    public float wetness { get; }
+    public Color? color { get; }
+}
+
+public class ItemStats : IReadOnlyItemStats
 {
     public int itemID { private set; get; } = -1;
     public Quality quality { private set; get; }

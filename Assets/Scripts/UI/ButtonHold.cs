@@ -57,7 +57,7 @@ public class ButtonHold : Button
     {
         if (interactable)
         {
-            timer = Timer.Create(0.2f, () => { isPressed = true; return false; });
+            timer = Timer.Create(0.2f, () => { isPressed = true; return true; });
             k = 0;
         }
     }

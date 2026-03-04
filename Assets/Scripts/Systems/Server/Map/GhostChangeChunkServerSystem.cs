@@ -20,12 +20,13 @@ public partial class GhostChangeChunkServerSystem : SystemBase
     ChunkManagementServerSystem chunkManagerSystem;
 
     private NativeQueue<(Entity chunk,Entity entity)> entitiesToRemove;
-    private NativeQueue<(Entity chunk, int ghostID)> sendGhostsToPlayers;
+    private NativeQueue<(Entity chunk, int ghostID, Entity entity)> sendGhostsToPlayers;
 
 
 
     private BufferLookup<ChunkObjects> chunkObjects;
     private BufferLookup<PlayersNeedChunk> playersNeedChunk;
+    private BufferLookup<GhostChildren> childrenRO;
 
     [BurstCompile] 
     protected override void OnCreate()
@@ -33,11 +34,12 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         query = SystemAPI.QueryBuilder().WithAll<GhostChunk,GhostInstance, NewChunk>().Build();
         chunkManagerSystem = World.GetExistingSystemManaged<ChunkManagementServerSystem>();
         entitiesToRemove = new NativeQueue<(Entity chunk,Entity entity)>(Allocator.Persistent);
-        sendGhostsToPlayers = new  NativeQueue<(Entity chunk, int ghostID)>(Allocator.Persistent);
+        sendGhostsToPlayers = new  NativeQueue<(Entity chunk, int ghostID,Entity entity)>(Allocator.Persistent);
 
 
         chunkObjects = SystemAPI.GetBufferLookup<ChunkObjects>();
         playersNeedChunk = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
+        childrenRO = SystemAPI.GetBufferLookup<GhostChildren>(true);
 
         RequireForUpdate<MapSettings>();
         RequireForUpdate(query);
@@ -58,6 +60,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
 
         chunkObjects.Update(this);
         playersNeedChunk.Update(this);
+        childrenRO.Update(this);
 
         var ghostRelevancy  = SystemAPI.GetSingletonRW<GhostRelevancy>();
 
@@ -69,7 +72,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         var job = new GhostChangeChunkJob()
         {
             map = mapSettings,
-            loadedChunks = chunkManagerSystem.loadedChunks.AsReadOnly(),
+            loadedChunks = ChunkManagementServerSystem.loadedChunks.AsReadOnly(),
             ecb = ecb,
             entitiesToRemove = entitiesToRemove.AsParallelWriter(),
             sendGhostsToPlayers = sendGhostsToPlayers.AsParallelWriter()        
@@ -110,6 +113,26 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                     };
                     if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
                         ghostRelevancy.ValueRW.GhostRelevancySet.Remove(element);
+
+
+                    
+                    if(childrenRO.HasBuffer(pair.entity))
+                    {
+                        var children = childrenRO[pair.entity];
+                        foreach(var child in children)
+                        {
+                            element = new RelevantGhostForConnection()
+                            {
+                                Connection = player.networkID,
+                                Ghost = child.ghostID
+                            };
+                            Debug.Log("stop!!! " + element.Connection + "  " + element.Ghost);
+
+                            if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
+                                ghostRelevancy.ValueRW.GhostRelevancySet.Remove(element);
+                        }
+                    }
+
                 } 
             }
 
@@ -126,6 +149,22 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                     Ghost = pair.ghostID
                 };
                 ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
+
+                if(childrenRO.HasBuffer(pair.entity))
+                {
+                    var children = childrenRO[pair.entity];
+                    foreach(var child in children)
+                    {
+                        element = new RelevantGhostForConnection()
+                        {
+                            Connection = player.networkID,
+                            Ghost = child.ghostID
+                        };
+                        
+                        Debug.Log("container!!! " + element.Connection + "  " + element.Ghost);
+                        ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
+                    }
+                }
             } 
         }
     }
@@ -143,9 +182,9 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         [ReadOnly] public NativeParallelHashMap<int,LoadedChunks>.ReadOnly loadedChunks;
         
 
+        
 
-
-        public NativeQueue<(Entity chunk, int ghostID)>.ParallelWriter sendGhostsToPlayers;
+        public NativeQueue<(Entity chunk, int ghostID, Entity entity)>.ParallelWriter sendGhostsToPlayers;
         public NativeQueue<(Entity chunk,Entity entity)>.ParallelWriter entitiesToRemove;
 
         public void Execute(Entity entity,in GhostInstance ghostInstance,GhostChunk ghostChunk,[EntityIndexInQuery] int sortKey)
@@ -160,7 +199,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                 {
                     ecb.AppendToBuffer(sortKey,chunk.chunkEntity, new ChunkObjects(entity,ghostID)); 
                     ecb.SetComponentEnabled<NewChunk>(sortKey,entity,false);
-                    sendGhostsToPlayers.Enqueue((chunk.chunkEntity,ghostID));
+                    sendGhostsToPlayers.Enqueue((chunk.chunkEntity,ghostID,entity));
                     ghostChunk.SetChunkEntity(chunk.chunkEntity);
                 }
             }

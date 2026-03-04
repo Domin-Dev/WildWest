@@ -23,7 +23,7 @@ public partial class ChunkManagementServerSystem : SystemBase
     private MapGenerator generator;
 
 
-    public NativeParallelHashMap<int,LoadedChunks> loadedChunks;
+    public static NativeParallelHashMap<int,LoadedChunks> loadedChunks;
     protected override void OnCreate()
     {
         LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();

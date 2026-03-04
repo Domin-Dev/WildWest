@@ -2,9 +2,9 @@ using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Timer
+public abstract class Timer
 { 
-    private class TimersUpdater : MonoBehaviour
+    protected class TimersUpdater : MonoBehaviour
     {
         public Action action;
         private void Update()
@@ -19,66 +19,111 @@ public class Timer
             }
         }
     }
+    protected bool timerIsOver = false;
+    protected static TimersUpdater updater;
 
-    private Func<bool> func;
-    private Func<bool> backFunc;
-
-    bool isBack = false;
-
-    private float timer;
-    private bool timerIsOver = false;
-
-
-    public static Timer Create(float time, Func<bool> func)
+    public static Delay Create(float time, Func<bool> func)
     {
-        Timer timer = new Timer(time, func);
-        return timer;         
+        return new Delay(time, func);  
     }
-    public static Timer Create(Func<bool> func, Func<bool> backfunc)
+    public static DelayWithCleanup Create(float timer, Func<bool> func, Action cleanupFunc )
     {
-        Timer timer = new Timer(func,backfunc);
+        return new DelayWithCleanup(timer,func,cleanupFunc);
+    }
+    public static ForwardAndBack Create(Func<bool> forwardFunc, Func<bool> backfunc)
+    {
+        return new ForwardAndBack(forwardFunc,backfunc);
+    }
+
+    protected Timer()
+    {
+        if (updater == null)
+        {
+            updater = new GameObject("Updater", typeof(TimersUpdater)).GetComponent<TimersUpdater>();
+        }    
+        updater.action += Update;   
+    }  
+    
+    public abstract float GetTime();
+    protected abstract void Update();
+    protected virtual void ExecuteCancel(){}
+    public void Cancel()
+    {
+        if(!timerIsOver)
+        {
+            updater.action -= Update;  
+            timerIsOver = true; 
+            ExecuteCancel();
+        }
+    }
+    public bool IsEnd()
+    {
+        return timerIsOver;
+    }
+}
+
+public class Delay : Timer
+{
+    private Func<bool> func;
+    private float timer;
+
+    public Delay(float timer, Func<bool> func) : base()
+    {
+        this.func = func;
+        this.timer = timer;     
+    }
+
+    public override float GetTime()
+    {
         return timer;
     }
-
-    private static TimersUpdater updater;
-    public Timer(float timer, Func<bool> func)
+    protected override void Update()
     {
-        this.func = func;
-        this.timer = timer;
-        TimersUpdater timersUpdater;
-        if (updater == null)
+        if(!timerIsOver)
         {
-            timersUpdater = new GameObject("Updater", typeof(TimersUpdater)).GetComponent<TimersUpdater>();
-            updater = timersUpdater;
+            timer -= Time.deltaTime;
+            if (timer < 0)
+            {
+                if(func())
+                    Cancel();
+            }
         }
-        else
-        {
-            timersUpdater = updater;
-        }
-        timersUpdater.action += Update;        
     }
-    public Timer(Func<bool> func, Func<bool> backfunc)
+} 
+public class DelayWithCleanup : Delay
+{
+    private Action cleanupFunc;
+    public DelayWithCleanup(float timer, Func<bool> func, Action cleanupFunc ) : base(timer,func)
     {
-        this.func = func;
-        this.backFunc = backfunc;
-        TimersUpdater timersUpdater;
-        if (updater == null)
-        {
-            timersUpdater = new GameObject("Updater", typeof(TimersUpdater)).GetComponent<TimersUpdater>();
-            updater = timersUpdater;
-        }
-        else
-        {
-            timersUpdater = updater;
-        }
-        timersUpdater.action += UpdateFunc;
+        this.cleanupFunc = cleanupFunc;
+    }
+    protected override void ExecuteCancel()
+    {
+        cleanupFunc?.Invoke();
+    }
+}
+public class ForwardAndBack : Timer
+{
+    private Func<bool> forwardFunc;
+    private Func<bool> backFunc;
+    bool isBack = false;
+
+
+    public ForwardAndBack(Func<bool> forwardFunc, Func<bool> backFunc) : base()
+    {
+        this.forwardFunc = forwardFunc;
+        this.backFunc = backFunc;
     }
 
-    public void UpdateFunc()
+    public override float GetTime()
+    {
+        return 0;
+    }
+    protected override void Update()
     {
         if(!isBack)
         {
-            if (func())
+            if (forwardFunc())
             {
                 isBack = true;
             }
@@ -87,46 +132,8 @@ public class Timer
         {
             if(backFunc())
             {
-                updater.action -= UpdateFunc;
-                timerIsOver = true;
+                Cancel();
             }
         }
     }
-    public void Update()
-    {
-        if(!timerIsOver)
-        {
-            timer -= Time.deltaTime;
-            if (timer < 0)
-            {
-                timerIsOver = true;
-                func();
-                updater.action -= Update;
-            }
-        }
-    }
-
-    public void Cancel()
-    {
-        if(!timerIsOver)
-        {
-            timerIsOver = true;
-            if (backFunc != null)
-            {
-                updater.action -= UpdateFunc;
-            }
-            else
-            {
-                updater.action -= Update;
-            }
-        }
-    }
-    public float GetTime()
-    {
-        return timer;
-    }
-    public bool IsEnd()
-    {
-        return timerIsOver;
-    }
-}
+} 

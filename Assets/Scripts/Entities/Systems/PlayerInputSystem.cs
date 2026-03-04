@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using Unity.Collections;
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -11,32 +10,24 @@ using UnityEngine.SceneManagement;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup),OrderFirst = true)]
 partial struct PlayerInputSystem : ISystem
-{   public void OnCreate(ref SystemState state)
+{   
+    public static event Action<int> onNewSlotInHand;
+    public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkStreamInGame>();
         state.RequireForUpdate<PlayerInput>();
     }
-
-
     public void OnUpdate(ref SystemState state)
     {
-        float2 input = float2.zero;
+        float2 input = (float2)InputManager.i.move.ReadValue<Vector2>();
 
-        if (Input.GetKey(KeyCode.S)) input.y -= 1;
-        if (Input.GetKey(KeyCode.W)) input.y += 1;
-
-        if (Input.GetKey(KeyCode.A)) input.x -= 1;
-        if (Input.GetKey(KeyCode.D)) input.x += 1;
-
-        bool left = Input.GetMouseButton(0);
-        bool right = Input.GetMouseButton(1);
-
+        bool left = InputManager.i.mainAction.inProgress;
+        bool right = InputManager.i.sideAction.inProgress;
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
         float3 target = (float3)MyTools.GetMouseWorldPosition();
         float2 sightDirection = new float2(target.x,target.y);
-
 
         //if (Input.GetKeyDown(KeyCode.Escape))
         //{
@@ -44,12 +35,11 @@ partial struct PlayerInputSystem : ISystem
         //        WindowsManager.instance.LoadScene(11);
         //}
 
+
         if (InputManager.i.playerList.triggered && !ChatManager.instance.isChatting)
         {
             WindowsManager.instance.LoadScene(9);
         }
-
-
 
 
         foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, Entity entity) in 
@@ -78,8 +68,8 @@ partial struct PlayerInputSystem : ISystem
                 playerInputSync.ValueRW.rightButton.Set();
 
                 quaternion quaternion = SystemAPI.GetComponent<LocalTransform>(hands.ValueRO.main).Rotation;
-                playerInput.ValueRW.handRotation = quaternion;
-                playerInputSync.ValueRW.handRotation = quaternion;
+                //playerInput.ValueRW.handRotation = quaternion;
+                //playerInputSync.ValueRW.handRotation = quaternion;
             }
             else
             {
@@ -87,26 +77,14 @@ partial struct PlayerInputSystem : ISystem
                 playerInputSync.ValueRW.rightButton = default;
             }
 
+            int newSlot = InputManager.i.GetNextSlotInHand(playerInput.ValueRO.slotInHand);
+            if(playerInput.ValueRO.slotInHand != newSlot)
+            {
+                onNewSlotInHand?.Invoke(newSlot);
+                playerInput.ValueRW.slotInHand = newSlot;
 
-
-          //  playerInput.ValueRW.dataTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-            //var inputBuffer = state.EntityManager.GetBuffer<InputBufferData<PlayerInput>>(entity);
-
-
-            //Debug.Log("nowe " + tick.TickValue + " " + playerInput.ValueRO);
-
-            //inputBuffer.AddCommandData(new InputBufferData<PlayerInput>
-            //{
-            //    Tick = tick,
-            //    InternalInput = new PlayerInput
-            //    {
-            //        movementDirection = playerInput.ValueRO.movementDirection,
-            //        leftButton = playerInput.ValueRW.leftButton,
-            //        rightButton = playerInput.ValueRW.rightButton,
-            //        handRotation = playerInput.ValueRO.handRotation,
-            //        sightDirection = playerInput.ValueRO.sightDirection
-            //    }
-            //});
+                CharacterManager.instance.ChangeItemInHand(newSlot, entity, ref state);
+            }
         }
     }
 }

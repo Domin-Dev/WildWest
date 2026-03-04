@@ -44,8 +44,6 @@ partial struct CharacterHandsSystem : ISystem
 
             UpdateDirectionIndex(rot,character, ref state);
         }
-
-
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {
             

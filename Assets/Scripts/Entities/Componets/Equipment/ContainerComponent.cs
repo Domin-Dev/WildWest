@@ -15,16 +15,24 @@ public struct ContainerComponent : IComponentData
     public int capacity => containerStats.capacity;
     public byte waterResistance => containerStats.waterResistance;
     public ContainerType containerType => EQHelperClient.GetContainerType(containerIndex);
+    public bool serverContainer => containerStats.serverContainer;
 
 }
 
+public struct ContainerPlayer : IComponentData
+{
+    public Entity player;
+}
 
+
+public struct ServerContainer : IComponentData{}
 
 
 
 [System.Serializable]
 public struct ContainerStats
 {
+    public bool serverContainer;
     public int containerIndex;
     public MandatoryProperties mandatoryProperties;
     public int mandatoryData;

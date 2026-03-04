@@ -181,6 +181,11 @@ public class ItemsAsset : MonoBehaviour
         item = GetItem<T>(itemId);
         return item != null;
     }
+
+    public bool TryGetItem(int itemId, out Item item)
+    {
+        return TryGetItem<Item>(itemId,out item);
+    }
     public string GetBarName(int itemID)
     {
         var item = GetItem(itemID) as IItemBar;

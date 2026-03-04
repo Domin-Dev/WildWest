@@ -67,7 +67,6 @@ public static class DebugController
                         ghostChunk.SetNewChunk();
                         ecb.SetComponent(character,ghostChunk);
                         ecb.SetComponentEnabled<IsChanged>(character, true);
-
                        // CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
                     }
                 }

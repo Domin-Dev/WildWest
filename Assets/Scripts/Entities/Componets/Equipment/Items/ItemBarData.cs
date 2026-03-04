@@ -25,6 +25,11 @@ public struct ItemBarData : IBufferElementData, IGetSlot
     {
         return slot;
     }
+
+    public void SetSlot(int slot)
+    {
+        this.slot = slot;
+    }
 }
 
 

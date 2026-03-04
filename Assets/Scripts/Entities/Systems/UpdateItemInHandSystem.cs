@@ -11,15 +11,15 @@ partial struct UpdateItemInHandSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<ItemInHandInputSync>();
+       // state.RequireForUpdate<ItemInHandInputSync>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (itemInHandInputSync, entity) in SystemAPI.Query<RefRO<ItemInHandInputSync>>().WithAll<Simulate>()
-            .WithChangeFilter<ItemInHandInputSync>().WithNone<NewPlayerTag>().WithEntityAccess())
-        {
-            CharacterManager.instance.ChangeItemInHand(itemInHandInputSync.ValueRO.itemInHand, entity, ref state);
-        }
+        // foreach (var (itemInHandInputSync, entity) in SystemAPI.Query<RefRO<ItemInHandInputSync>>().WithAll<Simulate>()
+        //     .WithChangeFilter<ItemInHandInputSync>().WithNone<NewPlayerTag>().WithEntityAccess())
+        // {
+        //     //CharacterManager.instance.ChangeItemInHand(itemInHandInputSync.ValueRO.itemInHand, entity, ref state);
+        // }
     }
 }

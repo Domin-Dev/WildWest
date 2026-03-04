@@ -43,7 +43,6 @@ public class FloorEditor : ItemEditor
                 if (texture != null)
                 {
                     texturePath = relativePath.Replace("Assets/Resources/", "").Replace(".png", "");
-                    Debug.Log("The texture is set");
                     NewSaveChanges();
                 }
             }

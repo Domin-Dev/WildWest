@@ -100,7 +100,7 @@ public partial class QueueRequestsServerSystem : SystemBase
                     }
                 }
                 values.Dispose();
-                if(!playerHasChunk && chunkManagerSystem.loadedChunks.TryGetValue(requestData.ValueRO.chunkIndex,out var loaded))
+                if(!playerHasChunk && ChunkManagementServerSystem.loadedChunks.TryGetValue(requestData.ValueRO.chunkIndex,out var loaded))
                 {
                     var newRequest = ecb.CreateEntity();
                     ecb.AddComponent(newRequest,new StartSendingChunkRequest(requestData.ValueRO,loaded.chunkEntity));
@@ -181,7 +181,7 @@ public partial class QueueRequestsServerSystem : SystemBase
             }
             lastLoadChunkRequests.Remove(requestData.ValueRO.chunkIndex);
             unloadChunkRequests.Enqueue((requestData.ValueRO,entity));
-            chunkManagerSystem.loadedChunks.Remove(requestData.ValueRO.chunkIndex);
+            ChunkManagementServerSystem.loadedChunks.Remove(requestData.ValueRO.chunkIndex);
 
             ecb.AddComponent<QueuedRequest>(entity);
         }

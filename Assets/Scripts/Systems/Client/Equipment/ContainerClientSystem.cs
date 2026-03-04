@@ -22,18 +22,25 @@ partial struct ContainerClientSystem : ISystem
     {
         
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        foreach ((RefRO<ContainerComponent> containerComponent, Entity entity) in SystemAPI.Query<RefRO<ContainerComponent>>().WithNone<ContainerLoaded>().WithEntityAccess())
+        foreach ((RefRO<ContainerComponent> containerComponent,RefRO<GhostOwner> containerOwner, Entity entity) in SystemAPI.Query<RefRO<ContainerComponent>,RefRO<GhostOwner>>().WithNone<ContainerLoaded>().WithEntityAccess())
         {
-            NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
-            entityCommandBuffer.AddComponent<ContainerLoaded>(entity);
-            foreach ((RefRO<Player> player, Entity e) in SystemAPI.Query<RefRO<Player>>().WithAll<GhostOwnerIsLocal,PlayerContainers>().WithEntityAccess())
+            if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(entity)) 
+                NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
+                
+            foreach ((RefRO<Player> player,RefRO<GhostOwner> owner, Entity e) in SystemAPI.Query<RefRO<Player>,RefRO<GhostOwner>>().WithAll<PlayerContainers>().WithEntityAccess())
             {
-                entityCommandBuffer.AppendToBuffer(e, new PlayerContainers() 
+                if(owner.ValueRO.NetworkId == containerOwner.ValueRO.NetworkId)
                 {
-                     entity = entity,
-                     index = containerComponent.ValueRO.containerIndex
-                });
+                    entityCommandBuffer.AppendToBuffer(e, new PlayerContainers() 
+                    {
+                        entity = entity,
+                        index = containerComponent.ValueRO.containerIndex
+                    });
+                    break;
+                }
             }
+
+            entityCommandBuffer.AddComponent<ContainerLoaded>(entity);
         }   
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

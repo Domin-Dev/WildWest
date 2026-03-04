@@ -15,6 +15,9 @@ partial struct SelectionItemServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
+    private ComponentLookup<ContainerComponent> containerComponents;
+
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -27,6 +30,7 @@ partial struct SelectionItemServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        containerComponents = SystemAPI.GetComponentLookup<ContainerComponent>();
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -42,22 +46,15 @@ partial struct SelectionItemServerSystem : ISystem
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var selectedSlot = SystemAPI.GetComponentRO<ContainerSettings>(player);
 
-
-          //  Debug.Log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk " + command.ValueRO.position);
-
-
             if (command.ValueRO.value > 0)
             {
-             ///  if (!EQHelper.BufferContains(slotsLookup, playerContainersLookup, player, selectedSlot.ValueRO.Position))
-            //   {
-                    if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
-                    SelectItem(ref state, player, command.ValueRO);
-                    if (command.ValueRO.position.slotIndex >= 0)
-                    {
-                        EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
-                            (new EquipmentEventData(command.ValueRO.position.slotIndex, 1), command.ValueRO.position.containerIndex, networkID));
-                    }
-           //    }
+                if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
+                SelectItem(ref state, player, command.ValueRO);
+                if (command.ValueRO.position.slotIndex >= 0)
+                {
+                    EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
+                        (new EquipmentEventData(command.ValueRO.position.slotIndex, 1), command.ValueRO.position.containerIndex, networkID));
+                }
             }
             entityCommandBuffer.DestroyEntity(entity);
         }
@@ -70,7 +67,7 @@ partial struct SelectionItemServerSystem : ISystem
     {
         var container = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectItem.position.containerIndex);
 
-        if (!container.HasValue) return;
+        if (!container.HasValue || SystemAPI.HasComponent<ServerContainer>(container.Value.entity)) return;
         if (selectItem.position.slotIndex >= 0 && EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))
         {
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);

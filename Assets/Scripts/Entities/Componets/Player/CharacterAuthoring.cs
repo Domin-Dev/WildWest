@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -23,11 +24,10 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new NewPlayerTag());
             AddComponent(entity, new PlayerInput()
             {
-                sightDirection = new float2(float.MinValue,float.MinValue)
+                sightDirection = new float2(float.MinValue,float.MinValue),
+                slotInHand = -1
             });
             AddComponent(entity, new PlayerInputSync());
-            AddComponent(entity, new ItemInHandInput() { itemInHand = int.MinValue });
-            AddComponent(entity, new ItemInHandInputSync() { itemInHand = int.MinValue});
             AddComponent(entity, new PlayerLook());
 
 
@@ -52,11 +52,11 @@ public struct PlayerInput : IInputComponentData
 {
     [GhostField(Quantization = 0)] public float2 movementDirection;
     [GhostField(Quantization = 0)] public float2 sightDirection;
-    [GhostField(Quantization = 0)] public quaternion handRotation;
     [GhostField(Quantization = 0)] public InputEvent rightButton;
     [GhostField(Quantization = 0)] public InputEvent leftButton;
-    [GhostField(Quantization = 0)] public NetworkTick dataTick;
+    [GhostField(Quantization = 0)] public int slotInHand;
 
+    [GhostField(Quantization = 0)] public NetworkTick dataTick;
 
     public bool SightDirectionIsEmpty()
     {
@@ -64,30 +64,17 @@ public struct PlayerInput : IInputComponentData
     }
 }
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct ItemInHandInput : IInputComponentData
-{
-    [GhostField(Quantization = 0)] public int itemInHand;
-}
-
-
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients,OwnerSendType = SendToOwnerType.SendToNonOwner)]
 public struct PlayerInputSync : IComponentData
 {
     [GhostField] public float2 movementDir;
     [GhostField] public float2 sightDirection;
-    [GhostField] public quaternion handRotation;
-
-
+    
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;
+    public int slotInHand; 
 }
 
-[GhostComponent(SendTypeOptimization = GhostSendType.AllClients, OwnerSendType = SendToOwnerType.SendToNonOwner)]
-public struct ItemInHandInputSync : IComponentData
-{
-    [GhostField] public int itemInHand;
-}
 
 
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
@@ -214,10 +201,11 @@ public struct GhostChunk : IComponentData
     }
 }
 
+
+
 public struct PlayerSourceConnection : IComponentData {
     public Entity value;
 }
-
 
 
 
@@ -235,7 +223,6 @@ public struct Cooldown : IComponentData
 {
     public NetworkTick cooldownTick;
 }
-
 
 
 
