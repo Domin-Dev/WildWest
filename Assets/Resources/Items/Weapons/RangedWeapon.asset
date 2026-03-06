@@ -14,9 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Shotgun
   description: 
-  ID: 36
   stackMax: 1
+  ID: 36
   icon: {fileID: 345955885, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags: []
   crafingIngredients:
   - itemID: 42
     number: 2
@@ -36,7 +37,7 @@ MonoBehaviour:
   gripPoint1: {x: -0.035, y: -0.015}
   gripPoint2: {x: 0.055, y: -0.005}
   damage: 5
-  cooldown: 0
+  cooldown: 30
   timeToReload: 0
   magazineCapacity: 2
   aimPoint: {x: 0.125, y: 0.005}

@@ -1,15 +1,19 @@
 using Unity.Burst;
 using Unity.Entities;
-using UnityEngine;
 using Unity.NetCode;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
+using Unity.Mathematics;
+using Unity.Transforms;
+using UnityEngine;
 
 
 [UpdateInGroup(typeof(EquipmentSystemGroup), OrderFirst = true)]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+
+
 partial struct ContainerClientSystem : ISystem
 {
+    
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
@@ -18,6 +22,7 @@ partial struct ContainerClientSystem : ISystem
         entityQueryBuilder.Dispose();
     }
 
+    
     public void OnUpdate(ref SystemState state)
     {
         
@@ -45,4 +50,5 @@ partial struct ContainerClientSystem : ISystem
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
+
 }

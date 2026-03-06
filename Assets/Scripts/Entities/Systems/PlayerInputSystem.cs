@@ -19,6 +19,7 @@ partial struct PlayerInputSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         float2 input = (float2)InputManager.i.move.ReadValue<Vector2>();
 
         bool left = InputManager.i.mainAction.inProgress;
@@ -42,8 +43,8 @@ partial struct PlayerInputSystem : ISystem
         }
 
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, Entity entity) in 
-            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner, Entity entity) in 
+            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
@@ -82,9 +83,15 @@ partial struct PlayerInputSystem : ISystem
             {
                 onNewSlotInHand?.Invoke(newSlot);
                 playerInput.ValueRW.slotInHand = newSlot;
+                playerInputSync.ValueRW.slotInHand = newSlot; 
 
-                CharacterManager.instance.ChangeItemInHand(newSlot, entity, ref state);
+                EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC()
+                {
+                    networkID = owner.ValueRO.NetworkId
+                });
             }
-        }
+        } 
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();  
     }
 }

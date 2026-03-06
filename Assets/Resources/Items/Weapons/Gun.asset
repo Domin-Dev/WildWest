@@ -18,12 +18,12 @@ MonoBehaviour:
     id : 1
 
     stack max: 100'
-  ID: 35
   stackMax: 1
+  ID: 35
   icon: {fileID: -2066496519, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags:
-  - tagID: 0
-  - tagID: -1
+  - tag: {fileID: 0}
+  - tag: {fileID: 0}
   crafingIngredients:
   - itemID: 42
     number: 2
@@ -45,7 +45,7 @@ MonoBehaviour:
   gripPoint1: {x: -0.044999998, y: -0.024999999}
   gripPoint2: {x: -100, y: -100}
   damage: 5
-  cooldown: 0
+  cooldown: 15
   timeToReload: 0
   magazineCapacity: 5
   aimPoint: {x: 0.044999998, y: 0.005}

@@ -40,39 +40,46 @@ public partial class StartSendingChunkServerSystem : SystemBase
     {
         chunkObjectsRO.Update(this);
         childrenRO.Update(this);
-        
+
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged).AsParallelWriter();
+        var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged);
         var entities = this.requests.ToEntityArray(Allocator.TempJob);
         var requestsData = this.requests.ToComponentDataArray<StartSendingChunkRequest>(Allocator.TempJob);
         var ghostRelevancy  = SystemAPI.GetSingletonRW<GhostRelevancy>();
+        var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
-        Dependency = new StartSendingJob()
-        {
-            ecb = ecb,
-            entities = entities,
-            requests = requestsData,
-            time = SystemAPI.Time.ElapsedTime
-        }
-        .Schedule(entities.Length,5,Dependency);
+
+
+        
        
         foreach(var item in requestsData)
         {
             var buffer = chunkObjectsRO[item.chunkEntity];
-            foreach(var element in buffer)
+            foreach(var chunkObj in buffer)
             {
-                Debug.Log("start sending!  " + element.entity);
+                Debug.Log("start sending!  " + chunkObj.entity);
                 var ghost = new RelevantGhostForConnection()
                 {
                     Connection = item.networkID,
-                    Ghost = element.ghostID
+                    Ghost = chunkObj.ghostID
                 };
 
-                ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(ghost,0);
-
-                if(childrenRO.HasBuffer(element.entity))
+               
+                if(SystemAPI.HasComponent<Player>(chunkObj.entity) && !ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(ghost))
                 {
-                    var children = childrenRO[element.entity];
+                    var owner = SystemAPI.GetComponent<GhostOwner>(chunkObj.entity);
+
+                    var connection = SystemAPI.GetComponent<PlayerSourceConnection>(item.playerEntity);
+                    Debug.Log("wyslanie gracza!!! " + owner.NetworkId + " " + connection.value);
+                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);
+                
+                }
+    
+
+                ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(ghost,0);
+                if(childrenRO.HasBuffer(chunkObj.entity))
+                {
+                    var children = childrenRO[chunkObj.entity];
                     foreach(var child in children)
                     {
                         ghost = new RelevantGhostForConnection()
@@ -86,10 +93,21 @@ public partial class StartSendingChunkServerSystem : SystemBase
             }
         }
 
+        Dependency = new StartSendingJob()
+        {
+            ecb = ecb.AsParallelWriter(),
+            entities = entities,
+            requests = requestsData,
+            time = SystemAPI.Time.ElapsedTime
+        }
+        .Schedule(entities.Length,5,Dependency);
 
         entities.Dispose(Dependency);
         requestsData.Dispose(Dependency);
     }
+
+
+    
 
     public partial struct StartSendingJob : IJobParallelFor
     {
@@ -103,25 +121,29 @@ public partial class StartSendingChunkServerSystem : SystemBase
             StartSendingChunkRequest request = requests[sortKey];
             Entity e = entities[sortKey];
 
-            ecb.SetComponent(sortKey,request.chunkEntity, new ChunkTimestamp(){ timestamp = time });
-            ecb.AppendToBuffer(sortKey,request.playerEntity,new PlayerChunks()
+            if(request.playerEntity != Entity.Null)
             {
-                chunkEntity = request.chunkEntity,
-                chunkIndex = request.chunkIndex,
-                time = time
-            });
-            ecb.AppendToBuffer(sortKey,request.chunkEntity,new PlayersNeedChunk()
-            {
-                playerEntity = request.playerEntity,
-                networkID = request.networkID
-            });
+                ecb.SetComponent(sortKey,request.chunkEntity, new ChunkTimestamp(){ timestamp = time });
+                ecb.AppendToBuffer(sortKey,request.playerEntity,new PlayerChunks()
+                {
+                    chunkEntity = request.chunkEntity,
+                    chunkIndex = request.chunkIndex,
+                    time = time
+                });
+                ecb.AppendToBuffer(sortKey,request.chunkEntity,new PlayersNeedChunk()
+                {
+                    playerEntity = request.playerEntity,
+                    networkID = request.networkID
+                });
 
-            ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,request.chunkEntity, true);
-            ecb.AppendToBuffer(sortKey,request.chunkEntity, new ChunkServerActions()
-            {
-                networkID = request.networkID,
-                action = 1
-            });
+                ecb.SetComponentEnabled<NewChunkServerAction>(sortKey,request.chunkEntity, true);
+                ecb.AppendToBuffer(sortKey,request.chunkEntity, new ChunkServerActions()
+                {
+                    networkID = request.networkID,
+                    action = 1
+                });
+            }
+
             ecb.DestroyEntity(sortKey,e);       
         }
     }       

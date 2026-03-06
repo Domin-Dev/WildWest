@@ -62,42 +62,39 @@ partial struct CharacterHandsSystem : ISystem
         }
     }
 
-    private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime = 0.04f)
+    private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime =1f)// 0.04f)
     {
         quaternion mainTargetRotation;
         quaternion sideTargetRotation;
         if (math.abs(angle) > leftSide)
         {
-            if (hands.ValueRO.rotated)
-            {
-                localMain = localMain.RotateX(math.radians(180));
-                hands.ValueRW.rotated = false;
-                var p = localItem.Position;
-                p.z = -0.0001f;
-                localItem.Position = p;
-            }
-
+            float3 euler = math.Euler(localMain.Rotation,math.RotationOrder.XYZ);
+            euler.x = math.radians(180);
+            localMain.Rotation = quaternion.EulerXYZ(euler);
+            var p = localItem.Position;
+            p.z = -0.0001f;
+            localItem.Position = p;
+            
             sideTargetRotation = quaternion.Euler(0, 0, angle - math.radians(90));
             angle = -angle;
             mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
         }
         else
         {
-            if (!hands.ValueRO.rotated)
-            {
-                localMain = localMain.RotateX(math.radians(-180));
-                hands.ValueRW.rotated = true;
-                var p = localItem.Position;
-                p.z = 0.0001f;
-                localItem.Position = p;
-            }
+            float3 euler = math.Euler(localMain.Rotation,math.RotationOrder.XYZ);
+            euler.x = 0;
+            localMain.Rotation = quaternion.EulerXYZ(euler);
+            var p = localItem.Position;
+            p.z = 0.0001f;
+            localItem.Position = p;
+          
             sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
             mainTargetRotation = quaternion.Euler(0, 0, angle);
         }
 
-        var rotationDifference = math.abs(math.angle(localMain.Rotation, mainTargetRotation));
-        localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, math.min(deltaTime, maxDeltaTime) * 20);
-        localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, math.min(deltaTime, maxDeltaTime) * 8);
+
+        localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, math.min(deltaTime, maxDeltaTime) * 22);
+        localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, math.min(deltaTime, maxDeltaTime) * 10);
 
         if (math.Euler(localMain.Rotation).z > 0) localMain.Position.z = 0.0011f;
         else localMain.Position.z = -0.001f;

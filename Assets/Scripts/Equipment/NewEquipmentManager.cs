@@ -120,8 +120,6 @@ public class NewEquipmentManager : MonoBehaviour
     private void NewSlotInHand(int slotIndex)
     {
         if(!containers.ContainsKey(0)) return;
-
-        Debug.Log("wybrano + " + slotIndex +"  " + currentSlotInHand);
         onNewSlotInHand?.Invoke((currentSlotInHand,slotIndex),containers[0].itemSlots[slotIndex]);
         currentSlotInHand = slotIndex;
     }

@@ -81,8 +81,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         job.Complete();
 
 
-
-
         while(entitiesToRemove.TryDequeue(out var pair))
         {
             var buffer = chunkObjects[pair.chunk];
@@ -160,8 +158,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                             Connection = player.networkID,
                             Ghost = child.ghostID
                         };
-                        
-                        Debug.Log("container!!! " + element.Connection + "  " + element.Ghost);
                         ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
                     }
                 }

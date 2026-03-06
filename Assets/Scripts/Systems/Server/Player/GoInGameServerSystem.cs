@@ -41,7 +41,7 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent(character, new GhostOwner { NetworkId = networkId }); 
             entityCommandBuffer.SetComponent(character, new Player()
             {
-                speed = 2f,
+                speed = 1.7f,
                 playerName = playerSave.playerName
             });
             playersList.Add(new PlayersList()

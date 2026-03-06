@@ -35,7 +35,7 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Cooldown());
             AddComponent(entity, new GhostChunk().StartValues());
 
-
+ 
             AddComponent(entity, new Health());
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());

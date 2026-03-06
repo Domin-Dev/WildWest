@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
@@ -76,5 +77,41 @@ public static class RPCHelper
         DisconnectAllClients(serverWorld);  
         serverWorld.QuitUpdate = true; 
         serverWorld.Dispose();         
+    }
+
+
+    public static void SendEventsToClients<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    where T : unmanaged, IRpcCommand,ISetPlayer
+    {
+        Entity chunk = Entity.Null; 
+        foreach(var chunkTmp in loadedChunks)
+        {
+            if(chunkTmp.chunkIndex == chunkIndex)
+                chunk = chunkTmp.chunkEntity;
+        }
+        if(chunk == Entity.Null) return;
+
+        var players = playerNeedChunkLookup[chunk];
+        var rpc = new T();
+        tick.Add(2u);
+        rpc.SetPlayer(networkID,tick);
+        
+        foreach(var player in players)
+        {
+            if(player.networkID != networkID)
+            {
+                var connection = state.EntityManager.GetComponentData<PlayerSourceConnection>(player.playerEntity).value;
+                RPCHelper.SendRpc(ecb,connection,rpc);
+            }
+        }
+    }
+
+    public static void SendEventToClient<T>(EntityCommandBuffer ecb,int networkID,NetworkTick tick,Entity target)
+    where T : unmanaged, IRpcCommand,ISetPlayer
+    {
+        var rpc = new T();
+        tick.Add(2u);
+        rpc.SetPlayer(networkID,tick);
+        RPCHelper.SendRpc(ecb,target,rpc);
     }
 }

@@ -33,8 +33,6 @@ public static class EQHelper
     public static bool TryGetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player,int containerIndex, out PlayerContainers? playerContainer)
     {
         playerContainer = GetPlayerContainer(containersLookup,player,containerIndex);
-        
-
         return playerContainer.HasValue;
     }
     public static PlayerContainers? GetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player, int containerIndex)
@@ -115,9 +113,9 @@ public static class EQHelper
         var slots = slotsLookup[container];
         for (int j = 0; j < slots.Length; j++)
         {
-            ref var slot = ref slots.ElementAt(j);
+            var slot = slots[j];
             if (slot.slot == slotIndex)
-            {
+            {   
                 itemID = slot.itemId;
                 bufferIndex = j;
                 return true;

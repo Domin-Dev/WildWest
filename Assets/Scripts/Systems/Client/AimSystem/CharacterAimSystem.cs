@@ -11,21 +11,27 @@ using UnityEngine;
 
  partial struct CharacterAimSystem : ISystem
 {
-    private static float leftSide = math.PI / 2f;
 
     private float deltaTime;
-    private double last;
 
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
 
+    private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<ItemBarData> barsLookup;
+    private BufferLookup<PlayerContainers> containersLookup;
+
+
     public void OnCreate(ref SystemState state)
     {
-        last = 0;
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();  
 
         playerNeedChunkLookup = state.GetBufferLookup<PlayersNeedChunk>(true);
+        slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
+        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+
     }
 
 
@@ -256,16 +262,24 @@ using UnityEngine;
     //     entityCommandBuffer.Playback(state.EntityManager);
     //     entityCommandBuffer.Dispose();
     // }
-   public void OnUpdate(ref SystemState state)
+    public void OnUpdate(ref SystemState state)
     {
+        playerNeedChunkLookup.Update(ref state);
+        slotsLookup.Update(ref state);
+        barsLookup.Update(ref state);
+        containersLookup.Update(ref state);
 
         //var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         //EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        
+
+
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-        
+        SystemAPI.TryGetSingletonBuffer<LoadedChunks>(out var loadedChunks,true);
+
+
+
         deltaTime = SystemAPI.Time.DeltaTime;
         var currentTick = networkTime.ServerTick;
         if(!networkTime.IsFirstTimeFullyPredictingTick) return;
@@ -274,6 +288,9 @@ using UnityEngine;
 
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
+            if (state.World.IsClient() && !state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
+                continue;
+
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.main);
             float rot = playerAspect.aimRotation.ValueRO.angle;   
 
@@ -289,8 +306,6 @@ using UnityEngine;
                         continue;
 
                     CalculateNextRotation(ref rot, direction,0.5f);
- 
-
                     if(!playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick))
                     {
                         testTick.Subtract(1);
@@ -299,14 +314,26 @@ using UnityEngine;
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
+                                if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                                    break;
+
+                                if(!EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out int itemId, out int bufferIndex))
+                                    break;
+
+                                if(!ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var weapon))
+                                    break;
+
+
+
+
                                 testTick.Add(1u);
-                               //  Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + " rot :  "+ rot +  " input : " + input.InternalInput.sightDirection.ToString() );     
-                                testTick.Add(5u);
-                                playerAspect.cooldown.ValueRW.cooldownTick = testTick;
+                                var cooldownTick = testTick;
+                                cooldownTick.Add(weapon.cooldown);
+                                playerAspect.cooldown.ValueRW.cooldownTick = cooldownTick;
 
 
-                                if (state.World.Flags == WorldFlags.GameServer || state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
-                                {
+                               
+                                
                                         World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
 
                                         LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.side);
@@ -319,52 +346,59 @@ using UnityEngine;
 
                                         state.EntityManager.SetComponentData(playerAspect.hands.ValueRO.main, localMain);
 
-                                    
+                
                                         LocalToWorld point = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.aimPoint);
-                                        LocalToWorld rotation = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.itemInHand);
-
-                                        //World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TransformSystemGroup>().Update();
- 
-                                    
-                                        Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
-                                        entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
-                                        Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + "<Color=#00ff00>  Position! " + point.Position + " " + quaternion.Euler(0, 0, rot));
-                                       
-                                        Unity.Mathematics.Random random = new Unity.Mathematics.Random(testTick.TickIndexForValidTick);
-                                        float spread = 10f * Mathf.Deg2Rad;
-
-                                        Debug.Log(random.NextFloat(-spread,spread));
-                                        LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(quaternion.Euler(0, 0, rot + random.NextFloat(-spread,spread)));
-                                        entityCommandBuffer.SetComponent(bullet, lt);
 
 
-                                        if (state.World.Flags == WorldFlags.GameServer)
+
+                                        Debug.Log("point " + point.Position);
+
+                                        uint seed = (uint)testTick.TickIndexForValidTick * 747796405u + 2891336453u;
+                                        Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
+                                        float spread = 1f * Mathf.Deg2Rad;
+
+                                        for(int k = 0; k < 1; k++)
                                         {
-                                            entityCommandBuffer.AddComponent(bullet, new GhostChunk().StartValues());
-                                            entityCommandBuffer.AddComponent(bullet, new NewChunk());
-                                            entityCommandBuffer.AddComponent(bullet, new EntityToHide());
-                                            NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
-                                            bulletComp.isOnServer = true;
-                                            entityCommandBuffer.SetComponent(bullet, bulletComp);
+                                            Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
+                                            entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
+                                            Debug.Log(state.World.Unmanaged.IsServer()+ " - " + testTick.TickIndexForValidTick + "<Color=#00ff00>  Position! " + point.Position + " " + quaternion.Euler(0, 0, rot));
+                                        
+                                            
+                                            LocalTransform lt = LocalTransform.FromPosition(point.Position).Rotate(quaternion.Euler(0, 0, rot + random.NextFloat(-1 * spread,spread)));
+                                            entityCommandBuffer.SetComponent(bullet, lt);
 
-                                            SendEventsToClients(ref state,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk());
+
+                                            if (state.World.Flags == WorldFlags.GameServer)
+                                            {
+                                                entityCommandBuffer.AddComponent(bullet, new GhostChunk().StartValues());
+                                                entityCommandBuffer.AddComponent(bullet, new NewChunk());
+                                                entityCommandBuffer.AddComponent(bullet, new EntityToHide());
+                                                NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
+                                                bulletComp.isOnServer = true;
+                                                entityCommandBuffer.SetComponent(bullet, bulletComp);
+                                                RPCHelper.SendEventsToClients<PlayerActionRPC>(ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                            }
                                         }
-                                        else
+                                        
+                                        
+
+                                        if(state.World.IsClient())
                                         {
                                             EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new PlayerActionRPC()
                                             {
                                                 networkID = playerAspect.networkId
                                             });
                                         }
+
+
                                             
-                                }
+                                
                             }
                         }
                     }
           
                 }
             }
-
             playerAspect.aimRotation.ValueRW.angle = rot;
         }
         entityCommandBuffer.Playback(state.EntityManager);
@@ -390,32 +424,8 @@ using UnityEngine;
         math.cos(currentAngle)
         );
     }
-    private void SendEventsToClients(ref SystemState state,EntityCommandBuffer ecb,int networkID, int chunkIndex)
-    {
-        var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>();
-        Entity chunk = Entity.Null; 
-        foreach(var chunkTmp in loadedChunks)
-        {
-            if(chunkTmp.chunkIndex == chunkIndex)
-                chunk = chunkTmp.chunkEntity;
-        }
-        if(chunk == Entity.Null) return;
 
-        var players = playerNeedChunkLookup[chunk];
-        PlayerActionRPC playerActionRPC = new PlayerActionRPC()
-        {
-           networkID = networkID
-        };
-        
-        foreach(var player in players)
-        {
-            if(player.networkID != networkID)
-            {
-                var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player.playerEntity).value;
-                RPCHelper.SendRpc<PlayerActionRPC>(ecb,connection,playerActionRPC);
-            }
-        }
-    }
+
     private void SetActionStatus(ref SystemState state,int index, RefRW<Hands> hands, quaternion lastRot, quaternion targetRot,float3 lastPos, float3 targetPos)
     {
         hands.ValueRW.lastRotation = lastRot;

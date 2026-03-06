@@ -29,9 +29,9 @@ public partial class ChunkManagementServerSystem : SystemBase
         LoadRequests = SystemAPI.QueryBuilder().WithAll<LoadChunkRequest,ProcessInTheTick>().Build();
         loadedChunks = new NativeParallelHashMap<int, LoadedChunks>(10,Allocator.Persistent);
 
-
         RequireForUpdate(LoadRequests);
         RequireForUpdate<MapSettings>();
+        
         
         if(SystemAPI.TryGetSingleton(out MapSettings mapSettings))
         {

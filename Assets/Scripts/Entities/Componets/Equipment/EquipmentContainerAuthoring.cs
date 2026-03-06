@@ -24,4 +24,3 @@ public class EquipmentContainerAuthoring : MonoBehaviour
         }
     }
 }
-

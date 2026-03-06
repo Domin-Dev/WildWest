@@ -13,7 +13,7 @@ public class Weapon : Destroyable
 
 
     public int damage = 5;
-    public int cooldown;
+    public uint cooldown;
 
     public override ItemStats GetItemStats()
     {

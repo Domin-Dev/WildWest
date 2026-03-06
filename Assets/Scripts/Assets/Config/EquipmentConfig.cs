@@ -6,17 +6,17 @@ using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 
-public class EquipmentConfig : MonoBehaviour
+public class EquipmentConfig 
 {
     private static EquipmentConfig i;
-    private Dictionary<int,ContainerData> containers;
+    private static Dictionary<int,ContainerData> containers;
 
 
 
-    public LocalizedString defaultContainerName {private set;get;}
+    public static LocalizedString defaultContainerName {private set;get;}
     public IReadOnlyDictionary<int, ContainerData> Containers => containers;
-    public int itemInHand_ContainerIndex {private set;get;}
-    public int hotBar_ContainerIndex {private set;get;}
+    public readonly static int itemInHand_ContainerIndex;
+    public readonly static int hotBar_ContainerIndex;
 
 
 
@@ -26,13 +26,13 @@ public class EquipmentConfig : MonoBehaviour
         {
             if (i == null)
             {
-                i = new GameObject("EquipmentConfig", typeof(EquipmentConfig)).GetComponent<EquipmentConfig>();
+                i = new EquipmentConfig();
             }
             return i;
         }
     }
     
-    public void Awake()
+    static EquipmentConfig()
     {
         var config = Resources.Load<EquipmentConfigData>("Config/EquipmentConfig");
         defaultContainerName = config.defaultContainerName;
