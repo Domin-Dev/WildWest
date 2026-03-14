@@ -203,8 +203,8 @@ public class HandsController : MonoBehaviour
             RangedWeapon rangedWeapon = (RangedWeapon)weapon;
             float posY = Mathf.Abs(rangedWeapon.aimPoint.y - rangedWeapon.gripPoint1.y);
             SetTransformHand(posY);
-            aimPoint.localPosition = (Vector2)itemInHand.transform.localPosition + rangedWeapon.aimPoint;
-            reloadPoint.localPosition = (Vector2)itemInHand.transform.localPosition + rangedWeapon.reloadPoint;
+         //  aimPoint.localPosition = (Vector2)itemInHand.transform.localPosition + rangedWeapon.aimPoint;
+         //   reloadPoint.localPosition = (Vector2)itemInHand.transform.localPosition + rangedWeapon.reloadPoint;
             SetAmmoBar(this, new SetAmmoBarArgs(rangedWeapon.magazineCapacity, (itemStats as RangedWeaponItem).currentAmmoCount, rangedWeapon.ammoType));
             ammoSprite = ItemsAsset.instance.GetAmmoHandSprite(rangedWeapon.ammoType);
         }

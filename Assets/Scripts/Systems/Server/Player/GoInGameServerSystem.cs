@@ -23,7 +23,9 @@ partial struct GoInGameServerSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         var playersList = SystemAPI.GetSingletonBuffer<PlayersList>(false);
-        
+        var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+
+
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, GoInGameRequestRPC requestRPC, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, GoInGameRequestRPC>().WithEntityAccess())
         {

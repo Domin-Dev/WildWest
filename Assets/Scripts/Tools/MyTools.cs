@@ -159,6 +159,11 @@ public static class MyTools
     {
         return new float2(v.x, v.y);
     }
+    public static float3 ConvertFloat(float2 v)
+    {
+        return new float3(v.x, v.y,v.y);
+    }
+
 
     public static World GetClientWorld()
     {

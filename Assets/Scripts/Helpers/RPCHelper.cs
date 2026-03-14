@@ -83,6 +83,11 @@ public static class RPCHelper
     public static void SendEventsToClients<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
+        SendEventsToClients(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,chunkIndex,tick);
+    }
+    public static void SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    where T : unmanaged, IRpcCommand,ISetPlayer
+    {
         Entity chunk = Entity.Null; 
         foreach(var chunkTmp in loadedChunks)
         {
@@ -92,7 +97,7 @@ public static class RPCHelper
         if(chunk == Entity.Null) return;
 
         var players = playerNeedChunkLookup[chunk];
-        var rpc = new T();
+
         tick.Add(2u);
         rpc.SetPlayer(networkID,tick);
         
@@ -105,6 +110,11 @@ public static class RPCHelper
             }
         }
     }
+
+
+
+
+
 
     public static void SendEventToClient<T>(EntityCommandBuffer ecb,int networkID,NetworkTick tick,Entity target)
     where T : unmanaged, IRpcCommand,ISetPlayer

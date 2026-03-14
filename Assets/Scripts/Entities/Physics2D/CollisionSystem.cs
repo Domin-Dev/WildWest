@@ -13,6 +13,7 @@ using UnityEngine;
 
 
 
+
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct CollisionSystem : ISystem
 {
@@ -115,12 +116,18 @@ public partial struct CollisionSystem : ISystem
     // {
     //     UpdateLookups(ref state);
     //     EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
-    //     var speed = SystemAPI.Time.DeltaTime * 4;
+
+    //    // if(state.)Debug.Log("collision!");
+
+    //     var speed = SystemAPI.Time.DeltaTime * 2;
+    //     NetworkTick networkTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
     //     if(state.World.IsServer())
     //     {
     //         loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
     //         map = SystemAPI.GetSingleton<MapSettings>();
     //     }
+
+        
 
     //     foreach (var (input, trans, e) in SystemAPI.Query<RefRO<PlayerInput>, RefRW<LocalTransform>>().WithAll<Simulate>().WithEntityAccess())
     //     {
@@ -128,8 +135,10 @@ public partial struct CollisionSystem : ISystem
     //         moveInput = math.normalizesafe(moveInput) * speed;
     //         trans.ValueRW.Position += new float3(moveInput.x, moveInput.y,0);
 
+
     //         EntityChangePosition(ref state,ref entityCommandBuffer,e,trans.ValueRO,out bool isloaded);
     //     }
+
     //     entityCommandBuffer.Playback(state.EntityManager);
     //     entityCommandBuffer.Dispose();
     // }
@@ -138,8 +147,9 @@ public partial struct CollisionSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        
         UpdateLookups(ref state);
+
+        
 
         if (state.World.Flags == WorldFlags.GameServer)
         {
@@ -167,6 +177,7 @@ public partial struct CollisionSystem : ISystem
 
 
         deltaTime = SystemAPI.Time.DeltaTime;
+        var time = SystemAPI.GetSingleton<NetworkTime>();
 
         EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
 
@@ -408,6 +419,9 @@ public partial struct CollisionSystem : ISystem
 
 
                 LocalTransform localTransform = getPosition[entity];
+                if(state.World.IsClient()) 
+                    Debug.Log( "tick " + time.ServerTick + " stare" + localTransform.Position  + "wynik :" + tempTransform1);
+
                 localTransform.Position = tempTransform1;
                 EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform, out bool chunkIsLoaded);
                
@@ -421,7 +435,6 @@ public partial struct CollisionSystem : ISystem
         }
         foreach ((RefRW<ForceImpulse2D> velocity, Entity e) in SystemAPI.Query<RefRW<ForceImpulse2D>>().WithAll<Simulate>().WithEntityAccess())
         {
-
             velocity.ValueRW.Value -= velocity.ValueRO.Value * DampingValue * deltaTime;
             isChanged.SetComponentEnabled(e, true);
             if (math.lengthsq(velocity.ValueRO.Value) < 0.01f)

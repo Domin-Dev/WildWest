@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 
@@ -23,7 +24,14 @@ public class ParticlesAuthoring : MonoBehaviour
             {
                 value = finish,
             });
+            AddComponent(entity, new NewParticles());
         }
     }
 }
 
+
+public struct NewParticles : IComponentData
+{
+    public Entity target;
+    public float3 offset;
+}

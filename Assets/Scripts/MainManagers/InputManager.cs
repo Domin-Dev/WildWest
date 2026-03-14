@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
@@ -101,7 +102,7 @@ public class InputManager : MonoBehaviour
         if(nextSlot.triggered)
             return (currentSlot + 1) % 10;   
 
-        return currentSlot;
+        return math.clamp(currentSlot,0,9);
     }
 
     private void PreviousSlot_performed(InputAction.CallbackContext obj)

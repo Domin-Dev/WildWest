@@ -45,6 +45,7 @@ partial struct NewItemInHandSystem : ISystem
         foreach ((RefRO<NewItemInHandRPC> rpcCommand, Entity entity) in SystemAPI.Query<RefRO<NewItemInHandRPC>>().WithEntityAccess())
         {     
             bool found = false;
+            var tick = rpcCommand.ValueRO.tick;
             Debug.Log("nowy!!!");
 
             foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity e) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
@@ -64,6 +65,7 @@ partial struct NewItemInHandSystem : ISystem
                                 entityCommandBuffer.DestroyEntity(entity);
                             }
                         }
+                        SystemAPI.GetComponent<ReceiveRpcCommandRequest>(entity).Consume();
                     }
                     else
                     {
@@ -79,10 +81,14 @@ partial struct NewItemInHandSystem : ISystem
                 }
             }
 
-            if(!found && snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(rpcCommand.ValueRO.tick))
+            if(!found)
             {
-                Debug.Log("nie znaleziono");
-                entityCommandBuffer.DestroyEntity(entity);
+                tick.Add(50u);
+                if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(tick))
+                {
+                    Debug.Log("nie znaleziono");
+                    entityCommandBuffer.DestroyEntity(entity);
+                }
             }
 
         }   
@@ -101,6 +107,7 @@ partial struct NewItemInHandSystem : ISystem
     {
         SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInHand);
         LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInHand);
+        
         LocalTransform aimPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.aimPoint);
         LocalTransform reloadPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.reloadPoint);
         LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.sidehand);
@@ -117,6 +124,7 @@ partial struct NewItemInHandSystem : ISystem
 
             mainHand.Position.y = 0;
         }
+
         spriteRenderer.sprite = weapon.weaponImage;
 
         if (weapon.gripPoint2.x != -100)

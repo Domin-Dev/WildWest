@@ -2,10 +2,10 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [UpdateInGroup(typeof(PresentationSystemGroup))]
-[UpdateAfter(typeof(CharacterAimSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct CharacterHandsSystem : ISystem
 {
@@ -16,19 +16,18 @@ partial struct CharacterHandsSystem : ISystem
     {
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<NetworkTime>();
-        state.RequireForUpdate<BeginPresentationEntityCommandBufferSystem.Singleton>();  
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        var ecbSingleton = SystemAPI.GetSingleton<BeginPresentationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-        
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         deltaTime = SystemAPI.Time.DeltaTime;
 
 
-        foreach ((RefRW<Hands> hands,RefRO<AimRotation> aimRotation, RefRW<Character> character) in SystemAPI.Query<RefRW<Hands>,RefRO<AimRotation>,RefRW<Character>>().WithNone<NewPlayerTag>().WithAll<Simulate>())
+
+        foreach ((RefRW<Hands> hands,RefRO<AimRotation> aimRotation, RefRW<Character> character,RefRO<LocalTransform> pos,RefRO<LocalToWorld> local, RefRO<PlayerInput> world) in SystemAPI.Query<RefRW<Hands>,RefRO<AimRotation>,RefRW<Character>,RefRO<LocalTransform>,RefRO<LocalToWorld>,RefRO<PlayerInput>>().WithNone<NewPlayerTag>())
         {
             LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
@@ -42,27 +41,57 @@ partial struct CharacterHandsSystem : ISystem
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSideHand);
             state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, localItem);
 
+
             UpdateDirectionIndex(rot,character, ref state);
         }
+
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {
             
-            foreach((RefRO<Hands> hands,RefRO<GhostOwner> ghostOwner) in SystemAPI.Query<RefRO<Hands>,RefRO<GhostOwner>>().WithAll<Player,Simulate>())
+            foreach((RefRO<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel,RefRO<LocalTransform> world, Entity e) in SystemAPI.Query<RefRO<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D> ,RefRO<LocalTransform>>().WithAll<Player>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
 
-                LocalToWorld aimpoint = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.aimPoint);
                 Sounds.instance.Shot();
+
+
+                LocalToWorld aimpoint = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.aimPoint);
+
+;
                 EntitySpawner.instance.SpawnEntityPrefab(2, aimpoint.Position, aimpoint.Rotation);
-                EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity);
-                EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation);          
+                EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity,new NewParticles()
+                {
+                    target = hands.ValueRO.aimPoint,
+                    offset = new float3(0.05f, 0f, 0f)
+                });
+                EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation, new NewParticles()
+                {
+                    target = hands.ValueRO.aimPoint,
+                    offset = new float3(0.01f,0f,0f)
+                });  
+
+
+
+                //     Entity prefab = SystemAPI.GetSingleton<EntitiesReferences>().shotSmoke;
+
+             //   Debug.DrawRay(aimpoint.Position, new float3(1,0,0), Color.red, 2f);
+
+                //     Entity entity = entityCommandBuffer.Instantiate(prefab);
+                //     entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(world.ValueRO.Position));
+                //     entityCommandBuffer.SetComponent(entity, new NewParticles()
+                //     {
+                //         target = e
+                //     });
+
                 break;
             }
             entityCommandBuffer.DestroyEntity(rpc);
         }
-    }
+        entityCommandBuffer.Playback(state.EntityManager);
+        entityCommandBuffer.Dispose();
+    }       
 
-    private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime =1f)// 0.04f)
+    private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime = 0.05f)
     {
         quaternion mainTargetRotation;
         quaternion sideTargetRotation;
@@ -93,8 +122,10 @@ partial struct CharacterHandsSystem : ISystem
         }
 
 
+          //  localMain.Rotation = mainTargetRotation;
+          //  localSideHand.Rotation = sideTargetRotation;
         localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, math.min(deltaTime, maxDeltaTime) * 22);
-        localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, math.min(deltaTime, maxDeltaTime) * 10);
+       localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, math.min(deltaTime, maxDeltaTime) * 10);
 
         if (math.Euler(localMain.Rotation).z > 0) localMain.Position.z = 0.0011f;
         else localMain.Position.z = -0.001f;

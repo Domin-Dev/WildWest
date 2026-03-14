@@ -24,7 +24,6 @@ public partial struct RelevancySynchronizationSystem : ISystem
     {
         needChunkRO.Update(ref state);
 
-        Debug.Log("dzialakooooooooooooooooo");
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
         var ghostRelevancy = SystemAPI.GetSingletonRW<GhostRelevancy>();

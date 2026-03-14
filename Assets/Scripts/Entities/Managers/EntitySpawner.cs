@@ -106,10 +106,21 @@ public class EntitySpawner : MonoBehaviour
         position.z = position.y;
         LocalTransform localTransform = LocalTransform.FromPosition(position);
         entityManager.SetComponentData(entity, localTransform.Rotate(quaternion));
-      //  SelfDestruction particles = entityManager.GetComponentData<SelfDestruction>(entity);
-       // particles.finishParticles += Time.time;
-      //  entityManager.SetComponentData(entity, particles);
     }
+
+
+    public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion,NewParticles target)
+    {
+        Entity prefab = GetParticleIndex(indexParticle);
+
+        Entity entity = entityManager.Instantiate(prefab);
+        position.z = position.y;
+        LocalTransform localTransform = LocalTransform.FromPosition(position);
+        entityManager.SetComponentData(entity, localTransform.Rotate(quaternion));
+        entityManager.SetComponentData(entity, target);
+    }
+
+
     public void SpawnEntityPrefab(int index,float3 position, quaternion quaternion)
     {
         Entity prefab = GetParticleIndex(index);
