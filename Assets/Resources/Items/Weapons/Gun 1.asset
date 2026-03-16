@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d9b1873d12d744448a3503317eafd98, type: 3}
+  m_Name: Gun 1
+  m_EditorClassIdentifier: 
+  name: bow
+  description: 'obrazenia : 100
+
+    id : 1
+
+    stack max: 100'
+  stackMax: 1
+  ID: 138
+  icon: {fileID: 1386770750, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  tags:
+  - tag: {fileID: 0}
+  - tag: {fileID: 0}
+  crafingIngredients:
+  - itemID: 42
+    number: 2
+  - itemID: 42
+    number: 2
+  craftTables: ffffffff
+  numberItem: 1
+  durability: 20
+  damage: 5
+  cooldown: 0.7
+  weaponImage: {fileID: -7034982987303943349, guid: b8f887fd54d6b5d45b37ea6eb0edfcfb, type: 3}
+  hitBoxPoints: []
+  gripPoint1: {x: 0.024999999, y: -0.024999999}
+  gripPoint2: {x: -100, y: -100}
+  timeToReload: 0
+  magazineCapacity: 5
+  bulletCount: 1
+  shotSpread: 10
+  aimPoint:
+    x: 0.035
+    y: -0.005
+  reloadPoint:
+    x: 0.024999999
+    y: -0.005
+  ammoType: 0

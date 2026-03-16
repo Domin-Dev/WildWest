@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: 
   description: 
-  ID: 41
   stackMax: 1
+  ID: 41
   icon: {fileID: 1312005463, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   tags:
-  - tag: {fileID: 0}
+  - tag: {fileID: 11400000, guid: d737fcec8c8d9894ea3abd08583dcaf1, type: 2}
   crafingIngredients:
   - itemID: 0
     number: 0

@@ -18,6 +18,35 @@ partial struct CharacterHandsSystem : ISystem
         state.RequireForUpdate<NetworkTime>();
     }
 
+
+
+
+            //         if (hands.ValueRW.actionStatus != 0)
+            //         {
+            //             transform.Position = hands.ValueRO.targetPosition;
+            //             transform.Rotation = hands.ValueRO.targetRotation;
+            //         }
+
+            //         SetActionStatus(ref state, 2, hands, transform.Rotation, math.normalize(math.mul(addedRotation, transform.Rotation)), transform.Position, transform.Position - new float3(0.06f, 0, 0));
+
+            //         if (state.World.Flags != WorldFlags.GameServer)
+            //         {
+            //             Sounds.instance.Shot();
+            //             EntitySpawner.instance.SpawnEntityPrefab(2, aimpoint.Position, aimpoint.Rotation);
+            //             EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity);
+            //             EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation);
+            //         }
+
+            //         if (lastAction.HasValue) entityCommandBuffer.SetComponent(entity, lastAction.Value);
+            //         continue;
+            //     }
+            // }
+
+            // if (hands.ValueRO.actionStatus != 0)
+            // {
+            //     ActionUpdate(hands, playerAspect.player, ref state);
+            // }
+
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -26,38 +55,34 @@ partial struct CharacterHandsSystem : ISystem
         deltaTime = SystemAPI.Time.DeltaTime;
 
 
-
-        foreach ((RefRW<Hands> hands,RefRO<AimRotation> aimRotation, RefRW<Character> character,RefRO<LocalTransform> pos,RefRO<LocalToWorld> local, RefRO<PlayerInput> world) in SystemAPI.Query<RefRW<Hands>,RefRO<AimRotation>,RefRW<Character>,RefRO<LocalTransform>,RefRO<LocalToWorld>,RefRO<PlayerInput>>().WithNone<NewPlayerTag>())
-        {
-            LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
-            LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
-            LocalTransform localItem = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInHand);
-            LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.main);
-            
-            float rot = aimRotation.ValueRO.angle;   
-            UpdateAimSystem(rot, ref localSideHand, ref localItem, ref localMain, hands);
-
-            state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.main, localMain);
-            state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSideHand);
-            state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, localItem);
-
-
-            UpdateDirectionIndex(rot,character, ref state);
-        }
+        
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
-        {
-            
-            foreach((RefRO<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel,RefRO<LocalTransform> world, Entity e) in SystemAPI.Query<RefRO<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D> ,RefRO<LocalTransform>>().WithAll<Player>().WithEntityAccess())
+        {      
+            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
 
                 Sounds.instance.Shot();
+                
+                
+                LocalToWorld worldPosMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.mainhand);
+                quaternion addedRotation = quaternion.Euler(0, 0, math.radians(70));
 
 
                 LocalToWorld aimpoint = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.aimPoint);
+                LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
+                
+                if (hands.ValueRW.actionStatus != 0)
+                {
+                    transform.Position = hands.ValueRO.targetPosition;
+                    transform.Rotation = hands.ValueRO.targetRotation;
+                }
 
-;
+                 
+                SetActionStatus(ref state, 2, hands, transform.Rotation, math.normalize(math.mul(addedRotation, transform.Rotation)), transform.Position, transform.Position - new float3(0.06f, 0, 0));
+
+
                 EntitySpawner.instance.SpawnEntityPrefab(2, aimpoint.Position, aimpoint.Rotation);
                 EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity,new NewParticles()
                 {
@@ -69,23 +94,32 @@ partial struct CharacterHandsSystem : ISystem
                     target = hands.ValueRO.aimPoint,
                     offset = new float3(0.01f,0f,0f)
                 });  
-
-
-
-                //     Entity prefab = SystemAPI.GetSingleton<EntitiesReferences>().shotSmoke;
-
-             //   Debug.DrawRay(aimpoint.Position, new float3(1,0,0), Color.red, 2f);
-
-                //     Entity entity = entityCommandBuffer.Instantiate(prefab);
-                //     entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(world.ValueRO.Position));
-                //     entityCommandBuffer.SetComponent(entity, new NewParticles()
-                //     {
-                //         target = e
-                //     });
-
                 break;
             }
             entityCommandBuffer.DestroyEntity(rpc);
+        }
+       
+
+        foreach ((RefRW<Hands> hands,RefRO<AimRotation> aimRotation, RefRW<Character> character) in SystemAPI.Query<RefRW<Hands>,RefRO<AimRotation>,RefRW<Character>>().WithNone<NewPlayerTag>())
+        {
+            LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.side);
+            LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
+            LocalTransform localItem = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInHand);
+            LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.main);
+            
+
+            if (hands.ValueRO.actionStatus != 0)
+            {
+                ActionUpdate(hands, ref state);
+            }
+            float rot = aimRotation.ValueRO.angle;   
+            UpdateAimSystem(rot, ref localSideHand, ref localItem, ref localMain, hands);
+
+            state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.main, localMain);
+            state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.side, localSideHand);
+            state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.itemInHand, localItem);
+
+            UpdateDirectionIndex(rot,character, ref state);
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
@@ -197,6 +231,60 @@ partial struct CharacterHandsSystem : ISystem
     }
 
     
+
+    private void SetActionStatus(ref SystemState state,int index, RefRW<Hands> hands, quaternion lastRot, quaternion targetRot,float3 lastPos, float3 targetPos)
+    {
+        hands.ValueRW.lastRotation = lastRot;
+        hands.ValueRW.lastPosition = lastPos;
+
+        hands.ValueRW.elapsedTime = 0;
+
+        hands.ValueRW.targetPosition = targetPos;
+        hands.ValueRW.targetRotation = targetRot;
+
+        hands.ValueRW.actionStatus = index;
+    }
+    private float GetActionTime(int index)
+    {
+        switch (index)
+        {
+            case 2: return 0.2f;
+            case 1002: return 0.2f;
+            default: return 1;
+        }
+    }
+    public void ActionUpdate(RefRW<Hands> hands, ref SystemState state)
+    {
+        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
+        hands.ValueRW.elapsedTime += deltaTime;
+
+
+        float t = math.clamp(hands.ValueRO.elapsedTime / GetActionTime(hands.ValueRO.actionStatus), 0f, 1f);
+        localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, t);
+        localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, t);
+
+        if(t == 1)
+        {
+            if (hands.ValueRO.actionStatus == 1002)
+            {
+                localTransform.Position = hands.ValueRO.targetPosition;
+                localTransform.Rotation = hands.ValueRO.targetRotation;
+                hands.ValueRW.actionStatus = 0;
+
+            }
+            else
+            {
+                hands.ValueRW.targetRotation = hands.ValueRO.lastRotation;
+                hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
+
+                hands.ValueRW.lastRotation  = localTransform.Rotation;
+                hands.ValueRW.lastPosition = localTransform.Position;
+                hands.ValueRW.elapsedTime = 0;
+                hands.ValueRW.actionStatus = 1002;
+            }
+        }
+        state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.mainhand, localTransform);
+    }
 }
 
 

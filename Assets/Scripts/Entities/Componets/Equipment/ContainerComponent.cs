@@ -19,7 +19,7 @@ public struct ContainerComponent : IComponentData
 
 }
 
-public struct ContainerPlayer : IComponentData
+public struct PlayerContainer : IComponentData
 {
     public Entity player;
 }

@@ -47,12 +47,9 @@ namespace Assembly_CSharp_Generated
             public float InternalInput_movementDirection_y;
             public float InternalInput_sightDirection_x;
             public float InternalInput_sightDirection_y;
-            public float InternalInput_handRotation_x;
-            public float InternalInput_handRotation_y;
-            public float InternalInput_handRotation_z;
-            public float InternalInput_handRotation_w;
             public uint InternalInput_rightButton_Count;
             public uint InternalInput_leftButton_Count;
+            public int InternalInput_slotInHand;
             public uint InternalInput_dataTick;
             public uint Tick;
         }
@@ -80,12 +77,9 @@ namespace Assembly_CSharp_Generated
                 snapshot.InternalInput_movementDirection_y = component.InternalInput.movementDirection.y;
                 snapshot.InternalInput_sightDirection_x = component.InternalInput.sightDirection.x;
                 snapshot.InternalInput_sightDirection_y = component.InternalInput.sightDirection.y;
-                snapshot.InternalInput_handRotation_x = component.InternalInput.handRotation.value.x;
-                snapshot.InternalInput_handRotation_y = component.InternalInput.handRotation.value.y;
-                snapshot.InternalInput_handRotation_z = component.InternalInput.handRotation.value.z;
-                snapshot.InternalInput_handRotation_w = component.InternalInput.handRotation.value.w;
                 snapshot.InternalInput_rightButton_Count = (uint)component.InternalInput.rightButton.Count;
                 snapshot.InternalInput_leftButton_Count = (uint)component.InternalInput.leftButton.Count;
+                snapshot.InternalInput_slotInHand = (int) component.InternalInput.slotInHand;
                 snapshot.InternalInput_dataTick = component.InternalInput.dataTick.SerializedData;
                 snapshot.Tick = component.Tick.SerializedData;
         }
@@ -97,9 +91,9 @@ namespace Assembly_CSharp_Generated
         {
                 component.InternalInput.movementDirection = new float2(snapshotBefore.InternalInput_movementDirection_x, snapshotBefore.InternalInput_movementDirection_y);
                 component.InternalInput.sightDirection = new float2(snapshotBefore.InternalInput_sightDirection_x, snapshotBefore.InternalInput_sightDirection_y);
-                component.InternalInput.handRotation = new quaternion(snapshotBefore.InternalInput_handRotation_x, snapshotBefore.InternalInput_handRotation_y, snapshotBefore.InternalInput_handRotation_z, snapshotBefore.InternalInput_handRotation_w);
                 component.InternalInput.rightButton.Count = (uint) snapshotBefore.InternalInput_rightButton_Count;
                 component.InternalInput.leftButton.Count = (uint) snapshotBefore.InternalInput_leftButton_Count;
+                component.InternalInput.slotInHand = (int) snapshotBefore.InternalInput_slotInHand;
                 component.InternalInput.dataTick = new Unity.NetCode.NetworkTick{SerializedData = snapshotBefore.InternalInput_dataTick};
                 component.Tick = new Unity.NetCode.NetworkTick{SerializedData = snapshotBefore.Tick};
         }
@@ -112,9 +106,9 @@ namespace Assembly_CSharp_Generated
             component.InternalInput.movementDirection.y = backup.InternalInput.movementDirection.y;
             component.InternalInput.sightDirection.x = backup.InternalInput.sightDirection.x;
             component.InternalInput.sightDirection.y = backup.InternalInput.sightDirection.y;
-            component.InternalInput.handRotation = backup.InternalInput.handRotation;
             component.InternalInput.rightButton.Count = backup.InternalInput.rightButton.Count;
             component.InternalInput.leftButton.Count = backup.InternalInput.leftButton.Count;
+            component.InternalInput.slotInHand = backup.InternalInput.slotInHand;
             component.InternalInput.dataTick = backup.InternalInput.dataTick;
             component.Tick = backup.Tick;
         }
@@ -126,6 +120,7 @@ namespace Assembly_CSharp_Generated
         {
             snapshot.InternalInput_rightButton_Count = (uint)predictor.PredictInt((int)snapshot.InternalInput_rightButton_Count, (int)baseline1.InternalInput_rightButton_Count, (int)baseline2.InternalInput_rightButton_Count);
             snapshot.InternalInput_leftButton_Count = (uint)predictor.PredictInt((int)snapshot.InternalInput_leftButton_Count, (int)baseline1.InternalInput_leftButton_Count, (int)baseline2.InternalInput_leftButton_Count);
+            snapshot.InternalInput_slotInHand = predictor.PredictInt(snapshot.InternalInput_slotInHand, baseline1.InternalInput_slotInHand, baseline2.InternalInput_slotInHand);
             snapshot.InternalInput_dataTick = (uint)predictor.PredictInt((int)snapshot.InternalInput_dataTick, (int)baseline1.InternalInput_dataTick, (int)baseline2.InternalInput_dataTick);
             snapshot.Tick = (uint)predictor.PredictInt((int)snapshot.Tick, (int)baseline1.Tick, (int)baseline2.Tick);
         }
@@ -140,12 +135,9 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.InternalInput_movementDirection_y != baseline.InternalInput_movementDirection_y) ? (1u<<0) : 0;
             changeMask |= (snapshot.InternalInput_sightDirection_x != baseline.InternalInput_sightDirection_x) ? (1u<<1) : 0;
             changeMask |= (snapshot.InternalInput_sightDirection_y != baseline.InternalInput_sightDirection_y) ? (1u<<1) : 0;
-            changeMask |= (snapshot.InternalInput_handRotation_x != baseline.InternalInput_handRotation_x ||
-                        snapshot.InternalInput_handRotation_y != baseline.InternalInput_handRotation_y ||
-                        snapshot.InternalInput_handRotation_z != baseline.InternalInput_handRotation_z ||
-                        snapshot.InternalInput_handRotation_w != baseline.InternalInput_handRotation_w) ? (1u<<2) : 0;
-            changeMask |= (snapshot.InternalInput_rightButton_Count != baseline.InternalInput_rightButton_Count) ? (1u<<3) : 0;
-            changeMask |= (snapshot.InternalInput_leftButton_Count != baseline.InternalInput_leftButton_Count) ? (1u<<4) : 0;
+            changeMask |= (snapshot.InternalInput_rightButton_Count != baseline.InternalInput_rightButton_Count) ? (1u<<2) : 0;
+            changeMask |= (snapshot.InternalInput_leftButton_Count != baseline.InternalInput_leftButton_Count) ? (1u<<3) : 0;
+            changeMask |= (snapshot.InternalInput_slotInHand != baseline.InternalInput_slotInHand) ? (1u<<4) : 0;
             changeMask |= (snapshot.InternalInput_dataTick != baseline.InternalInput_dataTick) ? (1u<<5) : 0;
             changeMask |= (snapshot.Tick != baseline.Tick) ? (1u<<6) : 0;
             GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
@@ -167,16 +159,11 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.InternalInput_sightDirection_y, baseline.InternalInput_sightDirection_y, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
-            {
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_x, baseline.InternalInput_handRotation_x, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_y, baseline.InternalInput_handRotation_y, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_z, baseline.InternalInput_handRotation_z, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_w, baseline.InternalInput_handRotation_w, compressionModel);
-            }
-            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_rightButton_Count, baseline.InternalInput_rightButton_Count, compressionModel);
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_leftButton_Count, baseline.InternalInput_leftButton_Count, compressionModel);
+            if ((changeMask & (1 << 4)) != 0)
+                writer.WritePackedIntDelta(snapshot.InternalInput_slotInHand, baseline.InternalInput_slotInHand, compressionModel);
             if ((changeMask & (1 << 5)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_dataTick, baseline.InternalInput_dataTick, compressionModel);
             if ((changeMask & (1 << 6)) != 0)
@@ -201,23 +188,15 @@ namespace Assembly_CSharp_Generated
                 writer.WritePackedFloatDelta(snapshot.InternalInput_sightDirection_x, baseline.InternalInput_sightDirection_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.InternalInput_sightDirection_y, baseline.InternalInput_sightDirection_y, compressionModel);
-            changeMask |= (snapshot.InternalInput_handRotation_x != baseline.InternalInput_handRotation_x ||
-                        snapshot.InternalInput_handRotation_y != baseline.InternalInput_handRotation_y ||
-                        snapshot.InternalInput_handRotation_z != baseline.InternalInput_handRotation_z ||
-                        snapshot.InternalInput_handRotation_w != baseline.InternalInput_handRotation_w) ? (1u<<2) : 0;
+            changeMask |= (snapshot.InternalInput_rightButton_Count != baseline.InternalInput_rightButton_Count) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
-            {
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_x, baseline.InternalInput_handRotation_x, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_y, baseline.InternalInput_handRotation_y, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_z, baseline.InternalInput_handRotation_z, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.InternalInput_handRotation_w, baseline.InternalInput_handRotation_w, compressionModel);
-            }
-            changeMask |= (snapshot.InternalInput_rightButton_Count != baseline.InternalInput_rightButton_Count) ? (1u<<3) : 0;
-            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_rightButton_Count, baseline.InternalInput_rightButton_Count, compressionModel);
-            changeMask |= (snapshot.InternalInput_leftButton_Count != baseline.InternalInput_leftButton_Count) ? (1u<<4) : 0;
-            if ((changeMask & (1 << 4)) != 0)
+            changeMask |= (snapshot.InternalInput_leftButton_Count != baseline.InternalInput_leftButton_Count) ? (1u<<3) : 0;
+            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_leftButton_Count, baseline.InternalInput_leftButton_Count, compressionModel);
+            changeMask |= (snapshot.InternalInput_slotInHand != baseline.InternalInput_slotInHand) ? (1u<<4) : 0;
+            if ((changeMask & (1 << 4)) != 0)
+                writer.WritePackedIntDelta(snapshot.InternalInput_slotInHand, baseline.InternalInput_slotInHand, compressionModel);
             changeMask |= (snapshot.InternalInput_dataTick != baseline.InternalInput_dataTick) ? (1u<<5) : 0;
             if ((changeMask & (1 << 5)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_dataTick, baseline.InternalInput_dataTick, compressionModel);
@@ -251,27 +230,17 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.InternalInput_sightDirection_y = baseline.InternalInput_sightDirection_y;
             if ((changeMask & (1 << 2)) != 0)
-            {
-                snapshot.InternalInput_handRotation_x = reader.ReadPackedFloatDelta(baseline.InternalInput_handRotation_x, compressionModel);
-                snapshot.InternalInput_handRotation_y = reader.ReadPackedFloatDelta(baseline.InternalInput_handRotation_y, compressionModel);
-                snapshot.InternalInput_handRotation_z = reader.ReadPackedFloatDelta(baseline.InternalInput_handRotation_z, compressionModel);
-                snapshot.InternalInput_handRotation_w = reader.ReadPackedFloatDelta(baseline.InternalInput_handRotation_w, compressionModel);
-            }
-            else
-            {
-                snapshot.InternalInput_handRotation_x = baseline.InternalInput_handRotation_x;
-                snapshot.InternalInput_handRotation_y = baseline.InternalInput_handRotation_y;
-                snapshot.InternalInput_handRotation_z = baseline.InternalInput_handRotation_z;
-                snapshot.InternalInput_handRotation_w = baseline.InternalInput_handRotation_w;
-            }
-            if ((changeMask & (1 << 3)) != 0)
                 snapshot.InternalInput_rightButton_Count = reader.ReadPackedUIntDelta(baseline.InternalInput_rightButton_Count, compressionModel);
             else
                 snapshot.InternalInput_rightButton_Count = baseline.InternalInput_rightButton_Count;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 3)) != 0)
                 snapshot.InternalInput_leftButton_Count = reader.ReadPackedUIntDelta(baseline.InternalInput_leftButton_Count, compressionModel);
             else
                 snapshot.InternalInput_leftButton_Count = baseline.InternalInput_leftButton_Count;
+            if ((changeMask & (1 << 4)) != 0)
+                snapshot.InternalInput_slotInHand = reader.ReadPackedIntDelta(baseline.InternalInput_slotInHand, compressionModel);
+            else
+                snapshot.InternalInput_slotInHand = baseline.InternalInput_slotInHand;
             if ((changeMask & (1 << 5)) != 0)
                 snapshot.InternalInput_dataTick = reader.ReadPackedUIntDelta(baseline.InternalInput_dataTick, compressionModel);
             else
@@ -293,8 +262,6 @@ namespace Assembly_CSharp_Generated
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.InternalInput.sightDirection, backup.InternalInput.sightDirection));
             ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.InternalInput.handRotation.value, backup.InternalInput.handRotation.value));
-            ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex],
                 (component.InternalInput.rightButton.Count > backup.InternalInput.rightButton.Count) ?
                 (component.InternalInput.rightButton.Count - backup.InternalInput.rightButton.Count) :
@@ -304,6 +271,8 @@ namespace Assembly_CSharp_Generated
                 (component.InternalInput.leftButton.Count > backup.InternalInput.leftButton.Count) ?
                 (component.InternalInput.leftButton.Count - backup.InternalInput.leftButton.Count) :
                 (backup.InternalInput.leftButton.Count - component.InternalInput.leftButton.Count));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.InternalInput.slotInHand - backup.InternalInput.slotInHand));
             ++errorIndex;
             {
             int tickErr = 0;
@@ -344,15 +313,15 @@ namespace Assembly_CSharp_Generated
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".InternalInput.handRotation");
-            ++nameCount;
-            if (nameCount != 0)
-                names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".InternalInput.rightButton.Count");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".InternalInput.leftButton.Count");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".InternalInput.slotInHand");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));

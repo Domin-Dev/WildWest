@@ -4,6 +4,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -21,6 +22,7 @@ using UnityEngine;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> containersLookup;
 
+    private int simulationTickRate;
 
     public void OnCreate(ref SystemState state)
     {
@@ -32,6 +34,7 @@ using UnityEngine;
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
         containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
         
+        simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
 
 
@@ -67,22 +70,6 @@ using UnityEngine;
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.main);
             
 
-            LocalToWorld point = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.aimPoint); 
-            LocalTransform p = state.EntityManager.GetComponentData<LocalTransform>(playerAspect.hands.ValueRO.aimPoint); 
-           
-            var aim = playerAspect.hands.ValueRO.aimPoint;
-            float3 position = p.Position;
-
-            while(state.EntityManager.HasComponent<Parent>(aim))
-            {
-                Entity parent = state.EntityManager.GetComponentData<Parent>(aim).Value;
-
-                LocalTransform parentTransform =
-                    state.EntityManager.GetComponentData<LocalTransform>(parent);
-
-                position = math.transform(parentTransform.ToMatrix(), position);
-                aim = parent;
-            }
 
 
 
@@ -126,35 +113,23 @@ using UnityEngine;
 
                                 testTick.Add(1u);
                                 var cooldownTick = testTick;
-                                cooldownTick.Add(weapon.cooldown);
+
+                                cooldownTick.Add((uint)(simulationTickRate * weapon.cooldown));
                                 playerAspect.cooldown.ValueRW.cooldownTick = cooldownTick;
 
 
-                                // LocalTransform localSideHand = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.side);
-                                // LocalTransform localItem = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.itemInHand);
-                                // LocalTransform localMain = state.EntityManager.GetComponentData<LocalTransform>( playerAspect.hands.ValueRO.main);
-                                    
-                                // CharacterHandsSystem.GetHandsRotation(rot,ref localSideHand, ref localItem, ref localMain,playerAspect.hands);
-
-
-                                // state.EntityManager.SetComponentData(playerAspect.hands.ValueRO.main, localMain);
-                                
-
-
-                                uint seed = (uint)testTick.TickIndexForValidTick * 747796405u + 2891336453u;
+                                uint seed = (uint)testTick.TickIndexForValidTick * 311u; //* 747796405u + 2891336453u;
                                 Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
-                                float spread = 1f * Mathf.Deg2Rad;
+                                float spread = weapon.shotSpread * Mathf.Deg2Rad;
 
-                                for(int k = 0; k < 1; k++)
+                                for(int k = 0; k < weapon.bulletCount; k++)
                                 {
                                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
                                     
-                                    
-                                            if(state.World.IsClient()) 
-                                     Debug.Log( "aim point " + playerAspect.playerPosition.ValueRO.Position);
 
-                                     var rotation = quaternion.Euler(0, 0, rot + random.NextFloat(-1 * spread,spread));
+                                    var rotation = quaternion.Euler(0, 0, rot + random.NextFloat(-1 * spread,spread));
+                                    Debug.Log("wynik ! " + (uint)testTick.TickIndexForValidTick);
                                     LocalTransform lt = LocalTransform.FromPosition(aimPoint).Rotate(rotation);
                                     entityCommandBuffer.SetComponent(bullet, lt);
 
@@ -167,22 +142,25 @@ using UnityEngine;
                                         NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
                                         bulletComp.isOnServer = true;
                                         entityCommandBuffer.SetComponent(bullet, bulletComp);
-                                        RPCHelper.SendEventsToClients<PlayerActionRPC>(new PlayerActionRPC()
-                                        {
-                                            rotation = rot,
-                                            position = aimPoint,
-                                            networkID = playerAspect.networkId
-                                        },
-                                        ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
-                                    }
-                                    else 
-                                    {     
-                                        EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new PlayerActionRPC()
-                                        {
-                                            networkID = playerAspect.networkId
-                                        });
-                                    }   
-                                }                      
+                                    } 
+                                } 
+
+
+                                if(state.World.IsServer())
+                                {
+                                    RPCHelper.SendEventsToClients<PlayerActionRPC>(new PlayerActionRPC()
+                                    {
+                                        networkID = playerAspect.networkId
+                                    },
+                                    ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                } 
+                                else 
+                                {     
+                                    EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new PlayerActionRPC()
+                                    {
+                                        networkID = playerAspect.networkId
+                                    });
+                                }                       
                             }
                         }
                     }
@@ -195,9 +173,6 @@ using UnityEngine;
         entityCommandBuffer.Dispose();
     }
  
-
-
-
     private float2 CalculateAimPoint(float angle,RangedWeapon weapon)
     {
         float2 v = new float2(weapon.aimPoint.x - weapon.gripPoint1.x +0.07f,0);
@@ -222,83 +197,4 @@ using UnityEngine;
         math.cos(currentAngle)
         );
     }
-
-
-    private void SetActionStatus(ref SystemState state,int index, RefRW<Hands> hands, quaternion lastRot, quaternion targetRot,float3 lastPos, float3 targetPos)
-    {
-        hands.ValueRW.lastRotation = lastRot;
-        hands.ValueRW.lastPosition = lastPos;
-
-        hands.ValueRW.elapsedTime = 0;
-
-        hands.ValueRW.targetPosition = targetPos;
-        hands.ValueRW.targetRotation = targetRot;
-
-        hands.ValueRW.actionStatus = index;
-    }
-    private float GetActionTime(int index)
-    {
-        switch (index)
-        {
-            case 2: return 0.2f;
-            case 1002: return 0.2f;
-            default: return 1;
-        }
-    }
-    public void ActionUpdate(RefRW<Hands> hands, RefRW<Player> player, ref SystemState state)
-    {
-        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
-        hands.ValueRW.elapsedTime += deltaTime;
-
-
-        float t = math.clamp(hands.ValueRO.elapsedTime / GetActionTime(hands.ValueRO.actionStatus), 0f, 1f);
-        localTransform.Rotation = math.slerp(localTransform.Rotation, hands.ValueRO.targetRotation, t);
-        localTransform.Position = math.lerp(localTransform.Position, hands.ValueRO.targetPosition, t);
-      //  Debug.Log(t + " " +  hands.ValueRO.actionStatus + " " + hands.ValueRW.targetPosition);
-
-        if(t == 1)
-        {
-            if (hands.ValueRO.actionStatus == 1002)
-            {
-                localTransform.Position = hands.ValueRO.targetPosition;
-                localTransform.Rotation = hands.ValueRO.targetRotation;
-                hands.ValueRW.actionStatus = 0;
-
-            }
-            else
-            {
-                hands.ValueRW.targetRotation = hands.ValueRO.lastRotation;
-                hands.ValueRW.targetPosition = hands.ValueRW.lastPosition;
-
-                hands.ValueRW.lastRotation  = localTransform.Rotation;
-                hands.ValueRW.lastPosition = localTransform.Position;
-                hands.ValueRW.elapsedTime = 0;
-                hands.ValueRW.actionStatus = 1002;
-            }
-        }
-        state.EntityManager.SetComponentData<LocalTransform>(hands.ValueRO.mainhand, localTransform);
-    }
-
 }
-
-
-
-
-
-
-
-//[BurstCompile]
-//public partial struct WorldItemAnimJob : IJobEntity
-//{
-//    private const float cycleTime = 0.5f;
-//    private const float maxDistance = 0.007f;
-//    public const float basePos = -0.01f;
-
-//    public float elapsedTime;
-//    public void Execute(ref LocalTransform localTransform, WorldItemAnim worldItemAnim)
-//    {
-//        float pingPongValue = math.sin(elapsedTime / cycleTime * math.PI);
-//        float targetY = pingPongValue * maxDistance;
-//        localTransform.Position = new float3(localTransform.Position.x, basePos + targetY, localTransform.Position.y);
-//    }
-//}

@@ -392,21 +392,22 @@ public static class EQHelper
     public static void NewItemInTheSlot(ref EntityCommandBuffer ecb,ContainerComponent containerComponent, int slotPos, Entity connection)
     {
         if(containerComponent.containerType == ContainerType.Outfit)
+        {
             EntityHelper.CreateEntityWithComponent(ref ecb, new EQOnEquip()
             {
                 slotPosition = new SlotPosition(containerComponent.containerIndex,slotPos),
                 connection = connection
             });
+        }
     }
+
+
     public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer,int networkID, params EquipmentEvent[] events)
     {
+        foreach (EquipmentEvent eventData in events)
         {
-            foreach (EquipmentEvent eventData in events)
-            {
-                eventData.SetNetworkID(networkID);
-                Debug.Log("Event! Container" + eventData.containerIndex +  ", slot"+ eventData.data.slot);
-                EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, eventData);
-            }
+            eventData.SetNetworkID(networkID);
+            EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, eventData);
         }
     }
     public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer, int networkID, SlotPosition duplicatedPos, params EquipmentEvent[] events)
@@ -755,6 +756,9 @@ public static class EQHelper
     {
         var containerFrom = GetPlayerContainer(containersLookup,player,from);
         var containerTo = GetPlayerContainer(containersLookup,player,to);
+
+
+        Debug.Log("dziala  " + containerFrom.HasValue + " " + containerTo.HasValue);
         if(containerFrom.HasValue && containerTo.HasValue)
         {
             Clone<InventorySlot>(ecb,slotsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity); 
@@ -765,6 +769,8 @@ public static class EQHelper
     {
         bool hasFrom = TryGetBufferIndex(lookup,from.slotIndex,containerFrom,out var itemFrom,out int bufferFrom);
         bool hasTo = TryGetBufferIndex(lookup,to.slotIndex,containerTo,out var itemTo,out int bufferTo);
+
+        Debug.Log("dzialakakakako "  + itemFrom + "  " + itemTo);
         if(hasFrom)
         {
             var slot = lookup[containerFrom][bufferFrom];

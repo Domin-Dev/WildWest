@@ -168,7 +168,7 @@ partial struct GoInGameServerSystem : ISystem
         entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(stats.capacity + 1);
         entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(stats.capacity + 1);
         entityCommandBuffer.AppendToBuffer(connection, new LinkedEntityGroup() { Value = e });
-        entityCommandBuffer.AddComponent(e,new ContainerPlayer(){ player = player});
+        entityCommandBuffer.AddComponent(e,new PlayerContainer(){ player = player});
 
         
         if(containerSave != null)

@@ -1,4 +1,5 @@
 
+using Unity.Entities.UI;
 using Unity.Mathematics;
 using UnityEngine;
 [CreateAssetMenu(fileName = "RangedWeapon", menuName = "GameAsset/Items/Weapons/RangedWeapon")]
@@ -7,6 +8,10 @@ public class RangedWeapon : Weapon
     [Header("Ranged Weapon Stats")]
     public float timeToReload;
     public int magazineCapacity;
+    [Min(1)]public int bulletCount = 1;
+    public float shotSpread;
+
+
     public float2 aimPoint;
     public float2 reloadPoint;
     public AmmoType ammoType;

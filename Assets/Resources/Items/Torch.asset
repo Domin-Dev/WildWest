@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: torch
   description: 
-  ID: 33
   stackMax: 50
+  ID: 33
   icon: {fileID: -713800621, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
-  tags:
-  - tagID: 2
+  tags: []
   crafingIngredients:
   - itemID: 135
     number: 0

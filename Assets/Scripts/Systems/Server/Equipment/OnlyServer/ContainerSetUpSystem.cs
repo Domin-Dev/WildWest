@@ -17,7 +17,7 @@ partial struct ContainerSetUpSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        containerQuery = SystemAPI.QueryBuilder().WithAll<ContainerPlayer,ContainerComponent,GhostInstance>().WithAll<Simulate>().WithNone<ContainerLoaded>().Build();
+        containerQuery = SystemAPI.QueryBuilder().WithAll<PlayerContainer,ContainerComponent,GhostInstance>().WithAll<Simulate>().WithNone<ContainerLoaded>().Build();
         state.RequireForUpdate(containerQuery);
     }
 
@@ -40,7 +40,7 @@ partial struct ContainerSetUpSystem : ISystem
     {
         public EntityCommandBuffer.ParallelWriter ecb;
 
-        public void Execute(Entity entity,in ContainerPlayer containerPlayer, in ContainerComponent container,  in GhostInstance ghostInstance,  [EntityIndexInQuery] int sortKey)
+        public void Execute(Entity entity,in PlayerContainer containerPlayer, in ContainerComponent container,  in GhostInstance ghostInstance,  [EntityIndexInQuery] int sortKey)
         {     
             if(ghostInstance.ghostId == 0)
                 return;

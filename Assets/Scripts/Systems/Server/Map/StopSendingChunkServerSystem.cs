@@ -98,7 +98,6 @@ public partial class StopSendingChunkServerSystem : SystemBase
                             Connection = item.request.networkID,
                             Ghost = child.ghostID
                         };
-                        Debug.Log("stop!!! " + connection.Connection + "  " + connection.Ghost);
                         if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(connection))
                             ghostRelevancy.ValueRW.GhostRelevancySet.Remove(connection);
                     }

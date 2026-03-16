@@ -46,15 +46,11 @@ namespace Assembly_CSharp_Generated
             public float movementDir_y;
             public float sightDirection_x;
             public float sightDirection_y;
-            public float handRotation_x;
-            public float handRotation_y;
-            public float handRotation_z;
-            public float handRotation_w;
             public uint rightButton_Count;
             public uint leftButton_Count;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 5;
+        private const int ChangeMaskBits = 4;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -77,10 +73,6 @@ namespace Assembly_CSharp_Generated
                 snapshot.movementDir_y = component.movementDir.y;
                 snapshot.sightDirection_x = component.sightDirection.x;
                 snapshot.sightDirection_y = component.sightDirection.y;
-                snapshot.handRotation_x = component.handRotation.value.x;
-                snapshot.handRotation_y = component.handRotation.value.y;
-                snapshot.handRotation_z = component.handRotation.value.z;
-                snapshot.handRotation_w = component.handRotation.value.w;
                 snapshot.rightButton_Count = (uint)component.rightButton.Count;
                 snapshot.leftButton_Count = (uint)component.leftButton.Count;
         }
@@ -92,7 +84,6 @@ namespace Assembly_CSharp_Generated
         {
                 component.movementDir = new float2(snapshotBefore.movementDir_x, snapshotBefore.movementDir_y);
                 component.sightDirection = new float2(snapshotBefore.sightDirection_x, snapshotBefore.sightDirection_y);
-                component.handRotation = new quaternion(snapshotBefore.handRotation_x, snapshotBefore.handRotation_y, snapshotBefore.handRotation_z, snapshotBefore.handRotation_w);
                 component.rightButton.Count = (uint) snapshotBefore.rightButton_Count;
                 component.leftButton.Count = (uint) snapshotBefore.leftButton_Count;
         }
@@ -105,7 +96,6 @@ namespace Assembly_CSharp_Generated
             component.movementDir.y = backup.movementDir.y;
             component.sightDirection.x = backup.sightDirection.x;
             component.sightDirection.y = backup.sightDirection.y;
-            component.handRotation = backup.handRotation;
             component.rightButton.Count = backup.rightButton.Count;
             component.leftButton.Count = backup.leftButton.Count;
         }
@@ -129,13 +119,9 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.movementDir_y != baseline.movementDir_y) ? (1u<<0) : 0;
             changeMask |= (snapshot.sightDirection_x != baseline.sightDirection_x) ? (1u<<1) : 0;
             changeMask |= (snapshot.sightDirection_y != baseline.sightDirection_y) ? (1u<<1) : 0;
-            changeMask |= (snapshot.handRotation_x != baseline.handRotation_x ||
-                        snapshot.handRotation_y != baseline.handRotation_y ||
-                        snapshot.handRotation_z != baseline.handRotation_z ||
-                        snapshot.handRotation_w != baseline.handRotation_w) ? (1u<<2) : 0;
-            changeMask |= (snapshot.rightButton_Count != baseline.rightButton_Count) ? (1u<<3) : 0;
-            changeMask |= (snapshot.leftButton_Count != baseline.leftButton_Count) ? (1u<<4) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 5);
+            changeMask |= (snapshot.rightButton_Count != baseline.rightButton_Count) ? (1u<<2) : 0;
+            changeMask |= (snapshot.leftButton_Count != baseline.leftButton_Count) ? (1u<<3) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 4);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -154,15 +140,8 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.sightDirection_y, baseline.sightDirection_y, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
-            {
-                writer.WritePackedFloatDelta(snapshot.handRotation_x, baseline.handRotation_x, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.handRotation_y, baseline.handRotation_y, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.handRotation_z, baseline.handRotation_z, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.handRotation_w, baseline.handRotation_w, compressionModel);
-            }
-            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.rightButton_Count, baseline.rightButton_Count, compressionModel);
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.leftButton_Count, baseline.leftButton_Count, compressionModel);
         }
 
@@ -184,24 +163,13 @@ namespace Assembly_CSharp_Generated
                 writer.WritePackedFloatDelta(snapshot.sightDirection_x, baseline.sightDirection_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
                 writer.WritePackedFloatDelta(snapshot.sightDirection_y, baseline.sightDirection_y, compressionModel);
-            changeMask |= (snapshot.handRotation_x != baseline.handRotation_x ||
-                        snapshot.handRotation_y != baseline.handRotation_y ||
-                        snapshot.handRotation_z != baseline.handRotation_z ||
-                        snapshot.handRotation_w != baseline.handRotation_w) ? (1u<<2) : 0;
+            changeMask |= (snapshot.rightButton_Count != baseline.rightButton_Count) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
-            {
-                writer.WritePackedFloatDelta(snapshot.handRotation_x, baseline.handRotation_x, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.handRotation_y, baseline.handRotation_y, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.handRotation_z, baseline.handRotation_z, compressionModel);
-                writer.WritePackedFloatDelta(snapshot.handRotation_w, baseline.handRotation_w, compressionModel);
-            }
-            changeMask |= (snapshot.rightButton_Count != baseline.rightButton_Count) ? (1u<<3) : 0;
-            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.rightButton_Count, baseline.rightButton_Count, compressionModel);
-            changeMask |= (snapshot.leftButton_Count != baseline.leftButton_Count) ? (1u<<4) : 0;
-            if ((changeMask & (1 << 4)) != 0)
+            changeMask |= (snapshot.leftButton_Count != baseline.leftButton_Count) ? (1u<<3) : 0;
+            if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.leftButton_Count, baseline.leftButton_Count, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 5);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 4);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -228,24 +196,10 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.sightDirection_y = baseline.sightDirection_y;
             if ((changeMask & (1 << 2)) != 0)
-            {
-                snapshot.handRotation_x = reader.ReadPackedFloatDelta(baseline.handRotation_x, compressionModel);
-                snapshot.handRotation_y = reader.ReadPackedFloatDelta(baseline.handRotation_y, compressionModel);
-                snapshot.handRotation_z = reader.ReadPackedFloatDelta(baseline.handRotation_z, compressionModel);
-                snapshot.handRotation_w = reader.ReadPackedFloatDelta(baseline.handRotation_w, compressionModel);
-            }
-            else
-            {
-                snapshot.handRotation_x = baseline.handRotation_x;
-                snapshot.handRotation_y = baseline.handRotation_y;
-                snapshot.handRotation_z = baseline.handRotation_z;
-                snapshot.handRotation_w = baseline.handRotation_w;
-            }
-            if ((changeMask & (1 << 3)) != 0)
                 snapshot.rightButton_Count = reader.ReadPackedUIntDelta(baseline.rightButton_Count, compressionModel);
             else
                 snapshot.rightButton_Count = baseline.rightButton_Count;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 3)) != 0)
                 snapshot.leftButton_Count = reader.ReadPackedUIntDelta(baseline.leftButton_Count, compressionModel);
             else
                 snapshot.leftButton_Count = baseline.leftButton_Count;
@@ -261,8 +215,6 @@ namespace Assembly_CSharp_Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.movementDir, backup.movementDir));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.sightDirection, backup.sightDirection));
-            ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.handRotation.value, backup.handRotation.value));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex],
                 (component.rightButton.Count > backup.rightButton.Count) ?
@@ -286,10 +238,6 @@ namespace Assembly_CSharp_Generated
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".sightDirection");
-            ++nameCount;
-            if (nameCount != 0)
-                names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".handRotation");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
@@ -441,7 +389,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 1966819302090705106,
+                    GhostFieldsHash = 5032326342240550756,
                     ComponentType = ComponentType.ReadWrite<PlayerInputSync>(),
                     ComponentSize = UnsafeUtility.SizeOf<PlayerInputSync>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -449,7 +397,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 5,
+                    ChangeMaskBits = 4,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.SendToNonOwner,

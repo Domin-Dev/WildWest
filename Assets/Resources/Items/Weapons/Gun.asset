@@ -32,6 +32,8 @@ MonoBehaviour:
   craftTables: ffffffff
   numberItem: 1
   durability: 20
+  damage: 5
+  cooldown: 0.7
   weaponImage: {fileID: 866442174, guid: 59c72a0771dd7a043a02a6626b207c98, type: 3}
   hitBoxPoints:
   - {x: -0.024999999, y: -0.015}
@@ -44,10 +46,14 @@ MonoBehaviour:
   - {x: 0.005, y: -0.015}
   gripPoint1: {x: -0.044999998, y: -0.024999999}
   gripPoint2: {x: -100, y: -100}
-  damage: 5
-  cooldown: 15
   timeToReload: 0
   magazineCapacity: 5
-  aimPoint: {x: 0.044999998, y: 0.005}
-  reloadPoint: {x: 0, y: 0}
+  bulletCount: 1
+  shotSpread: 10
+  aimPoint:
+    x: 0.044999998
+    y: 0.005
+  reloadPoint:
+    x: 0
+    y: 0
   ammoType: 0

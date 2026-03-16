@@ -37,12 +37,9 @@ namespace Assembly_CSharp_Generated
             writer.WriteFloat(data.InternalInput.movementDirection.y);
             writer.WriteFloat(data.InternalInput.sightDirection.x);
             writer.WriteFloat(data.InternalInput.sightDirection.y);
-            writer.WriteFloat(data.InternalInput.handRotation.value.x);
-            writer.WriteFloat(data.InternalInput.handRotation.value.y);
-            writer.WriteFloat(data.InternalInput.handRotation.value.z);
-            writer.WriteFloat(data.InternalInput.handRotation.value.w);
             writer.WriteUInt((uint)data.InternalInput.rightButton.Count);
             writer.WriteUInt((uint)data.InternalInput.leftButton.Count);
+            writer.WriteInt((int) data.InternalInput.slotInHand);
             writer.WriteUInt((uint)data.InternalInput.dataTick.SerializedData);
         }
 
@@ -52,12 +49,9 @@ namespace Assembly_CSharp_Generated
             data.InternalInput.movementDirection.y = reader.ReadFloat();
             data.InternalInput.sightDirection.x = reader.ReadFloat();
             data.InternalInput.sightDirection.y = reader.ReadFloat();
-            data.InternalInput.handRotation.value.x = reader.ReadFloat();
-            data.InternalInput.handRotation.value.y = reader.ReadFloat();
-            data.InternalInput.handRotation.value.z = reader.ReadFloat();
-            data.InternalInput.handRotation.value.w = reader.ReadFloat();
             data.InternalInput.rightButton.Count = (uint) reader.ReadUInt();
             data.InternalInput.leftButton.Count = (uint) reader.ReadUInt();
+            data.InternalInput.slotInHand = (int) reader.ReadInt();
             data.InternalInput.dataTick = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadUInt()};
         }
 
@@ -67,12 +61,9 @@ namespace Assembly_CSharp_Generated
             writer.WritePackedFloatDelta(data.InternalInput.movementDirection.y, baseline.InternalInput.movementDirection.y, compressionModel);
             writer.WritePackedFloatDelta(data.InternalInput.sightDirection.x, baseline.InternalInput.sightDirection.x, compressionModel);
             writer.WritePackedFloatDelta(data.InternalInput.sightDirection.y, baseline.InternalInput.sightDirection.y, compressionModel);
-            writer.WritePackedFloatDelta(data.InternalInput.handRotation.value.x, baseline.InternalInput.handRotation.value.x, compressionModel);
-            writer.WritePackedFloatDelta(data.InternalInput.handRotation.value.y, baseline.InternalInput.handRotation.value.y, compressionModel);
-            writer.WritePackedFloatDelta(data.InternalInput.handRotation.value.z, baseline.InternalInput.handRotation.value.z, compressionModel);
-            writer.WritePackedFloatDelta(data.InternalInput.handRotation.value.w, baseline.InternalInput.handRotation.value.w, compressionModel);
             writer.WritePackedUIntDelta((uint)data.InternalInput.rightButton.Count, (uint)baseline.InternalInput.rightButton.Count, compressionModel);
             writer.WritePackedUIntDelta((uint)data.InternalInput.leftButton.Count, (uint)baseline.InternalInput.leftButton.Count, compressionModel);
+            writer.WritePackedIntDelta((int) data.InternalInput.slotInHand, (int) baseline.InternalInput.slotInHand, compressionModel);
             writer.WritePackedUIntDelta((uint)data.InternalInput.dataTick.SerializedData, (uint)baseline.InternalInput.dataTick.SerializedData, compressionModel);
         }
 
@@ -82,12 +73,9 @@ namespace Assembly_CSharp_Generated
             data.InternalInput.movementDirection.y = reader.ReadPackedFloatDelta(baseline.InternalInput.movementDirection.y, compressionModel);
             data.InternalInput.sightDirection.x = reader.ReadPackedFloatDelta(baseline.InternalInput.sightDirection.x, compressionModel);
             data.InternalInput.sightDirection.y = reader.ReadPackedFloatDelta(baseline.InternalInput.sightDirection.y, compressionModel);
-            data.InternalInput.handRotation.value.x = reader.ReadPackedFloatDelta(baseline.InternalInput.handRotation.value.x, compressionModel);
-            data.InternalInput.handRotation.value.y = reader.ReadPackedFloatDelta(baseline.InternalInput.handRotation.value.y, compressionModel);
-            data.InternalInput.handRotation.value.z = reader.ReadPackedFloatDelta(baseline.InternalInput.handRotation.value.z, compressionModel);
-            data.InternalInput.handRotation.value.w = reader.ReadPackedFloatDelta(baseline.InternalInput.handRotation.value.w, compressionModel);
             data.InternalInput.rightButton.Count = (uint) reader.ReadPackedUIntDelta((uint)baseline.InternalInput.rightButton.Count, compressionModel);
             data.InternalInput.leftButton.Count = (uint) reader.ReadPackedUIntDelta((uint)baseline.InternalInput.leftButton.Count, compressionModel);
+            data.InternalInput.slotInHand = (int) reader.ReadPackedIntDelta((int) baseline.InternalInput.slotInHand, compressionModel);
             data.InternalInput.dataTick = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadPackedUIntDelta(baseline.InternalInput.dataTick.SerializedData, compressionModel)};
         }
 
@@ -98,12 +86,9 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.InternalInput.movementDirection.y != baseline.InternalInput.movementDirection.y) ? (1u<<0) : 0;
             changeMask |= (snapshot.InternalInput.sightDirection.x != baseline.InternalInput.sightDirection.x) ? (1u<<0) : 0;
             changeMask |= (snapshot.InternalInput.sightDirection.y != baseline.InternalInput.sightDirection.y) ? (1u<<0) : 0;
-            changeMask |= (snapshot.InternalInput.handRotation.value.x != baseline.InternalInput.handRotation.value.x ||
-                        snapshot.InternalInput.handRotation.value.y != baseline.InternalInput.handRotation.value.y||
-                        snapshot.InternalInput.handRotation.value.z != baseline.InternalInput.handRotation.value.z ||
-                        snapshot.InternalInput.handRotation.value.w != baseline.InternalInput.handRotation.value.w) ? 1u : 0;
             changeMask |= (snapshot.InternalInput.rightButton.Count != baseline.InternalInput.rightButton.Count) ? (1u<<0) : 0;
             changeMask |= (snapshot.InternalInput.leftButton.Count != baseline.InternalInput.leftButton.Count) ? (1u<<0) : 0;
+            changeMask |= (snapshot.InternalInput.slotInHand != baseline.InternalInput.slotInHand) ? (1u<<0) : 0;
             changeMask |= (snapshot.InternalInput.dataTick != baseline.InternalInput.dataTick) ? (1u<<0) : 0;
             return changeMask;
         }

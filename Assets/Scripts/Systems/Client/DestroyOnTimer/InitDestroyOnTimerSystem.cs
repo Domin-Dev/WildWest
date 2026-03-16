@@ -7,17 +7,18 @@ using System;
 
 public partial struct InitDestroyOnTimerSystem : ISystem
 {
+
+    int simulationTickRate;
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkTime>(); 
+        state.RequireForUpdate<NetworkTime>();                
+        simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
 
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        var simulationTickRate = 60;
-        if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
         var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
         

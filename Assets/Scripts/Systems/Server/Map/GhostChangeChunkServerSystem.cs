@@ -66,14 +66,17 @@ public partial class GhostChangeChunkServerSystem : SystemBase
 
 
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged).AsParallelWriter();
+        var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+        var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+
+
 
         var job = new GhostChangeChunkJob()
         {
             map = mapSettings,
             loadedChunks = ChunkManagementServerSystem.loadedChunks.AsReadOnly(),
-            ecb = ecb,
+            ecb = ecb.AsParallelWriter(),
             entitiesToRemove = entitiesToRemove.AsParallelWriter(),
             sendGhostsToPlayers = sendGhostsToPlayers.AsParallelWriter()        
         }
@@ -146,7 +149,16 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                     Connection = player.networkID,
                     Ghost = pair.ghostID
                 };
+
+                if(SystemAPI.HasComponent<Player>(pair.entity) && !ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
+                {
+                    var owner = SystemAPI.GetComponent<GhostOwner>(pair.entity);
+                    var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player.playerEntity);
+                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       
+                }
+
                 ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);
+
 
                 if(childrenRO.HasBuffer(pair.entity))
                 {

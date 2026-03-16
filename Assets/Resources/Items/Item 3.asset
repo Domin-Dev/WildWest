@@ -14,13 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Stick
   description: 
-  ID: 32
   stackMax: 50
+  ID: 32
   icon: {fileID: -534398875, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
-  tags:
-  - tagID: -26
-  - tagID: 98
-  - tagID: 0
+  tags: []
   crafingIngredients:
   - itemID: 7
     number: 24

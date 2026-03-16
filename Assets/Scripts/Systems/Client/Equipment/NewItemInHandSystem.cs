@@ -46,21 +46,22 @@ partial struct NewItemInHandSystem : ISystem
         {     
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
-            Debug.Log("nowy!!!");
+
 
             foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity e) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
+                Debug.Log("new item in hand!");
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
                 {
                     if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(entity))
                     {
                         if(EQHelper.TryGetPlayerContainer(containersLookup,e,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                         {
-                            Debug.Log("uwaga!!" + snapshotAck.LastReceivedSnapshotByLocal.TickIndexForValidTick + "  " + rpcCommand.ValueRO.tick.TickIndexForValidTick);
                             if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(rpcCommand.ValueRO.tick))
                             {
-                                Debug.Log("remoce!!");
+                                
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out int itemId, out int bufferIndex);
+                                Debug.Log("wynik " + itemId + "  " + rpcCommand.ValueRO.tick);
                                 ChangeItemInHand(ref state,itemId,entityCommandBuffer,in hands.ValueRO);
                                 entityCommandBuffer.DestroyEntity(entity);
                             }
@@ -86,7 +87,6 @@ partial struct NewItemInHandSystem : ISystem
                 tick.Add(50u);
                 if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(tick))
                 {
-                    Debug.Log("nie znaleziono");
                     entityCommandBuffer.DestroyEntity(entity);
                 }
             }

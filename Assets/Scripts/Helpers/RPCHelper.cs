@@ -79,7 +79,11 @@ public static class RPCHelper
         serverWorld.Dispose();         
     }
 
-
+    public static void SendEventsToClientsAndOwner<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    where T : unmanaged, IRpcCommand,ISetPlayer
+    {
+        SendEventsToClientsAndOwner(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,chunkIndex,tick);
+    }
     public static void SendEventsToClients<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
@@ -110,9 +114,28 @@ public static class RPCHelper
             }
         }
     }
+    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    where T : unmanaged, IRpcCommand,ISetPlayer
+    {
+        Entity chunk = Entity.Null; 
+        foreach(var chunkTmp in loadedChunks)
+        {
+            if(chunkTmp.chunkIndex == chunkIndex)
+                chunk = chunkTmp.chunkEntity;
+        }
+        if(chunk == Entity.Null) return;
 
+        var players = playerNeedChunkLookup[chunk];
 
-
+        tick.Add(2u);
+        rpc.SetPlayer(networkID,tick);
+        
+        foreach(var player in players)
+        {
+            var connection = state.EntityManager.GetComponentData<PlayerSourceConnection>(player.playerEntity).value;
+            RPCHelper.SendRpc(ecb,connection,rpc);
+        }
+    }
 
 
 

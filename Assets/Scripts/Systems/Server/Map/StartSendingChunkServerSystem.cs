@@ -71,8 +71,7 @@ public partial class StartSendingChunkServerSystem : SystemBase
 
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(item.playerEntity);
                     Debug.Log("wyslanie gracza!!! " + owner.NetworkId + " " + connection.value);
-                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);
-                
+                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       
                 }
     
 
