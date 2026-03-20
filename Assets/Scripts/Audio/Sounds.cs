@@ -7,6 +7,8 @@ public class Sounds : MonoBehaviour
     public static Sounds instance;
     private AudioSource audioSource;
 
+    [SerializeField] private SoundsConfig soundsConfig;
+
     [SerializeField] List<AudioClip> swordSounds;
     [SerializeField] List<AudioClip> hitSounds;
     [SerializeField] List<AudioClip> ShieldSounds;
@@ -46,6 +48,15 @@ public class Sounds : MonoBehaviour
     public void Shield() 
     {
         audioSource.PlayOneShot(ShieldSounds[Random.Range(0, 1)]);
+    }
+
+    public void PlayerSound(int id)
+    {
+        if(soundsConfig.Sounds.Count > id)
+        {
+            Debug.Log("sound!!! " + id);
+            audioSource.PlayOneShot(soundsConfig.Sounds[id]);
+        }
     }
 
     public void PlayerSound(AudioClip shot)

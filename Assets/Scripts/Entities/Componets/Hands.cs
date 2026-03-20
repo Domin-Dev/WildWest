@@ -3,8 +3,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.XR;
-
 
 
 
@@ -27,17 +25,7 @@ public struct Hands : IComponentData
     public Entity hitboxPoint;
 
 
-    public int actionStatus;
-
-    public quaternion targetRotation;
-    public float3 targetPosition;
-
-    public float3 lastPosition;
-    public quaternion lastRotation;
-
     public bool rotated;
-    public float elapsedTime;
-
 
     public Entity GetBodyPart(BodyPartType bodyPartType)
     {

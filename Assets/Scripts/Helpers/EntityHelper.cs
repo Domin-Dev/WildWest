@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
 
 public static class EntityHelper
 {
@@ -46,5 +48,19 @@ public static class EntityHelper
 
 
 
+
+    public static void SpawnEntityPrefab(EntityCommandBuffer entityCommandBuffer, Entity prefab, float3 position, quaternion quaternion, NewParticles target)
+    {
+        Entity entity = entityCommandBuffer.Instantiate(prefab);
+        position.z = position.y;
+        LocalTransform localTransform = new LocalTransform()
+        {
+            Rotation = quaternion,
+            Position = position,
+            Scale = 1f
+        };
+        entityCommandBuffer.SetComponent(entity, localTransform);
+        entityCommandBuffer.SetComponent(entity, target);
+    }
 
 }

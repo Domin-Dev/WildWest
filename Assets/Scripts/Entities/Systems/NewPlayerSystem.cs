@@ -27,12 +27,13 @@ partial struct NewPlayerSystem : ISystem
 
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
-            Hands hands = new Hands() { rotated = true, elapsedTime = 0 };
+            Hands hands = new Hands() { rotated = true};
             Character character = new Character() { isMove = false };
             var children = SystemAPI.GetBuffer<Child>(entity);
 
 
             SetUpPlayer(ref children, ref state, ref hands, ref character);
+
 
             if(state.World.IsServer())
             {
@@ -143,6 +144,7 @@ partial struct NewPlayerSystem : ISystem
             }
         }
     }
+    
     private void SetUpPlayer(ref DynamicBuffer<Child> children,ref SystemState state, ref Hands hands, ref Character character)
     {
         foreach (var child in children)
@@ -162,7 +164,6 @@ partial struct NewPlayerSystem : ISystem
                 hands.main = child.Value;
                 hands.itemInHand = GetChild<ItemPointTag>(child.Value, 4, ref state);
                 hands.mainhand = GetChild(child.Value, 1,ref state);
-
 
                 hands.aimPoint = GetChild<AimPointTag>(child.Value, 4, ref state);
                 hands.hitboxPoint = GetChild<ItemHitboxTag>(child.Value, 4, ref state);

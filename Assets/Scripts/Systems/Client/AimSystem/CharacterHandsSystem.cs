@@ -4,6 +4,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.VFX;
 
 [UpdateInGroup(typeof(PresentationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -14,8 +15,18 @@ partial struct CharacterHandsSystem : ISystem
     private float deltaTime;
 
     private ComponentLookup<LocalTransform> transformLookup;
+    private ComponentLookup<LocalToWorld> worldLookup;
     private ComponentLookup<AnimationComponent> animationLookup;
+    private ComponentLookup<Hands> handsLookup;
+
+
     private BufferLookup<AnimationFrames> framesLookup;
+    private BufferLookup<AnimationEvents> eventsLookup;
+
+    
+
+
+    private DynamicBuffer<VisualEffectsBuffer> visualEffects;
 
     public void OnCreate(ref SystemState state)
     {
@@ -23,8 +34,14 @@ partial struct CharacterHandsSystem : ISystem
         state.RequireForUpdate<NetworkTime>();
 
         transformLookup = SystemAPI.GetComponentLookup<LocalTransform>();
+        worldLookup = SystemAPI.GetComponentLookup<LocalToWorld>();
         animationLookup = SystemAPI.GetComponentLookup<AnimationComponent>();
+        handsLookup = SystemAPI.GetComponentLookup<Hands>();
         framesLookup = SystemAPI.GetBufferLookup<AnimationFrames>();
+        eventsLookup = SystemAPI.GetBufferLookup<AnimationEvents>();
+        
+
+        state.RequireForUpdate<VisualEffectsBuffer>();
     }
 
 
@@ -35,9 +52,14 @@ partial struct CharacterHandsSystem : ISystem
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         deltaTime = SystemAPI.Time.DeltaTime;
         transformLookup.Update(ref state);
+        worldLookup.Update(ref state);
         animationLookup.Update(ref state);
+        handsLookup.Update(ref state);
         framesLookup.Update(ref state);
+        eventsLookup.Update(ref state);
+
         state.CompleteDependency();
+        visualEffects = SystemAPI.GetSingletonBuffer<VisualEffectsBuffer>(true);
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {      
@@ -48,35 +70,26 @@ partial struct CharacterHandsSystem : ISystem
                 {
                     ClearAnimationComponent(hands.ValueRO.GetBodyPart(BodyPartType.MainHand));
                     ClearAnimationComponent(hands.ValueRO.GetBodyPart(BodyPartType.SideHand));
-
+              
+                    int index = 0;
                     foreach(var frame in item.keyFrames)
                     {
                         var part = hands.ValueRO.GetBodyPart(frame.BodyPartType);
-                        framesLookup[part].Add(frame.GetAnimationFrame());
+                        framesLookup[part].Add(frame.GetAnimationFrame(index));
+                        foreach (var eventFrame in frame.Events)
+                            eventsLookup[part].Add(eventFrame.GetEvent(index));
+                        
                         SystemAPI.SetComponentEnabled<AnimationIsPaused>(part,false);
+                        index++;
                     }
-                    
-                    Sounds.instance.PlayerSound(item.shotSound);
-                    LocalToWorld aimpoint = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.aimPoint);
-
-                    EntitySpawner.instance.SpawnEntityPrefab(2, aimpoint.Position, aimpoint.Rotation);
-                    EntitySpawner.instance.SpawnParticle(0, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.05f, 0f, 0f)), quaternion.identity,new NewParticles()
-                    {
-                        target = hands.ValueRO.aimPoint,
-                        offset = new float3(0.05f, 0f, 0f)
-                    });
-                    EntitySpawner.instance.SpawnParticle(1, aimpoint.Position + math.rotate(aimpoint.Rotation, new float3(0.01f, 0f, 0f)), aimpoint.Rotation, new NewParticles()
-                {
-                    target = hands.ValueRO.aimPoint,
-                    offset = new float3(0.01f,0f,0f)
-                });  
                 }
                 break;
             }
             entityCommandBuffer.DestroyEntity(rpc);
         }
        
-        foreach ((RefRW<LocalTransform> position ,DynamicBuffer<AnimationFrames> frames, RefRW<AnimationComponent> animation, EnabledRefRW<AnimationIsPaused> paused) in SystemAPI.Query<RefRW<LocalTransform>,DynamicBuffer<AnimationFrames>,RefRW<AnimationComponent>,EnabledRefRW<AnimationIsPaused>>().WithDisabled<AnimationIsPaused>())
+        foreach ((RefRW<LocalTransform> position , DynamicBuffer<AnimationFrames> frames, DynamicBuffer<AnimationEvents> animationEvents, RefRW<AnimationComponent> animation, EnabledRefRW<AnimationIsPaused> paused) in 
+        SystemAPI.Query<RefRW<LocalTransform>,DynamicBuffer<AnimationFrames>, DynamicBuffer<AnimationEvents>,RefRW<AnimationComponent>,EnabledRefRW<AnimationIsPaused>>().WithDisabled<AnimationIsPaused>())
         {
             if(frames.Length == 0)
             {
@@ -94,19 +107,42 @@ partial struct CharacterHandsSystem : ISystem
                     animation.ValueRW.hasStartPosition = true;
                     animation.ValueRW.startRotation = position.ValueRO.Rotation;
                     animation.ValueRW.startPosition = position.ValueRO.Position;
-                    Debug.Log("new rot" + position.ValueRO.Rotation);
                 }       
                 element.Process(animation.ValueRO,position.ValueRO);  
             }
 
-
-            float t = math.clamp(animation.ValueRO.elapsedTime / element.duration, 0f, 1f);
+            float t = 1;
+            if(element.duration > 0)
+                t = math.clamp(animation.ValueRO.elapsedTime / element.duration, 0f, 1f);
 
             position.ValueRW.Rotation = math.slerp(position.ValueRO.Rotation, element.targetRotation, t);
             position.ValueRW.Position = math.lerp(position.ValueRO.Position, element.targetPosition, t);
 
             if(t >= 1f)
             {
+                Hands hands = handsLookup[animation.ValueRO.player];
+
+                for(int i = animationEvents.Length -1;i >= 0 ; i--)
+                {
+                    var eventFrame = animationEvents[i];
+                    if(eventFrame.frameIndex == element.frameIndex)
+                    {
+                        switch(eventFrame.eventType)
+                        {
+                            case EventType.Sound:
+                                Sounds.instance.PlayerSound(eventFrame.id);
+                                break;
+                            case EventType.SpawnParticleAtAimPoint:
+                                CreatePrefab(entityCommandBuffer,hands.aimPoint,eventFrame);
+                                break;
+                            case EventType.SpawnParticleAtReloadPoint:
+                                CreatePrefab(entityCommandBuffer,hands.reloadPoint,eventFrame);
+                                break;
+                        }
+
+                        animationEvents.RemoveAtSwapBack(i);
+                    }
+                }
                 position.ValueRW.Rotation = element.targetRotation;
                 position.ValueRW.Position = element.targetPosition;
                 animation.ValueRW.elapsedTime = 0;
@@ -140,11 +176,31 @@ partial struct CharacterHandsSystem : ISystem
     }       
 
 
+    private void CreatePrefab(EntityCommandBuffer entityCommandBuffer, Entity target,AnimationEvents eventFrame)
+    {
+        LocalToWorld localToWorld = worldLookup[target];
+        var prefab = visualEffects[eventFrame.id].entity;
+
+
+        quaternion rotation;
+        if(eventFrame.relativeRotation)
+            rotation = math.normalize(math.mul(eventFrame.rotation, localToWorld.Rotation));
+        else
+            rotation = eventFrame.rotation;
+
+        EntityHelper.SpawnEntityPrefab(entityCommandBuffer,prefab, localToWorld.Position + math.rotate(localToWorld.Rotation, eventFrame.position), rotation ,new NewParticles()
+        {
+            offset = eventFrame.position,
+            target = target,
+        });
+    }
     private void ClearAnimationComponent(Entity entity)
     {
         var animation = animationLookup.GetRefRW(entity);
         var position = transformLookup.GetRefRW(entity);
         framesLookup[entity].Clear();
+        eventsLookup[entity].Clear();
+
         animation.ValueRW.elapsedTime = 0;
         if(animation.ValueRO.hasStartPosition)
         {

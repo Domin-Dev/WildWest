@@ -36,12 +36,14 @@ namespace Assembly_CSharp_Generated
         {
             writer.WriteInt((int) data.networkID);
             writer.WriteUInt((uint)data.tick.SerializedData);
+            writer.WriteInt((int) data.itemID);
         }
 
         public void Deserialize(ref DataStreamReader reader, in RpcDeserializerState state, ref PlayerActionRPC data)
         {
             data.networkID = (int) reader.ReadInt();
             data.tick = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadUInt()};
+            data.itemID = (int) reader.ReadInt();
         }
         [BurstCompile(DisableDirectCall = true)]
         [AOT.MonoPInvokeCallback(typeof(RpcExecutor.ExecuteDelegate))]

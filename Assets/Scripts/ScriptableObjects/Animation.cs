@@ -19,9 +19,10 @@ public class KeyFrame
     public float Duration => duration;
     public float3 Move => move;
     public quaternion Rotation => quaternion.Euler(math.radians(rotate)); 
+    public List<AnimationEvent> Events => events;
 
 
-    public AnimationFrames GetAnimationFrame()
+    public AnimationFrames GetAnimationFrame(int frameIndex)
     {
         return new AnimationFrames()
         {
@@ -29,7 +30,8 @@ public class KeyFrame
             targetRotation = Rotation,
             targetPosition = Move,
             positionMode = positionMode,
-            processed = false
+            processed = false,
+            frameIndex = frameIndex
         };
     }
 }
@@ -39,7 +41,25 @@ public class KeyFrame
 public class AnimationEvent
 {
     public EventType EventType;
+    public float3 position;
+    public float3 rotation;
+    public bool relativeRotation;
+
+    public quaternion Rotation => quaternion.Euler(math.radians(rotation)); 
     public int id;
+
+    public AnimationEvents GetEvent(int frameIndex)
+    {
+        return new AnimationEvents()
+        {
+            eventType = EventType,
+            id = id,
+            frameIndex = frameIndex,
+            position = position,
+            rotation = Rotation,
+            relativeRotation = relativeRotation
+        };
+    }
 }
 
 
@@ -52,7 +72,9 @@ public enum BodyPartType :  byte
 public enum EventType :  byte
 {
     Sound,
-    SpawnParticle
+    SpawnParticle,
+    SpawnParticleAtAimPoint,
+    SpawnParticleAtReloadPoint
 }
 
 public enum PositionMode :  byte

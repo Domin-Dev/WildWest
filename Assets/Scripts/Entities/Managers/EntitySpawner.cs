@@ -109,6 +109,10 @@ public class EntitySpawner : MonoBehaviour
     }
 
 
+
+
+
+
     public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion,NewParticles target)
     {
         Entity prefab = GetParticleIndex(indexParticle);

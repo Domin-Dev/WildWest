@@ -45,6 +45,20 @@ MonoBehaviour:
   bulletSpread: 0
   keyFrames:
   - bodyPartType: 0
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0
+    events:
+    - EventType: 0
+      id: 3
+  - bodyPartType: 0
     positionMode: 0
     rotate:
       x: 0
@@ -55,6 +69,7 @@ MonoBehaviour:
       y: 0
       z: 0
     duration: 0.2
+    events: []
   - bodyPartType: 0
     positionMode: 1
     rotate:
@@ -66,6 +81,7 @@ MonoBehaviour:
       y: 0
       z: 0
     duration: 0.3
+    events: []
   - bodyPartType: 1
     positionMode: 0
     rotate:
@@ -77,6 +93,7 @@ MonoBehaviour:
       y: 0
       z: 0
     duration: 0.2
+    events: []
   - bodyPartType: 1
     positionMode: 1
     rotate:
@@ -88,6 +105,7 @@ MonoBehaviour:
       y: 0
       z: 0
     duration: 0.3
+    events: []
   shotSound: {fileID: 8300000, guid: 0928d249995af11419f20c4cf4c1c8ea, type: 3}
   aimPoint:
     x: 0.035
