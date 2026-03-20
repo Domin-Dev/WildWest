@@ -6,6 +6,7 @@ public struct PlayerActionRPC : IRpcCommand,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;
+    public int itemID;
 
     public void SetPlayer(int networkID,NetworkTick tick)
     {

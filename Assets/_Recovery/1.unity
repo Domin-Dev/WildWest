@@ -148,11 +148,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a6022ea436c5b044b712ca25ed9902d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  visualEffects: {fileID: 11400000, guid: 6899b0a592683f67686c92bb81618ce7, type: 2}
+  visualEffects: {fileID: 0}
   characterPrefab: {fileID: 3773562619657541914, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
   chunkPrefab: {fileID: 5235496131011057365, guid: a33d510f62ceb5c43b6329327002f1aa, type: 3}
   equipmentContainerPrefab: {fileID: 7598637109522291836, guid: a7056adb7d0833e4cb06b5a3d88dad0b, type: 3}
-  shadowPrefab: {fileID: 3906003094013903276, guid: 8239189eae1b88d4aa09a07260d280d2, type: 3}
+  shadowPrefab: {fileID: 0}
   worldItemPrefab: {fileID: 3906003094013903276, guid: 8239189eae1b88d4aa09a07260d280d2, type: 3}
   worldTextPrefab: {fileID: 4787479206249689599, guid: f0e3ca3080f4dc6439177a8e6bf2a8d8, type: 3}
   buildObjectEntityPrefab: {fileID: 9169308965752663696, guid: 3b883392e783c5d4eb4d3bd503bc98ba, type: 3}

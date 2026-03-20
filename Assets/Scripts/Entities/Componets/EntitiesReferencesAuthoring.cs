@@ -2,9 +2,12 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EntitiesReferencesAuthoring : MonoBehaviour
 {
+    public VisualEffects visualEffects;
+
     [Header("Game")]
     public GameObject characterPrefab;
     public GameObject chunkPrefab;
@@ -20,6 +23,7 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
     public GameObject shotFire;
     public GameObject shotLight;
     public GameObject spark;
+    
     public class Baker : Baker<EntitiesReferencesAuthoring>
     {
         public override void Bake(EntitiesReferencesAuthoring authoring)
@@ -42,6 +46,14 @@ public class EntitiesReferencesAuthoring : MonoBehaviour
                 shotLight = GetEntity(authoring.shotLight, TransformUsageFlags.Dynamic),
                 spark = GetEntity(authoring.spark, TransformUsageFlags.Dynamic)
             });
+            AddBuffer<VisualEffectsBuffer>(entity);
+            foreach(var i in authoring.visualEffects.Prefabs)
+            {
+                AppendToBuffer(entity, new VisualEffectsBuffer()
+                {
+                    entity = GetEntity(i,TransformUsageFlags.Dynamic)
+                });
+            }
         }
     }
 }
@@ -65,4 +77,9 @@ public struct EntitiesReferences : IComponentData
     [Space]
     public Entity spark;
 
+}
+
+public struct VisualEffectsBuffer : IBufferElementData
+{
+    public Entity entity;
 }

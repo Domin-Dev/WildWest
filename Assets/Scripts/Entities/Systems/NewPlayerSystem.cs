@@ -80,18 +80,6 @@ partial struct NewPlayerSystem : ISystem
                 SetPlayerLook(ref playerLook.ValueRW, ref hands, ref character, ref state);
             }
 
-            if (state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity) && state.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(entity))
-            {
-              //  ItemInHandInput itemInHandInput = state.EntityManager.GetComponentData<ItemInHandInput>(entity);
-            //   //  ItemInHandInputSync itemInHandInputSync = state.EntityManager.GetComponentData<ItemInHandInputSync>(entity);
-
-            //     int id = EquipmentManager.instance.GetItemInHand();
-            //  //  itemInHandInput.itemInHand = id;
-            //     itemInHandInputSync.itemInHand = id;
-
-            //     entityCommandBuffer.SetComponent(entity, itemInHandInput);
-            //     entityCommandBuffer.SetComponent(entity, itemInHandInputSync);
-            }
 
             var physicsChildren = SystemAPI.GetBuffer<PhysicsChildrenBuffer>(entity);
             foreach (var item in physicsChildren)
@@ -174,6 +162,7 @@ partial struct NewPlayerSystem : ISystem
                 hands.main = child.Value;
                 hands.itemInHand = GetChild<ItemPointTag>(child.Value, 4, ref state);
                 hands.mainhand = GetChild(child.Value, 1,ref state);
+
 
                 hands.aimPoint = GetChild<AimPointTag>(child.Value, 4, ref state);
                 hands.hitboxPoint = GetChild<ItemHitboxTag>(child.Value, 4, ref state);

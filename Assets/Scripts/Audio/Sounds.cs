@@ -48,6 +48,11 @@ public class Sounds : MonoBehaviour
         audioSource.PlayOneShot(ShieldSounds[Random.Range(0, 1)]);
     }
 
+    public void PlayerSound(AudioClip shot)
+    {
+        audioSource.PlayOneShot(shot);
+    }
+
     public void Shot()
     {
         audioSource.PlayOneShot(shot);

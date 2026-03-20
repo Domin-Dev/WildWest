@@ -36,12 +36,59 @@ MonoBehaviour:
   cooldown: 0.7
   weaponImage: {fileID: -7034982987303943349, guid: b8f887fd54d6b5d45b37ea6eb0edfcfb, type: 3}
   hitBoxPoints: []
-  gripPoint1: {x: 0.024999999, y: -0.024999999}
-  gripPoint2: {x: -100, y: -100}
+  gripPoint1: {x: -0.015, y: -0.024999999}
+  gripPoint2: {x: 0.035, y: -0.015}
   timeToReload: 0
   magazineCapacity: 5
   bulletCount: 1
   shotSpread: 10
+  bulletSpread: 0
+  keyFrames:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 50
+    move:
+      x: 0.02
+      y: 0
+      z: 0
+    duration: 0.2
+  - bodyPartType: 0
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.3
+  - bodyPartType: 1
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 30
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+  - bodyPartType: 1
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.3
+  shotSound: {fileID: 8300000, guid: 0928d249995af11419f20c4cf4c1c8ea, type: 3}
   aimPoint:
     x: 0.035
     y: -0.005

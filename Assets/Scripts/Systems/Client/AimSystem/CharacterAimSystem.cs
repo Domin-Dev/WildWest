@@ -120,19 +120,31 @@ using UnityEngine;
 
                                 uint seed = (uint)testTick.TickIndexForValidTick * 311u; //* 747796405u + 2891336453u;
                                 Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
-                                float spread = weapon.shotSpread * Mathf.Deg2Rad;
+                                float spread = weapon.shotSpread;
+                                float offset = weapon.bulletOffset;
+                                float value = 0f;//random.NextFloat((-1 * spread) + weapon.bulletSpread,spread);
+                                
 
-                                for(int k = 0; k < weapon.bulletCount; k++)
+                                for(int k = 1   ; k < weapon.bulletCount; k++)
                                 {
                                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
                                     
 
-                                    var rotation = quaternion.Euler(0, 0, rot + random.NextFloat(-1 * spread,spread));
-                                    Debug.Log("wynik ! " + (uint)testTick.TickIndexForValidTick);
-                                    LocalTransform lt = LocalTransform.FromPosition(aimPoint).Rotate(rotation);
-                                    entityCommandBuffer.SetComponent(bullet, lt);
+                                    var baseRot = quaternion.Euler(0, 0, rot);
+                                    var spreadRot = quaternion.RotateZ(k * 2 * Mathf.Deg2Rad);
+                                    var rotation = math.mul(baseRot, spreadRot);
 
+                                    //var rotation = quaternion.Euler(0, 0, rot + (currentSpread * Mathf.Deg2Rad));
+                                    Debug.Log("wynik ! " + (uint)testTick.TickIndexForValidTick + " " + baseRot + " " + spreadRot);
+                                    //LocalTransform lt = LocalTransform.FromPosition(aimPoint).Rotate(rotation);
+                                    LocalTransform lt = new LocalTransform
+                                    {
+                                        Position = aimPoint + new float3(0,-0.05f * k,0),
+                                        Rotation = rotation,
+                                        Scale = 1f
+                                    };
+                                    entityCommandBuffer.SetComponent(bullet, lt);
 
                                     if (state.World.Flags == WorldFlags.GameServer)
                                     {
@@ -145,22 +157,20 @@ using UnityEngine;
                                     } 
                                 } 
 
+                                var rpc = new PlayerActionRPC()
+                                {
+                                    networkID = playerAspect.networkId,
+                                    itemID = itemId
+                                };                               
+
 
                                 if(state.World.IsServer())
                                 {
-                                    RPCHelper.SendEventsToClients<PlayerActionRPC>(new PlayerActionRPC()
-                                    {
-                                        networkID = playerAspect.networkId
-                                    },
+                                    RPCHelper.SendEventsToClients<PlayerActionRPC>(rpc,
                                     ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                                 } 
-                                else 
-                                {     
-                                    EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new PlayerActionRPC()
-                                    {
-                                        networkID = playerAspect.networkId
-                                    });
-                                }                       
+                                else      
+                                    EntityHelper.CreateEntityWithComponent(entityCommandBuffer,rpc);                      
                             }
                         }
                     }

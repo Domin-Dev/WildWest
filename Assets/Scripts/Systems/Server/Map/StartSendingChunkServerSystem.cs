@@ -47,10 +47,6 @@ public partial class StartSendingChunkServerSystem : SystemBase
         var requestsData = this.requests.ToComponentDataArray<StartSendingChunkRequest>(Allocator.TempJob);
         var ghostRelevancy  = SystemAPI.GetSingletonRW<GhostRelevancy>();
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-
-
-
-        
        
         foreach(var item in requestsData)
         {
@@ -63,12 +59,10 @@ public partial class StartSendingChunkServerSystem : SystemBase
                     Connection = item.networkID,
                     Ghost = chunkObj.ghostID
                 };
-
-               
+     
                 if(SystemAPI.HasComponent<Player>(chunkObj.entity) && !ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(ghost))
                 {
                     var owner = SystemAPI.GetComponent<GhostOwner>(chunkObj.entity);
-
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(item.playerEntity);
                     Debug.Log("wyslanie gracza!!! " + owner.NetworkId + " " + connection.value);
                     RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       

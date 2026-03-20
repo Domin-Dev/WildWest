@@ -33,7 +33,7 @@ MonoBehaviour:
   numberItem: 1
   durability: 20
   damage: 5
-  cooldown: 0.7
+  cooldown: 0.6
   weaponImage: {fileID: 866442174, guid: 59c72a0771dd7a043a02a6626b207c98, type: 3}
   hitBoxPoints:
   - {x: -0.024999999, y: -0.015}
@@ -50,6 +50,57 @@ MonoBehaviour:
   magazineCapacity: 5
   bulletCount: 1
   shotSpread: 10
+  bulletSpread: 0
+  keyFrames:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 50
+    move:
+      x: -0.06
+      y: 0.01
+      z: 0
+    duration: 0.15
+    events: []
+  - bodyPartType: 0
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.4
+    events: []
+  - bodyPartType: 1
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 30
+    move:
+      x: 0
+      y: 0.02
+      z: 0
+    duration: 0.1
+    events: []
+  - bodyPartType: 1
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  shotSound: {fileID: 8300000, guid: dd75df6807313de44a878a719e3f3664, type: 3}
   aimPoint:
     x: 0.044999998
     y: 0.005
