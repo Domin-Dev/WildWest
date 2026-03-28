@@ -47,14 +47,19 @@ public struct AnimationComponent : IComponentData
 {
     public float elapsedTime;
     public bool hasStartPosition;
+    public float playbackSpeed;
+   
 
+
+    public int itemID;
     public float3 startPosition;
     public quaternion startRotation;
+    public float3 characterCenterPosition;
     public BodyPartType bodyPartType;
-
-
     public Entity player;
 }
+
+
 
 
 
@@ -63,6 +68,7 @@ public struct AnimationEvents : IBufferElementData
     public EventType eventType;
     public int id;
     public int frameIndex;
+
     public float3 position;
     public quaternion rotation;
 
@@ -86,15 +92,22 @@ public struct AnimationFrames : IBufferElementData
     {
         processed = true;
 
-        if(positionMode == PositionMode.Local)
+
+        switch(positionMode)
         {
-            targetRotation = math.normalize(math.mul(targetRotation, localTransform.Rotation));
-            targetPosition = localTransform.Position + targetPosition;
+            case PositionMode.MoveLocal:
+                targetRotation = math.normalize(math.mul(targetRotation, localTransform.Rotation));
+                targetPosition = localTransform.Position + targetPosition;
+                break;
+            case PositionMode.SetLocal:
+                targetRotation = math.normalize(targetRotation);
+                targetPosition = targetPosition + animationComponent.characterCenterPosition;
+                break;
+            case PositionMode.MoveRelativeToStart:
+                targetRotation = math.normalize(math.mul(targetRotation, animationComponent.startRotation));
+                targetPosition = animationComponent.startPosition + targetPosition;
+                break;
         }
-        else if(positionMode == PositionMode.RelativeToStart)
-        {
-            targetRotation = math.normalize(math.mul(targetRotation, animationComponent.startRotation));
-            targetPosition = animationComponent.startPosition + targetPosition;
-        }
+
     }                   
 }

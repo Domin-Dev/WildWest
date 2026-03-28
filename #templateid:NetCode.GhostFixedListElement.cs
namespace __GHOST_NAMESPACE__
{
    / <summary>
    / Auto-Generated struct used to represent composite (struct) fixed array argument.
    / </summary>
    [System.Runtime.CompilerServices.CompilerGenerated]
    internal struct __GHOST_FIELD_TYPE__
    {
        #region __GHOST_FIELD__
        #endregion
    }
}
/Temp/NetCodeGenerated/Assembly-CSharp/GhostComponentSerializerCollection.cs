@@ -423,6 +423,23 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
+                DisplayName = "LinkedContainers",
+                Component = ComponentType.ReadWrite<LinkedContainers>(),
+                Hash = 18134272274485239454,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.AllClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
                 DisplayName = "CurrentHitPoints",
                 Component = ComponentType.ReadWrite<CurrentHitPoints>(),
                 Hash = 13772156756796214154,
@@ -524,6 +541,7 @@ namespace Assembly_CSharp.Generated
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ThirstGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_AimRotationGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ContainerComponentGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_LinkedContainersGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_CurrentHitPointsGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_DestroyAtTickGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ItemBarDataGhostComponentSerializer.GetState(ref state));

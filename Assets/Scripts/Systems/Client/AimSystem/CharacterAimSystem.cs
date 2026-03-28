@@ -124,7 +124,7 @@ using UnityEngine;
                                 float value = 0f;//random.NextFloat((-1 * spread) + weapon.bulletSpread,spread);
                                 
 
-                                for(int k = 1   ; k < weapon.bulletCount; k++)
+                                for(int k = 0   ; k < weapon.bulletCount; k++)
                                 {
                                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });

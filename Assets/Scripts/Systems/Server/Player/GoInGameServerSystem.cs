@@ -122,7 +122,8 @@ partial struct GoInGameServerSystem : ISystem
         var entities = SystemAPI.GetSingleton<EntitiesReferences>();
         ecb.AddComponent<ContainerSettings>(character, new ContainerSettings() {
             Position = SlotPosition.NullSlot,
-            targetContainer = -1
+            targetContainer = -1,
+            nextTempIndex = EquipmentConfig.start_ContainerIndex
         });
 
         var containers = EquipmentConfig.Instance.Containers;
@@ -137,7 +138,7 @@ partial struct GoInGameServerSystem : ISystem
                         containerSave = save;
                 }
             }
-            CreateNewContainer(ref state,character, connection,ref ecb,ref entities,networkID,cont.Value.stats,containerSave);
+            CreateNewContainer(ref state,character, connection,ecb,ref entities,networkID,cont.Value.stats,containerSave);
         }
 
         if(containerSaves != null)
@@ -151,10 +152,15 @@ partial struct GoInGameServerSystem : ISystem
     {
         ecb.AddBuffer<PlayerChunks>(character);
     }
-    
-    private void CreateNewContainer(ref SystemState state,Entity player,Entity connection,ref EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,ContainerStats stats,ContainerSave? containerSave = null)
+    public static Entity CreateNewContainer(ref SystemState state,Entity player,EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,ContainerStats stats,ContainerSave? containerSave = null)
     {
-        var e = entityCommandBuffer.Instantiate(entities.equipmentContainerEntity);
+        Entity connection = state.EntityManager.GetComponentData<PlayerSourceConnection>(player).value;
+        int networkID = state.EntityManager.GetComponentData<NetworkId>(connection).Value;
+        return CreateNewContainer(ref state, player,connection,entityCommandBuffer,ref entities,networkID,stats,containerSave);
+    }
+    public static Entity CreateNewContainer(ref SystemState state,Entity player,Entity connection, EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,ContainerStats stats,ContainerSave? containerSave = null)
+    {
+        var e = state.EntityManager.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
         entityCommandBuffer.SetComponent(e, new ContainerComponent() {
             containerStats = stats
@@ -169,8 +175,7 @@ partial struct GoInGameServerSystem : ISystem
         entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(stats.capacity + 1);
         entityCommandBuffer.AppendToBuffer(connection, new LinkedEntityGroup() { Value = e });
         entityCommandBuffer.AddComponent(e,new PlayerContainer(){ player = player});
-
-        
+       
         if(containerSave != null)
         {
             for(int i = 0; i < containerSave.Value.slots.Length;i++)
@@ -187,5 +192,6 @@ partial struct GoInGameServerSystem : ISystem
                 }
             }
         }
+        return e;
     }
 }

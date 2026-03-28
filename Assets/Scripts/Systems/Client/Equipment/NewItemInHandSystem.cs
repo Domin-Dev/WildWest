@@ -50,7 +50,6 @@ partial struct NewItemInHandSystem : ISystem
 
             foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity e) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
-                Debug.Log("new item in hand!");
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
                 {
                     if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(entity))
@@ -58,10 +57,8 @@ partial struct NewItemInHandSystem : ISystem
                         if(EQHelper.TryGetPlayerContainer(containersLookup,e,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                         {
                             if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(rpcCommand.ValueRO.tick))
-                            {
-                                
+                            {                           
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out int itemId, out int bufferIndex);
-                                Debug.Log("wynik " + itemId + "  " + rpcCommand.ValueRO.tick);
                                 ChangeItemInHand(ref state,itemId,entityCommandBuffer,in hands.ValueRO);
                                 entityCommandBuffer.DestroyEntity(entity);
                             }
@@ -112,6 +109,8 @@ partial struct NewItemInHandSystem : ISystem
         LocalTransform reloadPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.reloadPoint);
         LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.sidehand);
         LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.mainhand);
+        mainHand.Position.x = weapon.handOffset;
+
 
         if (weapon is RangedWeapon)
         {
@@ -154,6 +153,7 @@ partial struct NewItemInHandSystem : ISystem
         LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.mainhand);
 
         mainHand.Position.y = 0;
+        mainHand.Position.x = 0.07f;
 
         ResetSideHand(entityCommandBuffer,hands,ref sideHandTransform,ref state);
         localTransform.Position.x = 0;

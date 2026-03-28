@@ -10,9 +10,14 @@ public class Weapon : Destroyable
     public Sprite weaponImage;
 
     public Vector2[] hitBoxPoints;
+
+    public float handOffset = 0.07f;
     public Vector2 gripPoint1;
     public Vector2 gripPoint2;
 
+    public bool twoHanded  => gripPoint2.x != -100;
+
+    public override Sprite GetWorldSprite => weaponImage;
     public override ItemStats GetItemStats()
     {
         return base.GetItemStats();

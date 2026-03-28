@@ -236,7 +236,7 @@ public class ItemsAsset : MonoBehaviour
     }
     public int GetAmmoID(int weaponID)
     {
-        AmmoType type = (GetItem(weaponID) as RangedWeapon).ammoType;
+        AmmoType type = (GetItem(weaponID) as RangedWeapon).oldtype;
         for (int i = 0; i < ammoList.Count; i++)
         {
             if (ammoList[i].type == type)
@@ -322,6 +322,23 @@ public class ItemsAsset : MonoBehaviour
         maxValue = 1;
         return false;
     }
+
+    public bool hasLinkedContainer(int itemID,out int capacity, out MandatoryProperties mandatoryProperties, out int mandatoryData)
+    {
+        mandatoryProperties = MandatoryProperties.none;
+        mandatoryData = 0;
+        
+        if(TryGetItem(itemID,out Item item))
+        {
+            capacity = item.ContainerCapacity;
+            return item.HasLinkedContainer;
+        }
+        capacity = 0;
+        return false;
+    }
+
+
+
     public bool HaveBarValue(int itemID)
     {
         var item = GetItem(itemID);

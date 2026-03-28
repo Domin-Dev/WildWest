@@ -112,7 +112,7 @@ partial struct EquipmentClientSystem : ISystem
                             counter.index++;
                             isEvent = true;
                             startIndex = j;
-                            SlotsToUpdate.Enqueue(new  EqiupmentEventClient(eqEvents[j],containers[i].containerIndex));  
+                            SlotsToUpdate.Enqueue(new EqiupmentEventClient(eqEvents[j],containers[i].containerIndex));  
                             break;
                         }
                     }

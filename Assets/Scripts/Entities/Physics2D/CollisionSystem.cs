@@ -419,8 +419,6 @@ public partial struct CollisionSystem : ISystem
 
 
                 LocalTransform localTransform = getPosition[entity];
-                if(state.World.IsClient()) 
-                    Debug.Log( "tick " + time.ServerTick + " stare" + localTransform.Position  + "wynik :" + tempTransform1);
 
                 localTransform.Position = tempTransform1;
                 EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform, out bool chunkIsLoaded);

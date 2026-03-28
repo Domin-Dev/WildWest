@@ -20,4 +20,9 @@ public struct SlotSave
         this.color = slot.color;
         this.quality = slot.quality;
     }
+
+    public void Add(int quantity)
+    {
+        this.quantity += quantity;
+    }
 }

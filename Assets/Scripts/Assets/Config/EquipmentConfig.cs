@@ -17,6 +17,7 @@ public class EquipmentConfig
     public IReadOnlyDictionary<int, ContainerData> Containers => containers;
     public readonly static int itemInHand_ContainerIndex;
     public readonly static int hotBar_ContainerIndex;
+    public readonly static int start_ContainerIndex;
 
 
 
@@ -40,6 +41,7 @@ public class EquipmentConfig
 
         itemInHand_ContainerIndex = config.itemInHand_ContainerIndex;
         hotBar_ContainerIndex = config.hotBar_ContainerIndex;
+        start_ContainerIndex = config.start_ContainerIndex;
 
         foreach(var c in config.containers)
         {

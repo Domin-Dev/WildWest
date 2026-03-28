@@ -26,4 +26,5 @@ public class EquipmentConfigData : ScriptableObject
 
     public int itemInHand_ContainerIndex;
     public int hotBar_ContainerIndex;
+    public int start_ContainerIndex;
 }

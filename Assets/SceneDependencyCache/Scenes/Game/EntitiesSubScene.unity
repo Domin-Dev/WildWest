@@ -156,7 +156,7 @@ MonoBehaviour:
   worldItemPrefab: {fileID: 3906003094013903276, guid: 8239189eae1b88d4aa09a07260d280d2, type: 3}
   worldTextPrefab: {fileID: 4787479206249689599, guid: f0e3ca3080f4dc6439177a8e6bf2a8d8, type: 3}
   buildObjectEntityPrefab: {fileID: 9169308965752663696, guid: 3b883392e783c5d4eb4d3bd503bc98ba, type: 3}
-  bulletPrefab: {fileID: 790217896693364317, guid: 164a9318ec4a9df499a0db19f27a1d7a, type: 3}
+  bulletPrefab: {fileID: 790217896693364317, guid: 6408a1b8f9e1e2789a0b5613cf69f843, type: 3}
   shotSmoke: {fileID: 6328287962746153788, guid: 00deb22ece09d4f4e99ed891dbc09bec, type: 3}
   shotFire: {fileID: 2929994055924591819, guid: 6bc56e8498891144eb3354dd80e7ca31, type: 3}
   shotLight: {fileID: 8215907354024352320, guid: 7b6d87b4016d6ef4ea1b188d090df24f, type: 3}

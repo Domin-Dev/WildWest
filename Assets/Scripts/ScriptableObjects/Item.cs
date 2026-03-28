@@ -15,6 +15,7 @@ public class Item : ScriptableObject
 
     [Header("Item graphic")]
     public Sprite icon;
+    public List<Sprite> animSprites;
 
     [Header("Item Tags")]
     public List<TagSelection> tags;
@@ -25,6 +26,12 @@ public class Item : ScriptableObject
     public Ingredient[] crafingIngredients;
     public int[] craftTables;
     public int numberItem = 1;
+
+    public virtual bool HasLinkedContainer{ get{ return false;} }
+    public virtual int ContainerCapacity {get {return 0;}}
+
+
+    public virtual Sprite GetWorldSprite => icon;
     public virtual ItemStats GetItemStats()
     {
         return new ItemStats(ID);

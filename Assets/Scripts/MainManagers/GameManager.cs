@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public event EventHandler<ValueArgs> onValueChange;
-
     const int DebugUIIndex = 5;
     public class ValueArgs : EventArgs
     {

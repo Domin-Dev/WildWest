@@ -447,12 +447,13 @@ public static class EQHelper
             }
         }
     }
-    public static EquipmentEvent[] AddItems(BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, EQTransferData[] values, EQGiveItem itemData)
+    public static EquipmentEvent[] AddItems(ref SystemState state,EntityCommandBuffer ecb,ref EntitiesReferences entitiesReferences,BufferLookup<LinkedContainers> linkedContainers,BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, EQTransferData[] values, EQGiveItem itemData)
     {
         List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
         if (values == null) return null;
         bool hasBar = ItemsAsset.instance.TryGetBarValues(itemData.item.itemId, out float startValue, out float maxValue);
-        float barVal = maxValue * (Math.Clamp(itemData.barValue, 0f, 1f));
+        bool hasLinkedContainer = ItemsAsset.instance.hasLinkedContainer(itemData.item.itemId,out int capacity);      
+        float barVal = maxValue * Math.Clamp(itemData.barValue, 0f, 1f);
 
 
         foreach (EQTransferData item in values)
@@ -488,6 +489,7 @@ public static class EQHelper
                     quality = itemData.item.quality,
                     color = itemData.item.color,
                 });
+
                 if(hasBar)
                 {
                     barsLookup[container.Value.entity].Add(new ItemBarData() {
@@ -496,6 +498,20 @@ public static class EQHelper
                         maxValue = maxValue
                     });
                 }
+
+                if(hasLinkedContainer)
+                {
+                    Entity entity = GoInGameServerSystem.CreateNewContainer(ref state,player,ecb,ref entitiesReferences,new ContainerStats()
+                    {
+                        
+                    });
+                    linkedContainers[container.Value.entity].Add(new LinkedContainers()
+                    {
+                       slot = item.pos.slotIndex,
+                       container = entity
+                    });
+                }
+
                 equipmentEvents.Add(new EquipmentEvent(new EquipmentEventData(item.pos.slotIndex, 1), container.Value.index));
             }
         }

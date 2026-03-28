@@ -10,4 +10,5 @@ public struct ContainerSettings : IComponentData
 {
     public SlotPosition Position;
     public int targetContainer;
+    public int nextTempIndex;
 }

@@ -16,11 +16,13 @@ partial struct GiveItemServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<LinkedContainers> linkedContainersLookup;
 
 
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<ContainerSettings>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAny<EQGiveItem>();
 
@@ -30,14 +32,19 @@ partial struct GiveItemServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        linkedContainersLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
+        linkedContainersLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        ContainerSettings containerSettings = SystemAPI.GetSingleton<ContainerSettings>();
+
         
         foreach ((RefRO<EQGiveItem> command, Entity entity) in
         SystemAPI.Query<RefRO<EQGiveItem>>().WithEntityAccess())
@@ -47,7 +54,7 @@ partial struct GiveItemServerSystem : ISystem
 
 
             var slots = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player,command.ValueRO.item);
-            var events = EQHelper.AddItems(barsLookup,slotsLookup, playerContainersLookup, player, slots, command.ValueRO);
+            var events = EQHelper.AddItems(ref state,entityCommandBuffer,ref entitiesReferences,linkedContainersLookup,barsLookup,slotsLookup, playerContainersLookup, player, slots, command.ValueRO);
            
             EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
             entityCommandBuffer.DestroyEntity(entity);

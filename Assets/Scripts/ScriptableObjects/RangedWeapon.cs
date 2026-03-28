@@ -2,36 +2,42 @@
 using System.Collections.Generic;
 using Unity.Entities.UI;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 [CreateAssetMenu(fileName = "RangedWeapon", menuName = "GameAsset/Items/Weapons/RangedWeapon")]
 public class RangedWeapon : Weapon
 {
     [Header("Ranged Weapon Stats")]
     public float timeToReload;
-    public int magazineCapacity;
+    [Min(0)]public int magazineCapacity;
     [Min(1)]public int bulletCount = 1;
     public float shotSpread;
     public float bulletSpread = 0;
-
+    public Tag ammoTag;
+    
     [Header("Visual effects")]
-    public List<KeyFrame> keyFrames;
-
-    [Header("Sounds")]
-    public AudioClip shotSound;
-
+    public List<KeyFrame> shotAnim;
+    public List<KeyFrame> reloadAnim; 
 
 
 
 
     public float2 aimPoint;
     public float2 reloadPoint;
-    public AmmoType ammoType;
+    public AmmoType oldtype;
 
 
+
+    public bool hasMagazine => magazineCapacity > 0;
     public float bulletOffset => bulletSpread / math.max((bulletCount - 1),1);
 
+
+    public override bool HasLinkedContainer => hasMagazine;
+    public override int ContainerCapacity => magazineCapacity;
     public override ItemStats GetItemStats()
     {
         return new RangedWeaponItem(ID,durability, magazineCapacity);
     }
 }
+

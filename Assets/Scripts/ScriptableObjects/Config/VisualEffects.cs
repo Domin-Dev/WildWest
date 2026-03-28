@@ -10,4 +10,5 @@ public class VisualEffects : ScriptableObject
 {
     [SerializeField] private List<GameObject> prefabs;
     public List<GameObject> Prefabs => prefabs;
+
 }

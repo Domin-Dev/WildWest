@@ -128,9 +128,22 @@ public partial class SavingServerSystem : SystemBase
                 slotsArray[i] = new SlotSave(){ itemId = -1};
                 itemBarData[i] = new BarDataSave(){ value = -1};
             }
-            foreach(var slot in slots)
-                slotsArray[slot.slot] = new SlotSave(slot);
 
+            
+    
+            foreach(var slot in slots)
+            {
+                int slotIndex = slot.slot;
+                if(slotIndex < 0 )
+                    slotIndex = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(slotIndex);
+
+                if(slotsArray[slotIndex].quantity > 0)
+                    slotsArray[slotIndex].Add(slot.quantity);
+                else
+                    slotsArray[slotIndex] = new SlotSave(slot);    
+            }
+        
+        
             foreach(var data in barData)
                 itemBarData[data.slot] = new BarDataSave(data);
 

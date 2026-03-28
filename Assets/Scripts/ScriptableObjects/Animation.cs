@@ -62,24 +62,23 @@ public class AnimationEvent
     }
 }
 
-
 public enum BodyPartType :  byte
 {
     MainHand,
     SideHand
 }
-
 public enum EventType :  byte
 {
     Sound,
     SpawnParticle,
     SpawnParticleAtAimPoint,
-    SpawnParticleAtReloadPoint
+    SpawnParticleAtReloadPoint,
+    ChangeItemSprite
 }
-
 public enum PositionMode :  byte
 {
-    Local = 0,
-    RelativeToStart = 1,
+    MoveLocal = 0,
+    SetLocal = 1,
+    MoveRelativeToStart = 2,
 }
 

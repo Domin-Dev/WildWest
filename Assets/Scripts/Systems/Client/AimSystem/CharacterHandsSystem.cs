@@ -4,6 +4,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 using UnityEngine.VFX;
 
 [UpdateInGroup(typeof(PresentationSystemGroup))]
@@ -71,10 +72,15 @@ partial struct CharacterHandsSystem : ISystem
                     ClearAnimationComponent(hands.ValueRO.GetBodyPart(BodyPartType.MainHand));
                     ClearAnimationComponent(hands.ValueRO.GetBodyPart(BodyPartType.SideHand));
               
+                    
                     int index = 0;
-                    foreach(var frame in item.keyFrames)
+                    foreach(var frame in item.shotAnim)
                     {
                         var part = hands.ValueRO.GetBodyPart(frame.BodyPartType);
+                        if(frame.BodyPartType == BodyPartType.SideHand && item.twoHanded)
+                            animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.ValueRO.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.03f,0);
+                        
+                        animationLookup.GetRefRW(part).ValueRW.itemID = action.ValueRO.itemID;
                         framesLookup[part].Add(frame.GetAnimationFrame(index));
                         foreach (var eventFrame in frame.Events)
                             eventsLookup[part].Add(eventFrame.GetEvent(index));
@@ -85,6 +91,7 @@ partial struct CharacterHandsSystem : ISystem
                 }
                 break;
             }
+            
             entityCommandBuffer.DestroyEntity(rpc);
         }
        
@@ -98,8 +105,9 @@ partial struct CharacterHandsSystem : ISystem
                 continue;
             }
 
-            animation.ValueRW.elapsedTime += deltaTime;
             ref var element = ref frames.ElementAt(0);
+            animation.ValueRW.elapsedTime += deltaTime * animation.ValueRO.playbackSpeed;
+            
             if(!element.processed)
             {     
                 if(!animation.ValueRO.hasStartPosition)
@@ -137,6 +145,9 @@ partial struct CharacterHandsSystem : ISystem
                                 break;
                             case EventType.SpawnParticleAtReloadPoint:
                                 CreatePrefab(entityCommandBuffer,hands.reloadPoint,eventFrame);
+                                break;
+                            case EventType.ChangeItemSprite:
+                                ChangeItemSprite(ref state,hands.itemInHand,eventFrame.id,animation.ValueRO.itemID);
                                 break;
                         }
 
@@ -176,6 +187,23 @@ partial struct CharacterHandsSystem : ISystem
     }       
 
 
+
+    private void ChangeItemSprite(ref SystemState state,Entity itemInHand,int spriteID,int itemID)
+    {
+        Debug.Log("zmiana");
+        if(ItemsAsset.instance.TryGetItem(itemID,out var item))
+        {
+            Debug.Log("zmiannnnnnna!! " + spriteID );
+            if(spriteID < 0)
+                state.EntityManager.GetComponentObject<SpriteRenderer>(itemInHand).sprite = item.GetWorldSprite;
+            else if(item.animSprites.Count > spriteID)
+            {
+                Debug.Log("zmiana!!!");
+                state.EntityManager.GetComponentObject<SpriteRenderer>(itemInHand).sprite = item.animSprites[spriteID];    
+            } 
+        }
+    }
+
     private void CreatePrefab(EntityCommandBuffer entityCommandBuffer, Entity target,AnimationEvents eventFrame)
     {
         LocalToWorld localToWorld = worldLookup[target];
@@ -198,10 +226,14 @@ partial struct CharacterHandsSystem : ISystem
     {
         var animation = animationLookup.GetRefRW(entity);
         var position = transformLookup.GetRefRW(entity);
+
         framesLookup[entity].Clear();
         eventsLookup[entity].Clear();
-
+        animation.ValueRW.playbackSpeed = 1f;
         animation.ValueRW.elapsedTime = 0;
+        animation.ValueRW.characterCenterPosition = float3.zero;
+
+
         if(animation.ValueRO.hasStartPosition)
         {
             position.ValueRW.Position = animation.ValueRO.startPosition;

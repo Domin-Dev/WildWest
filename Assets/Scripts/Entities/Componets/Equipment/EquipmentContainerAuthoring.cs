@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -20,6 +21,7 @@ public class EquipmentContainerAuthoring : MonoBehaviour
             AddBuffer<InventorySlot>(entity);
             AddBuffer<ItemBarData>(entity);
             AddBuffer<EquipmentEventBuffer>(entity);
+            AddBuffer<LinkedContainers>(entity);
         }
     }
 }

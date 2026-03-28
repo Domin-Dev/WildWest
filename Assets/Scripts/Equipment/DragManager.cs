@@ -108,6 +108,7 @@ public class DragManager : MonoBehaviour
         {
             if(dragItem == null) dragItem = UIManager.instance.CreateDragItem();
             UIManager.instance.UpdateDragItem(dragItem, stats);
+            UpdateSelectedItemPosition();
         }
         else if (dragItem != null)
         {
@@ -142,6 +143,11 @@ public class DragManager : MonoBehaviour
         return mode;
     }
     private void Update()
+    {
+        UpdateSelectedItemPosition();
+    }
+
+    private void UpdateSelectedItemPosition()
     {
         if (dragItem != null)
         {

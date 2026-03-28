@@ -36,6 +36,7 @@ MonoBehaviour:
   - {x: 0.13499999, y: -0.005}
   - {x: 0.065, y: -0.005}
   - {x: 0.065, y: -0.015}
+  handOffset: 0.07
   gripPoint1: {x: -0.035, y: -0.015}
   gripPoint2: {x: 0.055, y: -0.005}
   timeToReload: 0
@@ -45,7 +46,7 @@ MonoBehaviour:
   bulletSpread: 8
   keyFrames:
   - bodyPartType: 0
-    positionMode: 1
+    positionMode: 2
     rotate:
       x: 0
       y: 0
@@ -113,7 +114,7 @@ MonoBehaviour:
     duration: 0.15
     events: []
   - bodyPartType: 0
-    positionMode: 1
+    positionMode: 2
     rotate:
       x: 0
       y: 0
@@ -160,7 +161,7 @@ MonoBehaviour:
     duration: 0.2
     events: []
   - bodyPartType: 1
-    positionMode: 1
+    positionMode: 2
     rotate:
       x: 0
       y: 0
@@ -171,7 +172,6 @@ MonoBehaviour:
       z: 0
     duration: 0.2
     events: []
-  shotSound: {fileID: 8300000, guid: dd75df6807313de44a878a719e3f3664, type: 3}
   aimPoint:
     x: 0.125
     y: 0.005
