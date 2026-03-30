@@ -47,6 +47,11 @@ public class UIManager : MonoBehaviour
     [Header("Gun Info UI")]
     [SerializeField] private Transform ammoBar;
     [SerializeField] private GameObject ammoUI;
+
+    [SerializeField] private GameObject ammoCounerPrefab;
+    [SerializeField] private Transform ammoCountersParent;
+
+
     #region Equipment UI
     [Header("Equipment UI")]
     [SerializeField] private Transform mainItemBar;
@@ -141,10 +146,12 @@ public class UIManager : MonoBehaviour
     public void OnEnable()
     {
         NewEquipmentManager.onNewSlotInHand += UpdateSlotInHand;
+        NewItemInHandSystem.onNewItemInHand += NewItemInHand;
     }
     public void OnDisable()
     {
         NewEquipmentManager.onNewSlotInHand -= UpdateSlotInHand;
+        NewItemInHandSystem.onNewItemInHand -= NewItemInHand;
     }
 
     private int i = 0;
@@ -1247,49 +1254,79 @@ public class UIManager : MonoBehaviour
     #region  Slot In Hand Funcs
     Timer itemInHandPopupTimer;
 
-    public void UpdateSlotInHand((int lastSlot,int newSlot) slotIndex,IReadOnlyItemStats itemStats)
+    public void UpdateSlotInHand((int lastSlot,int newSlot) slotIndex,InventorySlot? itemSlot)
     {
         if(itemInHandPopupTimer != null)
             itemInHandPopupTimer.Cancel();
 
-        if(slotIndex.lastSlot != slotIndex.newSlot)
+
+        Transform last = mainItemBar.GetChild(slotIndex.lastSlot);
+        last.GetComponent<Image>().sprite = unSelected;
+        Sounds.instance.Click();
+
+        if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem(itemSlot.Value.itemId,out var item))
         {
-            Transform last = mainItemBar.GetChild(slotIndex.lastSlot);
-            last.GetComponent<Image>().sprite = unSelected;
-            Sounds.instance.Hammer();
-            if(itemStats != null && ItemsAsset.instance.TryGetItem(itemStats.itemID,out var item))
-            {
-                itemInHandPopup.gameObject.SetActive(true);
-                itemInHandPopup.text = item.name;
-                var canvasGroup = itemInHandPopup.GetComponent<CanvasGroup>();
+            itemInHandPopup.gameObject.SetActive(true);
+            itemInHandPopup.text = item.name;
+            var canvasGroup = itemInHandPopup.GetComponent<CanvasGroup>();
 
-                itemInHandPopupTimer = Timer.Create(0.3f,() =>
-                {
-                    canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, 0, Time.deltaTime * 7f);
-                    if (canvasGroup.alpha < 0.1f)
-                    {
-                        return true;
-                    }
-                    return false;
-                },() =>
-                {
-                    canvasGroup.alpha = 1;
-                    canvasGroup.gameObject.SetActive(false);
-                });
-
-            }
-            else
+            itemInHandPopupTimer = Timer.Create(0.3f,() =>
             {
-                itemInHandPopup.gameObject.SetActive(false);
-            }
+                canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, 0, Time.deltaTime * 7f);
+                if (canvasGroup.alpha < 0.1f)
+                {
+                    return true;
+                }
+                return false;
+            },() =>
+            {
+                canvasGroup.alpha = 1;
+                canvasGroup.gameObject.SetActive(false);
+            });
+
         }
+        else
+        {
+            itemInHandPopup.gameObject.SetActive(false);
+        }
+        
+
         Transform current = mainItemBar.GetChild(slotIndex.newSlot);
         current.GetComponent<Image>().sprite = selected;
-        
-        // if(lastSlotUI != null) lastSlotUI.localScale = new Vector3(buttonScale, buttonScale,1);
-        // currentSlotUI = current.GetComponent<RectTransform>();
     }
     
+    public void NewItemInHand(InventorySlot? itemSlot,InventorySlot[] ammo)
+    {
+        if(itemSlot.HasValue && ammo != null && ItemsAsset.instance.TryGetItem(itemSlot.Value.itemId,out var item))
+        {
+            UpdateAmmoInfo(item,ammo);
+        }
+        else
+        {
+            UpdateAmmoInfo(null,null);
+        }
+    }
+
+    public void UpdateAmmoInfo(Item item,params InventorySlot[] ammoList)
+    {
+        RangedWeapon rangedWeapon = item as RangedWeapon;
+        for(int i = ammoCountersParent.childCount - 1; i >=0; i--)
+            Destroy(ammoCountersParent.GetChild(i).gameObject);
+
+        if(rangedWeapon != null)
+        {
+            foreach(var ammo in ammoList)
+            {
+                if(ItemsAsset.instance.TryGetItem(ammo.itemId, out var itemAsset))
+                {
+                    var gameObject = Instantiate(ammoCounerPrefab,ammoCountersParent);
+                    gameObject.transform.GetChild(0).GetComponentInChildren<Image>().sprite = itemAsset.icon;
+                    gameObject.GetComponentInChildren<TextMeshProUGUI>().text = ammo.quantity.ToString();
+                }
+            }            
+        }
+    }
+  
     #endregion
 
 

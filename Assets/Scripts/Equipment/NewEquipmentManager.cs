@@ -63,7 +63,7 @@ public class NewEquipmentManager : MonoBehaviour
     #region Variables
 
     public static NewEquipmentManager instance {  get; private set; }
-    public static event Action<(int lastSlot,int newSlot),IReadOnlyItemStats> onNewSlotInHand;
+    public static event Action<(int lastSlot,int newSlot),InventorySlot?> onNewSlotInHand;
 
     public Dictionary<int, Container> containers = new Dictionary<int, Container>();
     private bool open = false;
@@ -117,10 +117,12 @@ public class NewEquipmentManager : MonoBehaviour
 
     #region Item In Hand Managment
 
-    private void NewSlotInHand(int slotIndex)
+    private void NewSlotInHand(int slotIndex, InventorySlot? inventorySlot)
     {
         if(!containers.ContainsKey(0)) return;
-        onNewSlotInHand?.Invoke((currentSlotInHand,slotIndex),containers[0].itemSlots[slotIndex]);
+
+
+        onNewSlotInHand?.Invoke((currentSlotInHand,slotIndex),inventorySlot);
         currentSlotInHand = slotIndex;
     }
    
@@ -362,7 +364,7 @@ public class NewEquipmentManager : MonoBehaviour
         if (containerComponent.containerIndex == 0)
         {
             UIManager.instance.LoadBarSlots(container, entity);
-            NewSlotInHand(0);
+            NewSlotInHand(0,null);
         }
     }
     private ItemStats LoadItemFromEntities(SlotPosition slotPosition)

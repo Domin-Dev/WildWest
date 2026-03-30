@@ -42,7 +42,7 @@ public partial struct GlobalRelevancySystem : ISystem
                 Ghost = ghost.ValueRO.ghostId,
                 Connection = ghostOwner.ValueRO.NetworkId
             };
-            ghostRelevancy.ValueRW.GhostRelevancySet.Add(key, 0);
+            ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(key, 0);
             entityCommandBuffer.RemoveComponent<SendToOwner>(entity);
         }
 

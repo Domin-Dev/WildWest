@@ -7,12 +7,14 @@ using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public struct EQTransferData
 {
     public SlotPosition pos;
     public int quantity;
     public bool slotExist;
+
 
     public EQTransferData(SlotPosition pos, int quantity, bool slotExist)
     {
@@ -90,7 +92,7 @@ public static class EQHelper
    
 
    
-   public static void PrintBuffer(BufferLookup<InventorySlot> slotsLookup, Entity container)
+     public static void PrintBuffer(BufferLookup<InventorySlot> slotsLookup, Entity container)
     {
         var slots = slotsLookup[container];
         for (int j = 0; j < slots.Length; j++)
@@ -108,6 +110,18 @@ public static class EQHelper
         bufferIndex = -1;
         return false;
     }
+
+    // public static bool TryGetBufferIndex<T>(BufferLookup<T> lookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out T? inventorySlot, out int bufferIndex)  where T : unmanaged,IBufferElementData,IGetSlot
+    // {
+    //     var container = GetPlayerContainer(containers, player, slotPosition.containerIndex);
+    //     if(container.HasValue)
+    //         return TryGetBufferIndex<T>(lookup, slotPosition.slotIndex, container.Value.entity, out inventorySlot, out bufferIndex);
+    //     inventorySlot = null;
+    //     bufferIndex = -1;
+    //     return false;
+    // }
+
+
     public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, int slotIndex, Entity container, out int itemID, out int bufferIndex)
     {
         var slots = slotsLookup[container];
@@ -410,6 +424,15 @@ public static class EQHelper
             EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, eventData);
         }
     }
+
+    public static void SendEvents(EntityCommandBuffer entityCommandBuffer,int networkID, params EquipmentEvent[] events)
+    {
+        foreach (EquipmentEvent eventData in events)
+        {
+            eventData.SetNetworkID(networkID);
+            EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, eventData);
+        }
+    }
     public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer, int networkID, SlotPosition duplicatedPos, params EquipmentEvent[] events)
     {
         if (events != null)
@@ -452,7 +475,7 @@ public static class EQHelper
         List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
         if (values == null) return null;
         bool hasBar = ItemsAsset.instance.TryGetBarValues(itemData.item.itemId, out float startValue, out float maxValue);
-        bool hasLinkedContainer = ItemsAsset.instance.hasLinkedContainer(itemData.item.itemId,out int capacity);      
+        bool hasLinkedContainer = ItemsAsset.instance.hasLinkedContainer(itemData.item.itemId,out int capacity,out MandatoryProperties mandatoryProperties, out int mandatoryData);      
         float barVal = maxValue * Math.Clamp(itemData.barValue, 0f, 1f);
 
 
@@ -501,10 +524,20 @@ public static class EQHelper
 
                 if(hasLinkedContainer)
                 {
+                    var value = state.EntityManager.GetComponentData<ContainerSettings>(player);
                     Entity entity = GoInGameServerSystem.CreateNewContainer(ref state,player,ecb,ref entitiesReferences,new ContainerStats()
                     {
-                        
+                        capacity = capacity,
+                        containerIndex = value.nextTempIndex,
+                        serverContainer = true,
+                        waterResistance = 0,
+                        mandatoryProperties = mandatoryProperties,
+                        mandatoryData = mandatoryData
                     });
+
+                    value.nextTempIndex += 1;
+                    ecb.SetComponent(player,value);
+
                     linkedContainers[container.Value.entity].Add(new LinkedContainers()
                     {
                        slot = item.pos.slotIndex,
@@ -709,6 +742,110 @@ public static class EQHelper
         }
         return moves.ToArray();
     }
+    
+    
+
+
+
+    public static InventorySlot[] TryFindItemWithTag_Aggregated(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers> containers, Entity player,int tagID, out int counter)
+    {
+        var playerContainers = containers[player];
+
+        counter = 0;
+        Dictionary<int,InventorySlot> foundSlots = new Dictionary<int,InventorySlot>();
+
+        for (int i = 0; i < playerContainers.Length; i++)
+        {
+            var container = playerContainers[i];
+            var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.entity);
+            if(containerComponent.containerType != ContainerType.Standard) continue;
+            
+            if(CheckRequirementsTag(containerComponent,tagID, out bool AllItemsHaveTheTag))
+            {
+                var slots = slotLookup[container.entity];
+
+                for (int j = 0; j < slots.Length; j++)
+                {
+                    var slot = slots[j];
+                    if (slot.slot < 0) continue;
+                    if (AllItemsHaveTheTag || ItemsAsset.instance.ItemHasTheTag(slot.itemId,tagID))
+                    {
+                        counter += slot.quantity;
+                        if(foundSlots.ContainsKey(slot.itemId))
+                        {
+                            var temp = foundSlots[slot.itemId] ;
+                            temp.quantity += slot.quantity;
+                            foundSlots[slot.itemId] = temp;
+                        }
+                        else
+                            foundSlots.Add(slot.itemId, slot);  
+                    }
+                }
+            }
+        }
+        return foundSlots.OrderBy(kv => kv.Key).Select(x => x.Value).ToArray();
+    }
+    public static (EQTransferData data,int itemID)[] TryFindItemWithTag(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers> containers, Entity player,int tagID,out InventorySlot[] aggregated, out int counter)
+    {
+        var playerContainers = containers[player];
+
+        counter = 0;
+        List<(EQTransferData data,int itemID)> foundSlots = new List<(EQTransferData data,int itemID)>();
+        Dictionary<int,InventorySlot> aggregator = new Dictionary<int,InventorySlot>();
+
+        
+
+        for (int i = 0; i < playerContainers.Length; i++)
+        {
+            var container = playerContainers[i];
+            var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.entity);
+            if(containerComponent.containerType != ContainerType.Standard) continue;
+            
+            if(CheckRequirementsTag(containerComponent,tagID, out bool AllItemsHaveTheTag))
+            {
+                var slots = slotLookup[container.entity];
+
+                for (int j = 0; j < slots.Length; j++)
+                {
+                    var slot = slots[j];
+                    if (slot.slot < 0) continue;
+                    if (AllItemsHaveTheTag || ItemsAsset.instance.ItemHasTheTag(slot.itemId,tagID))
+                    {
+                        counter += slot.quantity;
+                        foundSlots.Add(new (new EQTransferData(new SlotPosition(containerComponent.containerIndex,slot.slot),slot.quantity,true),slot.itemId));
+                        
+                        if(aggregator.ContainsKey(slot.itemId))
+                        {
+                            var temp = aggregator[slot.itemId] ;
+                            temp.quantity += slot.quantity;
+                            aggregator[slot.itemId] = temp;
+                        }
+                        else
+                            aggregator.Add(slot.itemId, slot);  
+                    }
+                }
+
+            }
+        }
+        foundSlots = foundSlots
+            .OrderBy(x => x.data.pos.containerIndex)
+            .ThenBy(x => x.data.pos.slotIndex)
+            .ToList();     
+
+
+
+        Debug.Log("wynik grupowania to "  + aggregator.Count);
+        aggregated = aggregator.OrderBy(kv => kv.Key).Select(x => x.Value).ToArray();  
+
+    //    aggregated = null;
+
+        return foundSlots.ToArray(); 
+    }
+   
+   
+   
+   
+   
     public static bool TryFindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<PlayerContainers> containers, Entity player, InventorySlot inventorySlot,out EQTransferData[] data, params int[] findIncontainers)
     {
         data = FindSlotForItem(ref state,slotLookup ,containers,player,inventorySlot, findIncontainers);
@@ -716,7 +853,46 @@ public static class EQHelper
     }
 
     
+    public static EquipmentEvent[] SubtractItem(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers>containers,SlotPosition slotPosition,Entity player,int value = 1)
+    {
+        if(TryGetPlayerContainer(containers,player,slotPosition.containerIndex, out var playerContainer))
+        {
+            if(TryGetBufferIndex<InventorySlot>(slotLookup,slotPosition.slotIndex,playerContainer.Value.entity,out var slotItem, out int bufferIndex))
+            {
+                if(slotItem.Value.quantity > value)
+                {
+                    slotLookup[playerContainer.Value.entity].ElementAt(bufferIndex).quantity -= value;
+                }
+                else
+                {
+                    slotLookup[playerContainer.Value.entity].RemoveAtSwapBack(bufferIndex);
+                }
+            }
+        }
+        return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotPosition.slotIndex, 1),slotPosition.containerIndex) };  
+    }
+
     
+    public static bool CheckRequirementsTag(ContainerComponent containerComponent, int tagID, out bool AllItemsHaveTheTag)
+    {
+        AllItemsHaveTheTag = false;
+        return !containerComponent.serverContainer && CheckRequirementsTag(containerComponent.mandatoryProperties,containerComponent.mandatoryData,tagID, out AllItemsHaveTheTag); 
+    }
+    private static bool CheckRequirementsTag(MandatoryProperties mandatoryProperties, int mandatoryData, int tagID, out bool AllItemsHaveTheTag)
+    {
+        AllItemsHaveTheTag = false;
+        switch (mandatoryProperties)
+        {
+            case MandatoryProperties.none:
+                return true;
+            case MandatoryProperties.tag:
+                AllItemsHaveTheTag = true;
+                return tagID == mandatoryData;
+            case MandatoryProperties.item:
+                return ItemsAsset.instance.ItemHasTheTag(mandatoryData,tagID);
+        }
+        return false;
+    }
     public static bool CheckRequirements(ContainerComponent containerComponent, int itemID)
     {
         return !containerComponent.serverContainer && CheckRequirements(containerComponent.mandatoryProperties, containerComponent.mandatoryData, itemID);

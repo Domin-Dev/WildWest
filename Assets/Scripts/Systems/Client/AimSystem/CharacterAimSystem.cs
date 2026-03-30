@@ -29,7 +29,7 @@ using UnityEngine;
         state.RequireForUpdate<NetworkTime>();
 
         playerNeedChunkLookup = state.GetBufferLookup<PlayersNeedChunk>(true);
-        slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
+        slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
         containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
         
@@ -46,7 +46,6 @@ using UnityEngine;
         containersLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-
 
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
@@ -106,6 +105,34 @@ using UnityEngine;
                                 if(!ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var weapon))
                                     break;
 
+                                if(weapon.hasMagazine)
+                                {
+                                   Debug.Log("z"); 
+                                }
+                                else
+                                {
+                                    var slots = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,entity,weapon.ammoTagID,out var aggregated,out int counter);
+                                    
+                                    if(counter == 0) break;
+                                    if(state.World.IsServer())
+                                    {
+                                      //  int ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
+                                       Debug.Log("ammo ID to ->" +  aggregated[0].itemId + "pl " + playerAspect.playerInputSync.ValueRO.ammoSelectedIndex);
+                                     //   for(int k = 0; k < slots.Length; i++)
+                                    //    {
+                                           // if(slots[k].itemID == ammoID)
+                                            // {
+                                            
+                                            //     var events = EQHelper.SubtractItem(ref state,slotsLookup,containersLookup,slots[k].data.pos,entity);
+                                            //     EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId, events);
+                                            //     break;
+                                            // }
+                                     //   }
+                                    }
+
+                                    Debug.Log("Ammo => " + counter);
+                                }
+
 
 
                                 var aimPoint = MyTools.ConvertFloat(CalculateAimPoint(rot,weapon)) + currentPosition;
@@ -124,7 +151,7 @@ using UnityEngine;
                                 float value = 0f;//random.NextFloat((-1 * spread) + weapon.bulletSpread,spread);
                                 
 
-                                for(int k = 0   ; k < weapon.bulletCount; k++)
+                                for(int k = 0 ; k < weapon.bulletCount; k++)
                                 {
                                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
                                     entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });

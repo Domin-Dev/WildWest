@@ -34,6 +34,10 @@ public class InputManager : MonoBehaviour
     public InputAction nextSlot { private set; get; }
 
 
+    public InputAction previousAmmo { private set; get; }
+    public InputAction nextAmmo { private set; get; }
+
+
     public List<InputAction> slots { private set; get; }
 
 
@@ -72,6 +76,10 @@ public class InputManager : MonoBehaviour
 
         previousSlot = action.FindAction("PreviousSlot");
         nextSlot = action.FindAction("NextSlot");
+
+        previousAmmo = action.FindAction("PreviousAmmo");
+        nextAmmo = action.FindAction("NextAmmo");
+
         slots = new List<InputAction>();
         for (int i = 1; i < 10; i++)
         {
@@ -104,6 +112,18 @@ public class InputManager : MonoBehaviour
 
         return math.clamp(currentSlot,0,9);
     }
+
+    public int GetNextAmmoIndex(int currentIndex)
+    {
+        if(previousAmmo.triggered)
+            return (currentIndex - 1 + 10) % 10;
+
+        if(nextAmmo.triggered)
+            return (currentIndex + 1) % 10;   
+
+        return currentIndex;
+    }
+
 
     private void PreviousSlot_performed(InputAction.CallbackContext obj)
     {

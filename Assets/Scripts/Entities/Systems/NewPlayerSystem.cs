@@ -22,9 +22,10 @@ partial struct NewPlayerSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach ((RefRO<Player> player, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>, RefRW<PlayerLook>>().WithAll<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRO<Player> player, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>, RefRW<PlayerLook>>().WithAll<Simulate,NewPlayerTag>().WithEntityAccess())
         {
 
+            
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
             Hands hands = new Hands() { rotated = true};
@@ -51,6 +52,7 @@ partial struct NewPlayerSystem : ISystem
             }
             else
             {
+                Debug.Log("update new postac!!");
                 Entity update = entityCommandBuffer.CreateEntity();
                 entityCommandBuffer.AddComponent(update, new LifeStatsChangedRPC());
             }

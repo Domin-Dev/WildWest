@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Transforms;
 using UnityEngine;
 using Unity.Mathematics;
+using System;
 
 
 [UpdateInGroup(typeof(EquipmentSystemGroup), OrderLast = true)]
@@ -16,6 +17,8 @@ partial struct NewItemInHandSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> containersLookup;
+
+    public static event Action<InventorySlot?,InventorySlot[]> onNewItemInHand;
 
 
     [BurstCompile]
@@ -58,9 +61,12 @@ partial struct NewItemInHandSystem : ISystem
                         {
                             if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(rpcCommand.ValueRO.tick))
                             {                           
-                                EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out int itemId, out int bufferIndex);
+                                EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
+                                int itemId = slot.HasValue ? slot.Value.itemId : -1;
                                 ChangeItemInHand(ref state,itemId,entityCommandBuffer,in hands.ValueRO);
                                 entityCommandBuffer.DestroyEntity(entity);
+                                UpdateUI(ref state,e,slot);
+
                             }
                         }
                         SystemAPI.GetComponent<ReceiveRpcCommandRequest>(entity).Consume();
@@ -69,11 +75,17 @@ partial struct NewItemInHandSystem : ISystem
                     {
                         if(EQHelper.TryGetPlayerContainer(containersLookup,e,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                         {
-                            EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex);
+                            EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
+                            int itemId = slot.HasValue ? slot.Value.itemId : -1;
                             ChangeItemInHand(ref state,itemId,entityCommandBuffer,in hands.ValueRO);
                             entityCommandBuffer.DestroyEntity(entity);
+                            UpdateUI(ref state,e,slot);     
                         }
+
                     }
+                    
+
+                    
                     found = true;
                     break;
                 }
@@ -91,7 +103,17 @@ partial struct NewItemInHandSystem : ISystem
         }   
     }
 
-    
+    public void UpdateUI(ref SystemState state, Entity player, InventorySlot? itemSlot)
+    {
+        if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
+        {
+            InventorySlot[] ammo = null;
+            if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(itemSlot.Value.itemId,out var item))
+                ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
+            onNewItemInHand?.Invoke(itemSlot,ammo);
+        }
+    }    
+
 
     public void ChangeItemInHand(ref SystemState state,int itemID, EntityCommandBuffer ecb,in Hands hands)
     {

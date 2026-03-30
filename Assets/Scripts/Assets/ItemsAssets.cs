@@ -324,16 +324,13 @@ public class ItemsAsset : MonoBehaviour
     }
 
     public bool hasLinkedContainer(int itemID,out int capacity, out MandatoryProperties mandatoryProperties, out int mandatoryData)
-    {
+    {        
+        if(TryGetItem(itemID,out Item item))
+            return item.HasContainer(out capacity,out mandatoryProperties,out mandatoryData);
+        
+        capacity = 0;
         mandatoryProperties = MandatoryProperties.none;
         mandatoryData = 0;
-        
-        if(TryGetItem(itemID,out Item item))
-        {
-            capacity = item.ContainerCapacity;
-            return item.HasLinkedContainer;
-        }
-        capacity = 0;
         return false;
     }
 

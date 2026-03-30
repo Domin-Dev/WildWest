@@ -40,7 +40,7 @@ MonoBehaviour:
   gripPoint1: {x: 0.035, y: -0.015}
   gripPoint2: {x: -0.015, y: -0.005}
   timeToReload: 0
-  magazineCapacity: 5
+  magazineCapacity: 0
   bulletCount: 1
   shotSpread: 10
   bulletSpread: 0

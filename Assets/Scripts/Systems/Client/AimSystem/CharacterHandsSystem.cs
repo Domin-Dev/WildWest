@@ -190,15 +190,12 @@ partial struct CharacterHandsSystem : ISystem
 
     private void ChangeItemSprite(ref SystemState state,Entity itemInHand,int spriteID,int itemID)
     {
-        Debug.Log("zmiana");
         if(ItemsAsset.instance.TryGetItem(itemID,out var item))
         {
-            Debug.Log("zmiannnnnnna!! " + spriteID );
             if(spriteID < 0)
                 state.EntityManager.GetComponentObject<SpriteRenderer>(itemInHand).sprite = item.GetWorldSprite;
             else if(item.animSprites.Count > spriteID)
             {
-                Debug.Log("zmiana!!!");
                 state.EntityManager.GetComponentObject<SpriteRenderer>(itemInHand).sprite = item.animSprites[spriteID];    
             } 
         }

@@ -55,6 +55,8 @@ public struct PlayerInput : IInputComponentData
     [GhostField(Quantization = 0)] public InputEvent rightButton;
     [GhostField(Quantization = 0)] public InputEvent leftButton;
     [GhostField(Quantization = 0)] public int slotInHand;
+    [GhostField(Quantization = 0)] public int ammoSelectedIndex;
+
 
     [GhostField(Quantization = 0)] public NetworkTick dataTick;
 

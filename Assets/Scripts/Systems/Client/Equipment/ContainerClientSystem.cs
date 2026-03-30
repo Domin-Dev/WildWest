@@ -1,4 +1,5 @@
 using Unity.Burst;
+
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Collections;
@@ -30,7 +31,9 @@ partial struct ContainerClientSystem : ISystem
         foreach ((RefRO<ContainerComponent> containerComponent,RefRO<GhostOwner> containerOwner, Entity entity) in SystemAPI.Query<RefRO<ContainerComponent>,RefRO<GhostOwner>>().WithNone<ContainerLoaded>().WithEntityAccess())
         {
             if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(entity)) 
+            {
                 NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
+            }
                 
             foreach ((RefRO<Player> player,RefRO<GhostOwner> owner, Entity e) in SystemAPI.Query<RefRO<Player>,RefRO<GhostOwner>>().WithAll<PlayerContainers>().WithEntityAccess())
             {

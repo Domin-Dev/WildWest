@@ -27,10 +27,13 @@ public class Item : ScriptableObject
     public int[] craftTables;
     public int numberItem = 1;
 
-    public virtual bool HasLinkedContainer{ get{ return false;} }
-    public virtual int ContainerCapacity {get {return 0;}}
-
-
+    public virtual bool HasContainer(out int containerCapacity, out MandatoryProperties mandatoryProperties, out int mandatoryData)
+    {
+        containerCapacity = 0;
+        mandatoryData = 0;
+        mandatoryProperties = MandatoryProperties.none;
+        return false;
+    }
     public virtual Sprite GetWorldSprite => icon;
     public virtual ItemStats GetItemStats()
     {

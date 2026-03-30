@@ -21,6 +21,7 @@ MonoBehaviour:
   stackMax: 1
   ID: 35
   icon: {fileID: -2066496519, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  animSprites: []
   tags:
   - tag: {fileID: 0}
   - tag: {fileID: 0}
@@ -44,6 +45,7 @@ MonoBehaviour:
   - {x: 0.055, y: -0.005}
   - {x: 0.005, y: -0.005}
   - {x: 0.005, y: -0.015}
+  handOffset: 0.07
   gripPoint1: {x: -0.044999998, y: -0.024999999}
   gripPoint2: {x: -100, y: -100}
   timeToReload: 0
@@ -51,115 +53,13 @@ MonoBehaviour:
   bulletCount: 1
   shotSpread: 10
   bulletSpread: 0
-  keyFrames:
-  - bodyPartType: 0
-    positionMode: 2
-    rotate:
-      x: 0
-      y: 0
-      z: 0
-    move:
-      x: 0
-      y: 0
-      z: 0
-    duration: 0
-    events:
-    - EventType: 0
-      position:
-        x: 0
-        y: 0
-        z: 0
-      rotation:
-        x: 0
-        y: 0
-        z: 0
-      relativeRotation: 0
-      id: 0
-    - EventType: 2
-      position:
-        x: 0.02
-        y: 0
-        z: 0
-      rotation:
-        x: 0
-        y: 0
-        z: 0
-      relativeRotation: 0
-      id: 0
-    - EventType: 2
-      position:
-        x: 0.05
-        y: 0
-        z: 0
-      rotation:
-        x: 0
-        y: 0
-        z: 0
-      relativeRotation: 1
-      id: 1
-  - bodyPartType: 0
-    positionMode: 0
-    rotate:
-      x: 0
-      y: 0
-      z: 50
-    move:
-      x: -0.06
-      y: 0.01
-      z: 0
-    duration: 0.15
-    events:
-    - EventType: 0
-      position:
-        x: 0
-        y: 0
-        z: 0
-      rotation:
-        x: 0
-        y: 0
-        z: 0
-      relativeRotation: 0
-      id: 1
-  - bodyPartType: 0
-    positionMode: 2
-    rotate:
-      x: 0
-      y: 0
-      z: 0
-    move:
-      x: 0
-      y: 0
-      z: 0
-    duration: 0.4
-    events: []
-  - bodyPartType: 1
-    positionMode: 0
-    rotate:
-      x: 0
-      y: 0
-      z: 30
-    move:
-      x: 0
-      y: 0.02
-      z: 0
-    duration: 0.1
-    events: []
-  - bodyPartType: 1
-    positionMode: 2
-    rotate:
-      x: 0
-      y: 0
-      z: 0
-    move:
-      x: 0
-      y: 0
-      z: 0
-    duration: 0.2
-    events: []
+  ammoTag: {fileID: 11400000, guid: 53036c9d19c7a354ca0219de17fee9b8, type: 2}
+  shotAnim: []
+  reloadAnim: []
   aimPoint:
     x: 0.044999998
     y: 0.005
   reloadPoint:
     x: 0
     y: 0
-  ammoType: 0
+  oldtype: 0

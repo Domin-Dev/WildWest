@@ -32,9 +32,36 @@ public class RangedWeapon : Weapon
     public bool hasMagazine => magazineCapacity > 0;
     public float bulletOffset => bulletSpread / math.max((bulletCount - 1),1);
 
+    public int ammoTagID
+    {
+        get
+        {
+            if(ammoTag != null)
+                return ammoTag.ID;
+            else
+                return -1;
+        }
+    }
 
-    public override bool HasLinkedContainer => hasMagazine;
-    public override int ContainerCapacity => magazineCapacity;
+
+
+
+    public override bool HasContainer(out int containerCapacity, out MandatoryProperties mandatoryProperties, out int mandatoryData)
+    {
+        containerCapacity = magazineCapacity;
+        if(ammoTag != null)
+        {
+            mandatoryProperties = MandatoryProperties.tag;
+            mandatoryData = ammoTag.ID;
+        }
+        else
+        {
+            mandatoryProperties = MandatoryProperties.none;
+            mandatoryData = 0;
+        }
+
+        return hasMagazine;
+    }
     public override ItemStats GetItemStats()
     {
         return new RangedWeaponItem(ID,durability, magazineCapacity);

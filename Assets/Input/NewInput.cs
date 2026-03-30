@@ -264,6 +264,24 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""NextAmmo"",
+                    ""type"": ""Button"",
+                    ""id"": ""55f207dc-0635-4ba9-b417-8fbc9c8efb33"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PreviousAmmo"",
+                    ""type"": ""Button"",
+                    ""id"": ""73a29bcd-956e-4b31-ab04-8e04e486638a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -550,6 +568,28 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""DebugStats"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""169d0305-ca8a-4285-ab7e-66694f873a01"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""NextAmmo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""73e5508d-54f1-4011-8b3b-10938e92cfc1"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PreviousAmmo"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1211,6 +1251,8 @@ namespace UnityEngine.InputSystem
             m_Player_PreviousSlot = m_Player.FindAction("PreviousSlot", throwIfNotFound: true);
             m_Player_NextSlot = m_Player.FindAction("NextSlot", throwIfNotFound: true);
             m_Player_DebugStats = m_Player.FindAction("DebugStats", throwIfNotFound: true);
+            m_Player_NextAmmo = m_Player.FindAction("NextAmmo", throwIfNotFound: true);
+            m_Player_PreviousAmmo = m_Player.FindAction("PreviousAmmo", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1330,6 +1372,8 @@ namespace UnityEngine.InputSystem
         private readonly InputAction m_Player_PreviousSlot;
         private readonly InputAction m_Player_NextSlot;
         private readonly InputAction m_Player_DebugStats;
+        private readonly InputAction m_Player_NextAmmo;
+        private readonly InputAction m_Player_PreviousAmmo;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -1418,6 +1462,14 @@ namespace UnityEngine.InputSystem
             /// </summary>
             public InputAction @DebugStats => m_Wrapper.m_Player_DebugStats;
             /// <summary>
+            /// Provides access to the underlying input action "Player/NextAmmo".
+            /// </summary>
+            public InputAction @NextAmmo => m_Wrapper.m_Player_NextAmmo;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/PreviousAmmo".
+            /// </summary>
+            public InputAction @PreviousAmmo => m_Wrapper.m_Player_PreviousAmmo;
+            /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
             public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1500,6 +1552,12 @@ namespace UnityEngine.InputSystem
                 @DebugStats.started += instance.OnDebugStats;
                 @DebugStats.performed += instance.OnDebugStats;
                 @DebugStats.canceled += instance.OnDebugStats;
+                @NextAmmo.started += instance.OnNextAmmo;
+                @NextAmmo.performed += instance.OnNextAmmo;
+                @NextAmmo.canceled += instance.OnNextAmmo;
+                @PreviousAmmo.started += instance.OnPreviousAmmo;
+                @PreviousAmmo.performed += instance.OnPreviousAmmo;
+                @PreviousAmmo.canceled += instance.OnPreviousAmmo;
             }
 
             /// <summary>
@@ -1568,6 +1626,12 @@ namespace UnityEngine.InputSystem
                 @DebugStats.started -= instance.OnDebugStats;
                 @DebugStats.performed -= instance.OnDebugStats;
                 @DebugStats.canceled -= instance.OnDebugStats;
+                @NextAmmo.started -= instance.OnNextAmmo;
+                @NextAmmo.performed -= instance.OnNextAmmo;
+                @NextAmmo.canceled -= instance.OnNextAmmo;
+                @PreviousAmmo.started -= instance.OnPreviousAmmo;
+                @PreviousAmmo.performed -= instance.OnPreviousAmmo;
+                @PreviousAmmo.canceled -= instance.OnPreviousAmmo;
             }
 
             /// <summary>
@@ -2130,6 +2194,20 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnDebugStats(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "NextAmmo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnNextAmmo(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "PreviousAmmo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPreviousAmmo(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

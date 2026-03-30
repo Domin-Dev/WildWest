@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48ec4ba6633d2ab4684d21d70b3bdcf3, type: 3}
+  m_Name: Ammo 4
+  m_EditorClassIdentifier: 
+  name: Arrow
+  description: 
+  stackMax: 50
+  ID: 140
+  icon: {fileID: -1051393079, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  animSprites: []
+  tags:
+  - tag: {fileID: 11400000, guid: bbea7d2ee9395dcd0bd0575d90362450, type: 2}
+  crafingIngredients:
+  - itemID: 0
+    number: 0
+  craftTables: ffffffff
+  numberItem: 1
+  bullet: {fileID: 907356828559875784, guid: 39d35432007d90f40b15bf375f8b9449, type: 3}
+  UIBulletIcon: {fileID: 950248845, guid: 6f6089b46f69a5d4d99bc7c3bcd304d1, type: 3}
+  inHandSprite: {fileID: 21300000, guid: 96ed2977599248c4e87cbb7ba33b850b, type: 3}
+  damage: 10
+  type: 0

@@ -324,6 +324,7 @@ MonoBehaviour:
     m_LocalVariables: []
   itemInHand_ContainerIndex: 20001
   hotBar_ContainerIndex: 0
+  start_ContainerIndex: 1000000
   references:
     version: 2
     RefIds: []

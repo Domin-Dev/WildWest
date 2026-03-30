@@ -1,5 +1,6 @@
 using System;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
@@ -35,6 +36,10 @@ public struct InventorySlot : IBufferElementData, IGetSlot
         wetness = math.clamp(newValue + wetness, 0.0f, 100.0f);
     }
 
+    public void AddQuantity(int value)
+    {
+        quantity += value;
+    }
     public void SetSlot(int slot)
     {
         this.slot = slot;
