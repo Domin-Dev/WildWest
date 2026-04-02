@@ -36,10 +36,21 @@ partial struct EquipmentClientSystem : ISystem
     private NativeQueue<EqiupmentEventClient> slotsToUpdate;
     private NetworkTick lastProcessedServerTick;
 
+
+
+    private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<ItemBarData> barsLookup;
+    private BufferLookup<PlayerContainers> containersLookup;
+
+
     public void OnCreate(ref SystemState state)
     {
         slotsToUpdate = new NativeQueue<EqiupmentEventClient>(Allocator.Persistent);
         lastProcessedServerTick = NetworkTick.Invalid;
+
+        slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
+        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
     }
 
     public void OnDestroy(ref SystemState state)
@@ -53,6 +64,7 @@ partial struct EquipmentClientSystem : ISystem
         if (lastProcessedServerTick.IsValid && serverTick.IsValid &&  !serverTick.IsNewerThan(lastProcessedServerTick))
             return;
         lastProcessedServerTick = serverTick;
+        
 
         slotsToUpdate.Clear();
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -77,6 +89,25 @@ partial struct EquipmentClientSystem : ISystem
             NewEquipmentManager.instance.NewEvents(managedArray,ref entityCommandBuffer);
         }
         
+        if(NewEquipmentManager.instance.needUpdateAmmoUI)
+        {       
+            Debug.Log("update UI");
+            slotsLookup.Update(ref state);
+            barsLookup.Update(ref state);
+            containersLookup.Update(ref state);
+
+            foreach( (var input,Entity player) in  SystemAPI.Query<RefRO<PlayerInput>>().WithAll<Player,GhostOwnerIsLocal>().WithEntityAccess())
+            {
+
+                if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                {                         
+                    EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
+                    NewItemInHandSystem.UpdateUI(ref state,player,slot,slotsLookup,containersLookup);
+                }  
+            }
+            NewEquipmentManager.instance.needUpdateAmmoUI = false;
+        }
+
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }

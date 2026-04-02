@@ -105,6 +105,8 @@ using UnityEngine;
                                 if(!ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var weapon))
                                     break;
 
+
+                                int ammoID = -1;
                                 if(weapon.hasMagazine)
                                 {
                                    Debug.Log("z"); 
@@ -114,20 +116,18 @@ using UnityEngine;
                                     var slots = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,entity,weapon.ammoTagID,out var aggregated,out int counter);
                                     
                                     if(counter == 0) break;
+                                    ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
                                     if(state.World.IsServer())
-                                    {
-                                      //  int ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
-                                       Debug.Log("ammo ID to ->" +  aggregated[0].itemId + "pl " + playerAspect.playerInputSync.ValueRO.ammoSelectedIndex);
-                                     //   for(int k = 0; k < slots.Length; i++)
-                                    //    {
-                                           // if(slots[k].itemID == ammoID)
-                                            // {
-                                            
-                                            //     var events = EQHelper.SubtractItem(ref state,slotsLookup,containersLookup,slots[k].data.pos,entity);
-                                            //     EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId, events);
-                                            //     break;
-                                            // }
-                                     //   }
+                                    {                                     
+                                        for(int k = 0; k < slots.Length; k++)
+                                        {
+                                            if(slots[k].itemID == ammoID)
+                                            {
+                                                var events = EQHelper.SubtractItem(ref state,slotsLookup,containersLookup,slots[k].transferData.pos,entity);
+                                                EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId, events);
+                                                break;
+                                            }
+                                        }
                                     }
 
                                     Debug.Log("Ammo => " + counter);
@@ -195,8 +195,10 @@ using UnityEngine;
                                     RPCHelper.SendEventsToClients<PlayerActionRPC>(rpc,
                                     ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                                 } 
-                                else      
-                                    EntityHelper.CreateEntityWithComponent(entityCommandBuffer,rpc);                      
+                                else   
+                                {   
+                                    EntityHelper.CreateEntityWithComponent(entityCommandBuffer,rpc); 
+                                }                   
                             }
                         }
                     }

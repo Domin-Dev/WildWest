@@ -23,6 +23,17 @@ public class Container : IHaveTooltip
 
     public int mandatoryData;
 
+
+    public bool TryGetItemStats(int slotIndex,out ItemStats item)
+    {
+        if(itemSlots.Length > slotIndex)
+        {
+            item = itemSlots[slotIndex];
+            return item != null;
+        }
+        item = null;
+        return false;
+    }
     public TooltipInfo GetTooltip()
     { 
         StringBuilder header = new StringBuilder();
@@ -70,6 +81,12 @@ public class NewEquipmentManager : MonoBehaviour
     private ItemStats selectedItem;
     private SlotPosition selectedSlot;
     private int currentSlotInHand;
+    
+    
+    private int ammoTag;
+    public bool needUpdateAmmoUI;
+
+
 
     #endregion
 
@@ -114,6 +131,14 @@ public class NewEquipmentManager : MonoBehaviour
         PlayerInputSystem.onNewSlotInHand -= NewSlotInHand;
     }
     #endregion
+
+
+
+
+    public void SetAmmoTag(int ammoTag)
+    {
+        this.ammoTag = ammoTag;
+    }
 
     #region Item In Hand Managment
 
@@ -432,20 +457,26 @@ public class NewEquipmentManager : MonoBehaviour
         else
             return new ItemStats(slot);
     }
+   
+   
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
+            if(container.TryGetItemStats(slotPosition.slotIndex,out var lastItem))
+                CheckAmmoTag(lastItem);
+
+
             if (!selectedSlot.Compare(SlotPosition.NullSlot) && slotPosition.Compare(selectedSlot))
             {
-                ItemStats item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
+                var item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
                     EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
                 selectedItem = item;
                 DragManager.instance.UpdateSelected(item);
             }
             else
             {
-                ItemStats item = LoadSelectedItemFromEntities(slotPosition.containerIndex);
+                var item = LoadSelectedItemFromEntities(slotPosition.containerIndex);
                 if (item != null)
                 {
                     selectedItem = item;
@@ -456,14 +487,66 @@ public class NewEquipmentManager : MonoBehaviour
             
             ItemStats itemSlot = LoadItemFromEntities(slotPosition);
             UIManager.instance.UpdateItemSlot(container, itemSlot, slotPosition.slotIndex);
-
+            CheckAmmoTag(itemSlot);
 
             if(TooltipSystem.IsSelected(slotPosition))
             {
-                TooltipSystem.Show(slotPosition, itemSlot,true);
+                TooltipSystem.Show(slotPosition,itemSlot,true);
             }
         }
     }
+
+    // public void UpdateSlotIndex(SlotPosition slotPosition)
+    // {
+    //     if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
+    //     {
+    //         ItemStats item = null;
+    //         if(container.TryGetItemStats(slotPosition.slotIndex,out ItemStats lastItem))   
+
+    //         if (!selectedSlot.Compare(SlotPosition.NullSlot) && slotPosition.Compare(selectedSlot))
+    //         {
+    //             item = LoadItemFromEntities(new SlotPosition(selectedSlot.containerIndex,
+    //                 EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(selectedSlot.slotIndex)));
+    //             selectedItem = item;
+    //             DragManager.instance.UpdateSelected(item);
+    //         }
+    //         else
+    //         {
+    //             item = LoadSelectedItemFromEntities(slotPosition.containerIndex);
+    //             if (item != null)
+    //             {
+    //                 selectedItem = item;
+    //                 selectedSlot = slotPosition;
+    //                 DragManager.instance.UpdateSelected(item);
+    //             }
+    //         }
+
+            
+    //         // ItemStats itemSlot = LoadItemFromEntities(slotPosition);
+            
+
+
+    //         if(TooltipSystem.IsSelected(slotPosition))
+    //         {
+
+    //             TooltipSystem.Show(slotPosition, item,true);
+    //         }
+    //     }
+    // }
+
+    public void CheckAmmoTag(int itemID)
+    {
+        Debug.Log("spawdzanie!!!  "+ ammoTag + " "  + needUpdateAmmoUI + " " +  ItemsAsset.instance.ItemHasTheTag(itemID,ammoTag));
+        if(!needUpdateAmmoUI && ItemsAsset.instance.ItemHasTheTag(itemID,ammoTag))
+            needUpdateAmmoUI = true;
+    }
+
+    public void CheckAmmoTag(ItemStats item)
+    {
+        if(item != null)
+            CheckAmmoTag(item.itemID);
+    }
+
     public void ClearContainer(int index, ref EntityCommandBuffer ecb)
     {
         if (containers.TryGetValue(index,out Container container))
@@ -473,6 +556,7 @@ public class NewEquipmentManager : MonoBehaviour
                 var item = container.itemSlots[i];
                 if (item != null)
                 {
+                    CheckAmmoTag(item);
                     container.itemSlots[i] = null;
                     UIManager.instance.UpdateItemSlot(container, null, i);
                 }
@@ -520,8 +604,6 @@ public class NewEquipmentManager : MonoBehaviour
                     DragManager.instance.UpdateSelected(selectedItem);
                 }
             }
-
-            
         }
         if (TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
             TooltipSystem.Show(slotPosition.Value, GetItemStats(slotPosition.Value),true);

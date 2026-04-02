@@ -115,11 +115,8 @@ public class InputManager : MonoBehaviour
 
     public int GetNextAmmoIndex(int currentIndex)
     {
-        if(previousAmmo.triggered)
-            return (currentIndex - 1 + 10) % 10;
-
         if(nextAmmo.triggered)
-            return (currentIndex + 1) % 10;   
+            return (currentIndex + 1) % int.MaxValue;   
 
         return currentIndex;
     }

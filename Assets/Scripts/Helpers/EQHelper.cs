@@ -28,6 +28,18 @@ public struct EQTransferData
     }
 }
 
+public struct SlotData
+{
+    public EQTransferData transferData;
+    public int itemID;
+
+    public SlotData(EQTransferData transferData, int itemID)
+    {
+        this.transferData = transferData;
+        this.itemID = itemID;
+    }
+}
+
 
 public static class EQHelper
 {
@@ -785,12 +797,12 @@ public static class EQHelper
         }
         return foundSlots.OrderBy(kv => kv.Key).Select(x => x.Value).ToArray();
     }
-    public static (EQTransferData data,int itemID)[] TryFindItemWithTag(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers> containers, Entity player,int tagID,out InventorySlot[] aggregated, out int counter)
+    public static SlotData[] TryFindItemWithTag(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers> containers, Entity player,int tagID,out InventorySlot[] aggregated, out int counter)
     {
         var playerContainers = containers[player];
 
         counter = 0;
-        List<(EQTransferData data,int itemID)> foundSlots = new List<(EQTransferData data,int itemID)>();
+        List<SlotData> foundSlots = new List<SlotData>();
         Dictionary<int,InventorySlot> aggregator = new Dictionary<int,InventorySlot>();
 
         
@@ -812,7 +824,8 @@ public static class EQHelper
                     if (AllItemsHaveTheTag || ItemsAsset.instance.ItemHasTheTag(slot.itemId,tagID))
                     {
                         counter += slot.quantity;
-                        foundSlots.Add(new (new EQTransferData(new SlotPosition(containerComponent.containerIndex,slot.slot),slot.quantity,true),slot.itemId));
+                        
+                        foundSlots.Add(new SlotData(new EQTransferData(new SlotPosition(containerComponent.containerIndex,slot.slot),slot.quantity,true),slot.itemId));
                         
                         if(aggregator.ContainsKey(slot.itemId))
                         {
@@ -828,16 +841,11 @@ public static class EQHelper
             }
         }
         foundSlots = foundSlots
-            .OrderBy(x => x.data.pos.containerIndex)
-            .ThenBy(x => x.data.pos.slotIndex)
+            .OrderBy(x => x.transferData.pos.containerIndex)
+            .ThenBy(x => x.transferData.pos.slotIndex)
             .ToList();     
 
-
-
-        Debug.Log("wynik grupowania to "  + aggregator.Count);
         aggregated = aggregator.OrderBy(kv => kv.Key).Select(x => x.Value).ToArray();  
-
-    //    aggregated = null;
 
         return foundSlots.ToArray(); 
     }

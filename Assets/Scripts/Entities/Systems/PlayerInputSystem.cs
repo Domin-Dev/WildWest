@@ -120,6 +120,7 @@ partial struct PlayerInputSystem : ISystem
             if(playerInput.ValueRO.ammoSelectedIndex != newAmmoIndex)
             {
                 playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                UIManager.instance.UpdateSelectedAmmo(newAmmoIndex);
             } 
         } 
         ecb.Playback(state.EntityManager);

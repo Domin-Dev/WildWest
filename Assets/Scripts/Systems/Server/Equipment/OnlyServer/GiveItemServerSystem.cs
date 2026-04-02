@@ -22,7 +22,7 @@ partial struct GiveItemServerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
-        state.RequireForUpdate<ContainerSettings>();
+
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAny<EQGiveItem>();
 
@@ -43,7 +43,6 @@ partial struct GiveItemServerSystem : ISystem
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-        ContainerSettings containerSettings = SystemAPI.GetSingleton<ContainerSettings>();
 
         
         foreach ((RefRO<EQGiveItem> command, Entity entity) in

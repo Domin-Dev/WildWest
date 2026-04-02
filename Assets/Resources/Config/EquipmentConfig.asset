@@ -43,7 +43,7 @@ MonoBehaviour:
       containerIndex: 1
       mandatoryProperties: 0
       mandatoryData: 0
-      capacity: 20
+      capacity: 10
       waterResistance: 0
     _containerName:
       m_TableReference:
@@ -67,8 +67,8 @@ MonoBehaviour:
       serverContainer: 0
       containerIndex: 2
       mandatoryProperties: 1
-      mandatoryData: 0
-      capacity: 20
+      mandatoryData: 11
+      capacity: 10
       waterResistance: 0
     _containerName:
       m_TableReference:

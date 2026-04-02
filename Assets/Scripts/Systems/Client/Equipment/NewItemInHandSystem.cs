@@ -18,7 +18,15 @@ partial struct NewItemInHandSystem : ISystem
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> containersLookup;
 
-    public static event Action<InventorySlot?,InventorySlot[]> onNewItemInHand;
+
+    private ComponentLookup<LocalTransform> transformLookup;
+    private ComponentLookup<AnimationComponent> animationLookup;
+    private BufferLookup<AnimationFrames> framesLookup;
+    private BufferLookup<AnimationEvents> eventsLookup;
+
+
+
+    public static event Action<InventorySlot?,InventorySlot[],int> onNewItemInHand;
 
 
     [BurstCompile]
@@ -32,6 +40,12 @@ partial struct NewItemInHandSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
         containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+
+
+        transformLookup = SystemAPI.GetComponentLookup<LocalTransform>();
+        animationLookup = SystemAPI.GetComponentLookup<AnimationComponent>();
+        framesLookup = SystemAPI.GetBufferLookup<AnimationFrames>();
+        eventsLookup = SystemAPI.GetBufferLookup<AnimationEvents>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -39,6 +53,12 @@ partial struct NewItemInHandSystem : ISystem
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
+
+        transformLookup.Update(ref state);
+        animationLookup.Update(ref state);
+        framesLookup.Update(ref state);
+        eventsLookup.Update(ref state);
+
         
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
@@ -49,7 +69,6 @@ partial struct NewItemInHandSystem : ISystem
         {     
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
-
 
             foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity e) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
@@ -64,9 +83,12 @@ partial struct NewItemInHandSystem : ISystem
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                                 int itemId = slot.HasValue ? slot.Value.itemId : -1;
                                 ChangeItemInHand(ref state,itemId,entityCommandBuffer,in hands.ValueRO);
+                                UpdateUI(ref state,e,slot,slotsLookup,containersLookup);
                                 entityCommandBuffer.DestroyEntity(entity);
-                                UpdateUI(ref state,e,slot);
-
+                                if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item))
+                                {
+                                    CharacterHandsSystem.StartAnimation(ref state,item,hands.ValueRO,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                                }
                             }
                         }
                         SystemAPI.GetComponent<ReceiveRpcCommandRequest>(entity).Consume();
@@ -79,7 +101,11 @@ partial struct NewItemInHandSystem : ISystem
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;
                             ChangeItemInHand(ref state,itemId,entityCommandBuffer,in hands.ValueRO);
                             entityCommandBuffer.DestroyEntity(entity);
-                            UpdateUI(ref state,e,slot);     
+                            UpdateUI(ref state,e,slot,slotsLookup,containersLookup);    
+                            if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item))
+                            {
+                                CharacterHandsSystem.StartAnimation(ref state,item,hands.ValueRO,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                            } 
                         }
 
                     }
@@ -103,14 +129,31 @@ partial struct NewItemInHandSystem : ISystem
         }   
     }
 
-    public void UpdateUI(ref SystemState state, Entity player, InventorySlot? itemSlot)
+    public static void UpdateItemInHands()
     {
-        if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
+        
+    }
+
+    public static void UpdateUI(ref SystemState state, Entity player, InventorySlot? itemSlot, BufferLookup<InventorySlot> slotsLookup,BufferLookup<PlayerContainers> containersLookup)
+    {
+        if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
         {
             InventorySlot[] ammo = null;
+            int selectedAmmo = -1;
+
             if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(itemSlot.Value.itemId,out var item))
+            {
                 ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
-            onNewItemInHand?.Invoke(itemSlot,ammo);
+                if(ammo.Length > 0)
+                    selectedAmmo = state.EntityManager.GetComponentData<PlayerInput>(player).ammoSelectedIndex % ammo.Length;
+                
+                NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID);
+            }
+            else
+            {
+                NewEquipmentManager.instance.SetAmmoTag(-1);
+            }            
+            onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo);    
         }
     }    
 

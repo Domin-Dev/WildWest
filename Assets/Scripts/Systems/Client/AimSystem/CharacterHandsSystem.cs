@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -64,34 +65,15 @@ partial struct CharacterHandsSystem : ISystem
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {      
-            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player>().WithEntityAccess())
+            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel,EnabledRefRO<GhostOwnerIsLocal> owner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>,EnabledRefRO<GhostOwnerIsLocal>>().WithAll<Player>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
-                    ClearAnimationComponent(hands.ValueRO.GetBodyPart(BodyPartType.MainHand));
-                    ClearAnimationComponent(hands.ValueRO.GetBodyPart(BodyPartType.SideHand));
-              
-                    
-                    int index = 0;
-                    foreach(var frame in item.shotAnim)
-                    {
-                        var part = hands.ValueRO.GetBodyPart(frame.BodyPartType);
-                        if(frame.BodyPartType == BodyPartType.SideHand && item.twoHanded)
-                            animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.ValueRO.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.03f,0);
-                        
-                        animationLookup.GetRefRW(part).ValueRW.itemID = action.ValueRO.itemID;
-                        framesLookup[part].Add(frame.GetAnimationFrame(index));
-                        foreach (var eventFrame in frame.Events)
-                            eventsLookup[part].Add(eventFrame.GetEvent(index));
-                        
-                        SystemAPI.SetComponentEnabled<AnimationIsPaused>(part,false);
-                        index++;
-                    }
+                    StartAnimation(ref state,item,hands.ValueRO,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
                 }
                 break;
             }
-            
             entityCommandBuffer.DestroyEntity(rpc);
         }
        
@@ -219,7 +201,7 @@ partial struct CharacterHandsSystem : ISystem
             target = target,
         });
     }
-    private void ClearAnimationComponent(Entity entity)
+    public static void ClearAnimationComponent(Entity entity,ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup)
     {
         var animation = animationLookup.GetRefRW(entity);
         var position = transformLookup.GetRefRW(entity);
@@ -238,6 +220,38 @@ partial struct CharacterHandsSystem : ISystem
             animation.ValueRW.hasStartPosition = false;
         }
     }
+
+    public static void StartAnimation(ref SystemState state,RangedWeapon item,Hands hands, List<KeyFrame> frames,
+    ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup)
+    {
+        ClearAnimationComponent(hands.GetBodyPart(BodyPartType.MainHand),animationLookup,transformLookup,framesLookup,eventsLookup);
+        ClearAnimationComponent(hands.GetBodyPart(BodyPartType.SideHand),animationLookup,transformLookup,framesLookup,eventsLookup);
+                    
+        int index = 0;
+        foreach(var frame in frames)
+        {
+            var part = hands.GetBodyPart(frame.BodyPartType);
+            if(frame.BodyPartType == BodyPartType.SideHand && item.twoHanded)
+                animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.03f,0);
+            
+            animationLookup.GetRefRW(part).ValueRW.itemID = item.ID;
+
+            animationLookup.GetRefRW(part).ValueRW.itemID = item.ID;
+            framesLookup[part].Add(frame.GetAnimationFrame(index));
+            foreach (var eventFrame in frame.Events)
+                eventsLookup[part].Add(eventFrame.GetEvent(index));
+            
+            state.EntityManager.SetComponentEnabled<AnimationIsPaused>(part,false);
+            index++;
+        }
+    }
+
+
+
+
+
+
+
     private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime = 0.05f)
     {
         quaternion mainTargetRotation;
