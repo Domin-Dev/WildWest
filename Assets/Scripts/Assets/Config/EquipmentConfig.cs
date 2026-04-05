@@ -16,6 +16,8 @@ public class EquipmentConfig
     public static LocalizedString defaultContainerName {private set;get;}
     public IReadOnlyDictionary<int, ContainerData> Containers => containers;
     public readonly static int itemInHand_ContainerIndex;
+    public static SlotPosition itemInHand_SlotPosition => new SlotPosition(itemInHand_ContainerIndex,0);
+
     public readonly static int hotBar_ContainerIndex;
     public readonly static int start_ContainerIndex;
 

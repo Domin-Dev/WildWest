@@ -46,10 +46,45 @@ partial struct VariableSynchronizationServerSystem : ISystem
             {
                 playerInputSync.ValueRW.slotInHand = NewSlotInHand;
                 var from = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand);
-                var to = new SlotPosition(EquipmentConfig.itemInHand_ContainerIndex,0);
-                EQHelper.Clone(ecb,from,to,barsLookup,slotsLookup,containersLookup,entity);
-                RPCHelper.SendEventsToClients<NewItemInHandRPC>(ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,ghostChunk.ValueRO.GetChunk(),tick);
+                var to = EquipmentConfig.itemInHand_SlotPosition;
+                EQHelper.Clone(ecb,from,to,barsLookup,slotsLookup,containersLookup,entity,out var newSlot,out var newBarData);
+                RPCHelper.SendEventsToClients<NewItemInHandRPC>(ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,ghostChunk.ValueRO.GetChunk(),tick);     
+                if(newSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(newSlot.Value.itemId,out var item))
+                {
+                    var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,entity,item.ammoTagID,out int counter);
+                    if(ammo.Length > 0)
+                    {
+                        var selectedAmmo = playerInput.ValueRO.ammoSelectedIndex % ammo.Length;
+                        var ammoID = ammo[selectedAmmo].itemId;
+                        playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
+                        playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
+                        RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  newSlot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,ghostChunk.ValueRO.GetChunk(),tick);
+                    }
+                }
             }
+            
+            int newAmmoIndex = playerInput.ValueRO.ammoSelectedIndex;
+            if(newAmmoIndex != playerInputSync.ValueRO.ammoSelectedIndex)
+            {
+                playerInputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,entity,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex);
+                if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
+                {
+                    var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,entity,item.ammoTagID,out int counter);
+                    if(ammo.Length > 0)
+                    {
+                        var selectedAmmo = playerInput.ValueRO.ammoSelectedIndex % ammo.Length;
+                        var ammoID = ammo[selectedAmmo].itemId;
+                        if(playerInputSync.ValueRW.ammoSelectedItemID != ammoID)
+                        {
+                            playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
+                            playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
+                            RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,ghostChunk.ValueRO.GetChunk(),tick);
+                        }
+                    }
+                }
+            }
+
       }
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

@@ -65,16 +65,16 @@ partial struct EventsServerSystem : ISystem
                 counter.ValueRW.index++;
                 ClearBuffer(events, clientCounter.ValueRO.index);
                 ecb.SetComponentEnabled<ToSave>(entity,true);
+                
                 if(equipmentEvent.containerIndex == EquipmentConfig.hotBar_ContainerIndex)
                 {
                     var input = SystemAPI.GetComponentRO<PlayerInputSync>(playerContainer.ValueRO.player);
                     if(input.ValueRO.slotInHand == equipmentEvent.slotPosition.slotIndex)
                     {
-                        Debug.Log("<Color=cyan> dziala update!!!");
                         var playerChunk = SystemAPI.GetComponentRO<GhostChunk>(playerContainer.ValueRO.player);
                         var to = new SlotPosition(EquipmentConfig.itemInHand_ContainerIndex,0);
                         
-                        EQHelper.Clone(ecb,equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.player);
+                        EQHelper.Clone(ecb,equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.player,out var newSlot,out var newBarData);
                         RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerChunk.ValueRO.GetChunk(),tick);
                     }
                 }

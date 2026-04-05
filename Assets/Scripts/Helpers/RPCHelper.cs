@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
@@ -34,6 +34,14 @@ public static class RPCHelper
         em.AddComponentData(rpcEntity, rpcCommand);
         em.AddComponentData(rpcEntity, new SendRpcCommandRequest());
     }
+    public static void SendRpc<T>(EntityManager em,Entity connectionEntity, in T rpcCommand) where T : unmanaged, IRpcCommand
+    {
+        Entity rpcEntity = em.CreateEntity();
+        em.AddComponentData(rpcEntity, rpcCommand);
+        em.AddComponentData(rpcEntity, new SendRpcCommandRequest { TargetConnection = connectionEntity });
+    }
+
+
     public static void SendRpc<T>(ref EntityCommandBuffer ecb)
       where T : unmanaged, IRpcCommand
     {

@@ -64,7 +64,7 @@ partial struct NewPlayerSystem : ISystem
                 {
                     SetName(ref children, ref state, string.Empty);
                     state.EntityManager.GetComponentObject<SpriteRenderer>(character.head).enabled = false;
-                    state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInHand).enabled = false;
+                    state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand).enabled = false;
                     state.EntityManager.GetComponentObject<SpriteRenderer>(hands.mainhand).enabled = false;
                     state.EntityManager.GetComponentObject<SpriteRenderer>(hands.sidehand).enabled = false;
 
@@ -164,7 +164,7 @@ partial struct NewPlayerSystem : ISystem
             else if (SystemAPI.HasComponent<MainHand>(child.Value))
             {
                 hands.main = child.Value;
-                hands.itemInHand = GetChild<ItemPointTag>(child.Value, 4, ref state);
+                hands.itemInMainHand = GetChild<ItemPointTag>(child.Value, 4, ref state);
                 hands.mainhand = GetChild(child.Value, 1,ref state);
 
                 hands.aimPoint = GetChild<AimPointTag>(child.Value, 4, ref state);
@@ -175,6 +175,7 @@ partial struct NewPlayerSystem : ISystem
             {
                 hands.side = child.Value;
                 hands.sidehand = GetChild(child.Value, 1,ref state);
+                hands.itemInSideHand = GetChild(child.Value, 2,ref state);
             }
         }
     }

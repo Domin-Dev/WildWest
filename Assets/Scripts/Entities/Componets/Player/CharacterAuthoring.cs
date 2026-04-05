@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using Unity.Collections;
 using Unity.Entities;
@@ -47,6 +48,7 @@ public class CharacterAuthoring : MonoBehaviour
 
 
 
+
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct PlayerInput : IInputComponentData
 {
@@ -74,7 +76,10 @@ public struct PlayerInputSync : IComponentData
     
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;
+
     public int slotInHand; 
+    public int ammoSelectedIndex;
+    public int ammoSelectedItemID;
 }
 
 

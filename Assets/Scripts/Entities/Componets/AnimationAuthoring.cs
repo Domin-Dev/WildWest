@@ -66,6 +66,7 @@ public struct AnimationComponent : IComponentData
 public struct AnimationEvents : IBufferElementData
 {
     public EventType eventType;
+    public IndexType indexType;
     public int id;
     public int frameIndex;
 
@@ -85,13 +86,12 @@ public struct AnimationFrames : IBufferElementData
     public float duration;
     public float3 targetPosition;
     public quaternion targetRotation;
+    public Entity targetEntity;
 
-
-
-    public void Process(AnimationComponent animationComponent, LocalTransform  localTransform)
+    public void Process(AnimationComponent animationComponent,Hands hands,LocalTransform  localTransform)
     {
         processed = true;
-
+        targetEntity = Entity.Null;
 
         switch(positionMode)
         {
@@ -101,7 +101,7 @@ public struct AnimationFrames : IBufferElementData
                 break;
             case PositionMode.SetLocal:
                 targetRotation = math.normalize(targetRotation);
-                targetPosition = targetPosition + animationComponent.characterCenterPosition;
+                targetEntity = hands.main;
                 break;
             case PositionMode.MoveRelativeToStart:
                 targetRotation = math.normalize(math.mul(targetRotation, animationComponent.startRotation));
@@ -110,4 +110,35 @@ public struct AnimationFrames : IBufferElementData
         }
 
     }                   
+
+
+    public void GetTargetValues(ref SystemState state,Entity animatingObjects ,out float3 targetPos,out quaternion targetRot)
+    {
+        if(targetEntity == Entity.Null)
+        {
+            targetPos = targetPosition;
+            targetRot = targetRotation;
+        }
+        else
+        {
+            LocalToWorld targetLocalToWorld = state.EntityManager.GetComponentData<LocalToWorld>(targetEntity);
+            float3 targetWorldPos = targetLocalToWorld.Position + targetPosition;
+            
+            if (state.EntityManager.HasComponent<Parent>(animatingObjects))
+            {
+                var parent = state.EntityManager.GetComponentData<Parent>(animatingObjects).Value;
+                float4x4 parentWorldToLocal = math.inverse(
+                    state.EntityManager.GetComponentData<LocalToWorld>(parent).Value
+                );   
+                float3 localPos = math.transform(parentWorldToLocal, targetWorldPos);
+                localPos.z = targetPosition.z;
+                targetPos = localPos;
+            }
+            else
+                targetPos = targetWorldPos;
+
+            targetRot = targetRotation;
+        }
+    } 
+
 }

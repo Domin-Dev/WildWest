@@ -15,6 +15,8 @@ public class Item : ScriptableObject
 
     [Header("Item graphic")]
     public Sprite icon;
+    public Sprite worldSprite;
+    
     public List<Sprite> animSprites;
 
     [Header("Item Tags")]
@@ -34,7 +36,16 @@ public class Item : ScriptableObject
         mandatoryProperties = MandatoryProperties.none;
         return false;
     }
-    public virtual Sprite GetWorldSprite => icon;
+    public virtual Sprite GetWorldSprite 
+    {
+        get
+        {
+            if(worldSprite == null)
+                return icon;
+            else 
+                return worldSprite;
+        }
+    }
     public virtual ItemStats GetItemStats()
     {
         return new ItemStats(ID);

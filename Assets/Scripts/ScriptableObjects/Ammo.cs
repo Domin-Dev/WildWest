@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public enum AmmoType
@@ -17,5 +15,4 @@ public class Ammo : Item
     public Sprite inHandSprite;
     public int damage;
     public AmmoType type;
-  
 }

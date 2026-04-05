@@ -952,25 +952,28 @@ public static class EQHelper
     }
 
 
-    public static void Clone(EntityCommandBuffer ecb,SlotPosition from, SlotPosition to,BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containersLookup, Entity player)
+    public static void Clone(EntityCommandBuffer ecb,SlotPosition from, SlotPosition to,BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containersLookup, Entity player, out InventorySlot? newSlot, out ItemBarData? newBarData)
     {
         var containerFrom = GetPlayerContainer(containersLookup,player,from);
         var containerTo = GetPlayerContainer(containersLookup,player,to);
 
-
-        Debug.Log("dziala  " + containerFrom.HasValue + " " + containerTo.HasValue);
         if(containerFrom.HasValue && containerTo.HasValue)
         {
-            Clone<InventorySlot>(ecb,slotsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity); 
-            Clone<ItemBarData>(ecb,barsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity); 
+            Clone<InventorySlot>(ecb,slotsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity, out newSlot); 
+            Clone<ItemBarData>(ecb,barsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity, out newBarData); 
+        }
+        else
+        {
+            newSlot = null;
+            newBarData = null;   
         }
     }
-    private static void Clone<T>(EntityCommandBuffer ecb,BufferLookup<T> lookup, SlotPosition from, SlotPosition to, Entity containerFrom, Entity containerTo) where T : unmanaged,IBufferElementData,IGetSlot
+    private static void Clone<T>(EntityCommandBuffer ecb,BufferLookup<T> lookup, SlotPosition from, SlotPosition to, Entity containerFrom, Entity containerTo, out T? newValue) where T : unmanaged,IBufferElementData,IGetSlot
     {
         bool hasFrom = TryGetBufferIndex(lookup,from.slotIndex,containerFrom,out var itemFrom,out int bufferFrom);
         bool hasTo = TryGetBufferIndex(lookup,to.slotIndex,containerTo,out var itemTo,out int bufferTo);
-
-        Debug.Log("dzialakakakako "  + itemFrom + "  " + itemTo);
+        newValue = null;
+       
         if(hasFrom)
         {
             var slot = lookup[containerFrom][bufferFrom];
@@ -982,8 +985,11 @@ public static class EQHelper
             }
             else
                 ecb.AppendToBuffer(containerTo,slot);  
+            newValue = slot;
         }
         else if(hasTo)
-            lookup[containerTo].RemoveAtSwapBack(bufferTo);         
+        {
+            lookup[containerTo].RemoveAtSwapBack(bufferTo);   
+        } 
     }
 }

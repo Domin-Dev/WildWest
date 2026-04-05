@@ -63,22 +63,8 @@ partial struct CharacterHandsSystem : ISystem
         state.CompleteDependency();
         visualEffects = SystemAPI.GetSingletonBuffer<VisualEffectsBuffer>(true);
 
-        foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
-        {      
-            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel,EnabledRefRO<GhostOwnerIsLocal> owner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>,EnabledRefRO<GhostOwnerIsLocal>>().WithAll<Player>().WithEntityAccess())
-            {
-                if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
-                if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
-                {
-                    StartAnimation(ref state,item,hands.ValueRO,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
-                }
-                break;
-            }
-            entityCommandBuffer.DestroyEntity(rpc);
-        }
-       
-        foreach ((RefRW<LocalTransform> position , DynamicBuffer<AnimationFrames> frames, DynamicBuffer<AnimationEvents> animationEvents, RefRW<AnimationComponent> animation, EnabledRefRW<AnimationIsPaused> paused) in 
-        SystemAPI.Query<RefRW<LocalTransform>,DynamicBuffer<AnimationFrames>, DynamicBuffer<AnimationEvents>,RefRW<AnimationComponent>,EnabledRefRW<AnimationIsPaused>>().WithDisabled<AnimationIsPaused>())
+        foreach ((RefRW<LocalTransform> position , DynamicBuffer<AnimationFrames> frames, DynamicBuffer<AnimationEvents> animationEvents, RefRW<AnimationComponent> animation, EnabledRefRW<AnimationIsPaused> paused,Entity entity) in 
+        SystemAPI.Query<RefRW<LocalTransform>,DynamicBuffer<AnimationFrames>, DynamicBuffer<AnimationEvents>,RefRW<AnimationComponent>,EnabledRefRW<AnimationIsPaused>>().WithDisabled<AnimationIsPaused>().WithEntityAccess())
         {
             if(frames.Length == 0)
             {
@@ -92,21 +78,25 @@ partial struct CharacterHandsSystem : ISystem
             
             if(!element.processed)
             {     
+                Hands hands = handsLookup[animation.ValueRO.player];
                 if(!animation.ValueRO.hasStartPosition)
                 {
                     animation.ValueRW.hasStartPosition = true;
                     animation.ValueRW.startRotation = position.ValueRO.Rotation;
                     animation.ValueRW.startPosition = position.ValueRO.Position;
                 }       
-                element.Process(animation.ValueRO,position.ValueRO);  
+                element.Process(animation.ValueRO,hands,position.ValueRO);  
             }
 
             float t = 1;
             if(element.duration > 0)
                 t = math.clamp(animation.ValueRO.elapsedTime / element.duration, 0f, 1f);
 
-            position.ValueRW.Rotation = math.slerp(position.ValueRO.Rotation, element.targetRotation, t);
-            position.ValueRW.Position = math.lerp(position.ValueRO.Position, element.targetPosition, t);
+
+            element.GetTargetValues(ref state,entity,out var targetPosition,out var targetRotation);
+
+            position.ValueRW.Rotation = math.slerp(position.ValueRO.Rotation, targetRotation, t);
+            position.ValueRW.Position = math.lerp(position.ValueRO.Position, targetPosition, t);
 
             if(t >= 1f)
             {
@@ -129,15 +119,19 @@ partial struct CharacterHandsSystem : ISystem
                                 CreatePrefab(entityCommandBuffer,hands.reloadPoint,eventFrame);
                                 break;
                             case EventType.ChangeItemSprite:
-                                ChangeItemSprite(ref state,hands.itemInHand,eventFrame.id,animation.ValueRO.itemID);
+                                ChangeItemSprite(ref state,hands.itemInMainHand,eventFrame.id,animation.ValueRO.itemID);
+                                break;
+                            case EventType.ChangeSpriteInSideHand:
+                                ChangeSpriteInSideHand(ref state,hands.itemInSideHand,eventFrame);
                                 break;
                         }
 
                         animationEvents.RemoveAtSwapBack(i);
                     }
                 }
-                position.ValueRW.Rotation = element.targetRotation;
-                position.ValueRW.Position = element.targetPosition;
+
+                position.ValueRW.Rotation = targetRotation;
+                position.ValueRW.Position = targetPosition;
                 animation.ValueRW.elapsedTime = 0;
                 frames.RemoveAt(0);
             }
@@ -147,7 +141,7 @@ partial struct CharacterHandsSystem : ISystem
         {
             LocalTransform localSideHand = transformLookup[hands.ValueRO.side];
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
-            LocalTransform localItem =  transformLookup[hands.ValueRO.itemInHand];
+            LocalTransform localItem =  transformLookup[hands.ValueRO.itemInMainHand];
             LocalTransform localMain =  transformLookup[hands.ValueRO.main];
             
             // if (hands.ValueRO.actionStatus != 0)
@@ -160,7 +154,7 @@ partial struct CharacterHandsSystem : ISystem
 
             transformLookup[hands.ValueRO.main] = localMain;
             transformLookup[hands.ValueRO.side] = localSideHand;
-            transformLookup[hands.ValueRO.itemInHand] = localItem;
+            transformLookup[hands.ValueRO.itemInMainHand] = localItem;
             UpdateDirectionIndex(rot,character, ref state);
         }
         
@@ -170,6 +164,18 @@ partial struct CharacterHandsSystem : ISystem
 
 
 
+    private void ChangeSpriteInSideHand(ref SystemState state,Entity itemInHand,AnimationEvents eventFrame)
+    {
+        Sprite sprite = null;
+        if(ItemsAsset.instance.TryGetItem(eventFrame.id,out var item))
+            sprite = item.GetWorldSprite;
+
+        var pos = state.EntityManager.GetComponentData<LocalTransform>(itemInHand);
+        pos.Position = eventFrame.position;
+        pos.Rotation = eventFrame.rotation;
+        state.EntityManager.SetComponentData(itemInHand,pos);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(itemInHand).sprite = sprite;
+    }
     private void ChangeItemSprite(ref SystemState state,Entity itemInHand,int spriteID,int itemID)
     {
         if(ItemsAsset.instance.TryGetItem(itemID,out var item))
@@ -182,7 +188,6 @@ partial struct CharacterHandsSystem : ISystem
             } 
         }
     }
-
     private void CreatePrefab(EntityCommandBuffer entityCommandBuffer, Entity target,AnimationEvents eventFrame)
     {
         LocalToWorld localToWorld = worldLookup[target];
@@ -201,56 +206,6 @@ partial struct CharacterHandsSystem : ISystem
             target = target,
         });
     }
-    public static void ClearAnimationComponent(Entity entity,ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup)
-    {
-        var animation = animationLookup.GetRefRW(entity);
-        var position = transformLookup.GetRefRW(entity);
-
-        framesLookup[entity].Clear();
-        eventsLookup[entity].Clear();
-        animation.ValueRW.playbackSpeed = 1f;
-        animation.ValueRW.elapsedTime = 0;
-        animation.ValueRW.characterCenterPosition = float3.zero;
-
-
-        if(animation.ValueRO.hasStartPosition)
-        {
-            position.ValueRW.Position = animation.ValueRO.startPosition;
-            position.ValueRW.Rotation = animation.ValueRO.startRotation;
-            animation.ValueRW.hasStartPosition = false;
-        }
-    }
-
-    public static void StartAnimation(ref SystemState state,RangedWeapon item,Hands hands, List<KeyFrame> frames,
-    ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup)
-    {
-        ClearAnimationComponent(hands.GetBodyPart(BodyPartType.MainHand),animationLookup,transformLookup,framesLookup,eventsLookup);
-        ClearAnimationComponent(hands.GetBodyPart(BodyPartType.SideHand),animationLookup,transformLookup,framesLookup,eventsLookup);
-                    
-        int index = 0;
-        foreach(var frame in frames)
-        {
-            var part = hands.GetBodyPart(frame.BodyPartType);
-            if(frame.BodyPartType == BodyPartType.SideHand && item.twoHanded)
-                animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.03f,0);
-            
-            animationLookup.GetRefRW(part).ValueRW.itemID = item.ID;
-
-            animationLookup.GetRefRW(part).ValueRW.itemID = item.ID;
-            framesLookup[part].Add(frame.GetAnimationFrame(index));
-            foreach (var eventFrame in frame.Events)
-                eventsLookup[part].Add(eventFrame.GetEvent(index));
-            
-            state.EntityManager.SetComponentEnabled<AnimationIsPaused>(part,false);
-            index++;
-        }
-    }
-
-
-
-
-
-
 
     private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime = 0.05f)
     {

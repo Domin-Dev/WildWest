@@ -10,7 +10,7 @@ using UnityEngine;
 [UpdateAfter(typeof(VariableSynchronizationServerSystem))]
 [UpdateAfter(typeof(CollisionSystem))]
 
- partial struct CharacterAimSystem : ISystem
+partial struct CharacterAimSystem : ISystem
 {
 
     private float deltaTime;
@@ -180,7 +180,12 @@ using UnityEngine;
                                         NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
                                         bulletComp.isOnServer = true;
                                         entityCommandBuffer.SetComponent(bullet, bulletComp);
-                                    } 
+                                    }
+                                    else
+                                    {
+                                        if(ItemsAsset.instance.TryGetItem(ammoID,out var item))
+                                            state.EntityManager.GetComponentObject<SpriteRenderer>(bullet).sprite = item.GetWorldSprite;
+                                    }
                                 } 
 
                                 var rpc = new PlayerActionRPC()

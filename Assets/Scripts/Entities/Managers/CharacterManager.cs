@@ -77,8 +77,8 @@ public class CharacterManager : MonoBehaviour
     {
         Hands hands = state.EntityManager.GetComponentData<Hands>(entity);
 
-        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInHand);
-        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInHand);
+        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand);
+        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInMainHand);
         LocalTransform aimPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.aimPoint);
         LocalTransform reloadPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.reloadPoint);
         LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.sidehand);
@@ -101,7 +101,7 @@ public class CharacterManager : MonoBehaviour
 
         if (weapon.gripPoint2.x != -100)
         {
-            Entity entity1 = state.EntityManager.GetComponentData<Parent>(hands.itemInHand).Value;
+            Entity entity1 = state.EntityManager.GetComponentData<Parent>(hands.itemInMainHand).Value;
             state.EntityManager.SetComponentData(hands.sidehand, new Parent { Value = entity1 });
             sideHandTransform.Position = new float3(weapon.gripPoint2.x - weapon.gripPoint1.x, weapon.gripPoint2.y - weapon.gripPoint1.y, 0);
         }
@@ -111,7 +111,7 @@ public class CharacterManager : MonoBehaviour
         }
 
 
-        state.EntityManager.SetComponentData(hands.itemInHand, localTransform);
+        state.EntityManager.SetComponentData(hands.itemInMainHand, localTransform);
         state.EntityManager.SetComponentData(hands.sidehand, sideHandTransform);
         state.EntityManager.SetComponentData(hands.aimPoint, aimPoint);
         state.EntityManager.SetComponentData(hands.reloadPoint, reloadPoint);
@@ -120,8 +120,8 @@ public class CharacterManager : MonoBehaviour
     private void SetItemInHand(Item item, Entity entity, ref SystemState state)
     {
         Hands hands = state.EntityManager.GetComponentData<Hands>(entity);
-        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInHand);
-        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInHand);
+        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand);
+        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInMainHand);
         LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.sidehand);
 
         LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.mainhand);
@@ -134,7 +134,7 @@ public class CharacterManager : MonoBehaviour
         spriteRenderer.sprite = null;
         if (item != null)
             spriteRenderer.sprite = item.icon;
-        state.EntityManager.SetComponentData(hands.itemInHand, localTransform);
+        state.EntityManager.SetComponentData(hands.itemInMainHand, localTransform);
         state.EntityManager.SetComponentData(hands.sidehand, sideHandTransform);
         state.EntityManager.SetComponentData(hands.mainhand, mainHand);
     }

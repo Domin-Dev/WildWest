@@ -21,6 +21,7 @@ MonoBehaviour:
   stackMax: 1
   ID: 138
   icon: {fileID: 1386770750, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
   animSprites:
   - {fileID: -7034982987303943349, guid: 0729d5fbcc98759aa9ecd8d43cf2e2c1, type: 3}
   tags: []
@@ -68,7 +69,20 @@ MonoBehaviour:
         y: 0
         z: 0
       relativeRotation: 0
+      indexType: 0
       id: 3
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
   - bodyPartType: 0
     positionMode: 0
     rotate:
@@ -115,6 +129,7 @@ MonoBehaviour:
         y: 0
         z: 0
       relativeRotation: 0
+      indexType: 0
       id: 0
   - bodyPartType: 1
     positionMode: 2
@@ -138,8 +153,69 @@ MonoBehaviour:
         y: 0
         z: 0
       relativeRotation: 0
+      indexType: 0
       id: -1
-  reloadAnim: []
+  reloadAnim:
+  - bodyPartType: 1
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0
+    events:
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
+  - bodyPartType: 1
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 75
+    move:
+      x: 0
+      y: -0.05
+      z: 0
+    duration: 0.6
+    events:
+    - EventType: 5
+      position:
+        x: 0.03
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: 0
+  - bodyPartType: 1
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.6
+    events: []
   aimPoint:
     x: 0.035
     y: -0.005

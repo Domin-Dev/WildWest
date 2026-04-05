@@ -91,18 +91,16 @@ partial struct EquipmentClientSystem : ISystem
         
         if(NewEquipmentManager.instance.needUpdateAmmoUI)
         {       
-            Debug.Log("update UI");
             slotsLookup.Update(ref state);
             barsLookup.Update(ref state);
             containersLookup.Update(ref state);
 
             foreach( (var input,Entity player) in  SystemAPI.Query<RefRO<PlayerInput>>().WithAll<Player,GhostOwnerIsLocal>().WithEntityAccess())
             {
-
                 if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                 {                         
                     EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
-                    NewItemInHandSystem.UpdateUI(ref state,player,slot,slotsLookup,containersLookup);
+                    NewItemInHandSystem.UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var outArgs);
                 }  
             }
             NewEquipmentManager.instance.needUpdateAmmoUI = false;

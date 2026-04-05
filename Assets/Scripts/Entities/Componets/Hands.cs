@@ -11,12 +11,17 @@ public struct Hands : IComponentData
 {
     public Entity main;
     public Entity side;
-    public Entity itemInHand;
+    public Entity itemInMainHand;
+
+    public Entity itemInSideHand;
+
 
 
 
     public Entity mainhand;
     public Entity sidehand;
+
+
 
 
 

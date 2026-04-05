@@ -46,14 +46,26 @@ public class AnimationEvent
     public bool relativeRotation;
 
     public quaternion Rotation => quaternion.Euler(math.radians(rotation)); 
+
+    public IndexType indexType;
     public int id;
 
-    public AnimationEvents GetEvent(int frameIndex)
+    public AnimationEvents GetEvent(int frameIndex,int[] args)
     {
+        int index = id;
+        if(indexType == IndexType.ArgumentID && args != null)
+        {
+            if(args.Length > id && id >= 0)
+                index = args[id];
+            else
+                index = -1;
+        }
+     
         return new AnimationEvents()
         {
             eventType = EventType,
-            id = id,
+            indexType = indexType,
+            id = index,
             frameIndex = frameIndex,
             position = position,
             rotation = Rotation,
@@ -62,6 +74,13 @@ public class AnimationEvent
     }
 }
 
+
+
+public enum IndexType : byte
+{
+    AssetID = 0,
+    ArgumentID = 1,
+}
 public enum BodyPartType :  byte
 {
     MainHand,
@@ -73,7 +92,8 @@ public enum EventType :  byte
     SpawnParticle,
     SpawnParticleAtAimPoint,
     SpawnParticleAtReloadPoint,
-    ChangeItemSprite
+    ChangeItemSprite,
+    ChangeSpriteInSideHand
 }
 public enum PositionMode :  byte
 {
