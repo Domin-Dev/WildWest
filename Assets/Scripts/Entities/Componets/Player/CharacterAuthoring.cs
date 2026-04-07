@@ -225,7 +225,7 @@ public struct AimRotation : IComponentData
     [GhostField] public float angle;
 } 
 
-[GhostComponent(SendTypeOptimization = GhostSendType.OnlyPredictedClients)]
+
 public struct Cooldown : IComponentData
 {
     public NetworkTick cooldownTick;

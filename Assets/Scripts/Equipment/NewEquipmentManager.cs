@@ -582,6 +582,7 @@ public class NewEquipmentManager : MonoBehaviour
             if (selectedSlot.containerIndex == container.gridIndex)
                 DeselectItem(ref ecb);
         }
+        needUpdateAmmoUI = true;
     }
     public void UpdateWetness()
     {

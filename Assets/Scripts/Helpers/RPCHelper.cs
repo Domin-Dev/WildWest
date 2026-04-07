@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection.Emit;
 using Unity.Entities;
 using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
@@ -87,17 +88,17 @@ public static class RPCHelper
         serverWorld.Dispose();         
     }
 
-    public static void SendEventsToClientsAndOwner<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    public static void SendEventsToClientsAndOwner<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, Entity playerEntity, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
-        SendEventsToClientsAndOwner(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,chunkIndex,tick);
+        SendEventsToClientsAndOwner(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,playerEntity,chunkIndex,tick);
     }
-    public static void SendEventsToClients<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    public static void SendEventsToClients<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
-        SendEventsToClients(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,chunkIndex,tick);
+        SendEventsToClients(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,playerEntity,chunkIndex,tick);
     }
-    public static void SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    public static void SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
         Entity chunk = Entity.Null; 
@@ -112,17 +113,23 @@ public static class RPCHelper
 
         tick.Add(2u);
         rpc.SetPlayer(networkID,tick);
-        
+        var rpcEvent = ecb.CreateEntity();
+        ecb.AddComponent(rpcEvent,rpc);
+        ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
+        ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers() {connection = playerEntity });
         foreach(var player in players)
         {
             if(player.networkID != networkID)
             {
                 var connection = state.EntityManager.GetComponentData<PlayerSourceConnection>(player.playerEntity).value;
-                RPCHelper.SendRpc(ecb,connection,rpc);
+                ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers()
+                {
+                    connection = connection
+                });
             }
         }
     }
-    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, int chunkIndex, NetworkTick tick)
+    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
         Entity chunk = Entity.Null; 
@@ -137,15 +144,20 @@ public static class RPCHelper
 
         tick.Add(2u);
         rpc.SetPlayer(networkID,tick);
-        
+        var rpcEvent = ecb.CreateEntity();
+        ecb.AddComponent(rpcEvent,rpc);
+        ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
+        ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers() {connection = playerEntity });
+
         foreach(var player in players)
         {
             var connection = state.EntityManager.GetComponentData<PlayerSourceConnection>(player.playerEntity).value;
-            RPCHelper.SendRpc(ecb,connection,rpc);
+            ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers()
+            {
+                connection = connection
+            });
         }
     }
-
-
 
     public static void SendEventToClient<T>(EntityCommandBuffer ecb,int networkID,NetworkTick tick,Entity target)
     where T : unmanaged, IRpcCommand,ISetPlayer

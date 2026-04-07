@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 
 public static class EntityHelper
@@ -47,6 +48,17 @@ public static class EntityHelper
     }
 
 
+    public static NetworkTick AddTime(NetworkTick tick, float seconds)
+    {
+        tick.Add((uint)(1 + (NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * seconds)));
+        return tick;
+    }
+    
+    public static NetworkTick AddTime(NetworkTick tick, int ticks)
+    {
+        tick.Add((uint)(ticks));
+        return tick;
+    }
 
 
     public static void SpawnEntityPrefab(EntityCommandBuffer entityCommandBuffer, Entity prefab, float3 position, quaternion quaternion, NewParticles target)

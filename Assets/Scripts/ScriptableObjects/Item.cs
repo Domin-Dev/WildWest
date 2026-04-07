@@ -93,6 +93,16 @@ public class Item : ScriptableObject
  
         return new TooltipInfo(content.ToString(), header.ToString(),hColor);
     }
+
+    protected float CalculateTime(List<KeyFrame> keyframes)
+    {
+        float timer = 0;
+        foreach(var i in keyframes)
+        {
+            timer += i.Duration;
+        }
+        return timer;
+    } 
 }
 
 [System.Serializable]

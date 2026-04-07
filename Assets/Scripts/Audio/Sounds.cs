@@ -54,7 +54,6 @@ public class Sounds : MonoBehaviour
     {
         if(soundsConfig.Sounds.Count > id)
         {
-            Debug.Log("sound!!! " + id);
             audioSource.PlayOneShot(soundsConfig.Sounds[id]);
         }
     }

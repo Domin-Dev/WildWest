@@ -64,6 +64,7 @@ partial struct NewItemInHandSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
         var snapshotAck = SystemAPI.GetSingleton<NetworkSnapshotAck>();
+        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
 
         foreach ((RefRO<NewItemInHandRPC> rpcCommand, Entity entity) in SystemAPI.Query<RefRO<NewItemInHandRPC>>().WithEntityAccess())
@@ -71,32 +72,37 @@ partial struct NewItemInHandSystem : ISystem
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
 
-            foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity e) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+            foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
                 {
                     if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(entity))
                     {
-                        if(EQHelper.TryGetPlayerContainer(containersLookup,e,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                         {
                             if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(rpcCommand.ValueRO.tick))
                             {    
-                                Debug.Log("uwaga new item");                       
+                                Debug.Log("uwaga new item");      
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                                 int itemId = slot.HasValue ? slot.Value.itemId : -1;
                                 ChangeItemInHand(ref state,itemId,in hands.ValueRO);
-                                UpdateUI(ref state,e,slot,slotsLookup,containersLookup,out var ammoID);
+                                if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+                                {
+                                    state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
+                                    UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var ammoID);
+                                }
                                 entityCommandBuffer.DestroyEntity(entity);
 
-                                if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item) && ammoID >= 0)
-                                {
+
+                               // if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item) && ammoID >= 0)
+                               // {
                                     // EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new NewAmmoSelectedRPC()
                                     // {
                                     //     ammoID = ammoID,
                                     //     weaponID = itemId,
                                     //     networkID = owner.ValueRO.NetworkId 
                                     // }); 
-                                }
+                               // }
                                     //CharacterHandsEvents.StartAnimation(ref state,item,hands.ValueRO,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,animArgs); 
                                 
                             }
@@ -105,23 +111,33 @@ partial struct NewItemInHandSystem : ISystem
                     }
                     else
                     {
-                        if(EQHelper.TryGetPlayerContainer(containersLookup,e,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                         {
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;
                             ChangeItemInHand(ref state,itemId,in hands.ValueRO);
-                            entityCommandBuffer.DestroyEntity(entity);
-                            UpdateUI(ref state,e,slot,slotsLookup,containersLookup,out var ammoID);
-
-                            if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item) && ammoID >= 0)
+                            
+                            if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                             {
+                                var cooldownTick = tick;
+                                if(tick == NetworkTick.Invalid)
+                                    cooldownTick = networkTime.ServerTick;
+
+                                Debug.Log("new item!!! " + cooldownTick.TickIndexForValidTick + "  " + EntityHelper.AddTime(cooldownTick,20).TickIndexForValidTick);
+                                state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(cooldownTick,20)});
+                                UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var ammoID);
+                            }
+                            entityCommandBuffer.DestroyEntity(entity);
+
+                           // if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item) && ammoID >= 0)
+                            //{
                                 // EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new NewAmmoSelectedRPC()
                                 // {
                                 //     ammoID = ammoID,
                                 //     weaponID = itemId,
                                 //     networkID = owner.ValueRO.NetworkId 
                                 // }); 
-                            }
+                           // }
                          //   if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item) && animArgs != null)
                             //    CharacterHandsEvents.StartAnimation(ref state,item,hands.ValueRO,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,animArgs); 
                         }
@@ -153,29 +169,27 @@ partial struct NewItemInHandSystem : ISystem
 
     public static void UpdateUI(ref SystemState state, Entity player, InventorySlot? itemSlot, BufferLookup<InventorySlot> slotsLookup,BufferLookup<PlayerContainers> containersLookup,out int ammoID)
     {
-        ammoID = -1;
-        if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+        ammoID = -1;      
+        InventorySlot[] ammo = null;
+        int selectedAmmo = -1;
+
+        if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(itemSlot.Value.itemId,out var item))
         {
-            InventorySlot[] ammo = null;
-            int selectedAmmo = -1;
-
-            if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(itemSlot.Value.itemId,out var item))
+            ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
+            if(ammo.Length > 0)
             {
-                ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
-                if(ammo.Length > 0)
-                {
-                    selectedAmmo = state.EntityManager.GetComponentData<PlayerInput>(player).ammoSelectedIndex % ammo.Length;
-                    ammoID = ammo[selectedAmmo].itemId;
-                }
-
-                NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID); 
+                selectedAmmo = state.EntityManager.GetComponentData<PlayerInput>(player).ammoSelectedIndex % ammo.Length;
+                ammoID = ammo[selectedAmmo].itemId;
             }
-            else
-            {
-                NewEquipmentManager.instance.SetAmmoTag(-1);
-            }            
-            onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo);    
+
+            NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID); 
         }
+        else
+        {
+            NewEquipmentManager.instance.SetAmmoTag(-1);
+        }            
+        onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo);    
+    
     }    
 
 

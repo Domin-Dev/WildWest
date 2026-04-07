@@ -1,4 +1,5 @@
 
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 
@@ -6,6 +7,7 @@ public struct PlayerActionRPC : IRpcCommand,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;
+    public Entity player;
     public int itemID;
 
     public void SetPlayer(int networkID,NetworkTick tick)

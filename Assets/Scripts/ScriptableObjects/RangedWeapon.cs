@@ -20,7 +20,7 @@ public class RangedWeapon : Weapon
     public List<KeyFrame> shotAnim;
     public List<KeyFrame> reloadAnim; 
 
-
+    public float reloadCooldown => CalculateTime(reloadAnim);
 
 
     public float2 aimPoint;
@@ -31,6 +31,7 @@ public class RangedWeapon : Weapon
 
     public bool hasMagazine => magazineCapacity > 0;
     public float bulletOffset => bulletSpread / math.max((bulletCount - 1),1);
+
 
     public int ammoTagID
     {
@@ -46,6 +47,8 @@ public class RangedWeapon : Weapon
 
 
 
+
+    
     public override bool HasContainer(out int containerCapacity, out MandatoryProperties mandatoryProperties, out int mandatoryData)
     {
         containerCapacity = magazineCapacity;

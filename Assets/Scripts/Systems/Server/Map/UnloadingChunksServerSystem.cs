@@ -42,8 +42,6 @@ public partial class UnloadingChunksServerSystem : SystemBase
 
         foreach ((RefRO<UnloadChunkRequest> requestData, Entity entity) in SystemAPI.Query<RefRO<UnloadChunkRequest>>().WithAll<ProcessInTheTick>().WithEntityAccess())
         {
-            Debug.Log("remove!!" + requestData.ValueRO.chunkIndex);
-            
             if(SystemAPI.Exists(requestData.ValueRO.chunkEntity))
                 ecb.DestroyEntity(requestData.ValueRO.chunkEntity);
 

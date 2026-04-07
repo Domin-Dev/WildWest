@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using NUnit.Framework.Interfaces;
 using TMPro;
 using TMPro.Examples;
 using Unity.Entities;
@@ -123,7 +124,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private UIConfig uISettings;
 
 
+
     public InventorySlot[] ammoTab; 
+    public int lastSelectedAmmo = -100;
 
    
     private void Awake()
@@ -1340,12 +1343,19 @@ public class UIManager : MonoBehaviour
             UpdateSelectedAmmo(selectedAmmoIndex);           
         }
     }
-    public void UpdateSelectedAmmo(int selectedAmmoIndex)
+    public bool UpdateSelectedAmmo(int selectedAmmoIndex)
     {
-        if(ammoTab == null || ammoTab.Length == 0) return;
+        if(ammoTab == null || ammoTab.Length == 0) return false;
         Sounds.instance.Click();
         selectedAmmoIndex = selectedAmmoIndex % ammoTab.Length;
         UpdateAmmoChild(selectedAmmoIndex);
+        if(selectedAmmoIndex != lastSelectedAmmo)
+        {
+            lastSelectedAmmo = selectedAmmoIndex;
+            return true;
+        }
+        else
+            return false;
     }
     private void UpdateAmmoChild(int childIndex)
     {

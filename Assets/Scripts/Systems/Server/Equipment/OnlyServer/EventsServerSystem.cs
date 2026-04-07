@@ -75,7 +75,7 @@ partial struct EventsServerSystem : ISystem
                         var to = new SlotPosition(EquipmentConfig.itemInHand_ContainerIndex,0);
                         
                         EQHelper.Clone(ecb,equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.player,out var newSlot,out var newBarData);
-                        RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerChunk.ValueRO.GetChunk(),tick);
+                        RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerContainer.ValueRO.player,playerChunk.ValueRO.GetChunk(),tick);
                     }
                 }
             }

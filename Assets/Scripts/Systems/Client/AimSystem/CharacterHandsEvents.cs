@@ -69,7 +69,6 @@ partial struct CharacterHandsEvents : ISystem
             foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
-
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
                     StartAnimation(ref state,item,hands.ValueRO,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
@@ -83,14 +82,15 @@ partial struct CharacterHandsEvents : ISystem
         {     
             if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(action.ValueRO.tick))
             {             
-                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player>().WithEntityAccess())
+                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player>().WithEntityAccess())
                 {
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
 
-                    Debug.Log("uwaga new ammo");                       
+                    Debug.Log("uwaga new ammo" + action.ValueRO.tick);                       
 
                     if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.weaponID,out var item))
                     {
+                        state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,item.reloadCooldown)});
                         StartAnimation(ref state,item,hands.ValueRO,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,new int[]{action.ValueRO.ammoID}); 
                     }
                     break;

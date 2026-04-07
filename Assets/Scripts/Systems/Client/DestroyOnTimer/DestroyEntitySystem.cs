@@ -55,7 +55,6 @@ public partial class DestroyEntitySystem : SystemBase
                         var buffer = chunkObjects[ghostChunk.ValueRO.currentChunkEntity];
                         for(int i = 0; i < buffer.Length; i++)
                         {
-                            Debug.Log(buffer[i].entity + " " + buffer[i].entity.Index);
                             if(buffer[i].entity == entity)
                             {
                                 buffer.RemoveAtSwapBack(i);

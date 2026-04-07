@@ -95,6 +95,7 @@ partial struct CharacterAimSystem : ISystem
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
+                                Debug.Log("shoot!!! " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
 
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                                     break;
@@ -129,8 +130,6 @@ partial struct CharacterAimSystem : ISystem
                                             }
                                         }
                                     }
-
-                                    Debug.Log("Ammo => " + counter);
                                 }
 
 
@@ -162,7 +161,6 @@ partial struct CharacterAimSystem : ISystem
                                     var rotation = math.mul(baseRot, spreadRot);
 
                                     //var rotation = quaternion.Euler(0, 0, rot + (currentSpread * Mathf.Deg2Rad));
-                                    Debug.Log("wynik ! " + (uint)testTick.TickIndexForValidTick + " " + baseRot + " " + spreadRot);
                                     //LocalTransform lt = LocalTransform.FromPosition(aimPoint).Rotate(rotation);
                                     LocalTransform lt = new LocalTransform
                                     {
@@ -197,11 +195,10 @@ partial struct CharacterAimSystem : ISystem
 
                                 if(state.World.IsServer())
                                 {
-                                    RPCHelper.SendEventsToClients<PlayerActionRPC>(rpc,
-                                    ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                    RPCHelper.SendEventsToClients<PlayerActionRPC>(rpc,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                                 } 
                                 else   
-                                {   
+                                {                                       
                                     EntityHelper.CreateEntityWithComponent(entityCommandBuffer,rpc); 
                                 }                   
                             }

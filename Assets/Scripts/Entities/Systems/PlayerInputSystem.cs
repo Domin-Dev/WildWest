@@ -39,6 +39,7 @@ partial struct PlayerInputSystem : ISystem
         containersLookup.Update(ref state);
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         float2 input = (float2)InputManager.i.move.ReadValue<Vector2>();
+        var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
         bool left = InputManager.i.mainAction.inProgress;
         bool right = InputManager.i.sideAction.inProgress;
@@ -107,20 +108,18 @@ partial struct PlayerInputSystem : ISystem
             if(playerInput.ValueRO.slotInHand != newSlot)
             {
                 UpdateItemInHand(slotsLookup,containersLookup,entity,newSlot);
-
                 playerInput.ValueRW.slotInHand = newSlot;
-                playerInputSync.ValueRW.slotInHand = newSlot; 
-
-                EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC()
-                {
-                    networkID = owner.ValueRO.NetworkId
-                });
+                playerInputSync.ValueRW.slotInHand = newSlot;
+                Debug.Log("nowa bron!!" +  tick.TickIndexForValidTick + "  ,, "  + EntityHelper.AddTime(tick,5)); 
+                state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,5)});
+                EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC() { networkID = owner.ValueRO.NetworkId  });
             }
 
             if(playerInput.ValueRO.ammoSelectedIndex != newAmmoIndex)
             {
                 playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
-                UIManager.instance.UpdateSelectedAmmo(newAmmoIndex);
+                if(UIManager.instance.UpdateSelectedAmmo(newAmmoIndex))
+                    state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,15)});      
             } 
         } 
         ecb.Playback(state.EntityManager);

@@ -14,15 +14,8 @@ public struct NewItemInHandRPC : IRpcCommand, ISetPlayer
     }
 }
 
-public struct EventToDo : IComponentData
+public struct SendEventToPlayers : IBufferElementData
 {
-    public int networkID;
-    public NetworkTick tick;
-
-    public void SetPlayer(int networkID,NetworkTick tick)
-    {
-        this.networkID = networkID;
-        this.tick = tick;
-    }
+    public Entity connection;
 }
 
