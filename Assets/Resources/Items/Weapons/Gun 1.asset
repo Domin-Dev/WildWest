@@ -34,7 +34,7 @@ MonoBehaviour:
   numberItem: 1
   durability: 20
   damage: 5
-  cooldown: 0.7
+  cooldown: 0.67
   weaponImage: {fileID: -7034982987303943349, guid: b8f887fd54d6b5d45b37ea6eb0edfcfb, type: 3}
   hitBoxPoints: []
   handOffset: 0.11

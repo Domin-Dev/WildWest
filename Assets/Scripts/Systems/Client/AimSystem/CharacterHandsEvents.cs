@@ -97,6 +97,13 @@ partial struct CharacterHandsEvents : ISystem
                 }
                 entityCommandBuffer.DestroyEntity(rpc);
             }
+            else if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(rpc))
+            {
+               var command = SystemAPI.GetComponent<ReceiveRpcCommandRequest>(rpc);
+               command.Consume();
+               SystemAPI.SetComponent(rpc,command);
+            }
+                
         }
 
 

@@ -1464,6 +1464,7 @@ GameObject:
   - component: {fileID: 330373314}
   - component: {fileID: 330373316}
   - component: {fileID: 330373315}
+  - component: {fileID: 330373317}
   m_Layer: 5
   m_Name: Version
   m_TagString: Untagged
@@ -1555,7 +1556,7 @@ MonoBehaviour:
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
   m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
+  m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
@@ -1591,6 +1592,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330373313}
   m_CullTransparentMesh: 1
+--- !u!114 &330373317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330373313}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 234afb769d07aa9418ff45a3044aa619, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UpdateTextSettings
+  textType: 3
 --- !u!1001 &331676805
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5833,6 +5847,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2994b0fd24102d9429caf02d569952b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sounds
+  soundsConfig: {fileID: 0}
   swordSounds: []
   hitSounds: []
   ShieldSounds: []

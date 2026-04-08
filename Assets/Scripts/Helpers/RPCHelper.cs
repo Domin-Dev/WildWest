@@ -87,7 +87,19 @@ public static class RPCHelper
         serverWorld.QuitUpdate = true; 
         serverWorld.Dispose();         
     }
+    
+    public static void CreateSerwerLocalEvent<T>(T rpc,EntityCommandBuffer ecb,Entity playerEntity,int networkID,NetworkTick tick) where T : unmanaged, IComponentData, ISetPlayer
+    {
+        var rpcEvent = ecb.CreateEntity();
+        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        tick.Add(2u); 
+        rpc.SetPlayer(networkID,tick);
 
+        ecb.AddComponent(rpcEvent,rpc);
+        ecb.AddComponent<WaitForProcess>(rpcEvent);
+        ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
+        ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers() {connection = playerEntity });
+    }
     public static void SendEventsToClientsAndOwner<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, Entity playerEntity, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
@@ -111,9 +123,13 @@ public static class RPCHelper
 
         var players = playerNeedChunkLookup[chunk];
 
-        tick.Add(2u);
-        rpc.SetPlayer(networkID,tick);
+
         var rpcEvent = ecb.CreateEntity();
+        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent<WaitForProcess>(rpcEvent);
+        tick.Add(2u);
+        
+        rpc.SetPlayer(networkID,tick);
         ecb.AddComponent(rpcEvent,rpc);
         ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
         ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers() {connection = playerEntity });
@@ -129,7 +145,7 @@ public static class RPCHelper
             }
         }
     }
-    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick)
+    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick, bool instantProcess = false)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
         Entity chunk = Entity.Null; 
@@ -142,9 +158,16 @@ public static class RPCHelper
 
         var players = playerNeedChunkLookup[chunk];
 
+
+        var rpcEvent = ecb.CreateEntity();
+
+        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent<WaitForProcess>(rpcEvent);
+        if(instantProcess)
+            ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
+
         tick.Add(2u);
         rpc.SetPlayer(networkID,tick);
-        var rpcEvent = ecb.CreateEntity();
         ecb.AddComponent(rpcEvent,rpc);
         ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
         ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers() {connection = playerEntity });
@@ -158,7 +181,6 @@ public static class RPCHelper
             });
         }
     }
-
     public static void SendEventToClient<T>(EntityCommandBuffer ecb,int networkID,NetworkTick tick,Entity target)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {

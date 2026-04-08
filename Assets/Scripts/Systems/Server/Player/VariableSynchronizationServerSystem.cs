@@ -68,6 +68,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
                         {
                             playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
                             playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
+                            Debug.Log("zmiana ammo!! " + tick.TickIndexForValidTick);
                             RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);
                             state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,4)});
                         }

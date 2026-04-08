@@ -57,7 +57,7 @@ partial struct PlayerInputSystem : ISystem
         //}
 
 
-
+        Debug.Log("input !!!" +  tick.TickIndexForValidTick); 
 
         if (InputManager.i.playerList.triggered && !ChatManager.instance.isChatting)
         {
@@ -65,8 +65,8 @@ partial struct PlayerInputSystem : ISystem
         }
 
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner, Entity entity) in 
-            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,RefRW<Cooldown> cooldown, Entity entity) in 
+            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
@@ -118,8 +118,14 @@ partial struct PlayerInputSystem : ISystem
             if(playerInput.ValueRO.ammoSelectedIndex != newAmmoIndex)
             {
                 playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                Debug.Log("ammmo klient!!!" +  tick.TickIndexForValidTick ); 
                 if(UIManager.instance.UpdateSelectedAmmo(newAmmoIndex))
-                    state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,15)});      
+                {  
+                    if(tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
+                        cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);
+                    
+                    cooldown.ValueRW.cooldownTick  = EntityHelper.AddTime(tick,15);
+                } 
             } 
         } 
         ecb.Playback(state.EntityManager);

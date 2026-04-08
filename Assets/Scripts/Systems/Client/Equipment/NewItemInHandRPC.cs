@@ -19,3 +19,18 @@ public struct SendEventToPlayers : IBufferElementData
     public Entity connection;
 }
 
+public struct ServerEventData  : IComponentData
+{
+    public NetworkTick tick;
+
+    public ServerEventData(NetworkTick networkTick)
+    {
+        this.tick = networkTick;
+    }
+}
+
+public struct WaitForProcess: IComponentData, IEnableableComponent {  }
+
+
+
+

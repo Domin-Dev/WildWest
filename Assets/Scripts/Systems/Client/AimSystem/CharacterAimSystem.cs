@@ -40,25 +40,22 @@ partial struct CharacterAimSystem : ISystem
   
     public void OnUpdate(ref SystemState state)
     {
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var currentTick = networkTime.ServerTick;
+        if(!networkTime.IsFirstTimeFullyPredictingTick) return;
+
+        if(state.World.IsClient())
+            Debug.Log(networkTime.ServerTick.TickIndexForValidTick);
+
+        deltaTime = SystemAPI.Time.DeltaTime;
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
+        SystemAPI.TryGetSingletonBuffer<LoadedChunks>(out var loadedChunks,true);
+    
         playerNeedChunkLookup.Update(ref state);
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
-
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-
-        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
-        SystemAPI.TryGetSingletonBuffer<LoadedChunks>(out var loadedChunks,true);
-
-
-
-        deltaTime = SystemAPI.Time.DeltaTime;
-        var currentTick = networkTime.ServerTick;
-        if(!networkTime.IsFirstTimeFullyPredictingTick) return;
-    
-        playerNeedChunkLookup.Update(ref state);
-  
 
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
@@ -66,19 +63,12 @@ partial struct CharacterAimSystem : ISystem
                 continue;
 
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.main);
-            
-
-
-
-
             float rot = playerAspect.aimRotation.ValueRO.angle;   
-
-   
 
             for (var i = 1u; i <= networkTime.SimulationStepBatchSize; i++)
             {
                 var testTick = currentTick;
-                testTick.Subtract((uint)networkTime.SimulationStepBatchSize - i);           
+                testTick.Subtract((uint)networkTime.SimulationStepBatchSize - i);         
                 if(testTick.IsValid && playerAspect.input.GetDataAtTick(testTick, out var input))
                 {
                     float3 currentPosition = worldMainHand.Position;
@@ -87,15 +77,19 @@ partial struct CharacterAimSystem : ISystem
                         continue;
 
                     CalculateNextRotation(ref rot, direction,0.5f);
-                    if(!playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick))
+                    Debug.Log("jest input!! " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
+                    
+                    if(!playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
+                    (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick)))
                     {
+                        Debug.Log("mozna shot");
                         testTick.Subtract(1);
                         if (playerAspect.input.GetDataAtTick(testTick, out var input2))
                         {
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
-                                Debug.Log("shoot!!! " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
+                                Debug.Log("shoot!!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
 
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                                     break;
@@ -108,6 +102,10 @@ partial struct CharacterAimSystem : ISystem
 
 
                                 int ammoID = -1;
+                                float reloadCooldown = 0;
+
+
+
                                 if(weapon.hasMagazine)
                                 {
                                    Debug.Log("z"); 
@@ -115,7 +113,6 @@ partial struct CharacterAimSystem : ISystem
                                 else
                                 {
                                     var slots = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,entity,weapon.ammoTagID,out var aggregated,out int counter);
-                                    
                                     if(counter == 0) break;
                                     ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
                                     if(state.World.IsServer())
@@ -130,6 +127,7 @@ partial struct CharacterAimSystem : ISystem
                                             }
                                         }
                                     }
+                                    reloadCooldown = weapon.reloadCooldown;
                                 }
 
 
@@ -137,10 +135,13 @@ partial struct CharacterAimSystem : ISystem
                                 var aimPoint = MyTools.ConvertFloat(CalculateAimPoint(rot,weapon)) + currentPosition;
 
                                 testTick.Add(1u);
-                                var cooldownTick = testTick;
+                                var cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown + reloadCooldown);
 
-                                cooldownTick.Add((uint)(simulationTickRate * weapon.cooldown));
+                               
+
+
                                 playerAspect.cooldown.ValueRW.cooldownTick = cooldownTick;
+                                playerAspect.cooldown.ValueRW.startCooldown = NetworkTick.Invalid;
 
 
                                 uint seed = (uint)testTick.TickIndexForValidTick * 311u; //* 747796405u + 2891336453u;

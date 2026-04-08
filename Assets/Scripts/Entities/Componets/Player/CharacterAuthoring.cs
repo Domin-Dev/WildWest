@@ -229,6 +229,7 @@ public struct AimRotation : IComponentData
 public struct Cooldown : IComponentData
 {
     public NetworkTick cooldownTick;
+    public NetworkTick startCooldown;
 }
 
 
