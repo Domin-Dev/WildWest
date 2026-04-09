@@ -88,17 +88,25 @@ public static class RPCHelper
         serverWorld.Dispose();         
     }
     
-    public static void CreateSerwerLocalEvent<T>(T rpc,EntityCommandBuffer ecb,Entity playerEntity,int networkID,NetworkTick tick) where T : unmanaged, IComponentData, ISetPlayer
+    public static void CreateSerwerLocalEvent<T>(T rpc,EntityCommandBuffer ecb,Entity playerEntity,int networkID,NetworkTick tick,bool instantProcess = true) where T : unmanaged, IComponentData, ISetPlayer
     {
         var rpcEvent = ecb.CreateEntity();
         ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        
+        ecb.AddComponent<WaitForProcess>(rpcEvent);
+        if(instantProcess)
+            ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
+        else
+        {
+            ecb.AppendToBuffer<FutureEventsForPlayer>(playerEntity,new FutureEventsForPlayer(){ entityEvent = rpcEvent});
+        }
+
         tick.Add(2u); 
         rpc.SetPlayer(networkID,tick);
-
         ecb.AddComponent(rpcEvent,rpc);
-        ecb.AddComponent<WaitForProcess>(rpcEvent);
         ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
         ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers() {connection = playerEntity });
+        
     }
     public static void SendEventsToClientsAndOwner<T>(ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID, Entity playerEntity, int chunkIndex, NetworkTick tick)
     where T : unmanaged, IRpcCommand,ISetPlayer
@@ -110,7 +118,7 @@ public static class RPCHelper
     {
         SendEventsToClients(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,playerEntity,chunkIndex,tick);
     }
-    public static void SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick)
+    public static void SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick, bool instantProcess = true)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
         Entity chunk = Entity.Null; 
@@ -127,6 +135,12 @@ public static class RPCHelper
         var rpcEvent = ecb.CreateEntity();
         ecb.AddComponent(rpcEvent,new ServerEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
+        if(instantProcess)
+            ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
+            else
+        {
+            ecb.AppendToBuffer<FutureEventsForPlayer>(playerEntity,new FutureEventsForPlayer(){ entityEvent = rpcEvent});
+        }
         tick.Add(2u);
         
         rpc.SetPlayer(networkID,tick);
@@ -145,7 +159,7 @@ public static class RPCHelper
             }
         }
     }
-    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick, bool instantProcess = false)
+    public static void SendEventsToClientsAndOwner<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick, bool instantProcess = true)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
         Entity chunk = Entity.Null; 
@@ -165,6 +179,10 @@ public static class RPCHelper
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
+        else
+        {
+            ecb.AppendToBuffer<FutureEventsForPlayer>(playerEntity,new FutureEventsForPlayer(){ entityEvent = rpcEvent});
+        }
 
         tick.Add(2u);
         rpc.SetPlayer(networkID,tick);

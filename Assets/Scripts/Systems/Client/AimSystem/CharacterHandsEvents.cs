@@ -23,6 +23,9 @@ partial struct CharacterHandsEvents : ISystem
     private BufferLookup<AnimationEvents> eventsLookup;
 
     
+    private BufferLookup<InventorySlot> slotsLookup;
+    private BufferLookup<ItemBarData> barsLookup;
+    private BufferLookup<PlayerContainers> containersLookup;
 
 
     private DynamicBuffer<VisualEffectsBuffer> visualEffects;
@@ -37,7 +40,15 @@ partial struct CharacterHandsEvents : ISystem
         handsLookup = SystemAPI.GetComponentLookup<Hands>();
         framesLookup = SystemAPI.GetBufferLookup<AnimationFrames>();
         eventsLookup = SystemAPI.GetBufferLookup<AnimationEvents>();
+
+        slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
+        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+
+
         state.RequireForUpdate<VisualEffectsBuffer>();
+
+
 
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
@@ -58,6 +69,10 @@ partial struct CharacterHandsEvents : ISystem
         handsLookup.Update(ref state);
         framesLookup.Update(ref state);
         eventsLookup.Update(ref state);
+
+        slotsLookup.Update(ref state);
+        barsLookup.Update(ref state);
+        containersLookup.Update(ref state);
 
         state.CompleteDependency();
 
@@ -82,9 +97,19 @@ partial struct CharacterHandsEvents : ISystem
         {     
             if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(action.ValueRO.tick))
             {             
-                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player>().WithEntityAccess())
+                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<PlayerInputSync> input, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<PlayerInputSync>>().WithAll<Player>().WithEntityAccess())
                 {
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
+
+                    if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
+                    {
+                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                        {
+                            EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
+                            int itemId = slot.HasValue ? slot.Value.itemId : -1;
+                            if(itemId != action.ValueRO.weaponID) break;
+                        }
+                    }
 
                     Debug.Log("uwaga new ammo" + action.ValueRO.tick);                       
 
@@ -122,13 +147,14 @@ partial struct CharacterHandsEvents : ISystem
         animation.ValueRW.elapsedTime = 0;
         animation.ValueRW.characterCenterPosition = float3.zero;
 
-
         if(animation.ValueRO.hasStartPosition)
         {
             position.ValueRW.Position = animation.ValueRO.startPosition;
             position.ValueRW.Rotation = animation.ValueRO.startRotation;
             animation.ValueRW.hasStartPosition = false;
         }
+
+
     }
     public static void StartAnimation(ref SystemState state,RangedWeapon item,Hands hands, List<KeyFrame> frames,
     ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup,int[] args = null)
@@ -157,6 +183,13 @@ partial struct CharacterHandsEvents : ISystem
             index++;
         }
     } 
+    public static void ResetAnimation(ref SystemState state,Hands hands,ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup)
+    {
+        ClearAnimationComponent(hands.GetBodyPart(BodyPartType.MainHand),animationLookup,transformLookup,framesLookup,eventsLookup);
+        ClearAnimationComponent(hands.GetBodyPart(BodyPartType.SideHand),animationLookup,transformLookup,framesLookup,eventsLookup);
+
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInSideHand).sprite = null;   
+    }
 }
 
 

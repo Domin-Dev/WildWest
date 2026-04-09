@@ -72,7 +72,7 @@ partial struct GoInGameServerSystem : ISystem
 
 
 
-
+            entityCommandBuffer.AddBuffer<FutureEventsForPlayer>(character);
             entityCommandBuffer.SetComponent<Health>(character, new Health() { Max = 100, Value = playerSave.health });
             entityCommandBuffer.SetComponent<Hunger>(character, new Hunger() { Max = 100, Value = playerSave.hunger });
             entityCommandBuffer.SetComponent<Thirst>(character, new Thirst() { Max = 100, Value = playerSave.thirst });    

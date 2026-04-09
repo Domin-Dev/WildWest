@@ -47,6 +47,7 @@ partial struct EquipmentClientSystem : ISystem
     {
         slotsToUpdate = new NativeQueue<EqiupmentEventClient>(Allocator.Persistent);
         lastProcessedServerTick = NetworkTick.Invalid;
+        state.RequireForUpdate<EntitiesReferences>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);

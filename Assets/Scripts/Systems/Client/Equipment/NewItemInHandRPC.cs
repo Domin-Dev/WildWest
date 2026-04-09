@@ -19,6 +19,11 @@ public struct SendEventToPlayers : IBufferElementData
     public Entity connection;
 }
 
+public struct FutureEventsForPlayer : IBufferElementData
+{
+    public Entity entityEvent;
+}
+
 public struct ServerEventData  : IComponentData
 {
     public NetworkTick tick;

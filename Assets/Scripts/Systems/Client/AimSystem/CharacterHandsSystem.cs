@@ -50,6 +50,8 @@ partial struct CharacterHandsSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+
+        Debug.Log(math.ceil(Time.time));
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         deltaTime = SystemAPI.Time.DeltaTime;
@@ -206,7 +208,7 @@ partial struct CharacterHandsSystem : ISystem
             target = target,
         });
     }
-
+    
     private void UpdateAimSystem(float angle,ref LocalTransform localSideHand, ref LocalTransform localItem, ref LocalTransform localMain, RefRW<Hands> hands, float maxDeltaTime = 0.05f)
     {
         quaternion mainTargetRotation;

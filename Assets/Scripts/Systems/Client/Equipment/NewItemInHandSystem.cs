@@ -88,6 +88,7 @@ partial struct NewItemInHandSystem : ISystem
                                 ChangeItemInHand(ref state,itemId,in hands.ValueRO);
                                 if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                                 {
+                                    CharacterHandsEvents.ResetAnimation(ref state,hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                     state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
                                     UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var ammoID);
                                 }
@@ -123,6 +124,7 @@ partial struct NewItemInHandSystem : ISystem
                                 if(tick == NetworkTick.Invalid)
                                     cooldownTick = networkTime.ServerTick;
 
+                                CharacterHandsEvents.ResetAnimation(ref state,hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                 Debug.Log("new item!!! " + cooldownTick.TickIndexForValidTick + "  " + EntityHelper.AddTime(cooldownTick,20).TickIndexForValidTick);
                                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(cooldownTick,20)});
                                 UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var ammoID);
@@ -196,7 +198,6 @@ partial struct NewItemInHandSystem : ISystem
     public void ChangeItemInHand(ref SystemState state,int itemID,in Hands hands)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
-
         if (item is Weapon) SetWeaponInHand(hands,item as Weapon,ref state);
         else SetItemInHand(hands,item, ref state);
     }
