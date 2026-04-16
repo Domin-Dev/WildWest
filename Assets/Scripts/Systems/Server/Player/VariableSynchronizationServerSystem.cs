@@ -33,7 +33,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
         foreach (var (playerInput,playerInputSync,owner,ghostChunk, entity) in
-        SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<GhostOwner>,RefRO<GhostChunk>>().WithEntityAccess())
+        SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<GhostOwner>,RefRO<GhostChunk>>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
             playerInputSync.ValueRW.sightDirection = playerInput.ValueRO.sightDirection;
@@ -42,14 +42,25 @@ partial struct VariableSynchronizationServerSystem : ISystem
 
 
             int NewSlotInHand = playerInput.ValueRO.slotInHand;
-            if (NewSlotInHand != playerInputSync.ValueRO.slotInHand)
-            {
-                playerInputSync.ValueRW.slotInHand = NewSlotInHand;
+            if (NewSlotInHand != playerInputSync.ValueRO.slotInHand && ghostChunk.ValueRO.HasChunk())
+            {               
+                Debug.Log("mmmmmmmmmmmmmmmmmmm  " + " "+ ghostChunk.ValueRO.GetChunk());
                 var from = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand);
                 var to = EquipmentConfig.itemInHand_SlotPosition;
-                EQHelper.Clone(ecb,from,to,barsLookup,slotsLookup,containersLookup,entity,out var newSlot,out var newBarData);
-                RPCHelper.SendEventsToClients<NewItemInHandRPC>(ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);     
-                state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,2)});
+                EQHelper.Clone(from,to,barsLookup,slotsLookup,containersLookup,entity,out var newSlot,out var newBarData);
+                int itemID = newSlot.HasValue ? newSlot.Value.itemId : -1;
+                
+                bool result;                    
+                if(playerInputSync.ValueRO.slotInHand != -1)
+                   result = RPCHelper.SendEventsToClients<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);     
+                else
+                   result = RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);     
+
+                if(result)
+                {
+                    playerInputSync.ValueRW.slotInHand = NewSlotInHand;
+                    state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,2)});
+                }
             }
             
             int newAmmoIndex = playerInput.ValueRO.ammoSelectedIndex;
@@ -68,7 +79,6 @@ partial struct VariableSynchronizationServerSystem : ISystem
                         {
                             playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
                             playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
-                            Debug.Log("zmiana ammo!! " + tick.TickIndexForValidTick);
                             RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);
                             state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,4)});
                         }

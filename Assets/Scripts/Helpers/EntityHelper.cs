@@ -48,6 +48,11 @@ public static class EntityHelper
     }
 
 
+    public static float TicksToSeconds(int ticks)
+    {
+        return (float)ticks / NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+    }
+
     public static NetworkTick AddTime(NetworkTick tick, float seconds)
     {
         tick.Add((uint)(1 + (NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * seconds)));

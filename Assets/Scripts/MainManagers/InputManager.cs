@@ -129,7 +129,6 @@ public class InputManager : MonoBehaviour
 
     private void PlayerList_performed(InputAction.CallbackContext obj)
     {
-        Debug.Log("input!!");
         playerTab = true;
     }
 

@@ -19,6 +19,7 @@ public class RangedWeapon : Weapon
     [Header("Visual effects")]
     public List<KeyFrame> shotAnim;
     public List<KeyFrame> reloadAnim; 
+    public List<KeyFrame> lostAmmo; 
 
     public float reloadCooldown => CalculateTime(reloadAnim);
 

@@ -77,7 +77,7 @@ partial struct CharacterAimSystem : ISystem
                         continue;
 
                     CalculateNextRotation(ref rot, direction,0.5f);
-                    //Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
+                   // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
                     
                     if(!playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
                     (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick)))
@@ -89,7 +89,7 @@ partial struct CharacterAimSystem : ISystem
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
-                               // Debug.Log("shoot!!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
+                           //     Debug.Log("shoot!!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
 
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                                     break;
@@ -114,9 +114,14 @@ partial struct CharacterAimSystem : ISystem
                                 {
                                     var slots = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,entity,weapon.ammoTagID,out var aggregated,out int counter);
                                     if(counter == 0) break;
+
                                     ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
+                                   
                                     if(state.World.IsServer())
-                                    {                                     
+                                    {      
+                                        if(EQHelper.PlayerHasTheAmmo(playerAspect.playerInputSync.ValueRO.ammoSelectedItemID,aggregated))
+                                            ammoID = playerAspect.playerInputSync.ValueRO.ammoSelectedItemID;
+                      
                                         for(int k = 0; k < slots.Length; k++)
                                         {
                                             if(slots[k].itemID == ammoID)

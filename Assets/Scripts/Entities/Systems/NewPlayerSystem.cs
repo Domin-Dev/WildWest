@@ -25,19 +25,18 @@ partial struct NewPlayerSystem : ISystem
         foreach ((RefRO<Player> player, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>, RefRW<PlayerLook>>().WithAll<Simulate,NewPlayerTag>().WithEntityAccess())
         {
 
-            
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
             Hands hands = new Hands() { rotated = true};
             Character character = new Character() { isMove = false };
             var children = SystemAPI.GetBuffer<Child>(entity);
 
-
             SetUpPlayer(ref children, ref state, ref hands, ref character);
 
 
             if(state.World.IsServer())
             {
+                Debug.Log("juzzzzzzzzzzzzzzzzz");
                 entityCommandBuffer.AddComponent(entity, new LastAction() { tick = NetworkTick.Invalid });
                 PlayerSourceConnection connection = new PlayerSourceConnection();
                 foreach ( (NetworkId netId,Entity e) in SystemAPI.Query<NetworkId>().WithEntityAccess())
@@ -54,6 +53,7 @@ partial struct NewPlayerSystem : ISystem
             {
                 Debug.Log("update new postac!!");
                 Entity update = entityCommandBuffer.CreateEntity();
+                
                 entityCommandBuffer.AddComponent(update, new LifeStatsChangedRPC());
             }
 

@@ -29,13 +29,9 @@ partial struct ContainerClientSystem : ISystem
         
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ContainerComponent> containerComponent,RefRO<GhostOwner> containerOwner, Entity entity) in SystemAPI.Query<RefRO<ContainerComponent>,RefRO<GhostOwner>>().WithNone<ContainerLoaded>().WithEntityAccess())
-        {
-            if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(entity)) 
-            {
-                NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
-            }
-                
-            foreach ((RefRO<Player> player,RefRO<GhostOwner> owner, Entity e) in SystemAPI.Query<RefRO<Player>,RefRO<GhostOwner>>().WithAll<PlayerContainers>().WithEntityAccess())
+        {        
+            bool found = false;
+            foreach ((RefRO<Player> player,RefRO<GhostOwner> owner, Entity e) in SystemAPI.Query<RefRO<Player>,RefRO<GhostOwner>>().WithAll<PlayerContainers>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(owner.ValueRO.NetworkId == containerOwner.ValueRO.NetworkId)
                 {
@@ -44,10 +40,20 @@ partial struct ContainerClientSystem : ISystem
                         entity = entity,
                         index = containerComponent.ValueRO.containerIndex
                     });
+
+                    if(containerComponent.ValueRO.containerIndex == EquipmentConfig.itemInHand_ContainerIndex)
+                        entityCommandBuffer.AddComponent<ContainersLoaded>(e);
+
+                    found = true;
                     break;
                 }
             }
+            if(!found) continue;
 
+            if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(entity)) 
+            {
+                NewEquipmentManager.instance.LoadContainer(containerComponent.ValueRO,entity);
+            }
             entityCommandBuffer.AddComponent<ContainerLoaded>(entity);
         }   
         entityCommandBuffer.Playback(state.EntityManager);

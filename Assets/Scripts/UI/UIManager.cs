@@ -50,8 +50,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Transform ammoBar;
     [SerializeField] private GameObject ammoUI;
 
+
+
+    #region AmmoUI
+
     [SerializeField] private GameObject ammoCounerPrefab;
     [SerializeField] private Transform ammoCountersParent;
+    [SerializeField] private GameObject ammoMagazinePrefab;
+    [SerializeField] private Transform ammoMagazineParent;
+
+
+    #endregion
 
     #region Equipment UI
     [Header("Equipment UI")]
@@ -114,6 +123,9 @@ public class UIManager : MonoBehaviour
     private EquipmentGrid containerGrid;
 
     private List<Transform> openWindows = new List<Transform>();
+            
+    public bool WindowsAreClosed => openWindows.Count == 0 && !ChatManager.instance.isChatting;
+
 
     private List<int> loadedScene = new List<int>();
     private List<(Color color, Type type)> colors;
@@ -125,8 +137,6 @@ public class UIManager : MonoBehaviour
 
 
 
-    public InventorySlot[] ammoTab; 
-    public int lastSelectedAmmo = -100;
 
    
     private void Awake()
@@ -1071,10 +1081,6 @@ public class UIManager : MonoBehaviour
         }
         return false;
     }
-    public bool WindowsAreClosed()
-    {
-        return openWindows.Count == 0;
-    }
 
     Timer timer;
 
@@ -1301,25 +1307,31 @@ public class UIManager : MonoBehaviour
         current.GetComponent<Image>().sprite = selected;
     }
     
-    public void NewItemInHand(InventorySlot? itemSlot,InventorySlot[] ammo, int selectedAmmoIndex)
+    public void NewItemInHand(InventorySlot? itemSlot,InventorySlot[] ammoToSelect, int selectedAmmoIndex,InventorySlot[] magazine)
     {
-        if(itemSlot.HasValue && ammo != null && ItemsAsset.instance.TryGetItem(itemSlot.Value.itemId,out var item))
-        {
-            UpdateAmmoInfo(item,ammo,selectedAmmoIndex);
-        }
+        if(itemSlot.HasValue && ammoToSelect != null && ItemsAsset.instance.TryGetItem(itemSlot.Value.itemId,out var item))
+            UpdateAmmoInfo(item,ammoToSelect,selectedAmmoIndex,magazine);
         else
-        {
-            UpdateAmmoInfo(null,null,-1);
-        }
+            UpdateAmmoInfo(null,null,-1,null);
     }
 
-    public void UpdateAmmoInfo(Item item,InventorySlot[] ammoList,int selectedAmmoIndex)
+
+
+
+    public void UpdateAmmoInfo(Item item,InventorySlot[] ammoList,int selectedAmmoIndex,InventorySlot[] magazine)
     {
         int ammoCount = ammoList  != null ? ammoList.Length : 0;
-        ammoTab = ammoList;
+        int magazineCount = magazine  != null ? ammoList.Length : 0;
+
+
         RangedWeapon rangedWeapon = item as RangedWeapon;
+
         for(int i = ammoCountersParent.childCount - 1; i >= ammoCount; i--)
             Destroy(ammoCountersParent.GetChild(i).gameObject);
+
+        // for(int i = ammoMagazineParent.childCount - 1; i >= magazineCount; i--)
+        //     Destroy(ammoCountersParent.GetChild(i).gameObject);
+
 
 
         if(rangedWeapon != null)
@@ -1340,25 +1352,13 @@ public class UIManager : MonoBehaviour
                     i++;
                 }
             }
+
             UpdateSelectedAmmo(selectedAmmoIndex);           
         }
     }
-    public bool UpdateSelectedAmmo(int selectedAmmoIndex)
+    public void UpdateSelectedAmmo(int childIndex)
     {
-        if(ammoTab == null || ammoTab.Length == 0) return false;
         Sounds.instance.Click();
-        selectedAmmoIndex = selectedAmmoIndex % ammoTab.Length;
-        UpdateAmmoChild(selectedAmmoIndex);
-        if(selectedAmmoIndex != lastSelectedAmmo)
-        {
-            lastSelectedAmmo = selectedAmmoIndex;
-            return true;
-        }
-        else
-            return false;
-    }
-    private void UpdateAmmoChild(int childIndex)
-    {
         for(int i = ammoCountersParent.childCount - 1; i >= 0; i--)
         {
            var icon = ammoCountersParent.GetChild(i).gameObject;
@@ -1368,55 +1368,6 @@ public class UIManager : MonoBehaviour
                 icon.transform.GetComponent<Image>().sprite = UIAssetsManager.instance.ironBackgroundUI;
         }
     }
-
-    // public void UpdateAmmoCounters(int itemID,int value)
-    // {
-    //     if(ammoTab == null) return;
-
-
-    //     for(int i = 0; i < ammoTab.Length;i++)
-    //     {
-    //         if(ammoTab[i].itemId == itemID)
-    //         {
-    //             var temp = ammoTab[i];
-    //             temp.quantity -= value;
-    //             ammoTab[i] = temp;
-    //             if(temp.quantity <= 0)
-    //             {
-    //                 Destroy(ammoCountersParent.GetChild(i).gameObject);
-    //                 if(ammoTab.Length >= 2)
-    //                 {
-    //                     var nowa = new InventorySlot[ammoTab.Length -1];
-    //                     int m  = 0;
-    //                     for(int j = 0; j < ammoTab.Length;j++)
-    //                     {
-    //                         if(j == i) continue;
-    //                         nowa[m] = ammoTab[j];
-    //                         m++;
-    //                     }
-    //                     if(i == ammoTab.Length -1)
-    //                     {;
-    //                         UpdateAmmoChild(0);  
-    //                     }
-    //                     else
-    //                         UpdateAmmoChild(i+1);  
-
-
-    //                     ammoTab = nowa;               
-    //                 }
-    //                 else
-    //                     ammoTab = null;            
-    //             }
-    //             else
-    //             {
-    //                 var icon = ammoCountersParent.GetChild(i).gameObject;
-    //                 icon.GetComponentInChildren<TextMeshProUGUI>().text = temp.quantity.ToString();     
-    //             }
-    //             break;
-    //         }
-    //     }
-    // }
-
     #endregion
 
 

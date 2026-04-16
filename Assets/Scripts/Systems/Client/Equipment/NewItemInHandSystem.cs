@@ -7,6 +7,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using System;
 using System.Linq;
+using Unity.VisualScripting;
 
 
 [UpdateInGroup(typeof(EquipmentSystemGroup), OrderLast = true)]
@@ -27,7 +28,7 @@ partial struct NewItemInHandSystem : ISystem
 
 
 
-    public static event Action<InventorySlot?,InventorySlot[],int> onNewItemInHand;
+    public static event Action<InventorySlot? ,InventorySlot[],int,InventorySlot[]> onNewItemInHand;
 
 
     [BurstCompile]
@@ -63,7 +64,6 @@ partial struct NewItemInHandSystem : ISystem
         
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer entityCommandBuffer = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-        var snapshotAck = SystemAPI.GetSingleton<NetworkSnapshotAck>();
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
 
@@ -71,44 +71,45 @@ partial struct NewItemInHandSystem : ISystem
         {     
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
-
-            foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRO<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRO<PlayerInputSync>>().WithAll<Player,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+            Debug.Log("nowey item!!!");
+            foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRW<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRW<PlayerInputSync>>().WithAll<Player,Simulate,ContainersLoaded>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
                 {
                     if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(entity))
                     {
-                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                        Debug.Log("NOWAAAAAAAAAAAAAAAAA "+ networkTime.InterpolationTick + "  " + rpcCommand.ValueRO.tick.TickIndexForValidTick);
+                        if(networkTime.InterpolationTick.IsNewerThan(rpcCommand.ValueRO.tick))
                         {
-                            if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(rpcCommand.ValueRO.tick))
+                            if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                             {    
-                                Debug.Log("uwaga new item");      
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                                 int itemId = slot.HasValue ? slot.Value.itemId : -1;
-                                ChangeItemInHand(ref state,itemId,in hands.ValueRO);
-                                if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+
+                                if(itemId == rpcCommand.ValueRO.itemID)
                                 {
-                                    CharacterHandsEvents.ResetAnimation(ref state,hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
-                                    state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
-                                    UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var ammoID);
+                                    Item item = ItemsAsset.instance.GetItem(itemId);
+                                    ChangeItemInHand(ref state,item,in hands.ValueRO);
+                                    if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+                                    {
+                                        CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
+                                        state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
+                                        UpdateUI(ref state,input,player,slot,slotsLookup,containersLookup,out var ammoID);
+                                    }
+                                    entityCommandBuffer.DestroyEntity(entity);
                                 }
-                                entityCommandBuffer.DestroyEntity(entity);
-
-
-                               // if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var item) && ammoID >= 0)
-                               // {
-                                    // EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new NewAmmoSelectedRPC()
-                                    // {
-                                    //     ammoID = ammoID,
-                                    //     weaponID = itemId,
-                                    //     networkID = owner.ValueRO.NetworkId 
-                                    // }); 
-                               // }
-                                    //CharacterHandsEvents.StartAnimation(ref state,item,hands.ValueRO,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,animArgs); 
-                                
+                            }
+                            else
+                            {
+                                Debug.Log("nie ma eq");
                             }
                         }
-                        SystemAPI.GetComponent<ReceiveRpcCommandRequest>(entity).Consume();
+                        else
+                        {
+                            var request = SystemAPI.GetComponent<ReceiveRpcCommandRequest>(entity);
+                            request.Consume();
+                            entityCommandBuffer.SetComponent(entity,request);
+                        }
                     }
                     else
                     {
@@ -116,7 +117,8 @@ partial struct NewItemInHandSystem : ISystem
                         {
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;
-                            ChangeItemInHand(ref state,itemId,in hands.ValueRO);
+                            Item item = ItemsAsset.instance.GetItem(itemId);
+                            ChangeItemInHand(ref state,item,in hands.ValueRO);
                             
                             if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                             {
@@ -124,10 +126,10 @@ partial struct NewItemInHandSystem : ISystem
                                 if(tick == NetworkTick.Invalid)
                                     cooldownTick = networkTime.ServerTick;
 
-                                CharacterHandsEvents.ResetAnimation(ref state,hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
+                                CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                 Debug.Log("new item!!! " + cooldownTick.TickIndexForValidTick + "  " + EntityHelper.AddTime(cooldownTick,20).TickIndexForValidTick);
                                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(cooldownTick,20)});
-                                UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var ammoID);
+                                UpdateUI(ref state,input,player,slot,slotsLookup,containersLookup,out var ammoID);
                             }
                             entityCommandBuffer.DestroyEntity(entity);
 
@@ -154,8 +156,8 @@ partial struct NewItemInHandSystem : ISystem
 
             if(!found)
             {
-                tick.Add(50u);
-                if(snapshotAck.LastReceivedSnapshotByLocal.IsNewerThan(tick))
+                Debug.Log("interpolation tick " + networkTime.InterpolationTick.IsValid + " " + tick.IsValid);
+                if(!tick.IsValid || networkTime.InterpolationTick.IsNewerThan(EntityHelper.AddTime(tick,200)))
                 {
                     entityCommandBuffer.DestroyEntity(entity);
                 }
@@ -164,12 +166,12 @@ partial struct NewItemInHandSystem : ISystem
         }   
     }
 
-    public static void UpdateItemInHands()
+    public static void UpdateItemInHandUI(InventorySlot? item ,InventorySlot[] ammo,int selectedAmmoIndex)
     {
-        
+        onNewItemInHand?.Invoke(item,ammo,selectedAmmoIndex,null);    
     }
 
-    public static void UpdateUI(ref SystemState state, Entity player, InventorySlot? itemSlot, BufferLookup<InventorySlot> slotsLookup,BufferLookup<PlayerContainers> containersLookup,out int ammoID)
+    public static void UpdateUI(ref SystemState state,RefRW<PlayerInputSync> input, Entity player, InventorySlot? itemSlot, BufferLookup<InventorySlot> slotsLookup,BufferLookup<PlayerContainers> containersLookup,out int ammoID)
     {
         ammoID = -1;      
         InventorySlot[] ammo = null;
@@ -185,23 +187,23 @@ partial struct NewItemInHandSystem : ISystem
             }
 
             NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID); 
+            input.ValueRW.ammoSelectedItemID = ammoID;
         }
         else
         {
             NewEquipmentManager.instance.SetAmmoTag(-1);
-        }            
-        onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo);    
-    
+            input.ValueRW.ammoSelectedItemID = -1;
+        }
+
+        onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo,null);    
     }    
 
-
-    public void ChangeItemInHand(ref SystemState state,int itemID,in Hands hands)
+    public static void ChangeItemInHand(ref SystemState state,Item item,in Hands hands)
     {
-        Item item = ItemsAsset.instance.GetItem(itemID);
         if (item is Weapon) SetWeaponInHand(hands,item as Weapon,ref state);
         else SetItemInHand(hands,item, ref state);
     }
-    private void SetWeaponInHand(Hands hands,Weapon weapon,ref SystemState state)
+    private static void SetWeaponInHand(Hands hands,Weapon weapon,ref SystemState state)
     {
         SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand);
         LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInMainHand);
@@ -238,14 +240,14 @@ partial struct NewItemInHandSystem : ISystem
             ResetSideHand(hands,ref sideHandTransform, ref state);
         }
 
-
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInSideHand).sprite = null;
         state.EntityManager.SetComponentData(hands.itemInMainHand, localTransform);
         state.EntityManager.SetComponentData(hands.sidehand, sideHandTransform);
         state.EntityManager.SetComponentData(hands.aimPoint, aimPoint);
         state.EntityManager.SetComponentData(hands.reloadPoint, reloadPoint);
         state.EntityManager.SetComponentData(hands.mainhand, mainHand);
     }
-    private void SetItemInHand(Hands hands,Item item, ref SystemState state)
+    private static void SetItemInHand(Hands hands,Item item, ref SystemState state)
     {
         SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand);
         LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInMainHand);
@@ -263,16 +265,18 @@ partial struct NewItemInHandSystem : ISystem
 
         if (item != null)
             spriteRenderer.sprite = item.icon;
+
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInSideHand).sprite = null;
         state.EntityManager.SetComponentData(hands.itemInMainHand, localTransform);
         state.EntityManager.SetComponentData(hands.sidehand, sideHandTransform);
         state.EntityManager.SetComponentData(hands.mainhand, mainHand);
     }
-    private void ResetSideHand(Hands hands,ref LocalTransform sideHandTransform, ref SystemState state)
+    private static void ResetSideHand(Hands hands,ref LocalTransform sideHandTransform, ref SystemState state)
     {
         state.EntityManager.SetComponentData(hands.sidehand, new Parent { Value = hands.side });
         sideHandTransform.Position = new float3(-0.09f,0,0);
     }
-    private void SetRangedWeaponInHand(RangedWeapon rangedWeapon,ref LocalTransform mainHand, ref LocalTransform localTransform, ref LocalTransform aimPoint, ref LocalTransform reloadPoint)
+    private static void SetRangedWeaponInHand(RangedWeapon rangedWeapon,ref LocalTransform mainHand, ref LocalTransform localTransform, ref LocalTransform aimPoint, ref LocalTransform reloadPoint)
     {
         mainHand.Position.y = -rangedWeapon.aimPoint.y + rangedWeapon.gripPoint1.y;
 

@@ -5,6 +5,16 @@ using Unity.NetCode;
 
 
 
+
+
+public static class EquipementEventFlags
+{
+    public static int UpdateSlot = 1;
+    public static int ClearContainer = 2;
+    public static int ClearAllContainers = 3;
+    public static int UpdateWetness = 4;
+}
+
 public struct EquipmentEventData
 {
     public int slot;

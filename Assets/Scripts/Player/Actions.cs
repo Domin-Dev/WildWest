@@ -37,7 +37,7 @@ public class Actions : MonoBehaviour
     }
     private void Update()
     {
-        if (UIManager.instance.WindowsAreClosed())
+        if (UIManager.instance.WindowsAreClosed)
         {
            // Vector2 pos = GridVisualization.instance.GetGridPosition(MyTools.GetMouseWorldPosition());
             //if (pos != lastPos)

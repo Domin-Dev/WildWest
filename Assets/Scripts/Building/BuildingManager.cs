@@ -74,7 +74,7 @@ public class BuildingManager : MonoBehaviour
     {
         if (buildingMode)
         {
-            if (selectedObjectID > 0 && UIManager.instance.WindowsAreClosed())
+            if (selectedObjectID > 0 && UIManager.instance.WindowsAreClosed)
             {
                 Vector2 pos = Actions.GetMousePosXY();
                 if (lastPos != pos) Plan(pos);

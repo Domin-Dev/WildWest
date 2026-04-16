@@ -154,7 +154,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                 {
                     var owner = SystemAPI.GetComponent<GhostOwner>(pair.entity);
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player.playerEntity);
-                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       
+                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);    
+                    Debug.Log("poszlo rpc !");   
                 }
 
                 ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);

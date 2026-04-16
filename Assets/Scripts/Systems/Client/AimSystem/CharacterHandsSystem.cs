@@ -50,8 +50,6 @@ partial struct CharacterHandsSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-
-        Debug.Log(math.ceil(Time.time));
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         deltaTime = SystemAPI.Time.DeltaTime;
@@ -134,7 +132,7 @@ partial struct CharacterHandsSystem : ISystem
 
                 position.ValueRW.Rotation = targetRotation;
                 position.ValueRW.Position = targetPosition;
-                animation.ValueRW.elapsedTime = 0;
+                animation.ValueRW.elapsedTime = animation.ValueRO.elapsedTime - element.duration;
                 frames.RemoveAt(0);
             }
         }
@@ -169,7 +167,7 @@ partial struct CharacterHandsSystem : ISystem
     private void ChangeSpriteInSideHand(ref SystemState state,Entity itemInHand,AnimationEvents eventFrame)
     {
         Sprite sprite = null;
-        if(ItemsAsset.instance.TryGetItem(eventFrame.id,out var item))
+        if(eventFrame.id >= 0 && ItemsAsset.instance.TryGetItem(eventFrame.id,out var item))
             sprite = item.GetWorldSprite;
 
         var pos = state.EntityManager.GetComponentData<LocalTransform>(itemInHand);

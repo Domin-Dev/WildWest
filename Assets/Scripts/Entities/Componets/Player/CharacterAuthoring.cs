@@ -26,9 +26,12 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new PlayerInput()
             {
                 sightDirection = new float2(float.MinValue,float.MinValue),
+                slotInHand = 0
+            });
+            AddComponent(entity, new PlayerInputSync()
+            {
                 slotInHand = -1
             });
-            AddComponent(entity, new PlayerInputSync());
             AddComponent(entity, new PlayerLook());
 
 
@@ -59,9 +62,8 @@ public struct PlayerInput : IInputComponentData
     [GhostField(Quantization = 0)] public int slotInHand;
     [GhostField(Quantization = 0)] public int ammoSelectedIndex;
 
-
     [GhostField(Quantization = 0)] public NetworkTick dataTick;
-
+    
     public bool SightDirectionIsEmpty()
     {
         return sightDirection.x == float.MinValue && sightDirection.y == float.MinValue;
@@ -80,6 +82,7 @@ public struct PlayerInputSync : IComponentData
     public int slotInHand; 
     public int ammoSelectedIndex;
     public int ammoSelectedItemID;
+    public int ammoSelectedTagID;
 }
 
 
@@ -91,6 +94,7 @@ public struct PlayerLook : IComponentData
 }
 
 
+public struct ContainersLoaded : IComponentData{}
 
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]
 public struct Player : IComponentData
@@ -189,6 +193,12 @@ public struct GhostChunk : IComponentData
         else
             return current;
     }
+
+    public bool HasChunk()
+    {
+        return GetChunk() != int.MinValue;
+    }
+
     public bool SpawnChunkIsNull()
     {
         return current == int.MinValue;

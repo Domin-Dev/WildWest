@@ -79,7 +79,7 @@ public class MyCharacterController: MonoBehaviour, ILifePoints, IUsesWeapons
     }
     private void FixedUpdate()
     {
-        if(UIManager.instance.WindowsAreClosed()) heroStateMachine.currentState.FrameFixedUpdate();
+        if(UIManager.instance.WindowsAreClosed) heroStateMachine.currentState.FrameFixedUpdate();
     }
    
     public void UpdateFlip()

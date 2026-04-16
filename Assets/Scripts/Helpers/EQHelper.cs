@@ -43,7 +43,25 @@ public struct SlotData
 
 public static class EQHelper
 {
-   
+    public static bool PlayerHasTheAmmo(int ammoID,InventorySlot[] slots)
+    {
+        return PlayerHasTheAmmo(ammoID,slots,out var index);
+    }
+    public static bool PlayerHasTheAmmo(int ammoID,InventorySlot[] slots, out int index)
+    {
+        for(int i = 0; i < slots.Length;i++)
+        {
+            if(slots[i].itemId == ammoID)
+            {
+                index = i;
+                return true;   
+            }
+        }
+        index = -1;
+        return false;
+    }
+
+
     public static bool TryGetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player,int containerIndex, out PlayerContainers? playerContainer)
     {
         playerContainer = GetPlayerContainer(containersLookup,player,containerIndex);
@@ -806,7 +824,6 @@ public static class EQHelper
         Dictionary<int,InventorySlot> aggregator = new Dictionary<int,InventorySlot>();
 
         
-
         for (int i = 0; i < playerContainers.Length; i++)
         {
             var container = playerContainers[i];
@@ -952,15 +969,15 @@ public static class EQHelper
     }
 
 
-    public static void Clone(EntityCommandBuffer ecb,SlotPosition from, SlotPosition to,BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containersLookup, Entity player, out InventorySlot? newSlot, out ItemBarData? newBarData)
+    public static void Clone(SlotPosition from, SlotPosition to,BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containersLookup, Entity player, out InventorySlot? newSlot, out ItemBarData? newBarData)
     {
         var containerFrom = GetPlayerContainer(containersLookup,player,from);
         var containerTo = GetPlayerContainer(containersLookup,player,to);
 
         if(containerFrom.HasValue && containerTo.HasValue)
         {
-            Clone<InventorySlot>(ecb,slotsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity, out newSlot); 
-            Clone<ItemBarData>(ecb,barsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity, out newBarData); 
+            Clone<InventorySlot>(slotsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity, out newSlot); 
+            Clone<ItemBarData>(barsLookup,from,to,containerFrom.Value.entity,containerTo.Value.entity, out newBarData); 
         }
         else
         {
@@ -968,7 +985,7 @@ public static class EQHelper
             newBarData = null;   
         }
     }
-    private static void Clone<T>(EntityCommandBuffer ecb,BufferLookup<T> lookup, SlotPosition from, SlotPosition to, Entity containerFrom, Entity containerTo, out T? newValue) where T : unmanaged,IBufferElementData,IGetSlot
+    private static void Clone<T>(BufferLookup<T> lookup, SlotPosition from, SlotPosition to, Entity containerFrom, Entity containerTo, out T? newValue) where T : unmanaged,IBufferElementData,IGetSlot
     {
         bool hasFrom = TryGetBufferIndex(lookup,from.slotIndex,containerFrom,out var itemFrom,out int bufferFrom);
         bool hasTo = TryGetBufferIndex(lookup,to.slotIndex,containerTo,out var itemTo,out int bufferTo);
@@ -984,7 +1001,7 @@ public static class EQHelper
                 slotTo = slot;
             }
             else
-                ecb.AppendToBuffer(containerTo,slot);  
+                lookup[containerTo].Add(slot);  
             newValue = slot;
         }
         else if(hasTo)

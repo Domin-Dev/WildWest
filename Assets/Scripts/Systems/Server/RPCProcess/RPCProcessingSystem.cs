@@ -69,27 +69,35 @@ partial struct RPCProcessingSystem : ISystem
         foreach ((RefRO<FutureReloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
         SystemAPI.Query<RefRO<FutureReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
-            Debug.Log("wykoanie evenytu!!!!!");
             Entity player = toPlayers.ElementAt(0).connection; 
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
             {
                 var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
+                var playerInputSync = state.EntityManager.GetComponentData<PlayerInputSync>(player);
+
                 if(ammo.Length > 0)
                 {
-                    var playerInputSync = state.EntityManager.GetComponentData<PlayerInputSync>(player);
                     var playerInput = state.EntityManager.GetComponentData<PlayerInput>(player);
                     var ghostChunk = state.EntityManager.GetComponentData<GhostChunk>(player);
+                    var ammoID = playerInputSync.ammoSelectedItemID;
 
-                    var selectedAmmo = playerInput.ammoSelectedIndex % ammo.Length;
-                    var ammoID = ammo[selectedAmmo].itemId;
-                    playerInputSync.ammoSelectedItemID = ammoID;
-                    playerInputSync.ammoSelectedIndex = selectedAmmo;
+                    if(!EQHelper.PlayerHasTheAmmo(playerInputSync.ammoSelectedItemID,ammo))
+                    {
+                        var selectedAmmo = playerInput.ammoSelectedIndex % ammo.Length;
+                        ammoID = ammo[selectedAmmo].itemId;
+                        playerInputSync.ammoSelectedItemID = ammoID;
+                        playerInputSync.ammoSelectedIndex = selectedAmmo;
+                    }
                     
                     RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
                     ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),rpc.ValueRO.tick,true);          
-                    state.EntityManager.SetComponentData(player,playerInputSync);
                 }
+                else
+                {
+                    playerInputSync.ammoSelectedItemID = -1;
+                }
+                state.EntityManager.SetComponentData(player,playerInputSync);
             }
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
             for(int i = buffer.Length - 1; i >= 0;i--)
@@ -116,30 +124,42 @@ partial struct RPCProcessingSystem : ISystem
         {
             Entity player = toPlayers.ElementAt(0).connection;
             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,20)});
+            var playerInputSync = state.EntityManager.GetComponentData<PlayerInputSync>(player);
 
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
             ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
             {
-                var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
-                if(ammo.Length > 0)
-                {
-                    var playerInputSync = state.EntityManager.GetComponentData<PlayerInputSync>(player);
-                    var playerInput = state.EntityManager.GetComponentData<PlayerInput>(player);
-                    var ghostChunk = state.EntityManager.GetComponentData<GhostChunk>(player);
 
+                var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
+                Debug.Log("wyslalno !!! " + ammo.Length);
+                if(ammo.Length > 0)
+                {                 
+                    var playerInput = state.EntityManager.GetComponentData<PlayerInput>(player);
+                    var ghostChunk = state.EntityManager.GetComponentData<GhostChunk>(player);   
                     var selectedAmmo = playerInput.ammoSelectedIndex % ammo.Length;
                     var ammoID = ammo[selectedAmmo].itemId;
+
                     playerInputSync.ammoSelectedItemID = ammoID;
                     playerInputSync.ammoSelectedIndex = selectedAmmo;
-                    
+                    playerInputSync.ammoSelectedTagID = item.ammoTagID;
+
                     RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
-                    ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),rpc.ValueRO.tick,true);
-                    
-                    state.EntityManager.SetComponentData(player,playerInputSync);
+                    ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),rpc.ValueRO.tick,true);                    
                 }
-                Debug.Log("nowe kkkk!!! " + tick.TickIndexForValidTick);
+                else
+                {
+                    playerInputSync.ammoSelectedTagID = item.ammoTagID;
+                    playerInputSync.ammoSelectedItemID = -1;
+                }             
+            }
+            else
+            {
+                playerInputSync.ammoSelectedTagID = -1;
+                playerInputSync.ammoSelectedItemID = -1;
             }
 
+
+            state.EntityManager.SetComponentData(player,playerInputSync);
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
             for(int i = buffer.Length - 1; i >= 0;i--)
             {
@@ -163,12 +183,11 @@ partial struct RPCProcessingSystem : ISystem
         foreach ((RefRO<NewAmmoSelectedRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
         SystemAPI.Query<RefRO<NewAmmoSelectedRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
+            Debug.Log("poszlo nowe rpc!");
             Entity player = toPlayers.ElementAt(0).connection;
             if(ItemsAsset.instance.TryGetItem<RangedWeapon>(rpc.ValueRO.weaponID,out var item))
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.reloadCooldown)});
             
-            Debug.Log("wysylam "+ rpc.ValueRO.tick.TickIndexForValidTick);
-
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
             for(int i = buffer.Length - 1; i >= 0;i--)
             {

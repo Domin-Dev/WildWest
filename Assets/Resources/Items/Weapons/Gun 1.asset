@@ -190,7 +190,7 @@ MonoBehaviour:
       x: 0
       y: -0.05
       z: 0
-    duration: 0.6
+    duration: 0.45
     events:
     - EventType: 5
       position:
@@ -214,8 +214,33 @@ MonoBehaviour:
       x: 0
       y: 0
       z: 0
-    duration: 0.6
+    duration: 0.45
     events: []
+  lostAmmo:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0
+    events:
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: -1
   aimPoint:
     x: 0.035
     y: -0.005

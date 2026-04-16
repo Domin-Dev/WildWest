@@ -40,10 +40,8 @@ partial struct PlayerInputSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         float2 input = (float2)InputManager.i.move.ReadValue<Vector2>();
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
-
         bool left = InputManager.i.mainAction.inProgress;
         bool right = InputManager.i.sideAction.inProgress;
-
 
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
@@ -60,23 +58,88 @@ partial struct PlayerInputSystem : ISystem
             WindowsManager.instance.LoadScene(9);
         }
 
+        
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,RefRW<Cooldown> cooldown, Entity entity) in 
+        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,RefRW<Cooldown> cooldown, Entity playerEntity) in 
             SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
+            if(!UIManager.instance.WindowsAreClosed)
+            {
+                playerInput.ValueRW.leftButton = default;
+                playerInputSync.ValueRW.leftButton = default;
+
+                playerInput.ValueRW.rightButton = default;
+                playerInputSync.ValueRW.rightButton = default;
+
+                playerInput.ValueRW.movementDirection = float2.zero;
+                playerInputSync.ValueRW.movementDir = float2.zero;
+
+                continue;
+            }
+
             playerInput.ValueRW.movementDirection = input;
             playerInputSync.ValueRW.movementDir = input;
 
             playerInput.ValueRW.sightDirection = sightDirection;
             playerInputSync.ValueRW.sightDirection = sightDirection;
 
-            if (left)
+
+            int newSlot = InputManager.i.GetNextSlotInHand(playerInput.ValueRO.slotInHand);
+            int newAmmoIndex = InputManager.i.GetNextAmmoIndex(playerInput.ValueRO.ammoSelectedIndex);
+
+            if(playerInputSync.ValueRO.slotInHand != newSlot)
             {
-                if(!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
-                {
-                    playerInput.ValueRW.leftButton.Set();
-                    playerInputSync.ValueRW.leftButton.Set();
+                UpdateItemInHand(slotsLookup,containersLookup,playerEntity,newSlot);
+                playerInput.ValueRW.slotInHand = newSlot;
+                playerInputSync.ValueRW.slotInHand = newSlot;
+                
+                if(cooldown.ValueRO.cooldownTick.IsValid && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
+                    cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);
+                cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,5);
+                EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC() { networkID = owner.ValueRO.NetworkId  });
+            }
+
+            if(playerInputSync.ValueRO.ammoSelectedIndex != newAmmoIndex)
+            {
+                int ammoID = -1;
+                playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                playerInputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                
+                if(EQHelper.TryGetPlayerContainer(containersLookup,playerEntity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                {                         
+                    EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
+                    if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
+                    {
+                        var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,playerEntity,item.ammoTagID,out int counter);
+                        if(ammo.Length > 0)
+                        {
+                            newAmmoIndex =  newAmmoIndex % ammo.Length;
+                            ammoID = ammo[newAmmoIndex].itemId;
+
+                            playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                            playerInputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                        }
+                    }
                 }
+
+                if(ammoID != playerInputSync.ValueRO.ammoSelectedItemID)
+                {
+                    playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
+                    if(ammoID >= 0)
+                    {
+                        UIManager.instance.UpdateSelectedAmmo(newAmmoIndex);
+                        if(cooldown.ValueRO.cooldownTick.IsValid  && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
+                            cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);  
+                        cooldown.ValueRW.cooldownTick  = EntityHelper.AddTime(tick,15);    
+                    }             
+                } 
+            } 
+            
+
+            if (left && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick)))
+            {
+                playerInput.ValueRW.leftButton.Set();
+                playerInputSync.ValueRW.leftButton.Set();
             }
             else
             {
@@ -84,49 +147,16 @@ partial struct PlayerInputSystem : ISystem
                 playerInputSync.ValueRW.leftButton = default;
             }
 
-            if (right)
+            if (right && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick)))
             {
                 playerInput.ValueRW.rightButton.Set();
                 playerInputSync.ValueRW.rightButton.Set();
-
-                quaternion quaternion = SystemAPI.GetComponent<LocalTransform>(hands.ValueRO.main).Rotation;
-                //playerInput.ValueRW.handRotation = quaternion;
-                //playerInputSync.ValueRW.handRotation = quaternion;
             }
             else
             {
                 playerInput.ValueRW.rightButton = default;
                 playerInputSync.ValueRW.rightButton = default;
             }
-
-
-            int newSlot = InputManager.i.GetNextSlotInHand(playerInput.ValueRO.slotInHand);
-            int newAmmoIndex = InputManager.i.GetNextAmmoIndex(playerInput.ValueRO.ammoSelectedIndex);
-
-
-            if(playerInput.ValueRO.slotInHand != newSlot)
-            {
-                UpdateItemInHand(slotsLookup,containersLookup,entity,newSlot);
-                playerInput.ValueRW.slotInHand = newSlot;
-                playerInputSync.ValueRW.slotInHand = newSlot;
-                Debug.Log("nowa bron!!" +  tick.TickIndexForValidTick + "  ,, "  + EntityHelper.AddTime(tick,5));    
-                if(cooldown.ValueRO.cooldownTick.IsValid && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
-                    cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);
-                cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,5);
-
-                EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC() { networkID = owner.ValueRO.NetworkId  });
-            }
-
-            if(playerInput.ValueRO.ammoSelectedIndex != newAmmoIndex)
-            {
-                playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
-                if(UIManager.instance.UpdateSelectedAmmo(newAmmoIndex))
-                {  
-                    if(cooldown.ValueRO.cooldownTick.IsValid  && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
-                        cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);  
-                    cooldown.ValueRW.cooldownTick  = EntityHelper.AddTime(tick,15);
-                } 
-            } 
         } 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();  

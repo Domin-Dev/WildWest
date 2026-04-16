@@ -14,8 +14,8 @@ using UnityEngine.Experimental.GlobalIllumination;
 public readonly partial struct PlayerAspect : IAspect
 {
 
+    public readonly RefRO<PlayerInputSync> playerInputSync;
 
-    public readonly RefRO<PlayerInput> playerInputSync;
     public readonly RefRO<LocalTransform> playerPosition;
     public readonly RefRO<LocalToWorld> localToWorld;
     public readonly RefRW<Hands> hands;

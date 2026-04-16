@@ -6,7 +6,6 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Burst.Intrinsics;
 using System.Linq;
-using Unity.Entities.UniversalDelegates;
 
 
 public struct EqiupmentEventClient
@@ -96,13 +95,42 @@ partial struct EquipmentClientSystem : ISystem
             barsLookup.Update(ref state);
             containersLookup.Update(ref state);
 
-            foreach( (var input,Entity player) in  SystemAPI.Query<RefRO<PlayerInput>>().WithAll<Player,GhostOwnerIsLocal>().WithEntityAccess())
+            foreach( (var inputSync, var input ,Entity player) in  SystemAPI.Query<RefRW<PlayerInputSync>,RefRW<PlayerInput>>().WithAll<Player,GhostOwnerIsLocal>().WithEntityAccess())
             {
+                int ammoID = -1;
+                int newAmmoIndex = inputSync.ValueRO.ammoSelectedIndex;
+                InventorySlot[] ammo = null;
+                InventorySlot? slot = null;
+
+
                 if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
                 {                         
-                    EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
-                    NewItemInHandSystem.UpdateUI(ref state,player,slot,slotsLookup,containersLookup,out var outArgs);
+                    EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out slot, out int bufferIndex);   
+                    if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
+                    {
+                        ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
+                        if(ammo.Length > 0)
+                        {
+                            if(EQHelper.PlayerHasTheAmmo(inputSync.ValueRO.ammoSelectedItemID,ammo,out int index))
+                            {
+                                ammoID = inputSync.ValueRO.ammoSelectedItemID;
+                                newAmmoIndex = index;
+                            }
+                            else
+                            {
+                                newAmmoIndex = newAmmoIndex % ammo.Length;
+                                ammoID = ammo[newAmmoIndex].itemId;
+                            }
+                            Debug.Log("zmaina ammo !" + ammoID);
+                        } 
+                    }
                 }  
+                
+                Debug.Log("zmaina " + newAmmoIndex);
+                inputSync.ValueRW.ammoSelectedItemID = ammoID;
+                inputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                input.ValueRW.ammoSelectedIndex = newAmmoIndex;
+                NewItemInHandSystem.UpdateItemInHandUI(slot,ammo,newAmmoIndex);  
             }
             NewEquipmentManager.instance.needUpdateAmmoUI = false;
         }

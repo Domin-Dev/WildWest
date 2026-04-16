@@ -118,51 +118,53 @@ public partial class SavingServerSystem : SystemBase
             ecb.SetComponentEnabled<ToSave>(entity,false);
         }
     
-        foreach ((RefRO<GhostOwner> owner,RefRO<ContainerComponent> containerComponent,DynamicBuffer<InventorySlot> slots,DynamicBuffer<ItemBarData> barData, Entity entity) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<ContainerComponent>,DynamicBuffer<InventorySlot>,DynamicBuffer<ItemBarData>>().WithAll<ToSave>().WithEntityAccess())
-        {
-            NativeArray<SlotSave> slotsArray = new NativeArray<SlotSave>(containerComponent.ValueRO.capacity,Allocator.Persistent);
-            NativeArray<BarDataSave> itemBarData = new NativeArray<BarDataSave>(containerComponent.ValueRO.capacity,Allocator.Persistent);
+        // foreach ((RefRO<GhostOwner> owner,RefRO<ContainerComponent> containerComponent,DynamicBuffer<InventorySlot> slots,DynamicBuffer<ItemBarData> barData, Entity entity) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<ContainerComponent>,DynamicBuffer<InventorySlot>,DynamicBuffer<ItemBarData>>().WithAll<ToSave>().WithEntityAccess())
+        // {
+        //     NativeArray<SlotSave> slotsArray = new NativeArray<SlotSave>(containerComponent.ValueRO.capacity,Allocator.Persistent);
+        //     NativeArray<BarDataSave> itemBarData = new NativeArray<BarDataSave>(containerComponent.ValueRO.capacity,Allocator.Persistent);
         
-            for(int i = 0; i < slotsArray.Length; i++)
-            {
-                slotsArray[i] = new SlotSave(){ itemId = -1};
-                itemBarData[i] = new BarDataSave(){ value = -1};
-            }
+        //     for(int i = 0; i < slotsArray.Length; i++)
+        //     {
+        //         slotsArray[i] = new SlotSave(){ itemId = -1};
+        //         itemBarData[i] = new BarDataSave(){ value = -1};
+        //     }
 
             
     
-            foreach(var slot in slots)
-            {
-                int slotIndex = slot.slot;
-                if(slotIndex < 0 )
-                    slotIndex = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(slotIndex);
+        //     foreach(var slot in slots)
+        //     {
+        //         int slotIndex = slot.slot;
+        //         if(slotIndex < 0 )
+        //             slotIndex = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(slotIndex);
 
-                if(slotsArray[slotIndex].quantity > 0)
-                    slotsArray[slotIndex].Add(slot.quantity);
-                else
-                    slotsArray[slotIndex] = new SlotSave(slot);    
-            }
+        //         if(slotsArray[slotIndex].quantity > 0)
+        //             slotsArray[slotIndex].Add(slot.quantity);
+        //         else
+        //             slotsArray[slotIndex] = new SlotSave(slot);    
+        //     }
         
         
-            foreach(var data in barData)
-                itemBarData[data.slot] = new BarDataSave(data);
+        //     foreach(var data in barData)
+        //         itemBarData[data.slot] = new BarDataSave(data);
 
-            foreach(var player in playersList)
-            {
-                if(player.networkID == owner.ValueRO.NetworkId)
-                {
-                    containersToSaveRW.Add((player.playerName,new ContainerSave()
-                    {
-                        containerIndex = containerComponent.ValueRO.containerIndex,
-                        capacity = containerComponent.ValueRO.capacity,
-                        slots = slotsArray,
-                        barData = itemBarData
-                    }));
-                }
-            } 
-            ecb.SetComponentEnabled<ToSave>(entity,false);
-        }
+        //     foreach(var player in playersList)
+        //     {
+        //         if(player.networkID == owner.ValueRO.NetworkId)
+        //         {
+        //             containersToSaveRW.Add((player.playerName,new ContainerSave()
+        //             {
+        //                 containerIndex = containerComponent.ValueRO.containerIndex,
+        //                 capacity = containerComponent.ValueRO.capacity,
+        //                 slots = slotsArray,
+        //                 barData = itemBarData
+        //             }));
+        //         }
+        //     } 
+        //     ecb.SetComponentEnabled<ToSave>(entity,false);
+        // }
         
+
+
         foreach ((RefRO<Player> player,RefRO<PlayerSourceConnection> connection,RefRO<Health> health,RefRO<Hunger> hunger, RefRO<Thirst> thirst, RefRO<PlayerLook> look,RefRO<LocalTransform> pos,Entity entity) in 
         SystemAPI.Query<RefRO<Player>,RefRO<PlayerSourceConnection>,RefRO<Health>,RefRO<Hunger>, RefRO<Thirst>,RefRO<PlayerLook>,RefRO<LocalTransform>>().WithAll<ToSave>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
