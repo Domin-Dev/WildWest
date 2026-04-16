@@ -20,7 +20,7 @@ MonoBehaviour:
   worldSprite: {fileID: -5621275025976656576, guid: 1c4213a8951599a8bbfb319f06a94b5f, type: 3}
   animSprites: []
   tags:
-  - tag: {fileID: 11400000, guid: bbea7d2ee9395dcd0bd0575d90362450, type: 2}
+  - tag: {fileID: 11400000, guid: 405132f4de430882f95470bf5519a96f, type: 2}
   crafingIngredients:
   - itemID: 0
     number: 0

@@ -45,7 +45,7 @@ MonoBehaviour:
   bulletCount: 1
   shotSpread: 10
   bulletSpread: 0
-  ammoTag: {fileID: 11400000, guid: bbea7d2ee9395dcd0bd0575d90362450, type: 2}
+  ammoTag: {fileID: 11400000, guid: 405132f4de430882f95470bf5519a96f, type: 2}
   shotAnim:
   - bodyPartType: 0
     positionMode: 0

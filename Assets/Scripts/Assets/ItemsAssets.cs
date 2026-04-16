@@ -263,7 +263,7 @@ public class ItemsAsset : MonoBehaviour
         {
             if (ammoList[i].type == type)
             {
-                return (GetItem(ammoList[i].id) as Ammo).inHandSprite;
+                return (GetItem(ammoList[i].id) as Ammo).GetWorldSprite;
             }
         }
         return null;

@@ -8,6 +8,8 @@ using Unity.NetCode;
 public struct ContainerComponent : IComponentData
 {
     [GhostField] public ContainerStats containerStats;
+    [GhostField] public int parentContainerIndex;
+
 
     public int containerIndex => containerStats.containerIndex;
     public MandatoryProperties mandatoryProperties => containerStats.mandatoryProperties;

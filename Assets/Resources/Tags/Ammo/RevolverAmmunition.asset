@@ -9,21 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b14d90bbc0b0b9b44b669c7c7e90daa0, type: 3}
+  m_Script: {fileID: 11500000, guid: 329aa87b924e7b925808e2f48f160d3e, type: 3}
   m_Name: RevolverAmmunition
-  m_EditorClassIdentifier: Assembly-CSharp::Tag
+  m_EditorClassIdentifier: Assembly-CSharp::AmmoTag
   _icon: {fileID: -1329511708, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   _localizedString:
     m_TableReference:
-      m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableCollectionName: 
     m_TableEntryReference:
-      m_KeyId: 7727035611262976
+      m_KeyId: 0
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
-  _tagName: Revolver ammunition
-  _ID: 10
+  _tagName: RevolverAmmunition
+  _ID: 12
+  noAmmoIconUI: {fileID: 874343242196921964, guid: 4736b038f1f3cab409b4c9cbafafedc4, type: 3}
   references:
     version: 2
     RefIds: []

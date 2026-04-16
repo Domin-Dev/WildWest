@@ -14,7 +14,7 @@ public class RangedWeapon : Weapon
     [Min(1)]public int bulletCount = 1;
     public float shotSpread;
     public float bulletSpread = 0;
-    public Tag ammoTag;
+    public AmmoTag ammoTag;
     
     [Header("Visual effects")]
     public List<KeyFrame> shotAnim;

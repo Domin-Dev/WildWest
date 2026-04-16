@@ -301,6 +301,7 @@ public class ChatManager : MonoBehaviour
     {
         isChat = true;
         isChatting = true;
+
         chatInputField.gameObject.SetActive(true);
 
         chatInputField.text = string.Empty;

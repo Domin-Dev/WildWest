@@ -10,24 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 48ec4ba6633d2ab4684d21d70b3bdcf3, type: 3}
-  m_Name: Ammo 3
+  m_Name: Ammo 6
   m_EditorClassIdentifier: 
-  name: Arrow
+  name: Gun Bullet
   description: 
-  stackMax: 50
-  ID: 139
-  icon: {fileID: 496431766, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
-  worldSprite: {fileID: -5621275025976656576, guid: bce69d945da3e189d9c826fdfdcf8d6a, type: 3}
+  stackMax: 20
+  ID: 142
+  icon: {fileID: -1114436365, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
   animSprites: []
   tags:
-  - tag: {fileID: 11400000, guid: 405132f4de430882f95470bf5519a96f, type: 2}
+  - tag: {fileID: 11400000, guid: f82161302018055149f097a93a83ab0f, type: 2}
   crafingIngredients:
   - itemID: 0
     number: 0
   craftTables: ffffffff
   numberItem: 1
   bullet: {fileID: 907356828559875784, guid: 39d35432007d90f40b15bf375f8b9449, type: 3}
-  UIBulletIcon: {fileID: 950248845, guid: 6f6089b46f69a5d4d99bc7c3bcd304d1, type: 3}
-  inHandSprite: {fileID: 21300000, guid: 96ed2977599248c4e87cbb7ba33b850b, type: 3}
+  UIBulletIcon: {fileID: -2098849381, guid: 4736b038f1f3cab409b4c9cbafafedc4, type: 3}
   damage: 10
   type: 0

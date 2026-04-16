@@ -9,21 +9,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b14d90bbc0b0b9b44b669c7c7e90daa0, type: 3}
-  m_Name: Arrow
-  m_EditorClassIdentifier: Assembly-CSharp::Tag
+  m_Script: {fileID: 11500000, guid: 329aa87b924e7b925808e2f48f160d3e, type: 3}
+  m_Name: Arrows
+  m_EditorClassIdentifier: Assembly-CSharp::AmmoTag
   _icon: {fileID: 479024344, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   _localizedString:
     m_TableReference:
-      m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+      m_TableCollectionName: 
     m_TableEntryReference:
-      m_KeyId: 3699484928684032
+      m_KeyId: 0
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
     m_LocalVariables: []
   _tagName: Arrow
   _ID: 11
+  noAmmoIconUI: {fileID: 0}
   references:
     version: 2
     RefIds: []

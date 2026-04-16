@@ -19,6 +19,8 @@ partial struct NewItemInHandSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<LinkedContainers> linkedContainersLookup;
+
 
 
     private ComponentLookup<LocalTransform> transformLookup;
@@ -41,7 +43,8 @@ partial struct NewItemInHandSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);    
+        linkedContainersLookup = SystemAPI.GetBufferLookup<LinkedContainers>(true);
 
 
         transformLookup = SystemAPI.GetComponentLookup<LocalTransform>();
@@ -55,6 +58,7 @@ partial struct NewItemInHandSystem : ISystem
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
+        linkedContainersLookup.Update(ref state);
 
         transformLookup.Update(ref state);
         animationLookup.Update(ref state);
@@ -94,7 +98,7 @@ partial struct NewItemInHandSystem : ISystem
                                     {
                                         CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                         state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
-                                        UpdateUI(ref state,input,player,slot,slotsLookup,containersLookup,out var ammoID);
+                                        UpdateUI(ref state,input,player,slot,out var ammoID,playerContainer.Value.entity);
                                     }
                                     entityCommandBuffer.DestroyEntity(entity);
                                 }
@@ -129,7 +133,7 @@ partial struct NewItemInHandSystem : ISystem
                                 CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                 Debug.Log("new item!!! " + cooldownTick.TickIndexForValidTick + "  " + EntityHelper.AddTime(cooldownTick,20).TickIndexForValidTick);
                                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(cooldownTick,20)});
-                                UpdateUI(ref state,input,player,slot,slotsLookup,containersLookup,out var ammoID);
+                                UpdateUI(ref state,input,player,slot,out var ammoID,playerContainer.Value.entity);
                             }
                             entityCommandBuffer.DestroyEntity(entity);
 
@@ -171,10 +175,12 @@ partial struct NewItemInHandSystem : ISystem
         onNewItemInHand?.Invoke(item,ammo,selectedAmmoIndex,null);    
     }
 
-    public static void UpdateUI(ref SystemState state,RefRW<PlayerInputSync> input, Entity player, InventorySlot? itemSlot, BufferLookup<InventorySlot> slotsLookup,BufferLookup<PlayerContainers> containersLookup,out int ammoID)
+    private void UpdateUI(ref SystemState state,RefRW<PlayerInputSync> input, Entity player, InventorySlot? itemSlot,out int ammoID, Entity hotBarContainer)
     {
         ammoID = -1;      
         InventorySlot[] ammo = null;
+        InventorySlot[] magazine = null;
+
         int selectedAmmo = -1;
 
         if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(itemSlot.Value.itemId,out var item))
@@ -185,17 +191,21 @@ partial struct NewItemInHandSystem : ISystem
                 selectedAmmo = state.EntityManager.GetComponentData<PlayerInput>(player).ammoSelectedIndex % ammo.Length;
                 ammoID = ammo[selectedAmmo].itemId;
             }
-
             NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID); 
             input.ValueRW.ammoSelectedItemID = ammoID;
+
+            if(item.hasMagazine)
+            {
+                magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,hotBarContainer,itemSlot.Value.slot);
+            }
         }
         else
         {
             NewEquipmentManager.instance.SetAmmoTag(-1);
             input.ValueRW.ammoSelectedItemID = -1;
         }
-
-        onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo,null);    
+        
+        onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo,magazine);    
     }    
 
     public static void ChangeItemInHand(ref SystemState state,Item item,in Hands hands)

@@ -563,16 +563,17 @@ public static class EQHelper
                         waterResistance = 0,
                         mandatoryProperties = mandatoryProperties,
                         mandatoryData = mandatoryData
-                    });
-
-                    value.nextTempIndex += 1;
-                    ecb.SetComponent(player,value);
+                    },null,container.Value.index);
 
                     linkedContainers[container.Value.entity].Add(new LinkedContainers()
                     {
                        slot = item.pos.slotIndex,
-                       container = entity
+                       containerEntity = entity,
+                       containerIndex = value.nextTempIndex
                     });
+
+                    value.nextTempIndex += 1;
+                    ecb.SetComponent(player,value);
                 }
 
                 equipmentEvents.Add(new EquipmentEvent(new EquipmentEventData(item.pos.slotIndex, 1), container.Value.index));
@@ -774,6 +775,20 @@ public static class EQHelper
     }
     
     
+
+
+    public static InventorySlot[] ReadLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex)
+    {
+        if(TryGetBufferIndex(linkedContainers,slotIndex,container,out var element, out int bufferIndex))
+        {
+            var slots = slotLookup[element.Value.containerEntity];
+            InventorySlot[] result = new InventorySlot[slots.Length];
+            for(int i = 0;i < slots.Length;i++)
+                result[i] = slots[i];      
+            return result;
+        }
+        return null;
+    }
 
 
 

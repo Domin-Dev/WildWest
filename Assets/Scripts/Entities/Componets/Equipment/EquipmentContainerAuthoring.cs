@@ -12,7 +12,7 @@ public class EquipmentContainerAuthoring : MonoBehaviour
         public override void Bake(EquipmentContainerAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.None);
-            AddComponent(entity, new ContainerComponent());
+            AddComponent(entity, new ContainerComponent() { parentContainerIndex = -1 });
             AddComponent(entity, new EquipmentEventCounter() { index = uint.MaxValue });
            
             AddComponent(entity, new ToSave());

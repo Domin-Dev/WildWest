@@ -6,7 +6,9 @@ using Unity.NetCode;
 public struct LinkedContainers : IBufferElementData, IGetSlot
 {
     [GhostField] public int slot;
-    [GhostField] public Entity container;
+    [GhostField] public int containerIndex;
+    [GhostField] public Entity containerEntity;
+
 
     public int GetSlot()
     {

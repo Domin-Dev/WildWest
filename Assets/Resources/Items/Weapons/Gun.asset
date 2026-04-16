@@ -21,6 +21,7 @@ MonoBehaviour:
   stackMax: 1
   ID: 35
   icon: {fileID: -2066496519, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
   animSprites: []
   tags:
   - tag: {fileID: 0}
@@ -53,9 +54,10 @@ MonoBehaviour:
   bulletCount: 1
   shotSpread: 10
   bulletSpread: 0
-  ammoTag: {fileID: 11400000, guid: 53036c9d19c7a354ca0219de17fee9b8, type: 2}
+  ammoTag: {fileID: 11400000, guid: f82161302018055149f097a93a83ab0f, type: 2}
   shotAnim: []
   reloadAnim: []
+  lostAmmo: []
   aimPoint:
     x: 0.044999998
     y: 0.005

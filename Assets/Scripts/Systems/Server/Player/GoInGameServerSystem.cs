@@ -147,23 +147,23 @@ partial struct GoInGameServerSystem : ISystem
                 i.Dispose();
         }
     }
-   
     private void AddMapComponents(ref EntityCommandBuffer ecb, Entity character)
     {
         ecb.AddBuffer<PlayerChunks>(character);
     }
-    public static Entity CreateNewContainer(ref SystemState state,Entity player,EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,ContainerStats stats,ContainerSave? containerSave = null)
+    public static Entity CreateNewContainer(ref SystemState state,Entity player,EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,ContainerStats stats,ContainerSave? containerSave = null, int parentContainerIndex = -1)
     {
         Entity connection = state.EntityManager.GetComponentData<PlayerSourceConnection>(player).value;
         int networkID = state.EntityManager.GetComponentData<NetworkId>(connection).Value;
-        return CreateNewContainer(ref state, player,connection,entityCommandBuffer,ref entities,networkID,stats,containerSave);
+        return CreateNewContainer(ref state, player,connection,entityCommandBuffer,ref entities,networkID,stats,containerSave,parentContainerIndex);
     }
-    public static Entity CreateNewContainer(ref SystemState state,Entity player,Entity connection, EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,ContainerStats stats,ContainerSave? containerSave = null)
+    public static Entity CreateNewContainer(ref SystemState state,Entity player,Entity connection, EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,ContainerStats stats,ContainerSave? containerSave = null,int parentContainerIndex = -1)
     {
         var e = state.EntityManager.Instantiate(entities.equipmentContainerEntity);
         entityCommandBuffer.AddComponent(e, new GhostOwner() { NetworkId = networkID });
         entityCommandBuffer.SetComponent(e, new ContainerComponent() {
-            containerStats = stats
+            containerStats = stats,
+            parentContainerIndex = parentContainerIndex
         });
         if(stats.serverContainer)
             entityCommandBuffer.AddComponent<ServerContainer>(e);

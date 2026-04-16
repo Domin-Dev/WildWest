@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using NUnit.Framework.Interfaces;
 using TMPro;
 using TMPro.Examples;
@@ -1320,6 +1321,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdateAmmoInfo(Item item,InventorySlot[] ammoList,int selectedAmmoIndex,InventorySlot[] magazine)
     {
+        Debug.Log("update UI!!!!");
         int ammoCount = ammoList  != null ? ammoList.Length : 0;
         int magazineCount = magazine  != null ? ammoList.Length : 0;
 
@@ -1329,33 +1331,61 @@ public class UIManager : MonoBehaviour
         for(int i = ammoCountersParent.childCount - 1; i >= ammoCount; i--)
             Destroy(ammoCountersParent.GetChild(i).gameObject);
 
-        // for(int i = ammoMagazineParent.childCount - 1; i >= magazineCount; i--)
-        //     Destroy(ammoCountersParent.GetChild(i).gameObject);
-
-
+        for(int i = ammoMagazineParent.childCount - 1; i >= magazineCount; i--)
+            Destroy(ammoMagazineParent.GetChild(i).gameObject);
 
         if(rangedWeapon != null)
         {
-            int i = 0;
-            foreach(var ammo in ammoList)
+            for(int i = 0; i < ammoList.Length;i++)
             {
+                var ammo = ammoList[i];
                 if(ItemsAsset.instance.TryGetItem(ammo.itemId, out var itemAsset))
                 {
-                    GameObject icon;
-                    if(i >= ammoCountersParent.childCount)
-                        icon = Instantiate(ammoCounerPrefab,ammoCountersParent);
-                    else
-                        icon = ammoCountersParent.GetChild(i).gameObject;
-                    
+                    GameObject icon = GetNextUIElement(ammoCounerPrefab,ammoCountersParent,i);           
                     icon.transform.GetChild(0).GetComponentInChildren<Image>().sprite = itemAsset.icon;
                     icon.GetComponentInChildren<TextMeshProUGUI>().text = ammo.quantity.ToString();
-                    i++;
+                }
+            }
+      
+            if(rangedWeapon.hasMagazine)
+            {
+                int j = 0;
+                for(j = 0;j < magazine.Length;j++)
+                {
+                    var element = magazine[j];
+                    if(ItemsAsset.instance.TryGetItem<Ammo>(element.itemId, out var itemAsset))
+                    {
+                        GameObject icon = GetNextUIElement(ammoMagazinePrefab,ammoMagazineParent,j);  
+                        icon.GetComponent<Image>().sprite = itemAsset.UIBulletIcon;
+                    }
+                }
+                
+                int free = rangedWeapon.magazineCapacity - magazine.Length;
+                if(free > 0)
+                {
+                    for(int k = 0; k < free; k++)
+                    {
+                        GameObject icon = GetNextUIElement(ammoMagazinePrefab,ammoMagazineParent,j+k);
+                               Debug.Log("index + " + j+k + " " + icon);
+
+                        icon.GetComponent<Image>().sprite = rangedWeapon.ammoTag.NoAmmoIconUI;        
+                    }
                 }
             }
 
             UpdateSelectedAmmo(selectedAmmoIndex);           
         }
     }
+
+    private GameObject GetNextUIElement(GameObject prefab,Transform parent, int index)
+    {
+        if(index >= parent.childCount)
+            return Instantiate(prefab,parent);
+        else
+            return parent.GetChild(index).gameObject;                  
+    }
+
+
     public void UpdateSelectedAmmo(int childIndex)
     {
         Sounds.instance.Click();
