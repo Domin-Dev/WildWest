@@ -35,7 +35,7 @@ MonoBehaviour:
   numberItem: 1
   durability: 20
   damage: 5
-  cooldown: 0.6
+  cooldown: 0.35
   weaponImage: {fileID: 866442174, guid: 59c72a0771dd7a043a02a6626b207c98, type: 3}
   hitBoxPoints:
   - {x: -0.024999999, y: -0.015}
@@ -55,9 +55,275 @@ MonoBehaviour:
   shotSpread: 10
   bulletSpread: 0
   ammoTag: {fileID: 11400000, guid: f82161302018055149f097a93a83ab0f, type: 2}
-  shotAnim: []
-  reloadAnim: []
+  shotAnim:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0
+    events:
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 0
+    - EventType: 2
+      position:
+        x: 0.03
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 1
+      indexType: 0
+      id: 1
+    - EventType: 2
+      position:
+        x: 0.03
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 0
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 50
+    move:
+      x: -0.05
+      y: 0
+      z: 0
+    duration: 0.12
+    events: []
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  reloadAnim:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 60
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.65
+    events: []
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.6
+    events: []
+  - bodyPartType: 1
+    positionMode: 3
+    rotate:
+      x: 0
+      y: 0
+      z: -50
+    move:
+      x: -0.03
+      y: 0
+      z: 0
+    duration: 0.65
+    events:
+    - EventType: 3
+      position:
+        x: -0.03
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 2
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 6
+  - bodyPartType: 1
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 70
+    move:
+      x: 0
+      y: -0.05
+      z: 0
+    duration: 0.6
+    events:
+    - EventType: 5
+      position:
+        x: 0.03
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: 0
+  - bodyPartType: 1
+    positionMode: 3
+    rotate:
+      x: 0
+      y: 0
+      z: -90
+    move:
+      x: -0.03
+      y: 0
+      z: 0
+    duration: 0.6
+    events:
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: -1
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 4
+  - bodyPartType: 1
+    positionMode: 3
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.08
+    events: []
+  - bodyPartType: 1
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
   lostAmmo: []
+  emptyMagazine:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0
+    events:
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 5
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 10
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  unloadAnim: []
   aimPoint:
     x: 0.044999998
     y: 0.005

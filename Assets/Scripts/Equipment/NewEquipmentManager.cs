@@ -609,6 +609,11 @@ public class NewEquipmentManager : MonoBehaviour
         if (TooltipSystem.IsSlotPostion(out SlotPosition? slotPosition))
             TooltipSystem.Show(slotPosition.Value, GetItemStats(slotPosition.Value),true);
     }
+
+    public void UpdateWeaponMagazine()
+    {
+        needUpdateAmmoUI = true;
+    }
     public void LocalUpdateSlotIndex(SlotPosition slotPosition)
     {
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
@@ -643,18 +648,21 @@ public class NewEquipmentManager : MonoBehaviour
         {
             switch (eqEevent.flag)
             {
-                case 1:
+                case EquipementEventFlags.UpdateSlot:
                     if (eqEevent.slot >= 0)                          
                         NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(eqEevent.containerIndex, eqEevent.slot));
                     break;
-                case 2:
+                case EquipementEventFlags.ClearContainer:
                         NewEquipmentManager.instance.ClearContainer(eqEevent.containerIndex,ref ecb);
                     break;
-                case 3:
+                case EquipementEventFlags.ClearAllContainers:
                         NewEquipmentManager.instance.ClearAllContainers(ref ecb);
                     break;
-                case 4:
+                case EquipementEventFlags.UpdateWetness:
                         NewEquipmentManager.instance.UpdateWetness();
+                    break;
+                case EquipementEventFlags.UpdateWeaponMagazine:
+                        NewEquipmentManager.instance.UpdateWeaponMagazine();
                     break;
             }
         }

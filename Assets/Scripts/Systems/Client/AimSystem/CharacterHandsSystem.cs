@@ -72,10 +72,9 @@ partial struct CharacterHandsSystem : ISystem
                 paused.ValueRW = true;
                 continue;
             }
-
             ref var element = ref frames.ElementAt(0);
             animation.ValueRW.elapsedTime += deltaTime * animation.ValueRO.playbackSpeed;
-            
+
             if(!element.processed)
             {     
                 Hands hands = handsLookup[animation.ValueRO.player];
@@ -101,7 +100,6 @@ partial struct CharacterHandsSystem : ISystem
             if(t >= 1f)
             {
                 Hands hands = handsLookup[animation.ValueRO.player];
-
                 for(int i = animationEvents.Length -1;i >= 0 ; i--)
                 {
                     var eventFrame = animationEvents[i];
@@ -143,6 +141,7 @@ partial struct CharacterHandsSystem : ISystem
             LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(hands.ValueRO.main);
             LocalTransform localItem =  transformLookup[hands.ValueRO.itemInMainHand];
             LocalTransform localMain =  transformLookup[hands.ValueRO.main];
+
             
             // if (hands.ValueRO.actionStatus != 0)
             // {
@@ -216,28 +215,24 @@ partial struct CharacterHandsSystem : ISystem
             SetEulerX(180,ref localMain);
             SetEulerX(180,ref localSideHand);
 
-
             var p = localItem.Position;
             p.z = -0.0001f;
             localItem.Position = p;
-            
-
             angle = -angle;
 
-            sideTargetRotation = quaternion.Euler(math.radians(180), 0, angle + math.radians(90));
+            sideTargetRotation = quaternion.Euler(math.radians(180), 0, angle + math.radians(110));
             mainTargetRotation = quaternion.Euler(math.radians(180), 0, angle);
         }
         else
         {
             SetEulerX(0,ref localMain);
             SetEulerX(0,ref localSideHand);
-
-            
+           
             var p = localItem.Position;
             p.z = 0.0001f;
             localItem.Position = p;
           
-            sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(90));
+            sideTargetRotation = quaternion.Euler(0, 0, angle + math.radians(110));
             mainTargetRotation = quaternion.Euler(0, 0, angle);
         }
 
@@ -247,8 +242,16 @@ partial struct CharacterHandsSystem : ISystem
         localMain.Rotation = math.slerp(localMain.Rotation, mainTargetRotation, math.min(deltaTime, maxDeltaTime) * 22);
         localSideHand.Rotation = math.slerp(localSideHand.Rotation, sideTargetRotation, math.min(deltaTime, maxDeltaTime) * 10);
 
-        if (math.Euler(localMain.Rotation).z > 0) localMain.Position.z = 0.0011f;
-        else localMain.Position.z = -0.001f;
+        if (math.Euler(localMain.Rotation).z > 0) 
+        {
+            localMain.Position.z = 0.0011f;
+            localSideHand.Position.z = 0.0011f;
+        }
+        else
+        {
+            localMain.Position.z = -0.001f;
+            localSideHand.Position.z = -0.001f;
+        }
     }
    
     private void SetEulerX(float value, ref LocalTransform localTransform)

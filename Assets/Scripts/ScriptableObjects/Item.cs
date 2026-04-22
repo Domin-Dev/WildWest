@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
-
+using System;
 
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]
 public class Item : ScriptableObject
@@ -96,12 +96,19 @@ public class Item : ScriptableObject
 
     protected float CalculateTime(List<KeyFrame> keyframes)
     {
-        float timer = 0;
-        foreach(var i in keyframes)
+        float maxDur = 0;
+        foreach (BodyPartType type in Enum.GetValues(typeof(BodyPartType)))
         {
-            timer += i.Duration;
+            float timer = 0;
+            foreach(var i in keyframes)
+            {
+                if(i.BodyPartType == type)
+                    timer += i.Duration;
+            }
+            if(timer > maxDur) 
+                maxDur = timer;
         }
-        return timer;
+        return maxDur;
     } 
 }
 

@@ -60,6 +60,20 @@ public static class EQHelper
         index = -1;
         return false;
     }
+    public static bool PlayerHasTheAmmo(int ammoID,SlotData[] slots, out int index)
+    {
+        for(int i = 0; i < slots.Length;i++)
+        {
+            if(slots[i].itemID == ammoID)
+            {
+                index = i;
+                return true;   
+            }
+        }
+        index = -1;
+        return false;
+    }
+
 
 
     public static bool TryGetPlayerContainer(BufferLookup<PlayerContainers> containersLookup, Entity player,int containerIndex, out PlayerContainers? playerContainer)
@@ -133,14 +147,21 @@ public static class EQHelper
     }
     public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out InventorySlot? inventorySlot, out int bufferIndex)
     {
+        return TryGetBufferIndex(slotsLookup,containers,player,slotPosition,out inventorySlot, out bufferIndex,out var containerEntity);
+    }
+    public static bool TryGetBufferIndex(BufferLookup<InventorySlot> slotsLookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out InventorySlot? inventorySlot, out int bufferIndex, out Entity containerEntity)
+    {
         var container = GetPlayerContainer(containers, player, slotPosition.containerIndex);
+        containerEntity = Entity.Null;
         if(container.HasValue)
+        {
+            containerEntity = container.Value.entity;
             return TryGetBufferIndex(slotsLookup, slotPosition.slotIndex, container.Value.entity, out inventorySlot, out bufferIndex);
+        }
         inventorySlot = null;
         bufferIndex = -1;
         return false;
     }
-
     // public static bool TryGetBufferIndex<T>(BufferLookup<T> lookup, BufferLookup<PlayerContainers> containers, Entity player, SlotPosition slotPosition, out T? inventorySlot, out int bufferIndex)  where T : unmanaged,IBufferElementData,IGetSlot
     // {
     //     var container = GetPlayerContainer(containers, player, slotPosition.containerIndex);
@@ -454,6 +475,20 @@ public static class EQHelper
             EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, eventData);
         }
     }
+
+
+
+
+    public static void AppendToBuffer(BufferLookup<InventorySlot> slots,Entity container, InventorySlot template, int quantity = 1) 
+    {
+        if(slots.TryGetBuffer(container, out var bufferData))
+        {
+            template.quantity = quantity;
+            template.slot = bufferData.Length; 
+            bufferData.Add(template);
+        }
+    }
+
 
     public static void SendEvents(EntityCommandBuffer entityCommandBuffer,int networkID, params EquipmentEvent[] events)
     {
@@ -791,6 +826,29 @@ public static class EQHelper
     }
 
 
+    public static int CountItemsInLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex)
+    {
+        return CountItemsInLinkedContainer(slotLookup,linkedContainers,container,slotIndex,out Entity entity);
+    }
+    public static int CountItemsInLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex,out Entity linkedContainerEntity)
+    {
+        int counter = 0;
+        if(TryGetBufferIndex(linkedContainers,slotIndex,container,out var element, out int bufferIndex))
+        {
+            linkedContainerEntity = element.Value.containerEntity;
+            var slots = slotLookup[element.Value.containerEntity];
+            for(int i = 0;i < slots.Length;i++)
+                counter += slots[i].quantity;  
+
+            return counter;
+        }
+        else
+        {
+            linkedContainerEntity = Entity.Null;
+        }
+        return counter;
+    }
+
 
     public static InventorySlot[] TryFindItemWithTag_Aggregated(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers> containers, Entity player,int tagID, out int counter)
     {
@@ -892,25 +950,33 @@ public static class EQHelper
         return data.Length > 0;
     }
 
-    
-    public static EquipmentEvent[] SubtractItem(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers>containers,SlotPosition slotPosition,Entity player,int value = 1)
+    public static EquipmentEvent[] SubtractItem(BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers>containers,SlotPosition slotPosition,Entity player,int value = 1)
     {
+        return SubtractItem(slotLookup,containers,slotPosition,player,out var template,value);
+    }
+
+    public static void SubtractItem(BufferLookup<InventorySlot> slotLookup,Entity container, int bufferIndex,out InventorySlot? template, int value = 1)
+    {
+        template = slotLookup[container][bufferIndex];
+        if(template == null) return;
+
+        if(template.Value.quantity > value)
+            slotLookup[container].ElementAt(bufferIndex).quantity -= value;
+        else
+            slotLookup[container].RemoveAtSwapBack(bufferIndex);
+    }
+    public static EquipmentEvent[] SubtractItem(BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers>containers,SlotPosition slotPosition,Entity player,out InventorySlot? template, int value = 1)
+    {
+        template = null;
         if(TryGetPlayerContainer(containers,player,slotPosition.containerIndex, out var playerContainer))
         {
             if(TryGetBufferIndex<InventorySlot>(slotLookup,slotPosition.slotIndex,playerContainer.Value.entity,out var slotItem, out int bufferIndex))
-            {
-                if(slotItem.Value.quantity > value)
-                {
-                    slotLookup[playerContainer.Value.entity].ElementAt(bufferIndex).quantity -= value;
-                }
-                else
-                {
-                    slotLookup[playerContainer.Value.entity].RemoveAtSwapBack(bufferIndex);
-                }
-            }
+                SubtractItem(slotLookup,playerContainer.Value.entity,bufferIndex,out template,value);
         }
         return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotPosition.slotIndex, 1),slotPosition.containerIndex) };  
     }
+    
+
 
     
     public static bool CheckRequirementsTag(ContainerComponent containerComponent, int tagID, out bool AllItemsHaveTheTag)

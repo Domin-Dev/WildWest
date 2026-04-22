@@ -1310,7 +1310,7 @@ public class UIManager : MonoBehaviour
     
     public void NewItemInHand(InventorySlot? itemSlot,InventorySlot[] ammoToSelect, int selectedAmmoIndex,InventorySlot[] magazine)
     {
-        if(itemSlot.HasValue && ammoToSelect != null && ItemsAsset.instance.TryGetItem(itemSlot.Value.itemId,out var item))
+        if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem(itemSlot.Value.itemId,out var item))
             UpdateAmmoInfo(item,ammoToSelect,selectedAmmoIndex,magazine);
         else
             UpdateAmmoInfo(null,null,-1,null);
@@ -1321,21 +1321,20 @@ public class UIManager : MonoBehaviour
 
     public void UpdateAmmoInfo(Item item,InventorySlot[] ammoList,int selectedAmmoIndex,InventorySlot[] magazine)
     {
-        Debug.Log("update UI!!!!");
         int ammoCount = ammoList  != null ? ammoList.Length : 0;
-        int magazineCount = magazine  != null ? ammoList.Length : 0;
-
-
+        int magazineCount = magazine  != null ? magazine.Length : 0;
         RangedWeapon rangedWeapon = item as RangedWeapon;
+
+        Debug.Log("update UI" + magazineCount);
 
         for(int i = ammoCountersParent.childCount - 1; i >= ammoCount; i--)
             Destroy(ammoCountersParent.GetChild(i).gameObject);
 
-        for(int i = ammoMagazineParent.childCount - 1; i >= magazineCount; i--)
-            Destroy(ammoMagazineParent.GetChild(i).gameObject);
-
         if(rangedWeapon != null)
-        {
+        {   
+            for(int i = ammoMagazineParent.childCount - 1; i >= rangedWeapon.magazineCapacity; i--)
+                Destroy(ammoMagazineParent.GetChild(i).gameObject);
+            
             for(int i = 0; i < ammoList.Length;i++)
             {
                 var ammo = ammoList[i];
@@ -1349,8 +1348,8 @@ public class UIManager : MonoBehaviour
       
             if(rangedWeapon.hasMagazine)
             {
-                int j = 0;
-                for(j = 0;j < magazine.Length;j++)
+                int j;
+                for(j = 0;j < magazineCount;j++)
                 {
                     var element = magazine[j];
                     if(ItemsAsset.instance.TryGetItem<Ammo>(element.itemId, out var itemAsset))
@@ -1360,13 +1359,13 @@ public class UIManager : MonoBehaviour
                     }
                 }
                 
-                int free = rangedWeapon.magazineCapacity - magazine.Length;
+                int free = rangedWeapon.magazineCapacity - magazineCount;
                 if(free > 0)
                 {
                     for(int k = 0; k < free; k++)
                     {
                         GameObject icon = GetNextUIElement(ammoMagazinePrefab,ammoMagazineParent,j+k);
-                               Debug.Log("index + " + j+k + " " + icon);
+                               Debug.Log("index + " + (j+k).ToString() + " " + icon);
 
                         icon.GetComponent<Image>().sprite = rangedWeapon.ammoTag.NoAmmoIconUI;        
                     }
@@ -1374,6 +1373,11 @@ public class UIManager : MonoBehaviour
             }
 
             UpdateSelectedAmmo(selectedAmmoIndex);           
+        }
+        else
+        {
+            for(int i = ammoMagazineParent.childCount - 1; i >= 0; i--)
+                Destroy(ammoMagazineParent.GetChild(i).gameObject);
         }
     }
 

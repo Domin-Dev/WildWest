@@ -9,10 +9,11 @@ using Unity.NetCode;
 
 public static class EquipementEventFlags
 {
-    public static int UpdateSlot = 1;
-    public static int ClearContainer = 2;
-    public static int ClearAllContainers = 3;
-    public static int UpdateWetness = 4;
+    public const int UpdateSlot = 1;
+    public const int ClearContainer = 2;
+    public const int ClearAllContainers = 3;
+    public const int UpdateWetness = 4;
+    public const int UpdateWeaponMagazine = 5;
 }
 
 public struct EquipmentEventData
@@ -40,6 +41,13 @@ public struct EquipmentEvent : IComponentData
         this.data = data;
         this.networkID = networkID;
         this.containerIndex = containerIndex;
+    }
+
+    public EquipmentEvent(byte flagEvent)
+    {
+        this.data = new EquipmentEventData(){ flags = flagEvent};
+        this.networkID = 0;
+        this.containerIndex = 0;
     }
 
     public void SetNetworkID(int networkID)

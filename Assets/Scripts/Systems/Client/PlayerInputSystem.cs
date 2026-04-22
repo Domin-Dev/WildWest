@@ -42,8 +42,10 @@ partial struct PlayerInputSystem : ISystem
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         bool left = InputManager.i.mainAction.inProgress;
         bool right = InputManager.i.sideAction.inProgress;
-
+        bool reloadButton = InputManager.i.reload.inProgress;
+        bool unloadButton = InputManager.i.unload.inProgress;
         if (math.lengthsq(input) > 1) input = math.normalize(input);
+
 
         float3 target = (float3)MyTools.GetMouseWorldPosition();
         float2 sightDirection = new float2(target.x,target.y);
@@ -73,6 +75,9 @@ partial struct PlayerInputSystem : ISystem
 
                 playerInput.ValueRW.movementDirection = float2.zero;
                 playerInputSync.ValueRW.movementDir = float2.zero;
+                
+                playerInput.ValueRW.reloadButton = default;
+                playerInput.ValueRW.unloadButton = default;
 
                 continue;
             }
@@ -82,7 +87,6 @@ partial struct PlayerInputSystem : ISystem
 
             playerInput.ValueRW.sightDirection = sightDirection;
             playerInputSync.ValueRW.sightDirection = sightDirection;
-
 
             int newSlot = InputManager.i.GetNextSlotInHand(playerInput.ValueRO.slotInHand);
             int newAmmoIndex = InputManager.i.GetNextAmmoIndex(playerInput.ValueRO.ammoSelectedIndex);
@@ -157,6 +161,17 @@ partial struct PlayerInputSystem : ISystem
                 playerInput.ValueRW.rightButton = default;
                 playerInputSync.ValueRW.rightButton = default;
             }
+        
+            if(reloadButton)
+                playerInput.ValueRW.reloadButton.Set();
+            else
+                playerInput.ValueRW.reloadButton = default;
+
+            if(unloadButton)
+                playerInput.ValueRW.unloadButton.Set();
+            else
+                playerInput.ValueRW.unloadButton = default;
+
         } 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();  

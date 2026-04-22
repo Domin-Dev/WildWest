@@ -17,7 +17,7 @@ MonoBehaviour:
   stackMax: 20
   ID: 0
   icon: {fileID: -1329511708, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
-  worldSprite: {fileID: 0}
+  worldSprite: {fileID: 21300000, guid: ee7cb2998a9dc2eb1a49c80d5f72b415, type: 3}
   animSprites: []
   tags:
   - tag: {fileID: 11400000, guid: f82161302018055149f097a93a83ab0f, type: 2}

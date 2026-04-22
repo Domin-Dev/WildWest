@@ -40,6 +40,7 @@ partial struct EquipmentClientSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<LinkedContainers> linkedContainers;
 
 
     public void OnCreate(ref SystemState state)
@@ -51,6 +52,7 @@ partial struct EquipmentClientSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
         containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+        linkedContainers =  SystemAPI.GetBufferLookup<LinkedContainers>(true);
     }
 
     public void OnDestroy(ref SystemState state)
@@ -94,21 +96,24 @@ partial struct EquipmentClientSystem : ISystem
             slotsLookup.Update(ref state);
             barsLookup.Update(ref state);
             containersLookup.Update(ref state);
+            linkedContainers.Update(ref state);
+
 
             foreach( (var inputSync, var input ,Entity player) in  SystemAPI.Query<RefRW<PlayerInputSync>,RefRW<PlayerInput>>().WithAll<Player,GhostOwnerIsLocal>().WithEntityAccess())
             {
                 int ammoID = -1;
                 int newAmmoIndex = inputSync.ValueRO.ammoSelectedIndex;
                 InventorySlot[] ammo = null;
+                InventorySlot[] magazine = null;
                 InventorySlot? slot = null;
 
-
-                if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
-                {                         
-                    EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out slot, out int bufferIndex);   
+                if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                {                    
+                    EQHelper.TryGetBufferIndex(slotsLookup,inputSync.ValueRO.slotInHand,playerContainer.Value.entity,out slot, out int bufferIndex);   
                     if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
                     {
                         ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
+                        
                         if(ammo.Length > 0)
                         {
                             if(EQHelper.PlayerHasTheAmmo(inputSync.ValueRO.ammoSelectedItemID,ammo,out int index))
@@ -123,6 +128,11 @@ partial struct EquipmentClientSystem : ISystem
                             }
                             Debug.Log("zmaina ammo !" + ammoID);
                         } 
+
+                        Debug.Log("tem " + item.hasMagazine + " " + playerContainer.Value.entity);
+                        if(item.hasMagazine)
+                            magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainers,playerContainer.Value.entity,slot.Value.slot);
+
                     }
                 }  
                 
@@ -130,7 +140,7 @@ partial struct EquipmentClientSystem : ISystem
                 inputSync.ValueRW.ammoSelectedItemID = ammoID;
                 inputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
                 input.ValueRW.ammoSelectedIndex = newAmmoIndex;
-                NewItemInHandSystem.UpdateItemInHandUI(slot,ammo,newAmmoIndex);  
+                NewItemInHandSystem.UpdateItemInHandUI(slot,ammo,newAmmoIndex,magazine);  
             }
             NewEquipmentManager.instance.needUpdateAmmoUI = false;
         }

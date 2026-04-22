@@ -46,14 +46,11 @@ partial struct CharacterHandsEvents : ISystem
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
         containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
 
-
         state.RequireForUpdate<VisualEffectsBuffer>();
 
-
-
-
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAny<PlayerActionRPC,NewAmmoSelectedRPC>();         
+            .WithAny<PlayerActionRPC,NewAmmoSelectedRPC,EmptyMagazineRPC>();   
+
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
 
@@ -86,12 +83,29 @@ partial struct CharacterHandsEvents : ISystem
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
-                    StartAnimation(ref state,item,hands.ValueRO,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                    StartAnimation(ref state,item,hands,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                }
+                break;
+            }
+            entityCommandBuffer.DestroyEntity(rpc);
+        }  
+        
+        foreach ((RefRO<EmptyMagazineRPC> action,Entity rpc) in SystemAPI.Query<RefRO<EmptyMagazineRPC>>().WithEntityAccess())
+        {      
+            Debug.Log("jest!!");
+            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+            {
+                if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
+               if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
+                {
+                    Debug.Log("juz!");
+                    StartAnimation(ref state,item,hands,item.emptyMagazine,animationLookup,transformLookup,framesLookup,eventsLookup); 
                 }
                 break;
             }
             entityCommandBuffer.DestroyEntity(rpc);
         }
+
 
         foreach ((RefRO<NewAmmoSelectedRPC> action,Entity rpc) in SystemAPI.Query<RefRO<NewAmmoSelectedRPC>>().WithEntityAccess())
         {   
@@ -101,32 +115,27 @@ partial struct CharacterHandsEvents : ISystem
                 foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<PlayerInputSync> input, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<PlayerInputSync>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
                 {
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
-                  //  Debug.Log("uwaga new ammo" + action.ValueRO.ammoID); 
                     if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
                     {
                         if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                         {
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;
-                            Debug.Log(itemId + " ppp " + action.ValueRO.weaponID);
                             if(itemId != action.ValueRO.weaponID) break;
                         }
                     }
-                    
-                  //  Debug.Log("uwaga new ammo" + action.ValueRO.ammoID);                       
-
+                                    
                     if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.weaponID,out var item))
                     {
                         float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
                         if(action.ValueRO.ammoID >= 0)
                         {
                             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,item.reloadCooldown)});
-                            Debug.Log("Minelo : " + time);
-                            StartAnimation(ref state,item,hands.ValueRO,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID}); 
+                            StartAnimation(ref state,item,hands,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID}); 
                         }
                         else
                         {
-                            StartAnimation(ref state,item,hands.ValueRO,item.lostAmmo,animationLookup,transformLookup,framesLookup,eventsLookup,time,null); 
+                            StartAnimation(ref state,item,hands,item.lostAmmo,animationLookup,transformLookup,framesLookup,eventsLookup,time,null); 
                         }
                     }
                     entityCommandBuffer.DestroyEntity(rpc);
@@ -168,18 +177,18 @@ partial struct CharacterHandsEvents : ISystem
             animation.ValueRW.hasStartPosition = false;
         }
     }
-    public static void StartAnimation(ref SystemState state,RangedWeapon item,Hands hands, List<KeyFrame> frames,
+    public static void StartAnimation(ref SystemState state,RangedWeapon item,RefRW<Hands> hands, List<KeyFrame> frames,
     ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup,float elapsedTime = 0,int[] args = null)
     {
-        ResetAnimation(hands,animationLookup,transformLookup,framesLookup,eventsLookup);
-        NewItemInHandSystem.ChangeItemInHand(ref state,item,in hands);
+        ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
+        NewItemInHandSystem.ChangeItemInHand(ref state,item,hands);
                     
         int index = 0;
         foreach(var frame in frames)
         {
-            var part = hands.GetBodyPart(frame.BodyPartType);
+            var part = hands.ValueRO.GetBodyPart(frame.BodyPartType);
             if(frame.BodyPartType == BodyPartType.SideHand && item.twoHanded)
-                animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.05f,0);
+                animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.ValueRO.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.05f,0);
             
             animationLookup.GetRefRW(part).ValueRW.itemID = item.ID;
             animationLookup.GetRefRW(part).ValueRW.elapsedTime = elapsedTime;

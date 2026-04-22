@@ -12,10 +12,9 @@ public struct Hands : IComponentData
     public Entity main;
     public Entity side;
     public Entity itemInMainHand;
-
     public Entity itemInSideHand;
 
-
+    public bool twoHanded;
 
 
     public Entity mainhand;

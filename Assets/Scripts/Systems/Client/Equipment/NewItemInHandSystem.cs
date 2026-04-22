@@ -8,6 +8,7 @@ using Unity.Mathematics;
 using System;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEngine.XR;
 
 
 [UpdateInGroup(typeof(EquipmentSystemGroup), OrderLast = true)]
@@ -76,13 +77,12 @@ partial struct NewItemInHandSystem : ISystem
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
             Debug.Log("nowey item!!!");
-            foreach ((RefRO<GhostOwner> owner, RefRO<Hands> hands, RefRW<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<Hands>,RefRW<PlayerInputSync>>().WithAll<Player,Simulate,ContainersLoaded>().WithNone<NewPlayerTag>().WithEntityAccess())
+            foreach ((RefRO<GhostOwner> owner, RefRW<Hands> hands, RefRW<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRW<Hands>,RefRW<PlayerInputSync>>().WithAll<Player,Simulate,ContainersLoaded>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
                 {
                     if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(entity))
                     {
-                        Debug.Log("NOWAAAAAAAAAAAAAAAAA "+ networkTime.InterpolationTick + "  " + rpcCommand.ValueRO.tick.TickIndexForValidTick);
                         if(networkTime.InterpolationTick.IsNewerThan(rpcCommand.ValueRO.tick))
                         {
                             if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
@@ -93,7 +93,7 @@ partial struct NewItemInHandSystem : ISystem
                                 if(itemId == rpcCommand.ValueRO.itemID)
                                 {
                                     Item item = ItemsAsset.instance.GetItem(itemId);
-                                    ChangeItemInHand(ref state,item,in hands.ValueRO);
+                                    ChangeItemInHand(ref state,item, hands);
                                     if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                                     {
                                         CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
@@ -122,7 +122,7 @@ partial struct NewItemInHandSystem : ISystem
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;
                             Item item = ItemsAsset.instance.GetItem(itemId);
-                            ChangeItemInHand(ref state,item,in hands.ValueRO);
+                            ChangeItemInHand(ref state,item,hands);
                             
                             if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                             {
@@ -170,9 +170,9 @@ partial struct NewItemInHandSystem : ISystem
         }   
     }
 
-    public static void UpdateItemInHandUI(InventorySlot? item ,InventorySlot[] ammo,int selectedAmmoIndex)
+    public static void UpdateItemInHandUI(InventorySlot? item ,InventorySlot[] ammo,int selectedAmmoIndex, InventorySlot[] magazine)
     {
-        onNewItemInHand?.Invoke(item,ammo,selectedAmmoIndex,null);    
+        onNewItemInHand?.Invoke(item,ammo,selectedAmmoIndex,magazine);    
     }
 
     private void UpdateUI(ref SystemState state,RefRW<PlayerInputSync> input, Entity player, InventorySlot? itemSlot,out int ammoID, Entity hotBarContainer)
@@ -208,20 +208,20 @@ partial struct NewItemInHandSystem : ISystem
         onNewItemInHand?.Invoke(itemSlot,ammo,selectedAmmo,magazine);    
     }    
 
-    public static void ChangeItemInHand(ref SystemState state,Item item,in Hands hands)
+    public static void ChangeItemInHand(ref SystemState state,Item item, RefRW<Hands> hands)
     {
         if (item is Weapon) SetWeaponInHand(hands,item as Weapon,ref state);
         else SetItemInHand(hands,item, ref state);
     }
-    private static void SetWeaponInHand(Hands hands,Weapon weapon,ref SystemState state)
+    private static void SetWeaponInHand(RefRW<Hands> hands,Weapon weapon,ref SystemState state)
     {
-        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand);
-        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInMainHand);
+        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.ValueRO.itemInMainHand);
+        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInMainHand);
         
-        LocalTransform aimPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.aimPoint);
-        LocalTransform reloadPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.reloadPoint);
-        LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.sidehand);
-        LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.mainhand);
+        LocalTransform aimPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.aimPoint);
+        LocalTransform reloadPoint = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.reloadPoint);
+        LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.sidehand);
+        LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
         mainHand.Position.x = weapon.handOffset;
 
 
@@ -241,32 +241,35 @@ partial struct NewItemInHandSystem : ISystem
 
         if (weapon.gripPoint2.x != -100)
         {
-            Entity entity1 = state.EntityManager.GetComponentData<Parent>(hands.itemInMainHand).Value;
-            state.EntityManager.SetComponentData(hands.sidehand, new Parent { Value = entity1 });
+            Entity entity1 = state.EntityManager.GetComponentData<Parent>(hands.ValueRO.itemInMainHand).Value;
+            state.EntityManager.SetComponentData(hands.ValueRO.sidehand, new Parent { Value = entity1 });
             sideHandTransform.Position = new float3(weapon.gripPoint2.x - weapon.gripPoint1.x, weapon.gripPoint2.y - weapon.gripPoint1.y, 0);
+            hands.ValueRW.twoHanded = true;
         }
         else
         {
             ResetSideHand(hands,ref sideHandTransform, ref state);
         }
 
-        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInSideHand).sprite = null;
-        state.EntityManager.SetComponentData(hands.itemInMainHand, localTransform);
-        state.EntityManager.SetComponentData(hands.sidehand, sideHandTransform);
-        state.EntityManager.SetComponentData(hands.aimPoint, aimPoint);
-        state.EntityManager.SetComponentData(hands.reloadPoint, reloadPoint);
-        state.EntityManager.SetComponentData(hands.mainhand, mainHand);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.ValueRO.itemInSideHand).sprite = null;
+        state.EntityManager.SetComponentData(hands.ValueRO.itemInMainHand, localTransform);
+        state.EntityManager.SetComponentData(hands.ValueRO.sidehand, sideHandTransform);
+        state.EntityManager.SetComponentData(hands.ValueRO.aimPoint, aimPoint);
+        state.EntityManager.SetComponentData(hands.ValueRO.reloadPoint, reloadPoint);
+        state.EntityManager.SetComponentData(hands.ValueRO.mainhand, mainHand);
     }
-    private static void SetItemInHand(Hands hands,Item item, ref SystemState state)
+    private static void SetItemInHand(RefRW<Hands> hands,Item item, ref SystemState state)
     {
-        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInMainHand);
-        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.itemInMainHand);
-        LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.sidehand);
+        SpriteRenderer spriteRenderer = state.EntityManager.GetComponentObject<SpriteRenderer>(hands.ValueRO.itemInMainHand);
+        LocalTransform localTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.itemInMainHand);
+        LocalTransform sideHandTransform = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.sidehand);
 
-        LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.mainhand);
+        LocalTransform mainHand = state.EntityManager.GetComponentData<LocalTransform>(hands.ValueRO.mainhand);
 
         mainHand.Position.y = 0;
         mainHand.Position.x = 0.07f;
+
+
 
         ResetSideHand(hands,ref sideHandTransform,ref state);
         localTransform.Position.x = 0;
@@ -276,15 +279,16 @@ partial struct NewItemInHandSystem : ISystem
         if (item != null)
             spriteRenderer.sprite = item.icon;
 
-        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.itemInSideHand).sprite = null;
-        state.EntityManager.SetComponentData(hands.itemInMainHand, localTransform);
-        state.EntityManager.SetComponentData(hands.sidehand, sideHandTransform);
-        state.EntityManager.SetComponentData(hands.mainhand, mainHand);
+        state.EntityManager.GetComponentObject<SpriteRenderer>(hands.ValueRO.itemInSideHand).sprite = null;
+        state.EntityManager.SetComponentData(hands.ValueRO.itemInMainHand, localTransform);
+        state.EntityManager.SetComponentData(hands.ValueRO.sidehand, sideHandTransform);
+        state.EntityManager.SetComponentData(hands.ValueRO.mainhand, mainHand);
     }
-    private static void ResetSideHand(Hands hands,ref LocalTransform sideHandTransform, ref SystemState state)
+    private static void ResetSideHand(RefRW<Hands>  hands,ref LocalTransform sideHandTransform, ref SystemState state)
     {
-        state.EntityManager.SetComponentData(hands.sidehand, new Parent { Value = hands.side });
+        state.EntityManager.SetComponentData(hands.ValueRO.sidehand, new Parent { Value = hands.ValueRO.side });
         sideHandTransform.Position = new float3(-0.09f,0,0);
+        hands.ValueRW.twoHanded = false;
     }
     private static void SetRangedWeaponInHand(RangedWeapon rangedWeapon,ref LocalTransform mainHand, ref LocalTransform localTransform, ref LocalTransform aimPoint, ref LocalTransform reloadPoint)
     {

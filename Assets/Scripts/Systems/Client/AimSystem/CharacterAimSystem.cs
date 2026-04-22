@@ -16,10 +16,10 @@ partial struct CharacterAimSystem : ISystem
     private float deltaTime;
 
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
-
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<LinkedContainers> linkedContainersLookup;
 
     private int simulationTickRate;
 
@@ -30,8 +30,9 @@ partial struct CharacterAimSystem : ISystem
 
         playerNeedChunkLookup = state.GetBufferLookup<PlayersNeedChunk>(true);
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+        barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        linkedContainersLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
         
         simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
@@ -56,6 +57,7 @@ partial struct CharacterAimSystem : ISystem
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
+        linkedContainersLookup.Update(ref state);
 
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
@@ -91,10 +93,10 @@ partial struct CharacterAimSystem : ISystem
                             {  
                            //     Debug.Log("shoot!!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
 
-                                if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                                if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                                     break;
 
-                                if(!EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out int itemId, out int bufferIndex))
+                                if(!EQHelper.TryGetBufferIndex(slotsLookup,playerAspect.playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex))
                                     break;
 
                                 if(!ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out var weapon))
@@ -108,15 +110,52 @@ partial struct CharacterAimSystem : ISystem
 
                                 if(weapon.hasMagazine)
                                 {
-                                   Debug.Log("z"); 
+                                    int magazineCount = EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainersLookup,playerContainer.Value.entity,playerAspect.playerInputSync.ValueRO.slotInHand, out Entity linkedContainerEntity);
+                                    if(magazineCount == 0)
+                                    {
+                                        Debug.Log("empty!!");
+                                        var emptyMagazine = new EmptyMagazineRPC()
+                                        {
+                                            networkID = playerAspect.networkId,
+                                            itemID = itemId
+                                        };   
+                                        if(state.World.IsServer())
+                                            RPCHelper.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                        else                                          
+                                            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,emptyMagazine);  
+
+
+                                        playerAspect.cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(testTick,0.5f);
+                                        break;
+                                    }
+
+                                    if(state.World.IsServer())
+                                    {
+                                        EQHelper.SubtractItem(slotsLookup,linkedContainerEntity,0,out var removedValue);  
+                                        EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId,new EquipmentEvent(EquipementEventFlags.UpdateWeaponMagazine));                                  
+                                    }
                                 }
                                 else
                                 {
                                     var slots = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,entity,weapon.ammoTagID,out var aggregated,out int counter);
-                                    if(counter == 0) break;
+                                    if(counter == 0)
+                                    {
+                                        var emptyMagazine = new EmptyMagazineRPC()
+                                        {
+                                            networkID = playerAspect.networkId,
+                                            itemID = itemId
+                                        };   
+                                        if(state.World.IsServer())
+                                            RPCHelper.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                        else                                          
+                                            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,emptyMagazine);  
+
+
+                                        playerAspect.cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(testTick,0.5f);
+                                        break;
+                                    }
 
                                     ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
-                                   
                                     if(state.World.IsServer())
                                     {      
                                         if(EQHelper.PlayerHasTheAmmo(playerAspect.playerInputSync.ValueRO.ammoSelectedItemID,aggregated))
@@ -126,21 +165,18 @@ partial struct CharacterAimSystem : ISystem
                                         {
                                             if(slots[k].itemID == ammoID)
                                             {
-                                                var events = EQHelper.SubtractItem(ref state,slotsLookup,containersLookup,slots[k].transferData.pos,entity);
+                                                var events = EQHelper.SubtractItem(slotsLookup,containersLookup,slots[k].transferData.pos,entity);
                                                 EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId, events);
                                                 break;
                                             }
                                         }
                                     }
-                                    reloadCooldown = weapon.reloadCooldown;
                                 }
 
 
-
                                 var aimPoint = MyTools.ConvertFloat(CalculateAimPoint(rot,weapon)) + currentPosition;
-
                                 testTick.Add(1u);
-                                var cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown + reloadCooldown);
+                                var cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown);
 
                                
 

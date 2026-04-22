@@ -100,5 +100,6 @@ public enum PositionMode :  byte
     MoveLocal = 0,
     SetLocal = 1,
     MoveRelativeToStart = 2,
+    MoveRelativeToReloadPoint = 3
 }
 

@@ -59,6 +59,10 @@ public struct PlayerInput : IInputComponentData
     [GhostField(Quantization = 0)] public float2 sightDirection;
     [GhostField(Quantization = 0)] public InputEvent rightButton;
     [GhostField(Quantization = 0)] public InputEvent leftButton;
+    [GhostField(Quantization = 0)] public InputEvent reloadButton;
+    [GhostField(Quantization = 0)] public InputEvent unloadButton;
+
+
     [GhostField(Quantization = 0)] public int slotInHand;
     [GhostField(Quantization = 0)] public int ammoSelectedIndex;
 
@@ -78,6 +82,8 @@ public struct PlayerInputSync : IComponentData
     
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;
+
+
 
     public int slotInHand; 
     public int ammoSelectedIndex;

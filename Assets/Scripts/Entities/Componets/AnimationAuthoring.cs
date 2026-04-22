@@ -101,11 +101,18 @@ public struct AnimationFrames : IBufferElementData
                 break;
             case PositionMode.SetLocal:
                 targetRotation = math.normalize(targetRotation);
-                targetEntity = hands.main;
+                if(animationComponent.bodyPartType == BodyPartType.SideHand && hands.twoHanded)
+                    targetEntity = hands.side;
+                else
+                    targetEntity = hands.main;
                 break;
             case PositionMode.MoveRelativeToStart:
                 targetRotation = math.normalize(math.mul(targetRotation, animationComponent.startRotation));
                 targetPosition = animationComponent.startPosition + targetPosition;
+                break;
+            case PositionMode.MoveRelativeToReloadPoint:
+                targetRotation = math.normalize(targetRotation);
+                targetEntity = hands.reloadPoint;
                 break;
         }
 
@@ -122,8 +129,12 @@ public struct AnimationFrames : IBufferElementData
         else
         {
             LocalToWorld targetLocalToWorld = state.EntityManager.GetComponentData<LocalToWorld>(targetEntity);
-            float3 targetWorldPos = targetLocalToWorld.Position + targetPosition;
-            
+            float3 offset = targetPosition;
+            if(positionMode != PositionMode.SetLocal)
+                offset = math.mul(targetLocalToWorld.Rotation,targetPosition);
+
+            float3 targetWorldPos = targetLocalToWorld.Position + offset;
+
             if (state.EntityManager.HasComponent<Parent>(animatingObjects))
             {
                 var parent = state.EntityManager.GetComponentData<Parent>(animatingObjects).Value;
@@ -131,6 +142,7 @@ public struct AnimationFrames : IBufferElementData
                     state.EntityManager.GetComponentData<LocalToWorld>(parent).Value
                 );   
                 float3 localPos = math.transform(parentWorldToLocal, targetWorldPos);
+
                 localPos.z = targetPosition.z;
                 targetPos = localPos;
             }

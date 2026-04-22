@@ -273,6 +273,24 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""c1a853b9-2ebe-4266-9612-e615650d460a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Unload"",
+                    ""type"": ""Button"",
+                    ""id"": ""08e82d65-f6c5-4bf4-843d-e7deb4e44a27"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -570,6 +588,28 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""NextAmmo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""62131e17-4271-4756-89de-a5b7e2ab4792"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6b8fdbe4-8abc-4205-a01b-d65ec1c5c3de"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Unload"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1232,6 +1272,8 @@ namespace UnityEngine.InputSystem
             m_Player_NextSlot = m_Player.FindAction("NextSlot", throwIfNotFound: true);
             m_Player_DebugStats = m_Player.FindAction("DebugStats", throwIfNotFound: true);
             m_Player_NextAmmo = m_Player.FindAction("NextAmmo", throwIfNotFound: true);
+            m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+            m_Player_Unload = m_Player.FindAction("Unload", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1352,6 +1394,8 @@ namespace UnityEngine.InputSystem
         private readonly InputAction m_Player_NextSlot;
         private readonly InputAction m_Player_DebugStats;
         private readonly InputAction m_Player_NextAmmo;
+        private readonly InputAction m_Player_Reload;
+        private readonly InputAction m_Player_Unload;
         /// <summary>
         /// Provides access to input actions defined in input action map "Player".
         /// </summary>
@@ -1444,6 +1488,14 @@ namespace UnityEngine.InputSystem
             /// </summary>
             public InputAction @NextAmmo => m_Wrapper.m_Player_NextAmmo;
             /// <summary>
+            /// Provides access to the underlying input action "Player/Reload".
+            /// </summary>
+            public InputAction @Reload => m_Wrapper.m_Player_Reload;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/Unload".
+            /// </summary>
+            public InputAction @Unload => m_Wrapper.m_Player_Unload;
+            /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
             public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1529,6 +1581,12 @@ namespace UnityEngine.InputSystem
                 @NextAmmo.started += instance.OnNextAmmo;
                 @NextAmmo.performed += instance.OnNextAmmo;
                 @NextAmmo.canceled += instance.OnNextAmmo;
+                @Reload.started += instance.OnReload;
+                @Reload.performed += instance.OnReload;
+                @Reload.canceled += instance.OnReload;
+                @Unload.started += instance.OnUnload;
+                @Unload.performed += instance.OnUnload;
+                @Unload.canceled += instance.OnUnload;
             }
 
             /// <summary>
@@ -1600,6 +1658,12 @@ namespace UnityEngine.InputSystem
                 @NextAmmo.started -= instance.OnNextAmmo;
                 @NextAmmo.performed -= instance.OnNextAmmo;
                 @NextAmmo.canceled -= instance.OnNextAmmo;
+                @Reload.started -= instance.OnReload;
+                @Reload.performed -= instance.OnReload;
+                @Reload.canceled -= instance.OnReload;
+                @Unload.started -= instance.OnUnload;
+                @Unload.performed -= instance.OnUnload;
+                @Unload.canceled -= instance.OnUnload;
             }
 
             /// <summary>
@@ -2169,6 +2233,20 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnNextAmmo(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnReload(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "Unload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnUnload(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

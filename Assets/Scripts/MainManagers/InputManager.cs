@@ -36,6 +36,9 @@ public class InputManager : MonoBehaviour
 
     public InputAction previousAmmo { private set; get; }
     public InputAction nextAmmo { private set; get; }
+    public InputAction reload { private set; get; }
+    public InputAction unload { private set; get; }
+
 
 
     public List<InputAction> slots { private set; get; }
@@ -73,6 +76,8 @@ public class InputManager : MonoBehaviour
         move = action.FindAction("Move");
         mainAction = action.FindAction("MainAction");
         sideAction = action.FindAction("SideAction");
+        reload = action.FindAction("Reload");
+        unload = action.FindAction("Unload");
 
         previousSlot = action.FindAction("PreviousSlot");
         nextSlot = action.FindAction("NextSlot");

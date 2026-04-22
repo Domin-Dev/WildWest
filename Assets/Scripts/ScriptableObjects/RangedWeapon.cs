@@ -20,6 +20,9 @@ public class RangedWeapon : Weapon
     public List<KeyFrame> shotAnim;
     public List<KeyFrame> reloadAnim; 
     public List<KeyFrame> lostAmmo; 
+    public List<KeyFrame> emptyMagazine;
+    public List<KeyFrame> unloadAnim;
+
 
     public float reloadCooldown => CalculateTime(reloadAnim);
 
