@@ -81,8 +81,11 @@ partial struct CharacterAimSystem : ISystem
                     CalculateNextRotation(ref rot, direction,0.5f);
                    // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
                     
-                    if(!playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
-                    (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick)))
+                    bool isCooldown = !playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
+                    (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick));
+                    
+                    
+                    if(isCooldown)
                     {
                       //  Debug.Log("mozna shot");
                         testTick.Subtract(1);
@@ -131,7 +134,7 @@ partial struct CharacterAimSystem : ISystem
 
                                     if(state.World.IsServer())
                                     {
-                                        EQHelper.SubtractItem(slotsLookup,linkedContainerEntity,0,out var removedValue);  
+                                        EQHelper.SubtractItem(slotsLookup,linkedContainerEntity,0,out var removedValue,1,false);  
                                         EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId,new EquipmentEvent(EquipementEventFlags.UpdateWeaponMagazine));                                  
                                     }
                                 }
@@ -171,12 +174,16 @@ partial struct CharacterAimSystem : ISystem
                                             }
                                         }
                                     }
+                                    else
+                                    {
+                                        reloadCooldown += 0.2f;
+                                    }
                                 }
 
 
                                 var aimPoint = MyTools.ConvertFloat(CalculateAimPoint(rot,weapon)) + currentPosition;
                                 testTick.Add(1u);
-                                var cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown);
+                                var cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown + reloadCooldown);
 
                                
 
@@ -246,7 +253,20 @@ partial struct CharacterAimSystem : ISystem
                             }
                         }
                     }
-          
+                    else if(state.World.IsServer() && playerAspect.playerState.ValueRO.state == PlayerState.reloading)
+                    {
+                        Debug.Log("jest input!!!");
+                        testTick.Subtract(1);
+                        if (playerAspect.input.GetDataAtTick(testTick, out var input2))
+                        {
+                            uint counter2 = input2.InternalInput.rightButton.Count;
+                            if(counter2 - input.InternalInput.rightButton.Count != 0)
+                            {  
+                                Debug.Log("jest input!!!");
+                                RPCHelper.SendEventsToClientsAndOwner<StopReloadRPC>(ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                            }
+                        }
+                    }
                 }
             }
             playerAspect.aimRotation.ValueRW.angle = rot;

@@ -15,6 +15,7 @@ public readonly partial struct PlayerAspect : IAspect
 {
 
     public readonly RefRO<PlayerInputSync> playerInputSync;
+    public readonly RefRW<CurrentPlayerState> playerState;
 
     public readonly RefRO<LocalTransform> playerPosition;
     public readonly RefRO<LocalToWorld> localToWorld;

@@ -37,6 +37,8 @@ public class CharacterAuthoring : MonoBehaviour
 
             AddComponent(entity, new AimRotation());
             AddComponent(entity, new Cooldown());
+            AddComponent(entity, new CurrentPlayerState(){ state = PlayerState.none});
+            
             AddComponent(entity, new GhostChunk().StartValues());
 
  
@@ -247,6 +249,19 @@ public struct Cooldown : IComponentData
     public NetworkTick cooldownTick;
     public NetworkTick startCooldown;
 }
+public struct CurrentPlayerState : IComponentData
+{
+    public PlayerState state;
+}
+
+
+public enum PlayerState : byte
+{
+    none,
+    reloading,
+    shooting
+}
+
 
 
 

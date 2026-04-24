@@ -241,6 +241,32 @@ MonoBehaviour:
       relativeRotation: 0
       indexType: 0
       id: -1
+  emptyMagazine:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 15
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  unloadAnim: []
   aimPoint:
     x: 0.035
     y: -0.005

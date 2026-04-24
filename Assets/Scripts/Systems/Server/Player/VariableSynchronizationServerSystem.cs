@@ -116,6 +116,10 @@ partial struct VariableSynchronizationServerSystem : ISystem
                             }
                         }
                     }
+                    else if (playerInput.ValueRO.unloadButton.IsSet)
+                    {
+                        RPCHelper.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);
+                    }
                 }
             }
       }

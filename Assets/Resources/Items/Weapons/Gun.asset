@@ -134,13 +134,25 @@ MonoBehaviour:
     rotate:
       x: 0
       y: 0
-      z: 60
+      z: 65
     move:
-      x: 0
+      x: -0.02
       y: 0
       z: 0
-    duration: 0.65
-    events: []
+    duration: 0.5
+    events:
+    - EventType: 3
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 2
   - bodyPartType: 0
     positionMode: 2
     rotate:
@@ -153,42 +165,6 @@ MonoBehaviour:
       z: 0
     duration: 0.6
     events: []
-  - bodyPartType: 1
-    positionMode: 3
-    rotate:
-      x: 0
-      y: 0
-      z: -50
-    move:
-      x: -0.03
-      y: 0
-      z: 0
-    duration: 0.65
-    events:
-    - EventType: 3
-      position:
-        x: -0.03
-        y: 0
-        z: 0
-      rotation:
-        x: 0
-        y: 0
-        z: 0
-      relativeRotation: 0
-      indexType: 0
-      id: 2
-    - EventType: 0
-      position:
-        x: 0
-        y: 0
-        z: 0
-      rotation:
-        x: 0
-        y: 0
-        z: 0
-      relativeRotation: 0
-      indexType: 0
-      id: 6
   - bodyPartType: 1
     positionMode: 1
     rotate:
@@ -323,7 +299,115 @@ MonoBehaviour:
       z: 0
     duration: 0.2
     events: []
-  unloadAnim: []
+  unloadAnim:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 60
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.7
+    events: []
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.4
+    events: []
+  - bodyPartType: 1
+    positionMode: 3
+    rotate:
+      x: 0
+      y: 0
+      z: -70
+    move:
+      x: -0.03
+      y: 0
+      z: 0
+    duration: 0.6
+    events:
+    - EventType: 5
+      position:
+        x: 0.03
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: 0
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 4
+  - bodyPartType: 1
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 30
+    move:
+      x: 0
+      y: -0.05
+      z: 0
+    duration: 0.6
+    events:
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
+  - bodyPartType: 1
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events:
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
   aimPoint:
     x: 0.044999998
     y: 0.005

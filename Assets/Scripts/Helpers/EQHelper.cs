@@ -955,7 +955,7 @@ public static class EQHelper
         return SubtractItem(slotLookup,containers,slotPosition,player,out var template,value);
     }
 
-    public static void SubtractItem(BufferLookup<InventorySlot> slotLookup,Entity container, int bufferIndex,out InventorySlot? template, int value = 1)
+    public static void SubtractItem(BufferLookup<InventorySlot> slotLookup,Entity container, int bufferIndex,out InventorySlot? template, int value = 1, bool removeAtSwapBack = true)
     {
         template = slotLookup[container][bufferIndex];
         if(template == null) return;
@@ -963,7 +963,12 @@ public static class EQHelper
         if(template.Value.quantity > value)
             slotLookup[container].ElementAt(bufferIndex).quantity -= value;
         else
-            slotLookup[container].RemoveAtSwapBack(bufferIndex);
+        {
+            if(removeAtSwapBack)
+                slotLookup[container].RemoveAtSwapBack(bufferIndex);
+            else
+                slotLookup[container].RemoveAt(bufferIndex);
+        }
     }
     public static EquipmentEvent[] SubtractItem(BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers>containers,SlotPosition slotPosition,Entity player,out InventorySlot? template, int value = 1)
     {

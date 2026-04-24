@@ -74,7 +74,7 @@ partial struct EventsServerSystem : ISystem
         foreach(var player in playersToAmmoUpdate)
         {
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
-            ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
+            ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && !item.hasMagazine)
             {
                 var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
                 var input = playerInputSyncLookup[player];

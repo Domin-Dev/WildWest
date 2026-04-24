@@ -97,9 +97,9 @@ partial struct PlayerInputSystem : ISystem
                 playerInput.ValueRW.slotInHand = newSlot;
                 playerInputSync.ValueRW.slotInHand = newSlot;
                 
-                if(cooldown.ValueRO.cooldownTick.IsValid && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
-                    cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);
-                cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,5);
+               // if(cooldown.ValueRO.cooldownTick.IsValid && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
+                //    cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);
+                cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,50);
                 EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC() { networkID = owner.ValueRO.NetworkId  });
             }
 
@@ -140,7 +140,7 @@ partial struct PlayerInputSystem : ISystem
             } 
             
 
-            if (left && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick)))
+            if (left ) //&& //(!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick)))
             {
                 playerInput.ValueRW.leftButton.Set();
                 playerInputSync.ValueRW.leftButton.Set();
@@ -151,7 +151,7 @@ partial struct PlayerInputSystem : ISystem
                 playerInputSync.ValueRW.leftButton = default;
             }
 
-            if (right && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick)))
+            if (right) //&& (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick)))
             {
                 playerInput.ValueRW.rightButton.Set();
                 playerInputSync.ValueRW.rightButton.Set();
