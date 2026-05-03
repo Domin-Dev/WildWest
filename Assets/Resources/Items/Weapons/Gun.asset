@@ -163,7 +163,7 @@ MonoBehaviour:
       x: 0
       y: 0
       z: 0
-    duration: 0.6
+    duration: 0.06
     events: []
   - bodyPartType: 1
     positionMode: 1
@@ -175,7 +175,7 @@ MonoBehaviour:
       x: 0
       y: -0.05
       z: 0
-    duration: 0.6
+    duration: 0.06
     events:
     - EventType: 5
       position:

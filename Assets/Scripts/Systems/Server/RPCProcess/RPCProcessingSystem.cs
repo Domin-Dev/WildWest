@@ -37,7 +37,6 @@ partial struct RPCProcessingSystem : ISystem
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         linkedContainers = SystemAPI.GetBufferLookup<LinkedContainers>();
-
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -48,6 +47,7 @@ partial struct RPCProcessingSystem : ISystem
         playerNeedChunkLookup.Update(ref state);
         linkedContainers.Update(ref state);
 
+        EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
@@ -67,10 +67,12 @@ partial struct RPCProcessingSystem : ISystem
         SystemAPI.Query<RefRO<PlayerActionRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             Entity player = toPlayers.ElementAt(0).connection;  
+            state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = PlayerState.shooting});
+            
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && !item.hasMagazine)
             {
-                RPCHelper.CreateSerwerLocalEvent(new FutureReloadRPC(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.cooldown),false);
+                RPCHelper.CreateSerwerLocalEvent(new FutureReload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.shootCooldown),false);
             }
 
             for(int i = 1; i < toPlayers.Length;i++)
@@ -78,8 +80,8 @@ partial struct RPCProcessingSystem : ISystem
             ecb.DestroyEntity(entity);
         }
 
-        foreach ((RefRO<FutureReloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
-        SystemAPI.Query<RefRO<FutureReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        foreach ((RefRO<FutureReload> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
+        SystemAPI.Query<RefRO<FutureReload>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             Entity player = toPlayers.ElementAt(0).connection; 
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
@@ -121,7 +123,8 @@ partial struct RPCProcessingSystem : ISystem
         ecb.Dispose();
         ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         containersLookup.Update(ref state);   
-        slotsLookup.Update(ref state);     
+        slotsLookup.Update(ref state);    
+         
 
 
         foreach ((RefRO<NewItemInHandRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
@@ -171,8 +174,7 @@ partial struct RPCProcessingSystem : ISystem
 
             state.EntityManager.SetComponentData(player,playerInputSync);
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
-            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReloadRPC),typeof(EndReloadRPC));
-
+            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
 
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
@@ -188,35 +190,30 @@ partial struct RPCProcessingSystem : ISystem
         SystemAPI.Query<RefRO<ReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             Entity player = toPlayers.ElementAt(0).connection;
+            var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
+            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
+
             if(ItemsAsset.instance.TryGetItem<RangedWeapon>(rpc.ValueRO.weaponID,out var item))
             {
-                state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.reloadCooldown)});
-                state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.reloading});
-              
-                RPCHelper.CreateSerwerLocalEvent(new EndReloadRPC(){ammoID = rpc.ValueRO.ammoID},ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.reloadCooldown),false);
+                state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.reloadCooldown)});               
+                state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = item.reloadingState});
+                RPCHelper.CreateSerwerLocalEvent(new EndReload(){ammoID = rpc.ValueRO.ammoID},ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.reloadCooldown),false);
             }
-
-            var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
-            for(int i = buffer.Length - 1; i >= 0;i--)
-            {
-                var eventEntity = buffer[i].entityEvent;
-                if(SystemAPI.HasComponent<FutureReloadRPC>(eventEntity))
-                {
-                    buffer.RemoveAt(i);
-                    ecb.DestroyEntity(eventEntity);
-                }
-            }
+            
             var newRPC = rpc.ValueRO.GetRPC();
-
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in newRPC);               
             ecb.DestroyEntity(entity);
         }
 
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+        ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
         foreach ((RefRO<EmptyMagazineRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
         SystemAPI.Query<RefRO<EmptyMagazineRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
+            
             Debug.Log("wysylam!");
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
@@ -231,7 +228,19 @@ partial struct RPCProcessingSystem : ISystem
         foreach ((RefRO<UnloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
         SystemAPI.Query<RefRO<UnloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
-            Debug.Log("wysylam!");
+            Entity player = toPlayers.ElementAt(0).connection;
+            var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
+            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
+
+            
+            if(ItemsAsset.instance.TryGetItem<RangedWeapon>(rpc.ValueRO.weaponID,out var item))
+            {
+                state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.unloadCooldown)});
+                state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.unloading});
+                RPCHelper.CreateSerwerLocalEvent(new EndUnload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.unloadCooldown),false);
+            }
+
+
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
             ecb.DestroyEntity(entity);
@@ -242,10 +251,9 @@ partial struct RPCProcessingSystem : ISystem
         ecb.Dispose();
         ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-        foreach ((RefRO<EndReloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
-        SystemAPI.Query<RefRO<EndReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        foreach ((RefRO<EndUnload> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
+        SystemAPI.Query<RefRO<EndUnload>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
-            Debug.Log("reload koniec!");
             Entity player = toPlayers.ElementAt(0).connection;
             var input = SystemAPI.GetComponent<PlayerInputSync>(player);
 
@@ -254,13 +262,51 @@ partial struct RPCProcessingSystem : ISystem
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
             {
                 var ammo = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out var aggregated,out int counter);
+                var items = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainers,containerEntity,input.slotInHand, out Entity linkedContainerEntity);
+                if(items != null && items.Length > 0)
+                {
+                    EQHelper.SubtractItem(slotsLookup,linkedContainerEntity,0,out var removedValue,1,false);  
+                    var slots = EQHelper.FindSlotForItem(ref state, slotsLookup, containersLookup, player,removedValue.Value);
+                    if(slots.Length > 0)
+                    {
+                        var events = EQHelper.AddItems(ref state,ecb,ref entitiesReferences,linkedContainers,barsLookup,slotsLookup,containersLookup, player, slots,new EQGiveItem(removedValue.Value));    
+                        EQHelper.SendEvents(ref ecb, rpc.ValueRO.networkID, events);
+                        EQHelper.SendEvents(ecb, rpc.ValueRO.networkID,new EquipmentEvent(EquipementEventFlags.UpdateWeaponMagazine));        
+                        if(items.Length > 1 && EQHelper.FindSlotForItem(ref state,slotsLookup,containersLookup,player,items[1].itemId).Length > 0)
+                        {
+                            var ghostChunk = state.EntityManager.GetComponentData<GhostChunk>(player);
+                            RPCHelper.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId, ammoID = items[1].itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),tick);
+                        }     
+                    }                     
+                }
+            }
+
+            var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
+            CleanUpEventBuffer(buffer,e);
+            ecb.DestroyEntity(e);
+        }
+       
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+        ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+
+        foreach ((RefRO<EndReload> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
+        SystemAPI.Query<RefRO<EndReload>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            Entity player = toPlayers.ElementAt(0).connection;
+            var input = SystemAPI.GetComponent<PlayerInputSync>(player);
+
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,input.slotInHand), out var slot,out int bufferIndex,out Entity containerEntity) && 
+                ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && item.hasMagazine)
+            {
+                var ammo = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out var aggregated,out int counter);
                 int magazineCount = EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainers,containerEntity,input.slotInHand, out Entity linkedContainerEntity);
 
                 if(EQHelper.PlayerHasTheAmmo(rpc.ValueRO.ammoID,ammo,out int index))
                 {
                     var events = EQHelper.SubtractItem(slotsLookup,containersLookup,ammo[index].transferData.pos,player,out var template);
                     EQHelper.SendEvents(ecb, rpc.ValueRO.networkID, events);
-                    Debug.Log("reload KKKKKKKKKKKKKKK " + linkedContainerEntity + " " + template.Value);
                     EQHelper.AppendToBuffer(slotsLookup,linkedContainerEntity,template.Value);
                     if(magazineCount + 1 < item.magazineCapacity && counter > 1)
                     {
@@ -287,17 +333,18 @@ partial struct RPCProcessingSystem : ISystem
         ecb.Dispose();
         ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-        foreach ((RefRO<StopReloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
-        SystemAPI.Query<RefRO<StopReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        foreach ((RefRW<StopReloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
+        SystemAPI.Query<RefRW<StopReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             Debug.Log("reload koniec!");
             Entity player = toPlayers.ElementAt(0).connection;
             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,20) });
             state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.none});
-
-
+            EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex);
+            rpc.ValueRW.weaponID = slot.HasValue ? slot.Value.itemId : -1;
+   
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
-            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReloadRPC),typeof(EndReloadRPC));
+            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);   
             ecb.DestroyEntity(e);
@@ -315,21 +362,12 @@ partial struct RPCProcessingSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;
             if(ItemsAsset.instance.TryGetItem<RangedWeapon>(rpc.ValueRO.weaponID,out var item))
             {
-                // if(item.hasMagazine)
-                //     return;
+                state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = item.reloadingState});
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.reloadCooldown)});
             }            
 
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
-            for(int i = buffer.Length - 1; i >= 0;i--)
-            {
-                var eventEntity = buffer[i].entityEvent;
-                if(SystemAPI.HasComponent<FutureReloadRPC>(eventEntity))
-                {
-                    buffer.RemoveAt(i);
-                    ecb.DestroyEntity(eventEntity);
-                }
-            }
+            StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
 
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               

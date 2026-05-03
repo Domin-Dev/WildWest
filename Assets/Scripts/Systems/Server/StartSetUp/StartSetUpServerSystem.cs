@@ -38,13 +38,23 @@ partial struct StartSetUpServerSystem : ISystem
 
                 playerRenderSize = 2,
                 maxChunksPerClient = 30,
-            });     
+            }); 
+
+
+
             EntityHelper.CreateEntityWithComponent(ref ecb,new UnloadingSettings()
             {
                 loadedChunksPerPlayer = 15,
                 chunkUnloadingPeriod = 10,
                 maxIdleChunkTime = 10,
             });
+            EntityHelper.CreateEntityWithComponent(ref ecb,new ShootingConfig()
+            {
+                maxSpread = 30f,
+                shootSpread = 1f,
+                sensitivityPlayerAim = 1f,
+                sensitivityPlayerMove = 1f,
+            });      
             EntityHelper.CreateEntityWithComponent(ecb, new TickLimitsConfig()
             {
                 maxLoadedChunksInTick = 50,

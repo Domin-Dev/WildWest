@@ -25,6 +25,10 @@ public class RangedWeapon : Weapon
 
 
     public float reloadCooldown => CalculateTime(reloadAnim);
+    public float unloadCooldown => CalculateTime(unloadAnim);
+    public float shootCooldown => CalculateTime(shotAnim);
+
+    public PlayerState reloadingState => hasMagazine ? PlayerState.reloading : PlayerState.reloadingNoMagazine;
 
 
     public float2 aimPoint;

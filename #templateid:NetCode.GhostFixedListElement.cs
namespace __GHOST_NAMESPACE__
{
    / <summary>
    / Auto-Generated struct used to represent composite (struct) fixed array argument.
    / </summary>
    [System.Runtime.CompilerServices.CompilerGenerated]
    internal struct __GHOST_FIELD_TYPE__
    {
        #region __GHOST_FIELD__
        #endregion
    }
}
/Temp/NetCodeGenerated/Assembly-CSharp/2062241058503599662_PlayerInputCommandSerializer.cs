@@ -41,12 +41,16 @@ namespace Assembly_CSharp_Generated
         {
             input.rightButton.Count -= prevInput.rightButton.Count;
             input.leftButton.Count -= prevInput.leftButton.Count;
+            input.reloadButton.Count -= prevInput.reloadButton.Count;
+            input.unloadButton.Count -= prevInput.unloadButton.Count;
         }
 
         public void IncrementEvents(ref PlayerInput input, in PlayerInput lastInput)
         {
             input.rightButton.Count += lastInput.rightButton.Count;
             input.leftButton.Count += lastInput.leftButton.Count;
+            input.reloadButton.Count += lastInput.reloadButton.Count;
+            input.unloadButton.Count += lastInput.unloadButton.Count;
         }
     }
 }

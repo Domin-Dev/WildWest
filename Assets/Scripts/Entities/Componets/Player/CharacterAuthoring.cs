@@ -34,6 +34,11 @@ public class CharacterAuthoring : MonoBehaviour
             });
             AddComponent(entity, new PlayerLook());
 
+            AddComponent(entity, new PlayerActionSpread());
+            AddComponent(entity, new ShootingSkill());
+
+
+
 
             AddComponent(entity, new AimRotation());
             AddComponent(entity, new Cooldown());
@@ -49,6 +54,13 @@ public class CharacterAuthoring : MonoBehaviour
             AddBuffer<PlayerContainers>(entity);
         }
     }
+}
+
+
+[GhostComponent(SendTypeOptimization = GhostSendType.AllClients,OwnerSendType = SendToOwnerType.SendToOwner)]
+public struct ShootingSkill : IComponentData
+{
+    public byte Value;
 }
 
 
@@ -244,6 +256,14 @@ public struct AimRotation : IComponentData
 } 
 
 
+public struct PlayerActionSpread : IComponentData
+{
+    public float Spread;
+} 
+
+
+
+
 public struct Cooldown : IComponentData
 {
     public NetworkTick cooldownTick;
@@ -259,7 +279,9 @@ public enum PlayerState : byte
 {
     none,
     reloading,
-    shooting
+    reloadingNoMagazine,
+    shooting,
+    unloading
 }
 
 

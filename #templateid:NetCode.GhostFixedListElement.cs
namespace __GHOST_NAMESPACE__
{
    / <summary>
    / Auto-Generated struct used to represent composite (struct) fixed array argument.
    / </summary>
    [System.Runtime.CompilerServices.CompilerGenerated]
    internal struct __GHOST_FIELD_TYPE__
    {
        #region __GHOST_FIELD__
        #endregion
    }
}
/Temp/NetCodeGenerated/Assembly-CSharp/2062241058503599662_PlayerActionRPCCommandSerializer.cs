@@ -36,6 +36,16 @@ namespace Assembly_CSharp_Generated
         {
             writer.WriteInt((int) data.networkID);
             writer.WriteUInt((uint)data.tick.SerializedData);
+            if (state.GhostFromEntity.TryGetComponent(data.player, out var ghostComponent))
+            {
+                writer.WriteInt(ghostComponent.ghostId);
+                writer.WriteUInt(ghostComponent.spawnTick.SerializedData);
+            }
+            else
+            {
+                writer.WriteInt(0);
+                writer.WriteUInt(Unity.NetCode.NetworkTick.Invalid.SerializedData);
+            }
             writer.WriteInt((int) data.itemID);
         }
 
@@ -43,6 +53,16 @@ namespace Assembly_CSharp_Generated
         {
             data.networkID = (int) reader.ReadInt();
             data.tick = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadUInt()};
+            {
+                var ghostId = reader.ReadInt();
+                NetworkTick spawnTick = new NetworkTick{SerializedData = reader.ReadUInt()};
+                data.player = default;
+                if (ghostId != 0)
+                {
+                    if (state.ghostMap.TryGetValue(new SpawnedGhost{ghostId = ghostId, spawnTick = spawnTick}, out var ghostEnt))
+                        data.player = ghostEnt;
+                }
+            }
             data.itemID = (int) reader.ReadInt();
         }
         [BurstCompile(DisableDirectCall = true)]

@@ -20,6 +20,7 @@ public readonly partial struct PlayerAspect : IAspect
     public readonly RefRO<LocalTransform> playerPosition;
     public readonly RefRO<LocalToWorld> localToWorld;
     public readonly RefRW<Hands> hands;
+    public readonly RefRW<PlayerActionSpread> spread;
     public readonly RefRW<Character> character;
     public readonly RefRW<Player> player;
     private readonly DynamicBuffer<InputBufferData<PlayerInput>> inputPlayer;

@@ -49,12 +49,15 @@ namespace Assembly_CSharp_Generated
             public float InternalInput_sightDirection_y;
             public uint InternalInput_rightButton_Count;
             public uint InternalInput_leftButton_Count;
+            public uint InternalInput_reloadButton_Count;
+            public uint InternalInput_unloadButton_Count;
             public int InternalInput_slotInHand;
+            public int InternalInput_ammoSelectedIndex;
             public uint InternalInput_dataTick;
             public uint Tick;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 7;
+        private const int ChangeMaskBits = 10;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -79,7 +82,10 @@ namespace Assembly_CSharp_Generated
                 snapshot.InternalInput_sightDirection_y = component.InternalInput.sightDirection.y;
                 snapshot.InternalInput_rightButton_Count = (uint)component.InternalInput.rightButton.Count;
                 snapshot.InternalInput_leftButton_Count = (uint)component.InternalInput.leftButton.Count;
+                snapshot.InternalInput_reloadButton_Count = (uint)component.InternalInput.reloadButton.Count;
+                snapshot.InternalInput_unloadButton_Count = (uint)component.InternalInput.unloadButton.Count;
                 snapshot.InternalInput_slotInHand = (int) component.InternalInput.slotInHand;
+                snapshot.InternalInput_ammoSelectedIndex = (int) component.InternalInput.ammoSelectedIndex;
                 snapshot.InternalInput_dataTick = component.InternalInput.dataTick.SerializedData;
                 snapshot.Tick = component.Tick.SerializedData;
         }
@@ -93,7 +99,10 @@ namespace Assembly_CSharp_Generated
                 component.InternalInput.sightDirection = new float2(snapshotBefore.InternalInput_sightDirection_x, snapshotBefore.InternalInput_sightDirection_y);
                 component.InternalInput.rightButton.Count = (uint) snapshotBefore.InternalInput_rightButton_Count;
                 component.InternalInput.leftButton.Count = (uint) snapshotBefore.InternalInput_leftButton_Count;
+                component.InternalInput.reloadButton.Count = (uint) snapshotBefore.InternalInput_reloadButton_Count;
+                component.InternalInput.unloadButton.Count = (uint) snapshotBefore.InternalInput_unloadButton_Count;
                 component.InternalInput.slotInHand = (int) snapshotBefore.InternalInput_slotInHand;
+                component.InternalInput.ammoSelectedIndex = (int) snapshotBefore.InternalInput_ammoSelectedIndex;
                 component.InternalInput.dataTick = new Unity.NetCode.NetworkTick{SerializedData = snapshotBefore.InternalInput_dataTick};
                 component.Tick = new Unity.NetCode.NetworkTick{SerializedData = snapshotBefore.Tick};
         }
@@ -108,7 +117,10 @@ namespace Assembly_CSharp_Generated
             component.InternalInput.sightDirection.y = backup.InternalInput.sightDirection.y;
             component.InternalInput.rightButton.Count = backup.InternalInput.rightButton.Count;
             component.InternalInput.leftButton.Count = backup.InternalInput.leftButton.Count;
+            component.InternalInput.reloadButton.Count = backup.InternalInput.reloadButton.Count;
+            component.InternalInput.unloadButton.Count = backup.InternalInput.unloadButton.Count;
             component.InternalInput.slotInHand = backup.InternalInput.slotInHand;
+            component.InternalInput.ammoSelectedIndex = backup.InternalInput.ammoSelectedIndex;
             component.InternalInput.dataTick = backup.InternalInput.dataTick;
             component.Tick = backup.Tick;
         }
@@ -120,7 +132,10 @@ namespace Assembly_CSharp_Generated
         {
             snapshot.InternalInput_rightButton_Count = (uint)predictor.PredictInt((int)snapshot.InternalInput_rightButton_Count, (int)baseline1.InternalInput_rightButton_Count, (int)baseline2.InternalInput_rightButton_Count);
             snapshot.InternalInput_leftButton_Count = (uint)predictor.PredictInt((int)snapshot.InternalInput_leftButton_Count, (int)baseline1.InternalInput_leftButton_Count, (int)baseline2.InternalInput_leftButton_Count);
+            snapshot.InternalInput_reloadButton_Count = (uint)predictor.PredictInt((int)snapshot.InternalInput_reloadButton_Count, (int)baseline1.InternalInput_reloadButton_Count, (int)baseline2.InternalInput_reloadButton_Count);
+            snapshot.InternalInput_unloadButton_Count = (uint)predictor.PredictInt((int)snapshot.InternalInput_unloadButton_Count, (int)baseline1.InternalInput_unloadButton_Count, (int)baseline2.InternalInput_unloadButton_Count);
             snapshot.InternalInput_slotInHand = predictor.PredictInt(snapshot.InternalInput_slotInHand, baseline1.InternalInput_slotInHand, baseline2.InternalInput_slotInHand);
+            snapshot.InternalInput_ammoSelectedIndex = predictor.PredictInt(snapshot.InternalInput_ammoSelectedIndex, baseline1.InternalInput_ammoSelectedIndex, baseline2.InternalInput_ammoSelectedIndex);
             snapshot.InternalInput_dataTick = (uint)predictor.PredictInt((int)snapshot.InternalInput_dataTick, (int)baseline1.InternalInput_dataTick, (int)baseline2.InternalInput_dataTick);
             snapshot.Tick = (uint)predictor.PredictInt((int)snapshot.Tick, (int)baseline1.Tick, (int)baseline2.Tick);
         }
@@ -137,10 +152,13 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.InternalInput_sightDirection_y != baseline.InternalInput_sightDirection_y) ? (1u<<1) : 0;
             changeMask |= (snapshot.InternalInput_rightButton_Count != baseline.InternalInput_rightButton_Count) ? (1u<<2) : 0;
             changeMask |= (snapshot.InternalInput_leftButton_Count != baseline.InternalInput_leftButton_Count) ? (1u<<3) : 0;
-            changeMask |= (snapshot.InternalInput_slotInHand != baseline.InternalInput_slotInHand) ? (1u<<4) : 0;
-            changeMask |= (snapshot.InternalInput_dataTick != baseline.InternalInput_dataTick) ? (1u<<5) : 0;
-            changeMask |= (snapshot.Tick != baseline.Tick) ? (1u<<6) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
+            changeMask |= (snapshot.InternalInput_reloadButton_Count != baseline.InternalInput_reloadButton_Count) ? (1u<<4) : 0;
+            changeMask |= (snapshot.InternalInput_unloadButton_Count != baseline.InternalInput_unloadButton_Count) ? (1u<<5) : 0;
+            changeMask |= (snapshot.InternalInput_slotInHand != baseline.InternalInput_slotInHand) ? (1u<<6) : 0;
+            changeMask |= (snapshot.InternalInput_ammoSelectedIndex != baseline.InternalInput_ammoSelectedIndex) ? (1u<<7) : 0;
+            changeMask |= (snapshot.InternalInput_dataTick != baseline.InternalInput_dataTick) ? (1u<<8) : 0;
+            changeMask |= (snapshot.Tick != baseline.Tick) ? (1u<<9) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 10);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -163,10 +181,16 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_leftButton_Count, baseline.InternalInput_leftButton_Count, compressionModel);
             if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.InternalInput_slotInHand, baseline.InternalInput_slotInHand, compressionModel);
+                writer.WritePackedUIntDelta(snapshot.InternalInput_reloadButton_Count, baseline.InternalInput_reloadButton_Count, compressionModel);
             if ((changeMask & (1 << 5)) != 0)
-                writer.WritePackedUIntDelta(snapshot.InternalInput_dataTick, baseline.InternalInput_dataTick, compressionModel);
+                writer.WritePackedUIntDelta(snapshot.InternalInput_unloadButton_Count, baseline.InternalInput_unloadButton_Count, compressionModel);
             if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedIntDelta(snapshot.InternalInput_slotInHand, baseline.InternalInput_slotInHand, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedIntDelta(snapshot.InternalInput_ammoSelectedIndex, baseline.InternalInput_ammoSelectedIndex, compressionModel);
+            if ((changeMask & (1 << 8)) != 0)
+                writer.WritePackedUIntDelta(snapshot.InternalInput_dataTick, baseline.InternalInput_dataTick, compressionModel);
+            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedUIntDelta(snapshot.Tick, baseline.Tick, compressionModel);
         }
 
@@ -194,16 +218,25 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.InternalInput_leftButton_Count != baseline.InternalInput_leftButton_Count) ? (1u<<3) : 0;
             if ((changeMask & (1 << 3)) != 0)
                 writer.WritePackedUIntDelta(snapshot.InternalInput_leftButton_Count, baseline.InternalInput_leftButton_Count, compressionModel);
-            changeMask |= (snapshot.InternalInput_slotInHand != baseline.InternalInput_slotInHand) ? (1u<<4) : 0;
+            changeMask |= (snapshot.InternalInput_reloadButton_Count != baseline.InternalInput_reloadButton_Count) ? (1u<<4) : 0;
             if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.InternalInput_slotInHand, baseline.InternalInput_slotInHand, compressionModel);
-            changeMask |= (snapshot.InternalInput_dataTick != baseline.InternalInput_dataTick) ? (1u<<5) : 0;
+                writer.WritePackedUIntDelta(snapshot.InternalInput_reloadButton_Count, baseline.InternalInput_reloadButton_Count, compressionModel);
+            changeMask |= (snapshot.InternalInput_unloadButton_Count != baseline.InternalInput_unloadButton_Count) ? (1u<<5) : 0;
             if ((changeMask & (1 << 5)) != 0)
-                writer.WritePackedUIntDelta(snapshot.InternalInput_dataTick, baseline.InternalInput_dataTick, compressionModel);
-            changeMask |= (snapshot.Tick != baseline.Tick) ? (1u<<6) : 0;
+                writer.WritePackedUIntDelta(snapshot.InternalInput_unloadButton_Count, baseline.InternalInput_unloadButton_Count, compressionModel);
+            changeMask |= (snapshot.InternalInput_slotInHand != baseline.InternalInput_slotInHand) ? (1u<<6) : 0;
             if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedIntDelta(snapshot.InternalInput_slotInHand, baseline.InternalInput_slotInHand, compressionModel);
+            changeMask |= (snapshot.InternalInput_ammoSelectedIndex != baseline.InternalInput_ammoSelectedIndex) ? (1u<<7) : 0;
+            if ((changeMask & (1 << 7)) != 0)
+                writer.WritePackedIntDelta(snapshot.InternalInput_ammoSelectedIndex, baseline.InternalInput_ammoSelectedIndex, compressionModel);
+            changeMask |= (snapshot.InternalInput_dataTick != baseline.InternalInput_dataTick) ? (1u<<8) : 0;
+            if ((changeMask & (1 << 8)) != 0)
+                writer.WritePackedUIntDelta(snapshot.InternalInput_dataTick, baseline.InternalInput_dataTick, compressionModel);
+            changeMask |= (snapshot.Tick != baseline.Tick) ? (1u<<9) : 0;
+            if ((changeMask & (1 << 9)) != 0)
                 writer.WritePackedUIntDelta(snapshot.Tick, baseline.Tick, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 10);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -238,14 +271,26 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.InternalInput_leftButton_Count = baseline.InternalInput_leftButton_Count;
             if ((changeMask & (1 << 4)) != 0)
+                snapshot.InternalInput_reloadButton_Count = reader.ReadPackedUIntDelta(baseline.InternalInput_reloadButton_Count, compressionModel);
+            else
+                snapshot.InternalInput_reloadButton_Count = baseline.InternalInput_reloadButton_Count;
+            if ((changeMask & (1 << 5)) != 0)
+                snapshot.InternalInput_unloadButton_Count = reader.ReadPackedUIntDelta(baseline.InternalInput_unloadButton_Count, compressionModel);
+            else
+                snapshot.InternalInput_unloadButton_Count = baseline.InternalInput_unloadButton_Count;
+            if ((changeMask & (1 << 6)) != 0)
                 snapshot.InternalInput_slotInHand = reader.ReadPackedIntDelta(baseline.InternalInput_slotInHand, compressionModel);
             else
                 snapshot.InternalInput_slotInHand = baseline.InternalInput_slotInHand;
-            if ((changeMask & (1 << 5)) != 0)
+            if ((changeMask & (1 << 7)) != 0)
+                snapshot.InternalInput_ammoSelectedIndex = reader.ReadPackedIntDelta(baseline.InternalInput_ammoSelectedIndex, compressionModel);
+            else
+                snapshot.InternalInput_ammoSelectedIndex = baseline.InternalInput_ammoSelectedIndex;
+            if ((changeMask & (1 << 8)) != 0)
                 snapshot.InternalInput_dataTick = reader.ReadPackedUIntDelta(baseline.InternalInput_dataTick, compressionModel);
             else
                 snapshot.InternalInput_dataTick = baseline.InternalInput_dataTick;
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 9)) != 0)
                 snapshot.Tick = reader.ReadPackedUIntDelta(baseline.Tick, compressionModel);
             else
                 snapshot.Tick = baseline.Tick;
@@ -272,7 +317,19 @@ namespace Assembly_CSharp_Generated
                 (component.InternalInput.leftButton.Count - backup.InternalInput.leftButton.Count) :
                 (backup.InternalInput.leftButton.Count - component.InternalInput.leftButton.Count));
             ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex],
+                (component.InternalInput.reloadButton.Count > backup.InternalInput.reloadButton.Count) ?
+                (component.InternalInput.reloadButton.Count - backup.InternalInput.reloadButton.Count) :
+                (backup.InternalInput.reloadButton.Count - component.InternalInput.reloadButton.Count));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex],
+                (component.InternalInput.unloadButton.Count > backup.InternalInput.unloadButton.Count) ?
+                (component.InternalInput.unloadButton.Count - backup.InternalInput.unloadButton.Count) :
+                (backup.InternalInput.unloadButton.Count - component.InternalInput.unloadButton.Count));
+            ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.InternalInput.slotInHand - backup.InternalInput.slotInHand));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.InternalInput.ammoSelectedIndex - backup.InternalInput.ammoSelectedIndex));
             ++errorIndex;
             {
             int tickErr = 0;
@@ -321,7 +378,19 @@ namespace Assembly_CSharp_Generated
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".InternalInput.reloadButton.Count");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".InternalInput.unloadButton.Count");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".InternalInput.slotInHand");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".InternalInput.ammoSelectedIndex");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
@@ -473,7 +542,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 13216756776952816942,
+                    GhostFieldsHash = 6359459209182528361,
                     ComponentType = ComponentType.ReadWrite<Unity.NetCode.InputBufferData<PlayerInput>>(),
                     ComponentSize = UnsafeUtility.SizeOf<Unity.NetCode.InputBufferData<PlayerInput>>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -481,7 +550,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 7,
+                    ChangeMaskBits = 10,
                     PrefabType = GhostPrefabType.AllPredicted,
                     SendMask = GhostSendType.OnlyPredictedClients,
                     SendToOwner = SendToOwnerType.SendToNonOwner,

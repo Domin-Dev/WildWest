@@ -74,6 +74,7 @@ partial struct CharacterHandsEvents : ISystem
 
         state.CompleteDependency();
         var currentTime = SystemAPI.GetSingleton<NetworkTime>();
+        
 
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
@@ -99,7 +100,8 @@ partial struct CharacterHandsEvents : ISystem
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
-                    StartAnimation(ref state,item,hands,item.emptyMagazine,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                    float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
+                    StartAnimation(ref state,item,hands,item.emptyMagazine,animationLookup,transformLookup,framesLookup,eventsLookup,time); 
                 }
                 break;
             }
@@ -127,10 +129,11 @@ partial struct CharacterHandsEvents : ISystem
                     if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.weaponID,out var item))
                     {
                         float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
+
                         if(action.ValueRO.ammoID >= 0)
                         {
                             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,item.reloadCooldown)});
-                            state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = PlayerState.reloading});
+                            state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = item.reloadingState});
                             StartAnimation(ref state,item,hands,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID}); 
                         }
                         else
@@ -160,22 +163,26 @@ partial struct CharacterHandsEvents : ISystem
                 {
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                     state.EntityManager.SetComponentData<Cooldown>(e,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,20) });
+                    var item = ItemsAsset.instance.GetItem(action.ValueRO.weaponID);
                     ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
+                    NewItemInHandSystem.ChangeItemInHand(ref state,item,hands);               
                     break;
                 }
-
             entityCommandBuffer.DestroyEntity(rpc);
         }
 
         foreach ((RefRO<UnloadRPC> action,Entity rpc) in SystemAPI.Query<RefRO<UnloadRPC>>().WithEntityAccess())
         {    
             Debug.Log("jest!!");
-            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.weaponID,out var item))
                 {
-                    StartAnimation(ref state,item,hands,item.unloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                    float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
+                    state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,item.reloadCooldown)});
+                    state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = PlayerState.unloading});
+                    StartAnimation(ref state,item,hands,item.unloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID});
                 }
                 break;
             }

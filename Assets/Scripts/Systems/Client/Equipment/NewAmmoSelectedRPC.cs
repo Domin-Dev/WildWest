@@ -48,6 +48,7 @@ public struct UnloadRPC : IRpcCommand, ISetPlayer
     public int networkID;
     public NetworkTick tick;
     public int weaponID;
+    public int ammoID;
 
     public void SetPlayer(int networkID,NetworkTick tick)
     {
@@ -62,6 +63,8 @@ public struct StopReloadRPC : IRpcCommand,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;
+    public int weaponID;
+    
     public void SetPlayer(int networkID,NetworkTick tick)
     {
         this.networkID = networkID;
@@ -69,7 +72,7 @@ public struct StopReloadRPC : IRpcCommand,ISetPlayer
     }
 }
 
-public struct EndReloadRPC : IComponentData,ISetPlayer
+public struct EndReload : IComponentData,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;
@@ -85,7 +88,6 @@ public struct EndUnload : IComponentData,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;
-    public int ammoID;
     
     public void SetPlayer(int networkID,NetworkTick tick)
     {
@@ -93,7 +95,7 @@ public struct EndUnload : IComponentData,ISetPlayer
         this.tick = tick;
     }
 }
-public struct FutureReloadRPC : IComponentData,ISetPlayer
+public struct FutureReload : IComponentData,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;

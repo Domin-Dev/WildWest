@@ -44,11 +44,12 @@ namespace Assembly_CSharp_Generated
         internal struct Snapshot
         {
             public int slot;
-            public int container;
-            public uint containerSpawnTick;
+            public int containerIndex;
+            public int containerEntity;
+            public uint containerEntitySpawnTick;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 2;
+        private const int ChangeMaskBits = 3;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -68,12 +69,13 @@ namespace Assembly_CSharp_Generated
         static void CopyToSnapshotGenerated(in GhostSerializerState serializerState, ref Snapshot snapshot, ref LinkedContainers component)
         {
                 snapshot.slot = (int) component.slot;
-                snapshot.container = 0;
-                snapshot.containerSpawnTick = Unity.NetCode.NetworkTick.Invalid.SerializedData;
-                if (serializerState.GhostFromEntity.TryGetComponent(component.container, out var ghostComponent))
+                snapshot.containerIndex = (int) component.containerIndex;
+                snapshot.containerEntity = 0;
+                snapshot.containerEntitySpawnTick = Unity.NetCode.NetworkTick.Invalid.SerializedData;
+                if (serializerState.GhostFromEntity.TryGetComponent(component.containerEntity, out var ghostComponent))
                 {
-                    snapshot.container = ghostComponent.ghostId;
-                    snapshot.containerSpawnTick = ghostComponent.spawnTick.SerializedData;
+                    snapshot.containerEntity = ghostComponent.ghostId;
+                    snapshot.containerEntitySpawnTick = ghostComponent.spawnTick.SerializedData;
                 }
         }
 
@@ -83,11 +85,12 @@ namespace Assembly_CSharp_Generated
             float snapshotInterpolationFactor, float snapshotInterpolationFactorRaw, ref Snapshot snapshotBefore, ref Snapshot snapshotAfter)
         {
                 component.slot = (int) snapshotBefore.slot;
-                component.container = default;
-                if (snapshotBefore.container != 0)
+                component.containerIndex = (int) snapshotBefore.containerIndex;
+                component.containerEntity = default;
+                if (snapshotBefore.containerEntity != 0)
                 {
-                    if (deserializerState.GhostMap.TryGetValue(new SpawnedGhost{ghostId = snapshotBefore.container, spawnTick = new NetworkTick{SerializedData = snapshotBefore.containerSpawnTick}}, out var ghostEnt))
-                        component.container = ghostEnt;
+                    if (deserializerState.GhostMap.TryGetValue(new SpawnedGhost{ghostId = snapshotBefore.containerEntity, spawnTick = new NetworkTick{SerializedData = snapshotBefore.containerEntitySpawnTick}}, out var ghostEnt))
+                        component.containerEntity = ghostEnt;
                 }
         }
 
@@ -96,7 +99,8 @@ namespace Assembly_CSharp_Generated
         static void RestoreFromBackupGenerated(ref LinkedContainers component, ref LinkedContainers backup)
         {
             component.slot = backup.slot;
-            component.container = backup.container;
+            component.containerIndex = backup.containerIndex;
+            component.containerEntity = backup.containerEntity;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.PredictDeltaGenerated"/>
@@ -105,8 +109,9 @@ namespace Assembly_CSharp_Generated
             ref GhostDeltaPredictor predictor)
         {
             snapshot.slot = predictor.PredictInt(snapshot.slot, baseline1.slot, baseline2.slot);
-            snapshot.container = predictor.PredictInt(snapshot.container, baseline1.container, baseline2.container);
-            snapshot.containerSpawnTick = (uint)predictor.PredictInt((int)snapshot.containerSpawnTick, (int)baseline1.containerSpawnTick, (int)baseline2.container);
+            snapshot.containerIndex = predictor.PredictInt(snapshot.containerIndex, baseline1.containerIndex, baseline2.containerIndex);
+            snapshot.containerEntity = predictor.PredictInt(snapshot.containerEntity, baseline1.containerEntity, baseline2.containerEntity);
+            snapshot.containerEntitySpawnTick = (uint)predictor.PredictInt((int)snapshot.containerEntitySpawnTick, (int)baseline1.containerEntitySpawnTick, (int)baseline2.containerEntity);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.CalculateChangeMaskGenerated"/>
@@ -116,8 +121,9 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = 0;
             changeMask = (snapshot.slot != baseline.slot) ? 1u : 0;
-            changeMask |= (snapshot.container != baseline.container || snapshot.containerSpawnTick != baseline.containerSpawnTick) ? (1u<<1) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 2);
+            changeMask |= (snapshot.containerIndex != baseline.containerIndex) ? (1u<<1) : 0;
+            changeMask |= (snapshot.containerEntity != baseline.containerEntity || snapshot.containerEntitySpawnTick != baseline.containerEntitySpawnTick) ? (1u<<2) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 3);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -130,9 +136,11 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 0)) != 0)
                 writer.WritePackedIntDelta(snapshot.slot, baseline.slot, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
+                writer.WritePackedIntDelta(snapshot.containerIndex, baseline.containerIndex, compressionModel);
+            if ((changeMask & (1 << 2)) != 0)
             {
-                writer.WritePackedIntDelta(snapshot.container, baseline.container, compressionModel);
-                writer.WritePackedUIntDelta(snapshot.containerSpawnTick, baseline.containerSpawnTick, compressionModel);
+                writer.WritePackedIntDelta(snapshot.containerEntity, baseline.containerEntity, compressionModel);
+                writer.WritePackedUIntDelta(snapshot.containerEntitySpawnTick, baseline.containerEntitySpawnTick, compressionModel);
             }
         }
 
@@ -145,13 +153,16 @@ namespace Assembly_CSharp_Generated
             changeMask = (snapshot.slot != baseline.slot) ? 1u : 0;
             if ((changeMask & (1 << 0)) != 0)
                 writer.WritePackedIntDelta(snapshot.slot, baseline.slot, compressionModel);
-            changeMask |= (snapshot.container != baseline.container || snapshot.containerSpawnTick != baseline.containerSpawnTick) ? (1u<<1) : 0;
+            changeMask |= (snapshot.containerIndex != baseline.containerIndex) ? (1u<<1) : 0;
             if ((changeMask & (1 << 1)) != 0)
+                writer.WritePackedIntDelta(snapshot.containerIndex, baseline.containerIndex, compressionModel);
+            changeMask |= (snapshot.containerEntity != baseline.containerEntity || snapshot.containerEntitySpawnTick != baseline.containerEntitySpawnTick) ? (1u<<2) : 0;
+            if ((changeMask & (1 << 2)) != 0)
             {
-                writer.WritePackedIntDelta(snapshot.container, baseline.container, compressionModel);
-                writer.WritePackedUIntDelta(snapshot.containerSpawnTick, baseline.containerSpawnTick, compressionModel);
+                writer.WritePackedIntDelta(snapshot.containerEntity, baseline.containerEntity, compressionModel);
+                writer.WritePackedUIntDelta(snapshot.containerEntitySpawnTick, baseline.containerEntitySpawnTick, compressionModel);
             }
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 2);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 3);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -166,14 +177,18 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.slot = baseline.slot;
             if ((changeMask & (1 << 1)) != 0)
+                snapshot.containerIndex = reader.ReadPackedIntDelta(baseline.containerIndex, compressionModel);
+            else
+                snapshot.containerIndex = baseline.containerIndex;
+            if ((changeMask & (1 << 2)) != 0)
             {
-                snapshot.container = reader.ReadPackedIntDelta(baseline.container, compressionModel);
-                snapshot.containerSpawnTick = reader.ReadPackedUIntDelta(baseline.containerSpawnTick, compressionModel);
+                snapshot.containerEntity = reader.ReadPackedIntDelta(baseline.containerEntity, compressionModel);
+                snapshot.containerEntitySpawnTick = reader.ReadPackedUIntDelta(baseline.containerEntitySpawnTick, compressionModel);
             }
             else
             {
-                snapshot.container = baseline.container;
-                snapshot.containerSpawnTick = baseline.containerSpawnTick;
+                snapshot.containerEntity = baseline.containerEntity;
+                snapshot.containerEntitySpawnTick = baseline.containerEntitySpawnTick;
             }
         }
 
@@ -186,6 +201,8 @@ namespace Assembly_CSharp_Generated
             int errorIndex = 0;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.slot - backup.slot));
             ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.containerIndex - backup.containerIndex));
+            ++errorIndex;
         }
 
         static internal int GetPredictionErrorNamesGenerated(ref FixedString512Bytes names)
@@ -194,6 +211,10 @@ namespace Assembly_CSharp_Generated
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".slot");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".containerIndex");
             ++nameCount;
             return nameCount;
         }
@@ -337,7 +358,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 15715212353518195692,
+                    GhostFieldsHash = 17627838338810177770,
                     ComponentType = ComponentType.ReadWrite<LinkedContainers>(),
                     ComponentSize = UnsafeUtility.SizeOf<LinkedContainers>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -345,7 +366,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 2,
+                    ChangeMaskBits = 3,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.All,

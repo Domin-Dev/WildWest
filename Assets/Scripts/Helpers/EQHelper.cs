@@ -552,7 +552,7 @@ public static class EQHelper
                 {
                     ref var i = ref slotLookup[container.Value.entity].ElementAt(bufferIndex);
 
-                    if (hasBar && TryGetBufferIndex(barsLookup, item.pos.slotIndex, container.Value.entity, out var barValue, out int barIndex))
+                    if(hasBar && TryGetBufferIndex(barsLookup, item.pos.slotIndex, container.Value.entity, out var barValue, out int barIndex))
                     {
                         barsLookup[container.Value.entity].ElementAt(barIndex).value = EQHelperClient.CalculateMixPercentage(i.quantity,barValue.Value.value,item.quantity, barVal);
                     }
@@ -810,21 +810,27 @@ public static class EQHelper
     }
     
     
+    
 
 
     public static InventorySlot[] ReadLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex)
     {
+        return ReadLinkedContainer(slotLookup, linkedContainers, container, slotIndex, out Entity linkedContainerEntity);
+    }
+    public static InventorySlot[] ReadLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex, out Entity linkedContainerEntity)
+    {
         if(TryGetBufferIndex(linkedContainers,slotIndex,container,out var element, out int bufferIndex))
         {
+            linkedContainerEntity = element.Value.containerEntity;
             var slots = slotLookup[element.Value.containerEntity];
             InventorySlot[] result = new InventorySlot[slots.Length];
             for(int i = 0;i < slots.Length;i++)
                 result[i] = slots[i];      
             return result;
         }
+        linkedContainerEntity = Entity.Null;
         return null;
     }
-
 
     public static int CountItemsInLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex)
     {
@@ -848,6 +854,28 @@ public static class EQHelper
         }
         return counter;
     }
+    public static int CountItemsInLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex,out Entity linkedContainerEntity, out int firstItemID)
+    {
+        int counter = 0;
+        firstItemID = -1;
+        if(TryGetBufferIndex(linkedContainers,slotIndex,container,out var element, out int bufferIndex))
+        {
+            linkedContainerEntity = element.Value.containerEntity;
+            var slots = slotLookup[element.Value.containerEntity];
+            if(slots.Length > 0) 
+                firstItemID = slots[0].itemId; 
+            for(int i = 0;i < slots.Length;i++)
+                    counter += slots[i].quantity;  
+            return counter;
+        }
+        else
+        {
+            linkedContainerEntity = Entity.Null;
+        }
+        return counter;
+    }
+
+
 
 
     public static InventorySlot[] TryFindItemWithTag_Aggregated(ref SystemState state,BufferLookup<InventorySlot> slotLookup,BufferLookup<PlayerContainers> containers, Entity player,int tagID, out int counter)

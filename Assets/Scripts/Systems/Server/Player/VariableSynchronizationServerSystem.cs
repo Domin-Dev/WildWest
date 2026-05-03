@@ -42,7 +42,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
         var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
-        foreach (var (playerInput,playerInputSync,owner,ghostChunk,cooldown, entity) in
+        foreach (var (playerInput,playerInputSync,owner,ghostChunk,cooldown, player) in
         SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<GhostOwner>,RefRO<GhostChunk>,RefRW<Cooldown>>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             int newAmmoIndex = playerInput.ValueRO.ammoSelectedIndex;
@@ -59,19 +59,19 @@ partial struct VariableSynchronizationServerSystem : ISystem
             {               
                 var from = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand);
                 var to = EquipmentConfig.itemInHand_SlotPosition;
-                EQHelper.Clone(from,to,barsLookup,slotsLookup,containersLookup,entity,out var newSlot,out var newBarData);
+                EQHelper.Clone(from,to,barsLookup,slotsLookup,containersLookup,player,out var newSlot,out var newBarData);
                 int itemID = newSlot.HasValue ? newSlot.Value.itemId : -1;
                 
                 bool result;                    
                 if(playerInputSync.ValueRO.slotInHand != -1)
-                   result = RPCHelper.SendEventsToClients<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);     
+                   result = RPCHelper.SendEventsToClients<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);     
                 else
-                   result = RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);     
+                   result = RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);     
 
                 if(result)
                 {
                     playerInputSync.ValueRW.slotInHand = NewSlotInHand;
-                    state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,2)});
+                    state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,2)});
                 }
             }
             
@@ -79,30 +79,39 @@ partial struct VariableSynchronizationServerSystem : ISystem
             if(newAmmo || playerInput.ValueRO.reloadButton.IsSet || playerInput.ValueRO.unloadButton.IsSet)
             {
                 playerInputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
-                EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,entity,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand), out var slot,out int bufferIndex, out Entity containerEntity);
+                EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand), out var slot,out int bufferIndex, out Entity containerEntity);
                 if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
                 {
-                    if(item.hasMagazine && playerInput.ValueRO.reloadButton.IsSet && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick) ||
+                    if(item.hasMagazine && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick) ||
                     (cooldown.ValueRO.startCooldown.IsValid && cooldown.ValueRO.startCooldown.IsNewerThan(tick))))
                     {
-                        Debug.Log("liczba ammo ! to " + EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainers,containerEntity,NewSlotInHand));
-                        if(EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainers,containerEntity,NewSlotInHand) < item.magazineCapacity)
+                        if(playerInput.ValueRO.reloadButton.IsSet)
                         {
-                            var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,entity,item.ammoTagID,out int counter);         
-                            if(ammo.Length > 0)
+                            if(EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainers,containerEntity,NewSlotInHand) < item.magazineCapacity)
                             {
-                                var selectedAmmo = playerInput.ValueRO.ammoSelectedIndex % ammo.Length;
-                                var ammoID = ammo[selectedAmmo].itemId;
-                                playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
-                                Debug.Log(" reload new RPC!!!");
-                                RPCHelper.SendEventsToClientsAndOwner<ReloadRPC>(new ReloadRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);
-                                cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4);
+                                var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);         
+                                if(ammo.Length > 0)
+                                {
+                                    var selectedAmmo = playerInput.ValueRO.ammoSelectedIndex % ammo.Length;
+                                    var ammoID = ammo[selectedAmmo].itemId;
+                                    playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
+                                    RPCHelper.SendEventsToClientsAndOwner<ReloadRPC>(new ReloadRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
+                                    cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4);
+                                }
+                            }
+                        } 
+                        else if (playerInput.ValueRO.unloadButton.IsSet)
+                        {
+                            if(EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainers,containerEntity,NewSlotInHand,out Entity linkedContainerEntity,out int firstItemID) > 0 && EQHelper.FindSlotForItem(ref state,slotsLookup,containersLookup,player,firstItemID).Length > 0)
+                            {
+                                RPCHelper.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId, ammoID = firstItemID } ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
+                                cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4); 
                             }
                         }
                     }
                     else if(!item.hasMagazine && newAmmo)
                     {
-                        var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,entity,item.ammoTagID,out int counter);         
+                        var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);         
                         if(ammo.Length > 0)
                         {
                             var selectedAmmo = playerInput.ValueRO.ammoSelectedIndex % ammo.Length;
@@ -111,14 +120,10 @@ partial struct VariableSynchronizationServerSystem : ISystem
                             {
                                 playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
                                 playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
-                                RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);
+                                RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
                                 cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4);
                             }
                         }
-                    }
-                    else if (playerInput.ValueRO.unloadButton.IsSet)
-                    {
-                        RPCHelper.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,entity,ghostChunk.ValueRO.GetChunk(),tick);
                     }
                 }
             }

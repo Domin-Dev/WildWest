@@ -389,23 +389,6 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
-                DisplayName = "Cooldown",
-                Component = ComponentType.ReadWrite<Cooldown>(),
-                Hash = 15176954909896060782,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.OnlyPredictedClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
                 DisplayName = "ContainerComponent",
                 Component = ComponentType.ReadWrite<ContainerComponent>(),
                 Hash = 686507675498549308,
