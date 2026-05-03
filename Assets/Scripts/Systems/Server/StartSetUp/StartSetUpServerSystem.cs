@@ -50,11 +50,13 @@ partial struct StartSetUpServerSystem : ISystem
             });
             EntityHelper.CreateEntityWithComponent(ref ecb,new ShootingConfig()
             {
-                maxSpread = 30f,
-                shootSpread = 1f,
-                sensitivityPlayerAim = 1f,
+                maxSpread = 7f,
+                shootSpread = 4f,
+                sensitivityPlayerAim = 3f,
                 sensitivityPlayerMove = 1f,
-            });      
+                spreadRecovery = 0.06f,
+            });
+
             EntityHelper.CreateEntityWithComponent(ecb, new TickLimitsConfig()
             {
                 maxLoadedChunksInTick = 50,

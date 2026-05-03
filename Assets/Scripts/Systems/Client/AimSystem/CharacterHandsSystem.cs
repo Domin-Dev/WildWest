@@ -156,6 +156,13 @@ partial struct CharacterHandsSystem : ISystem
             transformLookup[hands.ValueRO.itemInMainHand] = localItem;
             UpdateDirectionIndex(rot,character, ref state);
         }
+
+        Debug.Log("dzika");
+        foreach ((RefRO<AimRotation> aimRotation, RefRO<PlayerActionSpread> spread) in SystemAPI.Query<RefRO<AimRotation>,RefRO<PlayerActionSpread>>().WithAll<Player,GhostOwnerIsLocal>().WithNone<NewPlayerTag>())
+        {
+            Debug.Log("dziaa");
+            Crosshairs.SetSpread(spread.ValueRO.Spread);
+        }
         
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

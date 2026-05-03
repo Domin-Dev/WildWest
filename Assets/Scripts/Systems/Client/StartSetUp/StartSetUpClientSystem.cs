@@ -22,11 +22,13 @@ partial struct StartSetUpClientSystem : ISystem
             EntityHelper.CreateEntityWithComponent<EnableConnectionTimeoutCheck>(ref ecb);   
             EntityHelper.CreateEntityWithComponent(ref ecb,new ShootingConfig()
             {
-                maxSpread = 30f,
-                shootSpread = 1f,
-                sensitivityPlayerAim = 1f,
+                maxSpread = 7f,
+                shootSpread = 4f,
+                sensitivityPlayerAim = 3f,
                 sensitivityPlayerMove = 1f,
-            });        
+                spreadRecovery = 0.06f,
+            });
+      
 
             ecb.Playback(state.EntityManager);
             ecb.Dispose();

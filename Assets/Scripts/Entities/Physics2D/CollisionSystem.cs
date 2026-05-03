@@ -82,6 +82,7 @@ public partial struct CollisionSystem : ISystem
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId, NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+        state.RequireForUpdate<ShootingConfig>();
     
 
         entityQueryBuilder.Dispose();
@@ -149,15 +150,21 @@ public partial struct CollisionSystem : ISystem
     {
         UpdateLookups(ref state);
 
-        
+        ShootingConfig shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
+        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+
+       // Debug.Log("kkk " + networkTime.SimulationStepBatchSize);
 
         if (state.World.Flags == WorldFlags.GameServer)
         {
-            foreach (var (playerInputSync, playerInput, player, velocity, entity)
-                in SystemAPI.Query<RefRW<PlayerInputSync>, RefRW<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate>().WithEntityAccess())
+            foreach (var (playerInputSync, playerInput, player, velocity,spread, entity)
+                in SystemAPI.Query<RefRW<PlayerInputSync>, RefRW<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>,RefRW<PlayerActionSpread>>().WithAll<Simulate>().WithEntityAccess())
             {
                 playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
                 velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
+                if(networkTime.IsFirstTimeFullyPredictingTick) 
+                    spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRO.Value) * networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
+
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
                 if(shouldBeChanged) 
                     state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
@@ -165,10 +172,13 @@ public partial struct CollisionSystem : ISystem
         }
         else
         {
-            foreach (var (playerInput, player, velocity, entity)
-            in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
+            foreach (var (playerInput, player, velocity,spread, entity)
+            in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>,RefRW<PlayerActionSpread>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
             {
                 velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
+                if(networkTime.IsFirstTimeFullyPredictingTick) 
+                    spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRO.Value) *  networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
+
                 bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
                 if (shouldBeChanged) 
                     state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
@@ -177,7 +187,6 @@ public partial struct CollisionSystem : ISystem
 
 
         deltaTime = SystemAPI.Time.DeltaTime;
-        var time = SystemAPI.GetSingleton<NetworkTime>();
 
         EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
 

@@ -23,9 +23,7 @@ MonoBehaviour:
   icon: {fileID: -2066496519, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   worldSprite: {fileID: 0}
   animSprites: []
-  tags:
-  - tag: {fileID: 0}
-  - tag: {fileID: 0}
+  tags: []
   crafingIngredients:
   - itemID: 42
     number: 2

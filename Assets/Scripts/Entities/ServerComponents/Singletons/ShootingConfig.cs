@@ -13,5 +13,5 @@ public struct ShootingConfig: IComponentData
     public float shootSpread;
     public float sensitivityPlayerMove;
     public float sensitivityPlayerAim;
-
+    public float spreadRecovery;
 }

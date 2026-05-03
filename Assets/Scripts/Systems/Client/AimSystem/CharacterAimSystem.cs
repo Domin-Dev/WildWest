@@ -22,7 +22,7 @@ partial struct CharacterAimSystem : ISystem
     private BufferLookup<PlayerContainers> containersLookup;
     private BufferLookup<LinkedContainers> linkedContainersLookup;
 
-    private int simulationTickRate;
+    private float simulationTickDelta;
 
     public void OnCreate(ref SystemState state)
     {
@@ -36,7 +36,7 @@ partial struct CharacterAimSystem : ISystem
         containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         linkedContainersLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
         
-        simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+        simulationTickDelta = 1f / NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
 
 
@@ -47,10 +47,6 @@ partial struct CharacterAimSystem : ISystem
         var currentTick = networkTime.ServerTick;
         if(!networkTime.IsFirstTimeFullyPredictingTick) return;
 
-      //  if(state.World.IsClient())
-      //     Debug.Log(networkTime.ServerTick.TickIndexForValidTick);
-
-        deltaTime = SystemAPI.Time.DeltaTime;
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         ShootingConfig shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
@@ -61,7 +57,7 @@ partial struct CharacterAimSystem : ISystem
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
         linkedContainersLookup.Update(ref state);
-
+        
         foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             if (state.World.IsClient() && !state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
@@ -81,17 +77,24 @@ partial struct CharacterAimSystem : ISystem
                     if (!math.any(direction) || input.InternalInput.SightDirectionIsEmpty())
                         continue;
 
+                
+                    CalculateNextRotation(ref rot, direction,0.5f);    
+                    float rawSpread = DeltaAngle(playerAspect.aimRotation.ValueRO.angle,rot);
+                    float newSpread = playerAspect.spread.ValueRO.Spread + rawSpread * shootingConfig.sensitivityPlayerAim;
+                    if(newSpread > 0)
+                    {
+                        newSpread -= shootingConfig.spreadRecovery;
+                    }
 
-                    CalculateNextRotation(ref rot, direction,0.5f);
-                    float rawSpread = shootingConfig.sensitivityPlayerAim * DeltaAngle(playerAspect.aimRotation.ValueRO.angle,rot);
-                    playerAspect.spread.ValueRW.Spread = math.clamp(playerAspect.spread.ValueRO.Spread + rawSpread,0,shootingConfig.maxSpread);
-                    Debug.Log("spread " + rawSpread );
+                  //  Debug.Log(testTick.TickIndexForValidTick + "  " + state.World.Flags  + playerAspect.spread.ValueRO.Spread + " new -> " + newSpread + " , " + rawSpread + "(" + playerAspect.aimRotation.ValueRO.angle + " "  + rot + ")");
 
+                    playerAspect.spread.ValueRW.Spread = math.clamp(newSpread,0,shootingConfig.maxSpread);
+                    
                    // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
                     
                     bool isCooldown = !playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
                     (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick));
-                    
+                    playerAspect.aimRotation.ValueRW.angle = rot;
                     
                     if(isCooldown)
                     {
@@ -102,7 +105,7 @@ partial struct CharacterAimSystem : ISystem
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
-                                Debug.Log("shoot!!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
+                                Debug.Log("shoot!!! " + rot + "  spread => " +  playerAspect.spread.ValueRO.Spread   +  " "   + state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
 
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                                     break;
@@ -199,7 +202,7 @@ partial struct CharacterAimSystem : ISystem
 
                                 playerAspect.cooldown.ValueRW.cooldownTick = cooldownTick;
                                 playerAspect.cooldown.ValueRW.startCooldown = NetworkTick.Invalid;
-
+                                playerAspect.spread.ValueRW.Spread = math.clamp(playerAspect.spread.ValueRO.Spread + shootingConfig.shootSpread,0,shootingConfig.maxSpread);
 
                                 uint seed = (uint)testTick.TickIndexForValidTick * 311u; //* 747796405u + 2891336453u;
                                 Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
@@ -283,7 +286,6 @@ partial struct CharacterAimSystem : ISystem
                     }
                 }
             }
-            playerAspect.aimRotation.ValueRW.angle = rot;
         }
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
