@@ -29,4 +29,7 @@ MonoBehaviour:
   bullet: {fileID: 907356828559875784, guid: 39d35432007d90f40b15bf375f8b9449, type: 3}
   UIBulletIcon: {fileID: -60880909, guid: 4736b038f1f3cab409b4c9cbafafedc4, type: 3}
   damage: 7
+  bulletCount: 8
+  bulletsSpread: 30
+  bulletSprite: {fileID: -1913705195784120095, guid: 645527a677c91764ea3f9174db3dbbd0, type: 3}
   type: 1

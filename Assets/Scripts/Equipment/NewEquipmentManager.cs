@@ -146,7 +146,6 @@ public class NewEquipmentManager : MonoBehaviour
     {
         if(!containers.ContainsKey(0)) return;
 
-
         onNewSlotInHand?.Invoke((currentSlotInHand,slotIndex),inventorySlot);
         currentSlotInHand = slotIndex;
     }

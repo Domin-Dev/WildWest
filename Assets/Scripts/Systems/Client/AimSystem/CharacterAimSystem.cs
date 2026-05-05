@@ -120,8 +120,6 @@ partial struct CharacterAimSystem : ISystem
                                 int ammoID = -1;
                                 float reloadCooldown = 0;
 
-
-
                                 if(weapon.hasMagazine)
                                 {
                                     var magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,playerContainer.Value.entity,playerAspect.playerInputSync.ValueRO.slotInHand, out Entity linkedContainerEntity);
@@ -191,6 +189,8 @@ partial struct CharacterAimSystem : ISystem
                                     }
                                 }
 
+                                if(!ItemsAsset.instance.TryGetItem<Ammo>(ammoID,out var ammoItem))
+                                    break;
 
                                 var aimPoint = MyTools.ConvertFloat(CalculateAimPoint(rot,weapon)) + currentPosition;
                                 testTick.Add(1u);
@@ -202,34 +202,38 @@ partial struct CharacterAimSystem : ISystem
 
                                 playerAspect.cooldown.ValueRW.cooldownTick = cooldownTick;
                                 playerAspect.cooldown.ValueRW.startCooldown = NetworkTick.Invalid;
-                                playerAspect.spread.ValueRW.Spread = math.clamp(playerAspect.spread.ValueRO.Spread + shootingConfig.shootSpread,0,shootingConfig.maxSpread);
-
-                                uint seed = (uint)testTick.TickIndexForValidTick * 311u; //* 747796405u + 2891336453u;
+                                uint seed = (uint)testTick.TickIndexForValidTick * 747796405u + 2891336453u;
                                 Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
-                                float spread = weapon.shotSpread;
-                                float offset = weapon.bulletOffset;
-                                float value = 0f;//random.NextFloat((-1 * spread) + weapon.bulletSpread,spread);
-                                
+                                float spread = playerAspect.spread.ValueRO.Spread * 2f;
+                                Debug.Log("spread max =>" + spread);
+                                spread = random.NextFloat(-1 * spread, spread);                       
+                                playerAspect.spread.ValueRW.Spread = math.clamp(playerAspect.spread.ValueRO.Spread + shootingConfig.shootSpread,0,shootingConfig.maxSpread);
+                                float offset = ammoItem.bulletOffset;
+                                spread -= ammoItem.BulletsSpread / 2f;
 
-                                for(int k = 0 ; k < weapon.bulletCount; k++)
+
+                                for(int k = 0 ; k <  ammoItem.bulletCount; k++)
                                 {
                                     Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
-                                    entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });
-                                    
-
+                                    entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });                            
                                     var baseRot = quaternion.Euler(0, 0, rot);
-                                    var spreadRot = quaternion.RotateZ(k * 2 * Mathf.Deg2Rad);
+                                    var spreadRot = quaternion.RotateZ((spread + (offset * k)) * Mathf.Deg2Rad);
                                     var rotation = math.mul(baseRot, spreadRot);
-
-                                    //var rotation = quaternion.Euler(0, 0, rot + (currentSpread * Mathf.Deg2Rad));
-                                    //LocalTransform lt = LocalTransform.FromPosition(aimPoint).Rotate(rotation);
+ 
                                     LocalTransform lt = new LocalTransform
                                     {
-                                        Position = aimPoint + new float3(0,-0.05f * k,0),
+                                        Position = aimPoint,
                                         Rotation = rotation,
                                         Scale = 1f
                                     };
                                     entityCommandBuffer.SetComponent(bullet, lt);
+                                    entityCommandBuffer.SetComponent(bullet, new Bullet()
+                                    {
+                                        bulletID = (uint)(playerAspect.networkId << 16) | (uint)((11 * k + networkTime.ServerTick.TickIndexForValidTick) % 65536),
+                                        speed = 4,
+                                        damage = 10,
+                                        range = 20
+                                    });
 
                                     if (state.World.Flags == WorldFlags.GameServer)
                                     {
@@ -241,11 +245,9 @@ partial struct CharacterAimSystem : ISystem
                                         entityCommandBuffer.SetComponent(bullet, bulletComp);
                                     }
                                     else
-                                    {
-                                        if(ItemsAsset.instance.TryGetItem(ammoID,out var item))
-                                            state.EntityManager.GetComponentObject<SpriteRenderer>(bullet).sprite = item.GetWorldSprite;
-                                    }
+                                        state.EntityManager.GetComponentObject<SpriteRenderer>(bullet).sprite = ammoItem.BulletSprite;
                                 } 
+
 
                                 var rpc = new PlayerActionRPC()
                                 {
@@ -273,8 +275,8 @@ partial struct CharacterAimSystem : ISystem
                         if (playerAspect.input.GetDataAtTick(testTick, out var input2))
                         {
                             uint counter2 = input2.InternalInput.rightButton.Count - input.InternalInput.rightButton.Count;
-                            if(counter2 != 0 || (playerAspect.playerState.ValueRO.state == PlayerState.reloading && input2.InternalInput.unloadButton.Count - input.InternalInput.unloadButton.Count != 0) || 
-                            (playerAspect.playerState.ValueRO.state == PlayerState.unloading && input2.InternalInput.reloadButton.Count - input.InternalInput.reloadButton.Count != 0))
+                            uint counter1 = input2.InternalInput.leftButton.Count - input.InternalInput.leftButton.Count;
+                            if(counter2 != 0 || counter1 != 0)
                             {  
                                 state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(testTick,20) });
                                 playerAspect.playerState.ValueRW.state = PlayerState.none;

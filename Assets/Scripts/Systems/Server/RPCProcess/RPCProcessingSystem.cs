@@ -332,6 +332,8 @@ partial struct RPCProcessingSystem : ISystem
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
         ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        containersLookup.Update(ref state);   
+        slotsLookup.Update(ref state);    
 
         foreach ((RefRW<StopReloadRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
         SystemAPI.Query<RefRW<StopReloadRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())

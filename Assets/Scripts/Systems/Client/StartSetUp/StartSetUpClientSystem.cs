@@ -24,6 +24,7 @@ partial struct StartSetUpClientSystem : ISystem
             {
                 maxSpread = 7f,
                 shootSpread = 4f,
+                changeItemInHandSpread = 2f,
                 sensitivityPlayerAim = 3f,
                 sensitivityPlayerMove = 1f,
                 spreadRecovery = 0.06f,

@@ -210,8 +210,17 @@ partial struct NewItemInHandSystem : ISystem
 
     public static void ChangeItemInHand(ref SystemState state,Item item, RefRW<Hands> hands)
     {
-        if (item is Weapon) SetWeaponInHand(hands,item as Weapon,ref state);
-        else SetItemInHand(hands,item, ref state);
+        Crosshairs.Swtich(item is RangedWeapon);
+
+
+        if (item is Weapon)
+        {
+            SetWeaponInHand(hands,item as Weapon,ref state);
+        }
+        else 
+        {
+            SetItemInHand(hands,item, ref state);
+        }
     }
     private static void SetWeaponInHand(RefRW<Hands> hands,Weapon weapon,ref SystemState state)
     {

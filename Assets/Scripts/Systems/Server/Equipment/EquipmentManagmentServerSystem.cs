@@ -13,6 +13,8 @@ partial struct EquipmentManagmentServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<LinkedContainers> linkedLookup;
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -25,6 +27,8 @@ partial struct EquipmentManagmentServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
+
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -48,7 +52,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
             if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && 
             !SystemAPI.HasComponent<ServerContainer>(containerTo.Value.entity))
             {
-                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
+                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
                     containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, from.slotIndex, command.ValueRO.value);
                 if (tab != null) events.AddRange(tab);
             }
@@ -65,6 +69,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
         slotsLookup.Update(ref state);
         playerContainersLookup.Update(ref state);
         barsLookup.Update(ref state);
+        linkedLookup.Update(ref state);
     }
 
     private bool SlotIsEmpty(Entity container, int slotIndex)

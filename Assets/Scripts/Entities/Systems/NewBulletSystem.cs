@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,9 +7,6 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-
-
-//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 
 partial struct NewBulletSystem : ISystem
 {
@@ -28,9 +26,9 @@ partial struct NewBulletSystem : ISystem
                 HybridManager.instance.SetEntity(entity, new Vector3(pos.ValueRO.Position.x, pos.ValueRO.Position.y, 100f));
             }
 
-
+            Debug.Log( entity + " raw  _" + pos.ValueRO.Rotation);
             float3 v3 = pos.ValueRO.Right();
-            velocity.ValueRW.Value = new float2(v3.x,v3.y) * bullet.ValueRO.speed;
+            velocity.ValueRW.Value = new float2((float)MathF.Round(v3.x,3),MathF.Round(v3.y,3)) * bullet.ValueRO.speed;
             entityCommandBuffer.RemoveComponent<NewBullet>(entity);
         }
         entityCommandBuffer.Playback(state.EntityManager);

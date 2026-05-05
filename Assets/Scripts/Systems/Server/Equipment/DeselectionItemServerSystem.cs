@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
@@ -19,6 +20,8 @@ partial struct DeselectionItemServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     private BufferLookup<ItemBarData> barsLookup;
+    private BufferLookup<LinkedContainers> linkedLookup;
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -31,12 +34,15 @@ partial struct DeselectionItemServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
+
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
+        linkedLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQDeselectItem> command, Entity entity) in
@@ -47,7 +53,7 @@ partial struct DeselectionItemServerSystem : ISystem
             var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
 
 
-            EQHelper.Deselection(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
+            EQHelper.Deselection(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
             selectedSlot.ValueRW.Position = SlotPosition.NullSlot;
             entityCommandBuffer.DestroyEntity(entity);
         }

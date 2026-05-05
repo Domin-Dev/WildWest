@@ -157,10 +157,8 @@ partial struct CharacterHandsSystem : ISystem
             UpdateDirectionIndex(rot,character, ref state);
         }
 
-        Debug.Log("dzika");
         foreach ((RefRO<AimRotation> aimRotation, RefRO<PlayerActionSpread> spread) in SystemAPI.Query<RefRO<AimRotation>,RefRO<PlayerActionSpread>>().WithAll<Player,GhostOwnerIsLocal>().WithNone<NewPlayerTag>())
         {
-            Debug.Log("dziaa");
             Crosshairs.SetSpread(spread.ValueRO.Spread);
         }
         

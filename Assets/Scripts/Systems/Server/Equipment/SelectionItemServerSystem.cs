@@ -15,7 +15,9 @@ partial struct SelectionItemServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<LinkedContainers> linkedLookup;
     private ComponentLookup<ContainerComponent> containerComponents;
+
 
 
     public void OnCreate(ref SystemState state)
@@ -30,6 +32,7 @@ partial struct SelectionItemServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
         containerComponents = SystemAPI.GetComponentLookup<ContainerComponent>();
     }
     public void OnUpdate(ref SystemState state)
@@ -37,6 +40,7 @@ partial struct SelectionItemServerSystem : ISystem
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
+        linkedLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQSelectItem> command, Entity entity) in
@@ -48,7 +52,7 @@ partial struct SelectionItemServerSystem : ISystem
 
             if (command.ValueRO.value > 0)
             {
-                if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
+                if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
                 SelectItem(ref state, player, command.ValueRO);
                 if (command.ValueRO.position.slotIndex >= 0)
                 {
@@ -80,6 +84,10 @@ partial struct SelectionItemServerSystem : ISystem
                     barsLookup[container.Value.entity].ElementAt(bIndex).slot = newSlot;
                 }
 
+                if (EQHelper.TryGetBufferIndex(linkedLookup,element.slot,container.Value.entity,out var linked ,out int linkedIndex))
+                {
+                    linkedLookup[container.Value.entity].ElementAt(linkedIndex).slot = newSlot;
+                }
                 element.slot = newSlot;
             }
             else

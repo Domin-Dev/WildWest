@@ -37,9 +37,15 @@ partial struct PlayerInputSystem : ISystem
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
+
+
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+
+
         float2 input = (float2)InputManager.i.move.ReadValue<Vector2>();
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+        var shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
+
         bool left = InputManager.i.mainAction.inProgress;
         bool right = InputManager.i.sideAction.inProgress;
         bool reloadButton = InputManager.i.reload.inProgress;
@@ -62,8 +68,8 @@ partial struct PlayerInputSystem : ISystem
 
         
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,RefRW<Cooldown> cooldown, Entity playerEntity) in 
-            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,var spread,RefRW<Cooldown> cooldown, Entity playerEntity) in 
+            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<PlayerActionSpread>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             if(!UIManager.instance.WindowsAreClosed)
             {
@@ -100,6 +106,7 @@ partial struct PlayerInputSystem : ISystem
                // if(cooldown.ValueRO.cooldownTick.IsValid && tick.IsNewerThan(cooldown.ValueRO.cooldownTick))
                 //    cooldown.ValueRW.startCooldown =  EntityHelper.AddTime(tick,1);
                 cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,50);
+                spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRW.Spread + shootingConfig.changeItemInHandSpread,0,shootingConfig.maxSpread);
                 EntityHelper.CreateEntityWithComponent<NewItemInHandRPC>(ecb, new NewItemInHandRPC() { networkID = owner.ValueRO.NetworkId  });
             }
 

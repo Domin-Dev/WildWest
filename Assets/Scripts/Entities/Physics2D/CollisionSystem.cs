@@ -130,15 +130,12 @@ public partial struct CollisionSystem : ISystem
 
         
 
-    //     foreach (var (input, trans, e) in SystemAPI.Query<RefRO<PlayerInput>, RefRW<LocalTransform>>().WithAll<Simulate>().WithEntityAccess())
-    //     {
-    //         var moveInput = new float2(input.ValueRO.movementDirection.x, input.ValueRO.movementDirection.y);
-    //         moveInput = math.normalizesafe(moveInput) * speed;
-    //         trans.ValueRW.Position += new float3(moveInput.x, moveInput.y,0);
-
-
-    //         EntityChangePosition(ref state,ref entityCommandBuffer,e,trans.ValueRO,out bool isloaded);
-    //     }
+    //     // foreach (var (input, trans, e) in SystemAPI.Query<RefRO<Velocity2D>, RefRW<LocalTransform>>().WithAll<Bullet,Simulate>().WithEntityAccess())
+    //     // {
+    //     //     trans.ValueRW.Position += new float3(input.ValueRO.Value.x, input.ValueRO.Value.y,0) * deltaTime;
+    //     //     EntityChangePosition(ref state,ref entityCommandBuffer,e,trans.ValueRO,out bool isloaded);
+    //     //     Debug.Log("bullet "  + trans.ValueRO.Rotation);
+    //     // }
 
     //     entityCommandBuffer.Playback(state.EntityManager);
     //     entityCommandBuffer.Dispose();
@@ -213,6 +210,8 @@ public partial struct CollisionSystem : ISystem
             int layer = physics[i].layer;
             if (layer == 3) continue;
 
+
+
             BoxCollider2D tempHitbox1 = hitboxes[i];
             float3 tempTransform1 = GetWorldPosition(entity);
             float2 velocity1 = GetVelocity(ref state, ref entityCommandBuffer, entity);
@@ -221,6 +220,11 @@ public partial struct CollisionSystem : ISystem
                 tempHitbox1.offset.x + tempTransform1.x - tempHitbox1.size.x * 0.5f,
                 tempHitbox1.offset.y + tempTransform1.y + tempHitbox1.size.y * 0.5f
             );
+
+            if (SystemAPI.HasComponent<Bullet>(entity))
+            {
+                Debug.Log(entity  + "  bullet " + getPosition[entity].Rotation);
+            }
 
             float3 vel = new float3(0, 0, 0);
             float3 pos = float3.zero;

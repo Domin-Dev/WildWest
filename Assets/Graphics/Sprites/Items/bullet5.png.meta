@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 8b99a5ece182bf045b44cbee61d595dc
+guid: 645527a677c91764ea3f9174db3dbbd0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7625680781230581944
-    second: double_barrelled_shotgun_0
+      213: -1913705195784120095
+    second: bullet5_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -178,13 +178,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: double_barrelled_shotgun_0
+      name: bullet5_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 32
+        width: 15
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -193,20 +193,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8475a386bb32c2690800000000000000
-      internalID: -7625680781230581944
+      spriteID: 1e8d77083472175e0800000000000000
+      internalID: -1913705195784120095
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: double_barrelled_shotgun_1
+      name: bullet5_1
       rect:
         serializedVersion: 2
-        x: 32
+        x: 15
         y: 0
-        width: 32
-        height: 32
+        width: 15
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -215,20 +215,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1f04d4a4103e486a9aa5a4ec609812d5
-      internalID: -466529945
+      spriteID: 36964eeb92892e7c79d53f3fcdc56de1
+      internalID: 1770921489
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: double_barrelled_shotgun_2
+      name: bullet5_2
       rect:
         serializedVersion: 2
-        x: 64
+        x: 30
         y: 0
-        width: 32
-        height: 32
+        width: 15
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -237,8 +237,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2d8fec1f459d4e11ea37619f521c07f6
-      internalID: 1844913293
+      spriteID: 41184e38192641051a090693deb1cf59
+      internalID: 1421435421
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bullet5_3
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 0
+        width: 15
+        height: 15
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 764c7b23a482441cb9d4c9cf6520ac98
+      internalID: -128934472
       vertices: []
       indices: 
       edges: []
@@ -257,11 +279,12 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":32.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":15.0,"y":15.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      double_barrelled_shotgun_0: -7625680781230581944
-      double_barrelled_shotgun_1: -466529945
-      double_barrelled_shotgun_2: 1844913293
+      bullet5_0: -1913705195784120095
+      bullet5_1: 1770921489
+      bullet5_2: 1421435421
+      bullet5_3: -128934472
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

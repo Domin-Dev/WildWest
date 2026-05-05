@@ -41,9 +41,10 @@ partial struct VariableSynchronizationServerSystem : ISystem
 
         var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+        var shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
 
-        foreach (var (playerInput,playerInputSync,owner,ghostChunk,cooldown, player) in
-        SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<GhostOwner>,RefRO<GhostChunk>,RefRW<Cooldown>>().WithNone<NewPlayerTag>().WithEntityAccess())
+        foreach (var (playerInput,playerInputSync,owner,ghostChunk,spread,cooldown, player) in
+        SystemAPI.Query<RefRO<PlayerInput>, RefRW<PlayerInputSync>,RefRO<GhostOwner>,RefRO<GhostChunk>,RefRW<PlayerActionSpread>,RefRW<Cooldown>>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             int newAmmoIndex = playerInput.ValueRO.ammoSelectedIndex;
             bool newAmmo = newAmmoIndex != playerInputSync.ValueRO.ammoSelectedIndex;
@@ -72,6 +73,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
                 {
                     playerInputSync.ValueRW.slotInHand = NewSlotInHand;
                     state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(tick,2)});
+                    spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRW.Spread  + shootingConfig.changeItemInHandSpread,0,shootingConfig.maxSpread);
                 }
             }
             

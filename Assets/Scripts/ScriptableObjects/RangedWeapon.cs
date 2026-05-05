@@ -11,7 +11,6 @@ public class RangedWeapon : Weapon
     [Header("Ranged Weapon Stats")]
     public float timeToReload;
     [Min(0)]public int magazineCapacity;
-    [Min(1)]public int bulletCount = 1;
     public float shotSpread;
     public float bulletSpread = 0;
     public AmmoTag ammoTag;
@@ -38,9 +37,6 @@ public class RangedWeapon : Weapon
 
 
     public bool hasMagazine => magazineCapacity > 0;
-    public float bulletOffset => bulletSpread / math.max((bulletCount - 1),1);
-
-
     public int ammoTagID
     {
         get

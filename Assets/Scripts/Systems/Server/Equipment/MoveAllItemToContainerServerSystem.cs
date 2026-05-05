@@ -19,6 +19,9 @@ partial struct MoveAllItemToContainerServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     private BufferLookup<ItemBarData> barsLookup;
+    private BufferLookup<LinkedContainers> linkedLookup;
+
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -31,12 +34,14 @@ partial struct MoveAllItemToContainerServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
+        linkedLookup.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQMoveAllItemsToContainer> command, Entity entity) in
@@ -58,7 +63,7 @@ partial struct MoveAllItemToContainerServerSystem : ISystem
                         List<int> containers = EQHelper.GetPlayerContainers(ref state, playerContainersLookup, player, slot.Value.itemId);
                         containers.Remove(command.ValueRO.from.containerIndex);
                         var items = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player,slot.Value, containers.ToArray());
-                        var events = EQHelper.MoveItems(ref state,ref entityCommandBuffer,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup, command.ValueRO.from, player, items);
+                        var events = EQHelper.MoveItems(ref state,ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection, playerContainersLookup, command.ValueRO.from, player, items);
                         EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
                     }
                 }

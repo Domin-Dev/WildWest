@@ -47,7 +47,6 @@ MonoBehaviour:
   gripPoint2: {x: 0.015, y: -0.005}
   timeToReload: 0
   magazineCapacity: 2
-  bulletCount: 1
   shotSpread: 20
   bulletSpread: 8
   ammoTag: {fileID: 11400000, guid: 11e7bb546aa7ccbcbb07c1e2e25570a9, type: 2}
@@ -154,7 +153,7 @@ MonoBehaviour:
     rotate:
       x: 0
       y: 0
-      z: -30
+      z: -20
     move:
       x: 0
       y: 0
@@ -282,8 +281,224 @@ MonoBehaviour:
     duration: 0.3
     events: []
   lostAmmo: []
-  emptyMagazine: []
-  unloadAnim: []
+  emptyMagazine:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0
+    events:
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 5
+    - EventType: 4
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 1
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 10
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events:
+    - EventType: 4
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: -1
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events: []
+  unloadAnim:
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: -20
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.25
+    events:
+    - EventType: 4
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 0
+  - bodyPartType: 1
+    positionMode: 3
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.4
+    events:
+    - EventType: 5
+      position:
+        x: 0.02
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: 0
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 4
+  - bodyPartType: 1
+    positionMode: 1
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: -0.05
+      z: 0
+    duration: 0.5
+    events:
+    - EventType: 5
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
+  - bodyPartType: 0
+    positionMode: 0
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.5
+    events: []
+  - bodyPartType: 0
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.2
+    events:
+    - EventType: 4
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
+  - bodyPartType: 1
+    positionMode: 2
+    rotate:
+      x: 0
+      y: 0
+      z: 0
+    move:
+      x: 0
+      y: 0
+      z: 0
+    duration: 0.3
+    events:
+    - EventType: 4
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 1
+      id: -1
   aimPoint:
     x: 0.125
     y: 0.005

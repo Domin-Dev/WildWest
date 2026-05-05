@@ -5,6 +5,13 @@ public class Crosshairs : MonoBehaviour
 {
     private static Crosshairs i;
     private RectTransform rectTransform;
+
+
+    public static void Swtich(bool turnOn)
+    {
+        i.gameObject.SetActive(turnOn);
+        Cursor.visible = !turnOn;
+    }
     public static void SetSpread(float spread)
     {
         //Debug.Log("uwaga!!!  " + spread + " " + i == null);
