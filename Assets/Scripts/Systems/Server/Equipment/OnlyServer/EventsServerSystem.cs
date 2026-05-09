@@ -69,7 +69,6 @@ partial struct EventsServerSystem : ISystem
             ecb.DestroyEntity(entity);
         }
 
-
         Debug.Log("nowy  lista " + playersToAmmoUpdate.Count);
         foreach(var player in playersToAmmoUpdate)
         {
@@ -108,7 +107,6 @@ partial struct EventsServerSystem : ISystem
 
 
 
-
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }
@@ -125,8 +123,10 @@ partial struct EventsServerSystem : ISystem
                 counter.ValueRW.index++;
                 ClearBuffer(events, clientCounter.ValueRO.index);
                 ecb.SetComponentEnabled<ToSave>(entity,true);
-                
                 var input = playerInputSyncLookup.GetRefRW(playerContainer.ValueRO.player);         
+               
+
+               
                 if(equipmentEvent.containerIndex == EquipmentConfig.hotBar_ContainerIndex || equipmentEvent.data.flags == EquipementEventFlags.ClearAllContainers)
                 {
                     if(input.ValueRO.slotInHand == equipmentEvent.slotPosition.slotIndex)
@@ -145,7 +145,6 @@ partial struct EventsServerSystem : ISystem
         }
         return Entity.Null;
     }
-
     private void ClearBuffer<T>(DynamicBuffer<T> buffer, uint clientCounter) where T : unmanaged, IBufferElementData, IIndexed
     {
         if (buffer.Length > maxChunkEventsBufferPreClient)

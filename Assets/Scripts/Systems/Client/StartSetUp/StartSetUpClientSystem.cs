@@ -13,7 +13,7 @@ partial struct StartSetUpClientSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        if(GameInfo.instance != null && GameInfo.instance.startGame)
+        if(GameInfo.StartGame)
         {
             GameInfo data = GameInfo.instance;
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);

@@ -52,7 +52,7 @@ partial struct EquipmentManagmentServerSystem : ISystem
             if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && 
             !SystemAPI.HasComponent<ServerContainer>(containerTo.Value.entity))
             {
-                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,
+                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
                     containerFrom.Value, containerTo.Value, command.ValueRO.to.slotIndex, from.slotIndex, command.ValueRO.value);
                 if (tab != null) events.AddRange(tab);
             }

@@ -27,7 +27,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -36,8 +36,32 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _Accessory:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Bag:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Belt:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _GetTexture2D_f899bd620aa542a0bc00ca30cc0498fd_Texture2D_1871122832_Texture2D:
         m_Texture: {fileID: 2800000, guid: 0a6c38328901d3143998582ee9608c95, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Outerwear:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Pants:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Shirt:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2DAsset_313e285a0c224a34b7f7ee7a587d7323_Out_0_Texture2D:
@@ -82,6 +106,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BUILTIN_AlphaClip: 0
+    - _BUILTIN_Blend: 0
+    - _BUILTIN_CullMode: 0
+    - _BUILTIN_DstBlend: 0
+    - _BUILTIN_QueueControl: -1
+    - _BUILTIN_QueueOffset: 0
+    - _BUILTIN_SrcBlend: 1
+    - _BUILTIN_Surface: 1
+    - _BUILTIN_ZTest: 4
+    - _BUILTIN_ZWrite: 0
+    - _BUILTIN_ZWriteControl: 0
     - _BodyIndex: 0
     - _Direction: 0
     m_Colors:
@@ -90,8 +125,21 @@ Material:
     - _BeltColor: {r: 0.5924529, g: 0.021238793, b: 0.021238793, a: 1}
     - _OuterwearColor: {r: 0.427451, g: 0.32156864, b: 0.20392159, a: 1}
     - _PantsColor: {r: 0.12410327, g: 0.09803919, b: 0.47843134, a: 1}
-    - _ShirtColor: {r: 0.79622644, g: 0, b: 0, a: 1}
+    - _ShirtColor: {r: 0.7665915, g: 0, b: 0, a: 1}
     - _SkinColor: {r: 0.9803922, g: 0.74509805, b: 0.50980395, a: 1}
-    - _UnderwearColor: {r: 0.16268949, g: 0.6981132, b: 0.11986471, a: 1}
+    - _UnderwearColor: {r: 0.7520939, g: 0.4792325, b: 0.09977056, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!114 &7185783097874177032
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 639247ca83abc874e893eb93af2b5e44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.ShaderGraph.Editor::UnityEditor.Rendering.BuiltIn.AssetVersion
+  version: 0

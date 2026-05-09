@@ -12,15 +12,18 @@ public struct EqiupmentEventClient
 {
     public EquipmentEventBuffer data;
     public int containerIndex;
+    public int owner;
+
 
     public int slot => data.data.slot;
-
     public int flag => data.data.flags;
+    public SlotPosition slotPosition => new SlotPosition(containerIndex,slot);
 
-    public EqiupmentEventClient(EquipmentEventBuffer element, int containerIndex)
+    public EqiupmentEventClient(EquipmentEventBuffer element, int containerIndex, int owner)
     {
         this.data = element;
         this.containerIndex = containerIndex;
+        this.owner = owner;
     }
 }
 
@@ -75,6 +78,7 @@ partial struct EquipmentClientSystem : ISystem
             SlotsToUpdate = slotsToUpdate.AsParallelWriter(),
             eventBuffer = SystemAPI.GetBufferTypeHandle<EquipmentEventBuffer>(true),
             eventCounter = SystemAPI.GetComponentTypeHandle<EquipmentEventCounter>(),
+            owner = SystemAPI.GetComponentTypeHandle<GhostOwner>(true),
             container = SystemAPI.GetComponentTypeHandle<ContainerComponent>()
         };
         var query = SystemAPI.QueryBuilder().WithAll<EquipmentEventBuffer, ContainerComponent, EquipmentEventCounter, GhostOwnerIsLocal>().Build();
@@ -156,6 +160,7 @@ partial struct EquipmentClientSystem : ISystem
         public NativeQueue<EqiupmentEventClient>.ParallelWriter SlotsToUpdate;
         [ReadOnly] public BufferTypeHandle<EquipmentEventBuffer> eventBuffer;
         public ComponentTypeHandle<EquipmentEventCounter> eventCounter;
+        [ReadOnly] public ComponentTypeHandle<GhostOwner> owner;
         [ReadOnly] public ComponentTypeHandle<ContainerComponent> container;
 
         public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
@@ -163,6 +168,7 @@ partial struct EquipmentClientSystem : ISystem
             var events = chunk.GetBufferAccessorRO(ref eventBuffer);
             var counters = chunk.GetNativeArray(ref eventCounter);
             var containers = chunk.GetNativeArray(ref container);
+            var owners = chunk.GetNativeArray(ref owner);
 
             for (int i = 0; i < chunk.Count; i++)
             {
@@ -180,7 +186,7 @@ partial struct EquipmentClientSystem : ISystem
                             counter.index++;
                             isEvent = true;
                             startIndex = j;
-                            SlotsToUpdate.Enqueue(new EqiupmentEventClient(eqEvents[j],containers[i].containerIndex));  
+                            SlotsToUpdate.Enqueue(new EqiupmentEventClient(eqEvents[j],containers[i].containerIndex,owners[i].NetworkId));  
                             break;
                         }
                     }

@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Collections;
 using UnityEngine.InputSystem.Processors;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 
 
 [UpdateInGroup(typeof(EquipmentSystemGroup))]
@@ -35,21 +36,34 @@ partial struct OnEquipClientSystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<EQOnEquipClient> onEquip , Entity entity) in SystemAPI.Query<RefRO<EQOnEquipClient>>().WithEntityAccess())
         {
-            foreach ((RefRW<Hands> hands,RefRW<Character> character, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRW<Character>>().WithAll<GhostOwnerIsLocal>().WithEntityAccess())
+            Debug.Log("player outfit client");
+            foreach ((RefRO<Character> character, RefRO<GhostOwner> owner , Entity player) in SystemAPI.Query<RefRO<Character>,RefRO<GhostOwner>>().WithAll<Player>().WithEntityAccess())
             {
-                if(EQHelper.TryGetBufferIndex(slots,playerContainersLookup,player, onEquip.ValueRO.slotPosition, out InventorySlot? slot, out int bufferIndex))
-                {
-                    var tag = ItemsAsset.instance.GetTagType<GarmentTag>(slot.Value.itemId,out Item item);
+                if(owner.ValueRO.NetworkId == onEquip.ValueRO.ownerID)
+                {               
+                    EQHelper.TryGetBufferIndex(slots,playerContainersLookup,player, onEquip.ValueRO.slotPosition, out InventorySlot? slot, out int bufferIndex);
+
+                    var containerStats = EquipmentConfig.GetContainer(onEquip.ValueRO.slotPosition.containerIndex);
+                    var tag = ItemsAsset.instance.GetTag<GarmentTag>(containerStats.stats.mandatoryData);
                     if(tag != null)
                     { 
-                        var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(character.ValueRO.head);  
-                        Color? color = slot.Value.color.ConvertToUnityColor();
-                        HeroEditor.SetMaterialTexture2D(sprite,tag.texturePropertyName, (item as Garment).texture);
-                        if(color.HasValue)
-                            HeroEditor.SetMaterialColor(sprite,tag.colorPropertyName,color.Value);
-                    }
-                }
-            }
+                        Texture2D texture = null;
+                        Color? color = null;
+                        if(slot.HasValue && ItemsAsset.instance.TryGetItem<Garment>(slot.Value.itemId,out var item))
+                        {
+                            color = slot.Value.color.ConvertToUnityColor();
+                            texture = item.texture;
+                        }
+
+                        var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(character.ValueRO.GetPart(tag.bodyPart));  
+                        HeroEditor.SetMaterialTexture2D(sprite,tag.texturePropertyName, texture);
+                        HeroEditor.SetMaterialColor(sprite,tag.colorPropertyName,color.HasValue ? color.Value : Color.white);
+                        if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+                            Sounds.instance.PlayerSound(8);
+                    } 
+                    break;  
+                }  
+            }   
             entityCommandBuffer.DestroyEntity(entity);
         }
         

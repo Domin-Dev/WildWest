@@ -15,6 +15,7 @@ public enum Difficulty
 public class GameInfo : MonoBehaviour 
 {
     [HideInInspector]public bool startGame;
+    public static bool StartGame => instance == null ? false : instance.startGame;
 
     public string playerName;
     public string worldName;

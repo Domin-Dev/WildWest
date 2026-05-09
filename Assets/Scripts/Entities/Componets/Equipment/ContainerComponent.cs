@@ -18,6 +18,8 @@ public struct ContainerComponent : IComponentData
     public byte waterResistance => containerStats.waterResistance;
     public ContainerType containerType => EQHelperClient.GetContainerType(containerIndex);
     public bool serverContainer => containerStats.serverContainer;
+    public bool publicContainer => containerStats.publicContainer;
+
 
 }
 
@@ -35,6 +37,9 @@ public struct ServerContainer : IComponentData{}
 public struct ContainerStats
 {
     public bool serverContainer;
+    public bool publicContainer;
+
+    
     public int containerIndex;
     public MandatoryProperties mandatoryProperties;
     public int mandatoryData;

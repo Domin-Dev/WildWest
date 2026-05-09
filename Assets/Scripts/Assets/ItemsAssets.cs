@@ -352,10 +352,13 @@ public class ItemsAsset : MonoBehaviour
     //////// TAG
     ////////
 
-    public IReadTag GetTag(int tagID)
+    public T GetTag<T>(int tagID) where T : Tag
     {
         if(tags.ContainsKey(tagID))
-            return tags[tagID];
+        {
+            T t = tags[tagID] as T;
+            return t;
+        }
         return  null;
     }
     public string[] GetItemTags(int itemId)

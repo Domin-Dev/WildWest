@@ -9,10 +9,12 @@ using UnityEngine;
 public class HybridManager : MonoBehaviour
 {
     [SerializeField] GameObject trailBullet;
+    [SerializeField] GameObject playerFollower;
+
     [SerializeField] CinemachineVirtualCamera virtualCamera;
 
-    public static HybridManager instance;
 
+    public static HybridManager instance;
     private Dictionary<Entity,GameObject> connectedObjects = new Dictionary<Entity,GameObject>();    
 
 
@@ -32,7 +34,7 @@ public class HybridManager : MonoBehaviour
 
     private void IsPlayer()
     {
-        EntityFollower entityFollower = new GameObject("PlayerFollower", typeof(EntityFollower)).GetComponent<EntityFollower>();
+        EntityFollower entityFollower = Instantiate(playerFollower).AddComponent<EntityFollower>();
         entityFollower.transform.position = new Vector3(0, 0, -10f);
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp).WithAll<Player,GhostOwnerIsLocal>();
@@ -44,7 +46,6 @@ public class HybridManager : MonoBehaviour
         Vector3 cameraPos = virtualCamera.transform.position;
         cameraPos.x = pos.Position.x;
         cameraPos.y = pos.Position.y;
-
 
 
         virtualCamera.transform.position = cameraPos;

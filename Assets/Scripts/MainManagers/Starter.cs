@@ -26,6 +26,8 @@ public static class Starter
     {
         GameInfo.instance.isMultiplayer = true;
         GameInfo.instance.isHost = false;
+        GameInfo.instance.playerName = playerName;
+
         WindowsManager.instance.SwitchBackground(false);
         GameInfo.LoadScene(2, 0);
         
@@ -38,7 +40,10 @@ public static class Starter
             }
         }
 
-        World clientWorld = ClientServerBootstrap.CreateClientWorld("Client Wild world");
+
+        GameInfo.instance.startGame = true;
+        World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");
+        GameInfo.instance.startGame = false;
         ClientWorldSetUp(clientWorld);
 
 
@@ -50,9 +55,6 @@ public static class Starter
             clientWorld.EntityManager.CreateEntityQuery(typeof(NetworkStreamDriver)).GetSingletonRW<NetworkStreamDriver>();
         networkStreamDriver.ValueRW.Connect(clientWorld.EntityManager, networkEndpoint);
 
-        Entity entity = ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity();
-        ClientServerBootstrap.ClientWorld.EntityManager.AddComponentData(entity, new PlayerName() { name = playerName });
-        ClientServerBootstrap.ClientWorld.EntityManager.CreateEntity(typeof(EnableConnectionTimeoutCheck));
     }
     
     

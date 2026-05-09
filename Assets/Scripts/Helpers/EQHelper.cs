@@ -228,27 +228,28 @@ public static class EQHelper
         return false;
     }
 
-    public static EquipmentEvent[] ClearContainer(BufferLookup<ItemBarData> bars,BufferLookup<InventorySlot> lookup, BufferLookup<PlayerContainers> containers, Entity player, int containerIndex)
+    public static EquipmentEvent[] ClearContainer(EntityCommandBuffer ecb,ComponentLookup<ContainerComponent> componentLookup,BufferLookup<LinkedContainers> linked,BufferLookup<ItemBarData> bars,BufferLookup<InventorySlot> lookup, BufferLookup<PlayerContainers> containers, Entity player, int containerIndex)
     {
         var container = GetPlayerContainer(containers, player, containerIndex);
         if (container.HasValue)
-        {
+        {       
+            NewItemInTheSlot(ecb,container.Value.entity,componentLookup[container.Value.entity],player,lookup);          
             lookup[container.Value.entity].Clear();
             bars[container.Value.entity].Clear();
-            
-
+            linked[container.Value.entity].Clear();
             return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(0, 2), containerIndex) };
         }
         return null;
     }
-    public static EquipmentEvent[] ClearAllContainer(BufferLookup<ItemBarData> bars,BufferLookup<InventorySlot> lookup, BufferLookup<PlayerContainers> containers, Entity player)
+    public static EquipmentEvent[] ClearAllContainer(EntityCommandBuffer ecb,ComponentLookup<ContainerComponent> componentLookup,BufferLookup<LinkedContainers> linked ,BufferLookup<ItemBarData> bars,BufferLookup<InventorySlot> lookup, BufferLookup<PlayerContainers> containers, Entity player)
     {
         var playerContainers = containers[player];
         foreach (var container in playerContainers)
         {
-            Debug.Log(container.index);
+            NewItemInTheSlot(ecb,container.entity,componentLookup[container.entity],player,lookup);  
             lookup[container.entity].Clear();
             bars[container.entity].Clear();
+            linked[container.entity].Clear();
         }
         return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(0, 3), 0) };
     }
@@ -273,12 +274,12 @@ public static class EQHelper
     }
 
 
-    public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb,BufferLookup<LinkedContainers> linked, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, Entity connection, PlayerContainers containersFrom, PlayerContainers containersTo,
+    public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb,BufferLookup<LinkedContainers> linked, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, Entity connection, Entity player, PlayerContainers containersFrom, PlayerContainers containersTo,
     int slotTo, int slotFrom, int value = int.MaxValue,bool eventForSlotFrom = false)
     { 
-        return MoveBetweenContainers(ref state,ref ecb,linked,barsLookup,slotsLookup,connection,containersFrom,containersTo,slotTo,slotFrom,value,out int c,eventForSlotFrom);
+        return MoveBetweenContainers(ref state,ref ecb,linked,barsLookup,slotsLookup,connection,player,containersFrom,containersTo,slotTo,slotFrom,value,out int c,eventForSlotFrom);
     }
-    public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<LinkedContainers> linked, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, Entity connection, PlayerContainers containersFrom, PlayerContainers containersTo,
+    public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<LinkedContainers> linked, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, Entity connection,Entity player, PlayerContainers containersFrom, PlayerContainers containersTo,
     int slotTo, int slotFrom, int value, out int transferValue, bool eventForSlotFrom = false)
     {
         TryGetBufferIndex(slotsLookup, slotFrom, containersFrom.entity, out InventorySlot? itemFrom, out int fromIndex);
@@ -296,10 +297,12 @@ public static class EQHelper
         
         int number;
         int stackMax = ItemsAsset.instance.GetStackMax(itemFrom.Value.itemId);
-        var containerCompoennent = state.EntityManager.GetComponentData<ContainerComponent>(containersTo.entity);
+        var containerCompTo = state.EntityManager.GetComponentData<ContainerComponent>(containersTo.entity);
+        var containerCompFrom = state.EntityManager.GetComponentData<ContainerComponent>(containersFrom.entity);
+
         int startToIndex = toIndex; 
 
-        if (CheckRequirements(containerCompoennent, itemFrom.Value.itemId))
+        if (CheckRequirements(containerCompTo, itemFrom.Value.itemId))
         {
             if (fromIndex >= 0)
             {
@@ -318,7 +321,7 @@ public static class EQHelper
                             barsLookup[containersTo.entity].ElementAt(barToIndex).slot = slot.slot;
                         if(haveLinkedTo)
                             linked[containersTo.entity].ElementAt(linkedToIndex).slot = slot.slot; 
-                    
+
 
                         var entity = ecb.CreateEntity();
                         ecb.AddComponent(entity, new ReceiveRpcCommandRequest() { SourceConnection = connection });
@@ -377,6 +380,11 @@ public static class EQHelper
                     value = itemFrom.Value.quantity;
                 }
 
+                NewItemInTheSlot(ecb, containerCompTo,slotTo,player,itemTo);
+                NewItemInTheSlot(ecb, containerCompFrom,slotFrom < 0 ? EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(slotFrom) : slotFrom ,player,itemFrom);
+
+
+                
 
                 ref InventorySlot from = ref fromBuffer.ElementAt(fromIndex);
                 int to;
@@ -394,7 +402,7 @@ public static class EQHelper
                 else
                     to = from.quantity;
             
-                // slot "to" contains something
+
                 if (toIndex >= 0)
                 {
                     ref var i = ref toBuffer.ElementAt(toIndex);
@@ -412,7 +420,6 @@ public static class EQHelper
                         if (haveLinkedFrom) linked[containersFrom.entity].RemoveAtSwapBack(linkedFromIndex);
                     }
                 }
-                // slot "to" is empty
                 else
                 {
                     if (containersFrom.index == containersTo.index && number <= 0)
@@ -470,7 +477,6 @@ public static class EQHelper
                 }
 
                 // create events
-                NewItemInTheSlot(ref ecb, containerCompoennent,slotTo,connection);
             }
 
         }
@@ -489,15 +495,34 @@ public static class EQHelper
 
 
 
-    public static void NewItemInTheSlot(ref EntityCommandBuffer ecb,ContainerComponent containerComponent, int slotPos, Entity connection)
+    public static void NewItemInTheSlot(EntityCommandBuffer ecb,ContainerComponent containerComponent, int slotPos, Entity player, InventorySlot? oldSlot)
+    {
+        Debug.Log("check!! outfit " + containerComponent.containerIndex);
+        if(containerComponent.containerType == ContainerType.Outfit)
+        {
+            Debug.Log("new outfit");
+            EntityHelper.CreateEntityWithComponent(ecb, new EQOnEquip()
+            {
+                slotPosition = new SlotPosition(containerComponent.containerIndex,slotPos),
+                player = player,
+                oldInventorySlot = oldSlot.HasValue ? oldSlot.Value : InventorySlot.Empty
+            });
+        }
+    }
+    public static void NewItemInTheSlot(EntityCommandBuffer ecb,Entity container,ContainerComponent containerComponent, Entity player, BufferLookup<InventorySlot> slots)
     {
         if(containerComponent.containerType == ContainerType.Outfit)
         {
-            EntityHelper.CreateEntityWithComponent(ref ecb, new EQOnEquip()
+            for(int i = 0; i < containerComponent.capacity; i++)
             {
-                slotPosition = new SlotPosition(containerComponent.containerIndex,slotPos),
-                connection = connection
-            });
+                TryGetBufferIndex(slots,i,container, out InventorySlot? obj,out int bufferindex);
+                EntityHelper.CreateEntityWithComponent(ecb, new EQOnEquip()
+                {
+                    slotPosition = new SlotPosition(containerComponent.containerIndex,i),
+                    player = player,
+                    oldInventorySlot = obj.HasValue ? obj.Value : InventorySlot.Empty
+                });
+            }
         }
     }
 
@@ -662,7 +687,7 @@ public static class EQHelper
         foreach (EQTransferData item in values)
         {
             var containerTo = GetPlayerContainer(containers, player, item.pos.containerIndex);
-            equipmentEvents.AddRange(MoveBetweenContainers(ref state,ref ecb,linked, barsLookup,slotLookup, connection, containerFrom.Value,containerTo.Value,item.pos.slotIndex,from.slotIndex,item.quantity,true));
+            equipmentEvents.AddRange(MoveBetweenContainers(ref state,ref ecb,linked, barsLookup,slotLookup, connection,player, containerFrom.Value,containerTo.Value,item.pos.slotIndex,from.slotIndex,item.quantity,true));
         }
 
         return equipmentEvents.ToArray();
@@ -1102,7 +1127,7 @@ public static class EQHelper
                     var container = GetPlayerContainer(containers, player, selectedSlot.Position.containerIndex);
                     if (container.HasValue)
                     {
-                        var events = MoveBetweenContainers(ref state, ref entityCommandBuffer,linked, barsLookup, slotsLookup, connection, container.Value, container.Value, slotIndex, selectedSlot.Position.slotIndex, quantity, out int transferValue);
+                        var events = MoveBetweenContainers(ref state, ref entityCommandBuffer,linked, barsLookup, slotsLookup, connection,player, container.Value, container.Value, slotIndex, selectedSlot.Position.slotIndex, quantity, out int transferValue);
                         quantity -= transferValue;
                         SendEvents(ref entityCommandBuffer, networkID,events);
                     }

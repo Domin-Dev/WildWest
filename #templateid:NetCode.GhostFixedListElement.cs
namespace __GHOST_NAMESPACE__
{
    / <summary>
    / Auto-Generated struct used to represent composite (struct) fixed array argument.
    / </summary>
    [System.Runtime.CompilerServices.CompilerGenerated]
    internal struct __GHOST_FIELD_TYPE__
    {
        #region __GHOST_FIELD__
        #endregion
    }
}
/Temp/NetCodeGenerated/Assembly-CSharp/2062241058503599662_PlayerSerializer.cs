@@ -45,13 +45,12 @@ namespace Assembly_CSharp_Generated
             public float speed;
             public FixedString128Bytes playerName;
             public float armor;
-            public float movementSpeed;
             public float insulation;
             public float waterResistance;
             public float aesthetic;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 7;
+        private const int ChangeMaskBits = 6;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -73,7 +72,6 @@ namespace Assembly_CSharp_Generated
                 snapshot.speed = component.speed;
                 snapshot.playerName = component.playerName;
                 snapshot.armor = component.armor;
-                snapshot.movementSpeed = component.movementSpeed;
                 snapshot.insulation = component.insulation;
                 snapshot.waterResistance = component.waterResistance;
                 snapshot.aesthetic = component.aesthetic;
@@ -87,7 +85,6 @@ namespace Assembly_CSharp_Generated
                 component.speed = snapshotBefore.speed;
                 component.playerName = snapshotBefore.playerName;
                 component.armor = snapshotBefore.armor;
-                component.movementSpeed = snapshotBefore.movementSpeed;
                 component.insulation = snapshotBefore.insulation;
                 component.waterResistance = snapshotBefore.waterResistance;
                 component.aesthetic = snapshotBefore.aesthetic;
@@ -100,7 +97,6 @@ namespace Assembly_CSharp_Generated
             component.speed = backup.speed;
             component.playerName = backup.playerName;
             component.armor = backup.armor;
-            component.movementSpeed = backup.movementSpeed;
             component.insulation = backup.insulation;
             component.waterResistance = backup.waterResistance;
             component.aesthetic = backup.aesthetic;
@@ -122,11 +118,10 @@ namespace Assembly_CSharp_Generated
             changeMask = (snapshot.speed != baseline.speed) ? 1u : 0;
             changeMask |= snapshot.playerName.Equals(baseline.playerName) ? 0 : (1u<<1);
             changeMask |= (snapshot.armor != baseline.armor) ? (1u<<2) : 0;
-            changeMask |= (snapshot.movementSpeed != baseline.movementSpeed) ? (1u<<3) : 0;
-            changeMask |= (snapshot.insulation != baseline.insulation) ? (1u<<4) : 0;
-            changeMask |= (snapshot.waterResistance != baseline.waterResistance) ? (1u<<5) : 0;
-            changeMask |= (snapshot.aesthetic != baseline.aesthetic) ? (1u<<6) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
+            changeMask |= (snapshot.insulation != baseline.insulation) ? (1u<<3) : 0;
+            changeMask |= (snapshot.waterResistance != baseline.waterResistance) ? (1u<<4) : 0;
+            changeMask |= (snapshot.aesthetic != baseline.aesthetic) ? (1u<<5) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 6);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -143,12 +138,10 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedFloatDelta(snapshot.armor, baseline.armor, compressionModel);
             if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedFloatDelta(snapshot.movementSpeed, baseline.movementSpeed, compressionModel);
-            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedFloatDelta(snapshot.insulation, baseline.insulation, compressionModel);
-            if ((changeMask & (1 << 5)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedFloatDelta(snapshot.waterResistance, baseline.waterResistance, compressionModel);
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
                 writer.WritePackedFloatDelta(snapshot.aesthetic, baseline.aesthetic, compressionModel);
         }
 
@@ -167,19 +160,16 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.armor != baseline.armor) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedFloatDelta(snapshot.armor, baseline.armor, compressionModel);
-            changeMask |= (snapshot.movementSpeed != baseline.movementSpeed) ? (1u<<3) : 0;
+            changeMask |= (snapshot.insulation != baseline.insulation) ? (1u<<3) : 0;
             if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedFloatDelta(snapshot.movementSpeed, baseline.movementSpeed, compressionModel);
-            changeMask |= (snapshot.insulation != baseline.insulation) ? (1u<<4) : 0;
-            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedFloatDelta(snapshot.insulation, baseline.insulation, compressionModel);
-            changeMask |= (snapshot.waterResistance != baseline.waterResistance) ? (1u<<5) : 0;
-            if ((changeMask & (1 << 5)) != 0)
+            changeMask |= (snapshot.waterResistance != baseline.waterResistance) ? (1u<<4) : 0;
+            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedFloatDelta(snapshot.waterResistance, baseline.waterResistance, compressionModel);
-            changeMask |= (snapshot.aesthetic != baseline.aesthetic) ? (1u<<6) : 0;
-            if ((changeMask & (1 << 6)) != 0)
+            changeMask |= (snapshot.aesthetic != baseline.aesthetic) ? (1u<<5) : 0;
+            if ((changeMask & (1 << 5)) != 0)
                 writer.WritePackedFloatDelta(snapshot.aesthetic, baseline.aesthetic, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 6);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -202,18 +192,14 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.armor = baseline.armor;
             if ((changeMask & (1 << 3)) != 0)
-                snapshot.movementSpeed = reader.ReadPackedFloatDelta(baseline.movementSpeed, compressionModel);
-            else
-                snapshot.movementSpeed = baseline.movementSpeed;
-            if ((changeMask & (1 << 4)) != 0)
                 snapshot.insulation = reader.ReadPackedFloatDelta(baseline.insulation, compressionModel);
             else
                 snapshot.insulation = baseline.insulation;
-            if ((changeMask & (1 << 5)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.waterResistance = reader.ReadPackedFloatDelta(baseline.waterResistance, compressionModel);
             else
                 snapshot.waterResistance = baseline.waterResistance;
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
                 snapshot.aesthetic = reader.ReadPackedFloatDelta(baseline.aesthetic, compressionModel);
             else
                 snapshot.aesthetic = baseline.aesthetic;
@@ -229,8 +215,6 @@ namespace Assembly_CSharp_Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.speed - backup.speed));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.armor - backup.armor));
-            ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.movementSpeed - backup.movementSpeed));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.insulation - backup.insulation));
             ++errorIndex;
@@ -250,10 +234,6 @@ namespace Assembly_CSharp_Generated
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".armor");
-            ++nameCount;
-            if (nameCount != 0)
-                names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".movementSpeed");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
@@ -409,7 +389,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 1966819302090705106,
+                    GhostFieldsHash = 5032326342240550756,
                     ComponentType = ComponentType.ReadWrite<Player>(),
                     ComponentSize = UnsafeUtility.SizeOf<Player>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -417,7 +397,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 7,
+                    ChangeMaskBits = 6,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.All,

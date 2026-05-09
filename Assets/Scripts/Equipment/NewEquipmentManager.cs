@@ -52,7 +52,7 @@ public class Container : IHaveTooltip
     {
         if (mandatoryProperties == MandatoryProperties.tag)
         {
-            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag(mandatoryData)?.localizedString.GetLocalizedString());
+            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<Tag>(mandatoryData)?.localizedString?.GetLocalizedString());
             UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)
@@ -535,7 +535,6 @@ public class NewEquipmentManager : MonoBehaviour
 
     public void CheckAmmoTag(int itemID)
     {
-        Debug.Log("spawdzanie!!!  "+ ammoTag + " "  + needUpdateAmmoUI + " " +  ItemsAsset.instance.ItemHasTheTag(itemID,ammoTag));
         if(!needUpdateAmmoUI && ItemsAsset.instance.ItemHasTheTag(itemID,ammoTag))
             needUpdateAmmoUI = true;
     }
@@ -663,6 +662,13 @@ public class NewEquipmentManager : MonoBehaviour
                 case EquipementEventFlags.UpdateWeaponMagazine:
                         NewEquipmentManager.instance.UpdateWeaponMagazine();
                     break;
+                case EquipementEventFlags.UpdateOutfit:
+                        EntityHelper.CreateEntityWithComponent<EQOnEquipClient>(ecb,new EQOnEquipClient(){ 
+                            slotPosition = eqEevent.slotPosition,
+                            ownerID = eqEevent.owner
+                        });
+                    break;
+                
             }
         }
     }

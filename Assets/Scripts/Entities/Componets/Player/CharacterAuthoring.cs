@@ -123,7 +123,6 @@ public struct Player : IComponentData
     [GhostField] public FixedString128Bytes playerName;
 
     [GhostField] public float armor; 
-    [GhostField] public float movementSpeed;
     [GhostField] public float insulation;
     [GhostField] public float waterResistance;
     [GhostField] public float aesthetic;
@@ -139,6 +138,19 @@ public struct Character : IComponentData
     public Entity body;
     public Entity headParent;
     public Entity head;
+
+    public Entity GetPart(BodyPart part)
+    {
+        switch(part)
+        {
+            case BodyPart.head:
+                return head;
+            case BodyPart.body:
+                return body;
+        }
+        return Entity.Null;
+    }
+
 }
 
 

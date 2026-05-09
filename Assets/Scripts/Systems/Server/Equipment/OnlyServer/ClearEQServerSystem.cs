@@ -16,6 +16,11 @@ partial struct ClearEQServerSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<PlayerContainers> playerContainersLookup;
     private BufferLookup<ItemBarData> barsLookup;
+    private BufferLookup<LinkedContainers> linkedLookup;
+    private ComponentLookup<ContainerComponent> containerLookup;
+
+
+
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
@@ -28,14 +33,19 @@ partial struct ClearEQServerSystem : ISystem
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
+        linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
+        containerLookup = SystemAPI.GetComponentLookup<ContainerComponent>();
+
     }
     public void OnUpdate(ref SystemState state)
     {
         playerContainersLookup.Update(ref state);
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
+        linkedLookup.Update(ref state);
+        containerLookup.Update(ref state);
 
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         
         foreach ((RefRO<EQClear> command, Entity entity) in
         SystemAPI.Query<RefRO<EQClear>>().WithEntityAccess())
@@ -45,15 +55,15 @@ partial struct ClearEQServerSystem : ISystem
             EquipmentEvent[] events;
 
             if (command.ValueRO.containerIndex < 0)
-                events = EQHelper.ClearAllContainer(barsLookup,slotsLookup, playerContainersLookup, player);
+                events = EQHelper.ClearAllContainer(ecb,containerLookup,linkedLookup,barsLookup,slotsLookup, playerContainersLookup, player);
             else
-                events = EQHelper.ClearContainer(barsLookup,slotsLookup, playerContainersLookup, player, command.ValueRO.containerIndex);        
+                events = EQHelper.ClearContainer(ecb,containerLookup,linkedLookup,barsLookup,slotsLookup, playerContainersLookup, player, command.ValueRO.containerIndex);        
 
-            EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
-            entityCommandBuffer.DestroyEntity(entity);
+            EQHelper.SendEvents(ref ecb, networkID, events);
+            ecb.DestroyEntity(entity);
         }
 
-        entityCommandBuffer.Playback(state.EntityManager);
-        entityCommandBuffer.Dispose();
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -45,6 +46,25 @@ public class HeroEditor: MonoBehaviour
     private Image underwearColorSelected;
 
 
+    private static Texture2D _emptyTexture;
+    public static Texture2D EmptyTexture
+    {
+        get
+        {
+            if (_emptyTexture == null)
+            {
+                _emptyTexture = new Texture2D(1, 1);
+                _emptyTexture.SetPixel(0, 0, new Color(0,0,0,0));
+                _emptyTexture.Apply();
+
+                _emptyTexture.hideFlags = HideFlags.DontUnloadUnusedAsset;
+            }
+
+            return _emptyTexture;
+        }
+    }
+
+    
     public static HeroEditor instance { private set; get; }
 
     private void Awake()
@@ -170,7 +190,9 @@ public class HeroEditor: MonoBehaviour
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();
         spriteRenderer.GetPropertyBlock(materialPropertyBlock);
-        materialPropertyBlock.SetTexture(name, value);     
+        value = (value == null ? EmptyTexture : value);
+        Debug.Log("tekstura to " + value + " " + EmptyTexture);
+        materialPropertyBlock.SetTexture(name,value);     
         spriteRenderer.SetPropertyBlock(materialPropertyBlock);
     }
 

@@ -130,6 +130,10 @@ MonoBehaviour:
     m_Localized: Kolor
     m_Metadata:
       m_Items: []
+  - m_Id: 64569503404961792
+    m_Localized: Statystyki postaci
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

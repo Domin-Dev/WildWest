@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebde2a68752d16f45ad44fdb6db01cd5, type: 3}
   m_Name: Headwear
   m_EditorClassIdentifier: Assembly-CSharp::GarmentTag
-  _icon: {fileID: 918400040, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  _icon: {fileID: -1558752730, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   _localizedString:
     m_TableReference:
       m_TableCollectionName: GUID:a869cb24160aef143adf373703498297

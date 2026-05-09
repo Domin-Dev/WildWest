@@ -172,6 +172,18 @@ MonoBehaviour:
       relativeRotation: 0
       indexType: 0
       id: 0
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 7
   - bodyPartType: 1
     positionMode: 1
     rotate:
@@ -379,6 +391,18 @@ MonoBehaviour:
       relativeRotation: 0
       indexType: 0
       id: 0
+    - EventType: 0
+      position:
+        x: 0
+        y: 0
+        z: 0
+      rotation:
+        x: 0
+        y: 0
+        z: 0
+      relativeRotation: 0
+      indexType: 0
+      id: 7
   - bodyPartType: 1
     positionMode: 3
     rotate:

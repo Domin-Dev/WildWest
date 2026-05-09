@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32860fb8bd6d1554b823a8f6e17479c2, type: 3}
+  m_Name: Garment 9
+  m_EditorClassIdentifier: 
+  name: 
+  description: 
+  stackMax: 1
+  ID: 119
+  icon: {fileID: -394807298, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags:
+  - tag: {fileID: 11400000, guid: e684591a022c12acba165e643e96e6d7, type: 2}
+  crafingIngredients:
+  - itemID: 0
+    number: 0
+  craftTables: ffffffff
+  numberItem: 1
+  durability: 0
+  texture: {fileID: 2800000, guid: a67e58016d3ad2648a30a69b702e3f64, type: 3}
+  sprites:
+  - {fileID: 21300000, guid: 6c159ba6c42978d4e8719b7505ffa1c3, type: 2}
+  - {fileID: 21300000, guid: 3341ad4a9fbd7324181ca30bf0752811, type: 2}
+  - {fileID: 21300000, guid: a7106446a05d7b34daccf4a245ea8cc1, type: 2}
+  - {fileID: 21300000, guid: a8d3f2dd22171b647a5a18cf58eb97ed, type: 2}
+  garmentStats:
+    armor: 0
+    movementSpeed: 0
+    insulation: 0
+    waterResistance: 0
+    aesthetic: 0

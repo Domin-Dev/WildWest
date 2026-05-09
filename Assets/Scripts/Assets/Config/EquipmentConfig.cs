@@ -51,7 +51,7 @@ public class EquipmentConfig
         }
     }
 
-    public ContainerData GetContainer(int index)
+    public static ContainerData GetContainer(int index)
     {
         if(containers.TryGetValue(index,out ContainerData containerData))
             return containerData;

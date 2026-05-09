@@ -16,6 +16,8 @@ public struct InventorySlot : IBufferElementData, IGetSlot
     [GhostField] public Quality quality; 
 
 
+    public static readonly InventorySlot Empty = new InventorySlot(){ itemId = -1 };
+    
     public InventorySlot(SlotSave save,int slot)
     {
         this.slot = slot;

@@ -46,7 +46,7 @@ partial struct ContainerSetUpSystem : ISystem
                 return;
 
             ecb.AddComponent<SendToOwner>(sortKey,entity);       
-            if(container.serverContainer)
+            if(container.publicContainer)
             {
                 ecb.AppendToBuffer(sortKey,containerPlayer.player,new GhostChildren()
                 {

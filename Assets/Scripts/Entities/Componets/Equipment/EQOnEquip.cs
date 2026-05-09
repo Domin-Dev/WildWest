@@ -4,8 +4,9 @@ using Unity.Entities;
 
 public struct EQOnEquip : IComponentData
 {
+    public InventorySlot oldInventorySlot;
     public SlotPosition slotPosition;
-    public Entity connection;
+    public Entity player;
 }
 
 
@@ -13,5 +14,5 @@ public struct EQOnEquip : IComponentData
 public struct EQOnEquipClient : IComponentData
 {
     public SlotPosition slotPosition;
-    public Entity container;
+    public int ownerID;
 }

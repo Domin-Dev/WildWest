@@ -61,7 +61,7 @@ partial struct CombineItemsServerSystem : ISystem
                     if(EQHelper.TryFindSlotForItem(ref state, slotsLookup,playerContainersLookup, player,item.Value,out EQTransferData[] data, newContainer.Value.index))
                         events = EQHelper.MoveItems(ref state,ref ecb,linkedLookup,barsLookup,slotsLookup,connection,playerContainersLookup,command.ValueRO.position, player,data);
                     else
-                        events = EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedLookup,barsLookup,slotsLookup,connection,container.Value,newContainer.Value,0,command.ValueRO.position.slotIndex,int.MaxValue,true);
+                        events = EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedLookup,barsLookup,slotsLookup,connection,player,container.Value,newContainer.Value,0,command.ValueRO.position.slotIndex,int.MaxValue,true);
                 }
                 else
                 {
@@ -124,7 +124,7 @@ partial struct CombineItemsServerSystem : ISystem
             moves.Add(new(foundMaxSlotPos, slotTo, gap));
 
         foreach (var move in moves)
-            list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedLookup,barsLookup, slotsLookup, connection, container, container, move.to, move.from, move.amount, true));
+            list.AddRange(EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedLookup,barsLookup, slotsLookup, connection,player, container, container, move.to, move.from, move.amount, true));
 
         return list.ToArray();
         
