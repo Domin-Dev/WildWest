@@ -23,7 +23,6 @@ public class Garment : Destroyable
         if(garmentStats.insulation > 0) UIStringsHelper.Append(content,UIManager.instance.GetProperty("Insulation"),garmentStats.insulation.ToString());
         if(garmentStats.waterResistance > 0) UIStringsHelper.Append(content,UIManager.instance.GetProperty("WaterResistance"),garmentStats.waterResistance.ToString());
 
-
         tooltipInfo.content += (tooltipInfo.content.Length > 0 && content.Length > 0 ? "\n" : "") + content.ToString();
         return tooltipInfo;
     }

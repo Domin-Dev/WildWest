@@ -58,6 +58,7 @@ partial struct OnEquipClientSystem : ISystem
                         var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(character.ValueRO.GetPart(tag.bodyPart));  
                         HeroEditor.SetMaterialTexture2D(sprite,tag.texturePropertyName, texture);
                         HeroEditor.SetMaterialColor(sprite,tag.colorPropertyName,color.HasValue ? color.Value : Color.white);
+                        EntityHelper.CreateEntityWithComponent<PlayerStatsChangedRPC>(entityCommandBuffer);
                         if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                             Sounds.instance.PlayerSound(8);
                     } 

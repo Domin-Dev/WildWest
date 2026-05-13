@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data.Common;
-using NUnit.Framework.Interfaces;
+using System.Linq;
 using TMPro;
-using TMPro.Examples;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,6 +39,8 @@ public class ContainerUI
 public class UIManager : MonoBehaviour
 {
     //black background
+    [SerializeField] private PlayerStatsUI statsUI;
+    [Space(20f)]
     [SerializeField] private Transform background;
     [Space(20f)]
     //equipment
@@ -151,6 +149,17 @@ public class UIManager : MonoBehaviour
         colors = uISettings.GetColors();
         properties = uISettings.GetProperties();
         itemInHandPopup.gameObject.SetActive(false);
+        
+
+        List<string> stats = new List<string>();
+        var values = properties.Values.OrderByDescending(x => x.DisplayPriority).ToList();
+
+        foreach(var key in values)
+        {
+            if(key.DisplayEQWindow)
+                stats.Add(key.name);       
+        }
+        statsUI.Load(stats.ToArray());
     }
     private void Update()
     {
@@ -1231,9 +1240,6 @@ public class UIManager : MonoBehaviour
             equipmentGrid.gridTransform.GetComponentInChildren<EQOptionsTag>(true)?.transform.SetAsLastSibling();
         }
 
-
-
-
         var slots = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<InventorySlot>(entity);
         var bars = ClientServerBootstrap.ClientWorld.EntityManager.GetBuffer<ItemBarData>(entity);
 
@@ -1252,6 +1258,7 @@ public class UIManager : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.parent.GetComponent<RectTransform>());
         }
 
+        LayoutRebuilder.ForceRebuildLayoutImmediate(equipmentGrid.gridTransform.parent.GetComponent<RectTransform>());
         OpenEquipment(false);
     }
     private void LoadContainerOptions(EquipmentGrid equipmentGrid, Container containerComponent)

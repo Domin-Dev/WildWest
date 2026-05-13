@@ -790,7 +790,7 @@ TextureImporter:
         width: 50
         height: 30
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 20, y: 13, z: 20, w: 14}
       customData: 
       outline: []
@@ -799,6 +799,28 @@ TextureImporter:
       bones: []
       spriteID: 020dc3ad771491d49889bf07d62cfc0d
       internalID: 1366682903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UIBackgrounds_18
+      rect:
+        serializedVersion: 2
+        x: 272
+        y: 152
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 5, y: 8, z: 5, w: 5}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfaa73b8429468e868506df10291118a
+      internalID: 1152116005
       vertices: []
       indices: 
       edges: []
@@ -839,6 +861,7 @@ TextureImporter:
       UIBackgrounds_15: -279984359
       UIBackgrounds_16: 1012725750
       UIBackgrounds_17: 1366682903
+      UIBackgrounds_18: 1152116005
       UIBackgrounds_2: 1214819735
       UIBackgrounds_3: -144562309
       UIBackgrounds_4: -387067171

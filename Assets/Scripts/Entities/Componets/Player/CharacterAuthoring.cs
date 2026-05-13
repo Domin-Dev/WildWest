@@ -126,6 +126,7 @@ public struct Player : IComponentData
     [GhostField] public float insulation;
     [GhostField] public float waterResistance;
     [GhostField] public float aesthetic;
+    [GhostField] public float wetness;
 }
 public struct Character : IComponentData
 {
@@ -175,7 +176,6 @@ public struct Thirst : IComponentData
     [GhostField] public int Value;
     [GhostField] public int Max;
 }
-
 
 
 public struct GhostChunk : IComponentData

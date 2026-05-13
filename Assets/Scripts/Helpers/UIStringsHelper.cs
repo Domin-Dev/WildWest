@@ -24,17 +24,30 @@ public static class UIStringsHelper
 
     public static void Append(StringBuilder content, string colorString, string fieldName,string iconName, params string[] value)
     {
-        string joined = string.Join(" ", value);
-        content.Append($"{(content.Length > 0 ? "\n" : "")}<Color=#{colorString}>{GetSpriteIcon(iconName)} {fieldName}:</Color> {joined}");
+        content.Append($"{(content.Length > 0 ? "\n" : "")}{GetPropertyString(colorString,fieldName,iconName,value)}");
     }
-    public static void Append(StringBuilder content,Property property, params string[] value)
+    public static void Append(StringBuilder content, Property property,params string[] value)
     {
-        Append(content, ColorUtility.ToHtmlStringRGB(property.color),property.localizedName.GetLocalizedString(),property.nameIcon, value);
+        content.Append($"{(content.Length > 0 ? "\n" : "")}{GetPropertyString(property,value)}");
+    }
+
+    public static string GetPropertyString<T>(Property property,params T[] value)
+    {
+        return GetPropertyString(ColorUtility.ToHtmlStringRGB(property.color), property.localizedName.GetLocalizedString(),property.nameIcon, value);
+    }
+    public static string GetPropertyString<T>(Property property,Color color,params T[] value) 
+    {
+        return GetPropertyString(ColorUtility.ToHtmlStringRGB(color), property.localizedName.GetLocalizedString(),property.nameIcon, value);
+    }
+    public static string GetPropertyString<T>(string colorString, string fieldName,string iconName,params T[] value)
+    {
+        string joined = string.Join(" ", value);
+        return $"<Color=#{colorString}>{GetSpriteIcon(iconName)} {fieldName} :</Color> {joined}"; 
     }
 
     public static void Append(StringBuilder content,Property property, int value)
     {
-        Append(content, ColorUtility.ToHtmlStringRGB(property.color),property.localizedName.GetLocalizedString(),property.nameIcon,((value > 0 ? "+" : "" ) + value.ToString()));
+        Append(content,property,((value > 0 ? "+" : "" ) + value.ToString()));
     }
 
     public static void AppendArgs(StringBuilder content,Property property, params string[] args)

@@ -55,6 +55,7 @@ partial struct NewPlayerSystem : ISystem
                 Entity update = entityCommandBuffer.CreateEntity();
                 
                 entityCommandBuffer.AddComponent(update, new LifeStatsChangedRPC());
+                entityCommandBuffer.AddComponent(update, new PlayerStatsChangedRPC());
             }
 
 

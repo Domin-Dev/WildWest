@@ -21,6 +21,11 @@ public class Property
     [SerializeField] private LocalizedString _description;
     [SerializeField] private Color _color;
     [SerializeField] private string _nameIcon;
+    [SerializeField] private bool displayEQWindow;
+    [SerializeField] private int displayPriority;
+    [SerializeField] private bool hideWhenValueIsZero;
+
+
 
 
     public string name => _name;
@@ -28,8 +33,9 @@ public class Property
     public LocalizedString description => _description;
     public Color color => _color;
     public string nameIcon => _nameIcon;
-
-    
+    public bool DisplayEQWindow => displayEQWindow;
+    public int DisplayPriority => displayPriority;
+    public bool HideWhenValueIsZero => hideWhenValueIsZero;
 }
 
 

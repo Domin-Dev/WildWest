@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using Unity.Entities;
@@ -56,7 +56,6 @@ public class HeroEditor: MonoBehaviour
                 _emptyTexture = new Texture2D(1, 1);
                 _emptyTexture.SetPixel(0, 0, new Color(0,0,0,0));
                 _emptyTexture.Apply();
-
                 _emptyTexture.hideFlags = HideFlags.DontUnloadUnusedAsset;
             }
 

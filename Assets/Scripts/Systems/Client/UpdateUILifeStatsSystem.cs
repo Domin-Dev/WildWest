@@ -16,7 +16,7 @@ public partial struct UpdateUILifeStatsSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<LifeStatsChangedRPC>();
+            .WithAny<LifeStatsChangedRPC,PlayerStatsChangedRPC>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
     }
@@ -36,6 +36,24 @@ public partial struct UpdateUILifeStatsSystem : ISystem
             }
             entityCommandBuffer.DestroyEntity(entity);
         }
+
+        foreach ((PlayerStatsChangedRPC message, Entity entity) in
+        SystemAPI.Query<PlayerStatsChangedRPC>().WithEntityAccess())
+        {
+            foreach (Player player in SystemAPI.Query<Player>()
+            .WithAll<GhostOwnerIsLocal, Simulate>())
+            {
+                PlayerStatsUI.UpdateStat("MovementSpeed",player.speed);
+                PlayerStatsUI.UpdateStat("Aesthetic",player.aesthetic);
+                PlayerStatsUI.UpdateStat("Armor",player.armor);
+                PlayerStatsUI.UpdateStat("Insulation",player.insulation);
+                PlayerStatsUI.UpdateStat("WaterResistance",player.waterResistance);
+                PlayerStatsUI.UpdateStat("Wetness",player.wetness);
+            }
+            entityCommandBuffer.DestroyEntity(entity);
+        }
+
+
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
