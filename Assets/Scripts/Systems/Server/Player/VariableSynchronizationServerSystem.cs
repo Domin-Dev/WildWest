@@ -11,7 +11,7 @@ using UnityEngine.Assertions.Must;
 partial struct VariableSynchronizationServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
     private BufferLookup<LinkedContainers> linkedContainers;
@@ -24,7 +24,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
         state.RequireForUpdate<PlayerInput>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>(true);
         linkedContainers = SystemAPI.GetBufferLookup<LinkedContainers>();

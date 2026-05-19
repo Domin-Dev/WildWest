@@ -35,6 +35,16 @@ public class Tag : ScriptableObject, IReadTag
     public Sprite icon => _icon; 
     public LocalizedString localizedString => _localizedString;
 
+    public string getLocalizedString 
+    {
+        get
+        {
+            if(_localizedString != null && !_localizedString.IsEmpty)
+                return localizedString.GetLocalizedString();  
+            return "null";
+        }
+    }
+
 
     private void OnValidate()
     {

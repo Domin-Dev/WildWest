@@ -15,6 +15,7 @@ public class InputManager : MonoBehaviour
 
 
 
+    public InputAction dropItem { private set; get; }
     public InputAction moveAllTheItems { private set; get; }
     public InputAction moveTheItem { private set; get; }
 
@@ -65,6 +66,7 @@ public class InputManager : MonoBehaviour
     {
         action = inputAsset;
 
+        dropItem = action.FindAction("DropItem");
         moveAllTheItems = action.FindAction("MoveAllTheItems");
         moveTheItem = action.FindAction("MoveTheItem");  
 

@@ -33,7 +33,6 @@ public partial struct RelevancySynchronizationSystem : ISystem
         {
             if(ghostInstance.ValueRO.ghostId == 0) continue;
 
-
             if(SystemAPI.HasComponent<GhostChunk>(sync.ValueRO.parent))
             {
                 int chunkIndex = SystemAPI.GetComponent<GhostChunk>(sync.ValueRO.parent).GetChunk();

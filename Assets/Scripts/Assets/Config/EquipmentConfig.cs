@@ -20,6 +20,9 @@ public class EquipmentConfig
 
     public readonly static int hotBar_ContainerIndex;
     public readonly static int start_ContainerIndex;
+    public readonly static int chunkItems_ContainerIndex;
+
+    
 
 
 
@@ -44,6 +47,8 @@ public class EquipmentConfig
         itemInHand_ContainerIndex = config.itemInHand_ContainerIndex;
         hotBar_ContainerIndex = config.hotBar_ContainerIndex;
         start_ContainerIndex = config.start_ContainerIndex;
+
+        chunkItems_ContainerIndex = config.chunkItems_ContainerIndex;
 
         foreach(var c in config.containers)
         {

@@ -19,7 +19,7 @@ partial struct CharacterAimSystem : ISystem
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<LinkedContainers> linkedContainersLookup;
 
     private float simulationTickDelta;
@@ -33,7 +33,7 @@ partial struct CharacterAimSystem : ISystem
         playerNeedChunkLookup = state.GetBufferLookup<PlayersNeedChunk>(true);
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         linkedContainersLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
         
         simulationTickDelta = 1f / NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
@@ -98,7 +98,6 @@ partial struct CharacterAimSystem : ISystem
                     
                     if(isCooldown)
                     {
-                        Debug.Log("mozna shot");
                         testTick.Subtract(1);
                         if (playerAspect.input.GetDataAtTick(testTick, out var input2))
                         {

@@ -14,7 +14,7 @@ partial struct SelectionItemServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<EntityContainers> playerContainersLookup;
     private BufferLookup<LinkedContainers> linkedLookup;
     private ComponentLookup<ContainerComponent> containerComponents;
 
@@ -30,7 +30,7 @@ partial struct SelectionItemServerSystem : ISystem
         entityQueryBuilder.Dispose();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        playerContainersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
         containerComponents = SystemAPI.GetComponentLookup<ContainerComponent>();
@@ -41,6 +41,7 @@ partial struct SelectionItemServerSystem : ISystem
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         linkedLookup.Update(ref state);
+        containerComponents.Update(ref state);
 
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQSelectItem> command, Entity entity) in
@@ -53,7 +54,7 @@ partial struct SelectionItemServerSystem : ISystem
             if (command.ValueRO.value > 0)
             {
                 if (command.ValueRO.position.slotIndex >= 0) EQHelper.Deselection(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, playerContainersLookup, player, networkID, rpcCommandRequest.ValueRO.SourceConnection);
-                SelectItem(ref state, player, command.ValueRO);
+                SelectItem(ref state,entityCommandBuffer, player, command.ValueRO);
                 if (command.ValueRO.position.slotIndex >= 0)
                 {
                     EntityHelper.CreateEntityWithComponent(ref entityCommandBuffer, new EquipmentEvent
@@ -67,7 +68,7 @@ partial struct SelectionItemServerSystem : ISystem
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
-    private void SelectItem(ref SystemState state, Entity player, EQSelectItem selectItem)
+    private void SelectItem(ref SystemState state,EntityCommandBuffer ecb, Entity player, EQSelectItem selectItem)
     {
         var container = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectItem.position.containerIndex);
 
@@ -77,6 +78,7 @@ partial struct SelectionItemServerSystem : ISystem
             ref InventorySlot element = ref slotsLookup[container.Value.entity].ElementAt(bufferIndex);
             int newSlot = EQHelperClient.ConvetSlotIndexToSelectedSlotIndex(element.slot); 
 
+            EQHelper.NewItemInTheSlot(ecb, containerComponents[container.Value.entity],element.slot,player,element);
             if (selectItem.value >= element.quantity)
             {
                 if (EQHelper.TryGetBufferIndex(barsLookup,element.slot,container.Value.entity,out var barData,out int bIndex))
@@ -93,7 +95,6 @@ partial struct SelectionItemServerSystem : ISystem
             else
             {
                 int dif = element.quantity - selectItem.value;
-
                 element.quantity = dif;
 
                 slotsLookup[container.Value.entity].Add(new InventorySlot()
@@ -116,6 +117,7 @@ partial struct SelectionItemServerSystem : ISystem
                     });
                 }
             }
+        
         }
        
         var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);

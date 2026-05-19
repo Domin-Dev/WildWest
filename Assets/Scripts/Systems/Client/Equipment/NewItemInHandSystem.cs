@@ -19,7 +19,7 @@ partial struct NewItemInHandSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<LinkedContainers> linkedContainersLookup;
 
 
@@ -44,7 +44,7 @@ partial struct NewItemInHandSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);    
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);    
         linkedContainersLookup = SystemAPI.GetBufferLookup<LinkedContainers>(true);
 
 
@@ -94,18 +94,19 @@ partial struct NewItemInHandSystem : ISystem
                                 {
                                     Item item = ItemsAsset.instance.GetItem(itemId);
                                     ChangeItemInHand(ref state,item, hands);
+   
                                     if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
                                     {
                                         CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                         state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
-                                        UpdateUI(ref state,input,player,slot,out var ammoID,playerContainer.Value.entity);
+                                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var hotbar))
+                                        {
+                                            UpdateUI(ref state,input,player,slot,out var ammoID,hotbar.Value.entity);
+                                        }
                                     }
+
                                     entityCommandBuffer.DestroyEntity(entity);
                                 }
-                            }
-                            else
-                            {
-                                Debug.Log("nie ma eq");
                             }
                         }
                         else
@@ -196,7 +197,7 @@ partial struct NewItemInHandSystem : ISystem
 
             if(item.hasMagazine)
             {
-                magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,hotBarContainer,itemSlot.Value.slot);
+                magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,hotBarContainer,input.ValueRO.slotInHand);
             }
         }
         else

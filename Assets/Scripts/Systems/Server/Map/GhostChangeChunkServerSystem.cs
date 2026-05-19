@@ -201,6 +201,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
             int current = ghostChunk.GetChunk();
             int last = ghostChunk.GetLastChunk();
             int ghostID = ghostInstance.ghostId;
+            if(ghostInstance.ghostId == 0)
+                return;
 
             if(current >= 0)
             {

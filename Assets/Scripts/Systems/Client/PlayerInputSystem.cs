@@ -18,7 +18,7 @@ partial struct PlayerInputSystem : ISystem
 
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
 
 
 
@@ -29,7 +29,7 @@ partial struct PlayerInputSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);
 
     }
     public void OnUpdate(ref SystemState state)
@@ -184,7 +184,7 @@ partial struct PlayerInputSystem : ISystem
         ecb.Dispose();  
     }
 
-    public static void UpdateItemInHand(BufferLookup<InventorySlot> slotsLookup,BufferLookup<PlayerContainers> containersLookup,Entity player,int newSlot)
+    public static void UpdateItemInHand(BufferLookup<InventorySlot> slotsLookup,BufferLookup<EntityContainers> containersLookup,Entity player,int newSlot)
     {
         EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot), out var inventorySlot, out int bufferIndex);
         onNewSlotInHand?.Invoke(newSlot,inventorySlot);

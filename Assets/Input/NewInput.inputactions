@@ -1071,6 +1071,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "DropItem",
+                    "type": "Button",
+                    "id": "3e7102c6-5bbf-4f75-826d-f071d92bb133",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -1093,6 +1102,17 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "MoveTheItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d92cb6b9-3d16-4857-8fcf-7543e63eb321",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "DropItem",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

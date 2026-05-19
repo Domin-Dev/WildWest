@@ -1159,6 +1159,15 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DropItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""3e7102c6-5bbf-4f75-826d-f071d92bb133"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1181,6 +1190,17 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""MoveTheItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d92cb6b9-3d16-4857-8fcf-7543e63eb321"",
+                    ""path"": ""<Keyboard>/x"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""DropItem"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1292,6 +1312,7 @@ namespace UnityEngine.InputSystem
             m_Eqipment = asset.FindActionMap("Eqipment", throwIfNotFound: true);
             m_Eqipment_MoveAllTheItems = m_Eqipment.FindAction("MoveAllTheItems", throwIfNotFound: true);
             m_Eqipment_MoveTheItem = m_Eqipment.FindAction("MoveTheItem", throwIfNotFound: true);
+            m_Eqipment_DropItem = m_Eqipment.FindAction("DropItem", throwIfNotFound: true);
         }
 
         ~@NewInput()
@@ -1920,6 +1941,7 @@ namespace UnityEngine.InputSystem
         private List<IEqipmentActions> m_EqipmentActionsCallbackInterfaces = new List<IEqipmentActions>();
         private readonly InputAction m_Eqipment_MoveAllTheItems;
         private readonly InputAction m_Eqipment_MoveTheItem;
+        private readonly InputAction m_Eqipment_DropItem;
         /// <summary>
         /// Provides access to input actions defined in input action map "Eqipment".
         /// </summary>
@@ -1939,6 +1961,10 @@ namespace UnityEngine.InputSystem
             /// Provides access to the underlying input action "Eqipment/MoveTheItem".
             /// </summary>
             public InputAction @MoveTheItem => m_Wrapper.m_Eqipment_MoveTheItem;
+            /// <summary>
+            /// Provides access to the underlying input action "Eqipment/DropItem".
+            /// </summary>
+            public InputAction @DropItem => m_Wrapper.m_Eqipment_DropItem;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -1971,6 +1997,9 @@ namespace UnityEngine.InputSystem
                 @MoveTheItem.started += instance.OnMoveTheItem;
                 @MoveTheItem.performed += instance.OnMoveTheItem;
                 @MoveTheItem.canceled += instance.OnMoveTheItem;
+                @DropItem.started += instance.OnDropItem;
+                @DropItem.performed += instance.OnDropItem;
+                @DropItem.canceled += instance.OnDropItem;
             }
 
             /// <summary>
@@ -1988,6 +2017,9 @@ namespace UnityEngine.InputSystem
                 @MoveTheItem.started -= instance.OnMoveTheItem;
                 @MoveTheItem.performed -= instance.OnMoveTheItem;
                 @MoveTheItem.canceled -= instance.OnMoveTheItem;
+                @DropItem.started -= instance.OnDropItem;
+                @DropItem.performed -= instance.OnDropItem;
+                @DropItem.canceled -= instance.OnDropItem;
             }
 
             /// <summary>
@@ -2361,6 +2393,13 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnMoveTheItem(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "DropItem" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnDropItem(InputAction.CallbackContext context);
         }
     }
 }

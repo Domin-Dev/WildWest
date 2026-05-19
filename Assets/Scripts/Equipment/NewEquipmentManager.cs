@@ -8,6 +8,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Profiling.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Localization.Settings;
 
 
@@ -52,7 +53,7 @@ public class Container : IHaveTooltip
     {
         if (mandatoryProperties == MandatoryProperties.tag)
         {
-            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<Tag>(mandatoryData)?.localizedString?.GetLocalizedString());
+            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<Tag>(mandatoryData).getLocalizedString);
             UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)
@@ -107,19 +108,6 @@ public class NewEquipmentManager : MonoBehaviour
                 open = !open;
                 UIManager.instance.OpenEquipment(open);
             }
-
-            if (Input.GetMouseButton(0))
-            {
-                if(selectedItem != null && UIManager.instance.mouseIsOverEQUI)
-                {
-                   // Debug.Log("Drop!!!");
-                }
-            }
-
-            if(!open)
-            {
-                
-            }
         }
     }
     private void OnEnable()
@@ -166,6 +154,8 @@ public class NewEquipmentManager : MonoBehaviour
             UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
         return selectedItem;
     }
+
+    
     public ItemStats LocalSelectItem(SlotPosition slotPosition, ItemStats itemStats)
     {
         selectedSlot = slotPosition;

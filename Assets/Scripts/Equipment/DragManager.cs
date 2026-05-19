@@ -61,15 +61,18 @@ public class DragManager : MonoBehaviour
                 RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveAllItemsToContainer() { from = dragItemSlot });
                 return false;
             }
+            if (InputManager.i.dropItem.inProgress)
+            {
+                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = dragItemSlot });
+                return false;
+            }
+
 
             dragItem = dragDrop.GetComponent<RectTransform>();
             lastSlotPostion = dragItemSlot;
             lastSelectionTime = Time.time;
             SelectionMode mode = GetSelectionModeForSelectItem(eventData, out int n);
             ItemStats itemStats = NewEquipmentManager.instance.SelectItem(dragItemSlot, mode, n);
-
-
-
             UIManager.instance.UpdateDragItem(dragDrop.transform, itemStats);
             return true;
         }
@@ -160,6 +163,17 @@ public class DragManager : MonoBehaviour
                 out anchoredPos
             );
             dragItem.anchoredPosition = anchoredPos;
+
+            if (Input.GetMouseButton(0))
+            {
+                if(!EventSystem.current.IsPointerOverGameObject())
+                {
+                    Destroy(dragItem.gameObject);
+                    dragItem = null;
+                    Sounds.instance.Click();
+                    RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = SlotPosition.NullSlot });
+                }
+            }
         }
     }
 }

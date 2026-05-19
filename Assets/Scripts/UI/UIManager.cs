@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,6 +8,8 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 
@@ -22,7 +24,6 @@ public class EquipmentGrid
         this.gridIndex = gridIndex;
     }
 }
-
 
 [System.Serializable]
 public class ContainerUI
@@ -39,6 +40,7 @@ public class ContainerUI
 public class UIManager : MonoBehaviour
 {
     //black background
+    [SerializeField] private TabUI tabUI;
     [SerializeField] private PlayerStatsUI statsUI;
     [Space(20f)]
     [SerializeField] private Transform background;
@@ -113,8 +115,6 @@ public class UIManager : MonoBehaviour
     public Transform itemParent { get { return equipmentDragItems; } }
     public static UIManager instance { private set; get; }
 
-    public bool mouseIsOverEQUI = false;
-
     private EquipmentGrid barGrid;
     private EquipmentGrid equipmentBarGrid;
     private EquipmentGrid mainEquipmentGrid;
@@ -123,7 +123,7 @@ public class UIManager : MonoBehaviour
 
     private List<Transform> openWindows = new List<Transform>();
             
-    public bool WindowsAreClosed => openWindows.Count == 0 && !ChatManager.instance.isChatting;
+    public bool WindowsAreClosed => openWindows.Count == 0 && !tabUI.IsOpen() && !ChatManager.instance.isChatting;
 
 
     private List<int> loadedScene = new List<int>();
@@ -161,9 +161,35 @@ public class UIManager : MonoBehaviour
         }
         statsUI.Load(stats.ToArray());
     }
+    public void TabSetUp()
+    {
+        Debug.Log("setup");
+        tabUI.equipmentTab.OnEnable += () =>
+        {
+            // windowOpen(this,null);
+            //openWindows.Add(equipment);
+            SelectItem(-1);
+            CheckRecipes();
+            Debug.Log("dziala!!");
+        };  
+        
+        tabUI.equipmentTab.OnDisable += () =>
+        {
+            NewEquipmentManager.instance.DeselectItem();
+            TooltipSystem.Hide();
+            //openWindows.Remove(equipment);
+            ResetSelectedItem();        
+            if(timer != null) timer.Cancel();
+
+            Debug.Log("nie dziala!!!");
+        };
+
+    }
+
     private void Update()
     {
         UpdateButtonSize();
+        Debug.Log(EventSystem.current.IsPointerOverGameObject() + " mouse over UI  = " + MouseOverUI.MouseIsOverUI());
     }
     public void FixedUpdate()
     {
@@ -296,12 +322,6 @@ public class UIManager : MonoBehaviour
         SwitchPlaceholder(e.turn, GetGrid(e.slotPosition.containerIndex).GetChild(e.slotPosition.slotIndex));
     }
 
-    public void SetUpUIPlayer(HandsController handsController)
-    {
-        handsController.SetAmmoBar += SetAmmoBar;
-        handsController.UpdateAmmoBar += UpdateAmmoBar;
-        handsController.HideAmmoBar += HideAmmoBar;
-    }
     private void HideAmmoBar(object sender, EventArgs e)
     {
         ammoBar.gameObject.SetActive(false);
@@ -596,6 +616,7 @@ public class UIManager : MonoBehaviour
         else
         {
             transform.GetComponent<DragItem>().enabled = false;
+            transform.GetComponent<ItemSlotTooltipTrigger>().enabled = false;
         }
 
     }
@@ -693,8 +714,11 @@ public class UIManager : MonoBehaviour
             transform.GetComponent<DragItem>().IsInSlot();
         }
         else
+        {
             transform.GetComponent<DragItem>().enabled = false;
-        
+            transform.GetComponent<ItemSlotTooltipTrigger>().enabled = false;
+        }
+
     }
     public void SwitchBackground(bool value)
     {
@@ -703,26 +727,9 @@ public class UIManager : MonoBehaviour
 
     public void OpenEquipment(bool value)
     {
-        CloseWindows();
         background.gameObject.SetActive(value);
-        equipment.gameObject.SetActive(value);
-
-        if (!value)
-        {
-            NewEquipmentManager.instance.DeselectItem();
-            TooltipSystem.Hide();
-            openWindows.Remove(equipment);
-            ResetSelectedItem();
-           
-            if(timer != null) timer.Cancel();
-        }
-        else
-        {
-           // windowOpen(this,null);
-            openWindows.Add(equipment);
-            SelectItem(-1);
-            CheckRecipes();
-        } 
+        tabUI.SetActive(value);
+        tabUI.equipmentTab.TurnTab(value);
     }
 
            
@@ -735,14 +742,6 @@ public class UIManager : MonoBehaviour
         }
     }
        
-    private void CloseWindows()
-    {
-        foreach (Transform item in openWindows)
-        {
-            item.gameObject.SetActive(false);
-        }
-        isHold = false;
-    }
     private RectTransform lastSlotUI;
     private RectTransform currentSlotUI;
     private void UpdateButtonSize()
@@ -953,11 +952,11 @@ public class UIManager : MonoBehaviour
     }
     private void CheckRecipes()
     {
-        Dictionary<int,int> items = EquipmentManager.instance.GetItemDictionary();
-        foreach (var item in itemRecipes)
-        {
-            CheckRecipe(item.Key, items);
-        }
+        // Dictionary<int,int> items = EquipmentManager.instance.GetItemDictionary();
+        // foreach (var item in itemRecipes)
+        // {
+        //     CheckRecipe(item.Key, items);
+        // }
     }
     private void CheckRecipe(int id, Dictionary<int, int> items)
     {
@@ -1060,20 +1059,24 @@ public class UIManager : MonoBehaviour
     }
     public void CheckRecipesWithItem(int id,bool increasedItemCount)
     {
-        if (equipment.gameObject.activeSelf)
-        {
-            int counter = EquipmentManager.instance.CountItems(id);
-            ReadOnlyCollection<Item> items = ItemsAsset.instance.GetRecipesCrafTable(-1);
-            Dictionary<int, int> eq = EquipmentManager.instance.GetItemDictionary();
-            foreach (var item in items)
-            {
-                foreach (var ingredient in item.crafingIngredients)
-                {
-                    if (UpdateCheck(item.ID,ingredient, counter, id, eq, increasedItemCount)) break;
-                }
-            }
-        }
+        // if (equipment.gameObject.activeSelf)
+        // {
+        //     int counter = EquipmentManager.instance.CountItems(id);
+        //     ReadOnlyCollection<Item> items = ItemsAsset.instance.GetRecipesCrafTable(-1);
+        //     Dictionary<int, int> eq = EquipmentManager.instance.GetItemDictionary();
+        //     foreach (var item in items)
+        //     {
+        //         foreach (var ingredient in item.crafingIngredients)
+        //         {
+        //             if (UpdateCheck(item.ID,ingredient, counter, id, eq, increasedItemCount)) break;
+        //         }
+        //     }
+        // }
     }
+
+
+
+
     private bool UpdateCheck(int idRecipe, Ingredient ingredient,int counter,int id, Dictionary<int, int> eq,bool increasedItemCount)
     {
         if (ingredient.itemID == id)

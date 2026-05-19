@@ -23,9 +23,9 @@ public struct ContainerComponent : IComponentData
 
 }
 
-public struct PlayerContainer : IComponentData
+public struct ContainerOwner : IComponentData
 {
-    public Entity player;
+    public Entity owner;
 }
 
 

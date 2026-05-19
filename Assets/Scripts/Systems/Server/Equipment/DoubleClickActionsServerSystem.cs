@@ -13,7 +13,7 @@ using Unity.NetCode;
 partial struct CombineItemsServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<EntityContainers> playerContainersLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<LinkedContainers> linkedLookup;
 
@@ -29,7 +29,7 @@ partial struct CombineItemsServerSystem : ISystem
         entityQueryBuilder.Dispose();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        playerContainersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
     }
@@ -55,7 +55,7 @@ partial struct CombineItemsServerSystem : ISystem
 
             if(container.HasValue && !SystemAPI.HasComponent<ServerContainer>(container.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, command.ValueRO.position.slotIndex,container.Value.entity, out InventorySlot? item, out int bufferIndex))           
             {
-                if(EQHelper.TryFindContainerForItem(ref state,playerContainersLookup,player,out PlayerContainers? newContainer,ContainerType.Outfit,item.Value.itemId))
+                if(EQHelper.TryFindContainerForItem(ref state,playerContainersLookup,player,out EntityContainers? newContainer,ContainerType.Outfit,item.Value.itemId))
                 {
                     // try to find free slot or try combine the item in target container
                     if(EQHelper.TryFindSlotForItem(ref state, slotsLookup,playerContainersLookup, player,item.Value,out EQTransferData[] data, newContainer.Value.index))
@@ -82,7 +82,7 @@ partial struct CombineItemsServerSystem : ISystem
     /// <summary>
     /// Combine item in the same container.
     /// </summary>
-    EquipmentEvent[] CombineItems(ref SystemState state,ref EntityCommandBuffer ecb,Entity player,Entity connection,PlayerContainers container,InventorySlot item, int bufferIndex, int slotTo)
+    EquipmentEvent[] CombineItems(ref SystemState state,ref EntityCommandBuffer ecb,Entity player,Entity connection,EntityContainers container,InventorySlot item, int bufferIndex, int slotTo)
     {
         var slots = slotsLookup[container.entity];
         var element = slots.ElementAt(bufferIndex);

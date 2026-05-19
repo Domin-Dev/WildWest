@@ -374,12 +374,12 @@ public class EquipmentManager : MonoBehaviour
 
 
     ///////////////////////////////////////
-    public void SetUpEvent(HandsController handsController)
-    {
-        handsController.UseItem += UseSelectedItem;
-        BuildingManager.instance.builtObject += UseItem;
-        Actions.instance.useItem += UseItem;
-    }
+    // public void SetUpEvent(HandsController handsController)
+    // {
+    //     handsController.UseItem += UseSelectedItem;
+    //     BuildingManager.instance.builtObject += UseItem;
+    //     Actions.instance.useItem += UseItem;
+    // }
     public void MoveUpItem(SlotPosition slotPosition)
     {
         if (container != null)

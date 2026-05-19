@@ -14,7 +14,7 @@ using UnityEngine.UI;
 partial struct OnEquipClientSystem : ISystem
 {
     private BufferLookup<InventorySlot> slots;
-    private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<EntityContainers> playerContainersLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -25,7 +25,7 @@ partial struct OnEquipClientSystem : ISystem
         entityQueryBuilder.Dispose();
 
         slots = state.GetBufferLookup<InventorySlot>(true);
-        playerContainersLookup = state.GetBufferLookup<PlayerContainers>();
+        playerContainersLookup = state.GetBufferLookup<EntityContainers>();
     } 
 
     public void OnUpdate(ref SystemState state)

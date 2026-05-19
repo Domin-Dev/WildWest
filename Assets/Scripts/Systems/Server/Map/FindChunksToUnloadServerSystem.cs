@@ -85,7 +85,7 @@ public partial class FindChunksToUnloadServerSystem : SystemBase
         [BurstCompile]
         public void Execute(Entity chunk,in ChunkComponent chunkComponent,in ChunkTimestamp timestamp ,ref DynamicBuffer<ChunkObjects> chunkObjects, ref DynamicBuffer<PlayersNeedChunk> playersNeedChunks, [EntityIndexInQuery] int sortKey)
         {
-            if(chunkObjects.IsEmpty && playersNeedChunks.IsEmpty)
+            if(chunkObjects.Length == 1 && playersNeedChunks.IsEmpty)
             {
                 if(currentTime - timestamp.timestamp > maxIdleTime)
                 {

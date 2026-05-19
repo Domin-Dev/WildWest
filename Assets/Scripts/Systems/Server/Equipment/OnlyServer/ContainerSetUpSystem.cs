@@ -17,7 +17,7 @@ partial struct ContainerSetUpSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        containerQuery = SystemAPI.QueryBuilder().WithAll<PlayerContainer,ContainerComponent,GhostInstance>().WithAll<Simulate>().WithNone<ContainerLoaded>().Build();
+        containerQuery = SystemAPI.QueryBuilder().WithAll<ContainerOwner,ContainerComponent,GhostInstance>().WithAll<Simulate>().WithNone<ContainerLoaded>().Build();
         state.RequireForUpdate(containerQuery);
     }
 
@@ -40,7 +40,7 @@ partial struct ContainerSetUpSystem : ISystem
     {
         public EntityCommandBuffer.ParallelWriter ecb;
 
-        public void Execute(Entity entity,in PlayerContainer containerPlayer, in ContainerComponent container,  in GhostInstance ghostInstance,  [EntityIndexInQuery] int sortKey)
+        public void Execute(Entity entity,in ContainerOwner containerPlayer, in ContainerComponent container,  in GhostInstance ghostInstance,  [EntityIndexInQuery] int sortKey)
         {     
             if(ghostInstance.ghostId == 0)
                 return;
@@ -48,14 +48,14 @@ partial struct ContainerSetUpSystem : ISystem
             ecb.AddComponent<SendToOwner>(sortKey,entity);       
             if(container.publicContainer)
             {
-                ecb.AppendToBuffer(sortKey,containerPlayer.player,new GhostChildren()
+                ecb.AppendToBuffer(sortKey,containerPlayer.owner,new GhostChildren()
                 {
                     child = entity,
                     ghostID = ghostInstance.ghostId
                 });
                 ecb.AddComponent(sortKey,entity,new SynchronizeRelevancyWithParent()
                 {
-                    parent = containerPlayer.player
+                    parent = containerPlayer.owner
                 });
             }
             ecb.AddComponent<ContainerLoaded>(sortKey,entity);

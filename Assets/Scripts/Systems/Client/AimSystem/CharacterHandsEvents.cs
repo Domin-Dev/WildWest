@@ -26,7 +26,7 @@ partial struct CharacterHandsEvents : ISystem
     
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
 
 
     private DynamicBuffer<VisualEffectsBuffer> visualEffects;
@@ -44,7 +44,7 @@ partial struct CharacterHandsEvents : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);
 
         state.RequireForUpdate<VisualEffectsBuffer>();
 

@@ -43,6 +43,7 @@ namespace Assembly_CSharp_Generated
         internal struct Snapshot
         {
             public uint containerStats_serverContainer;
+            public uint containerStats_publicContainer;
             public int containerStats_containerIndex;
             public uint containerStats_mandatoryProperties;
             public int containerStats_mandatoryData;
@@ -51,7 +52,7 @@ namespace Assembly_CSharp_Generated
             public int parentContainerIndex;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 7;
+        private const int ChangeMaskBits = 8;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -71,6 +72,7 @@ namespace Assembly_CSharp_Generated
         static void CopyToSnapshotGenerated(in GhostSerializerState serializerState, ref Snapshot snapshot, ref ContainerComponent component)
         {
                 snapshot.containerStats_serverContainer = component.containerStats.serverContainer?1u:0;
+                snapshot.containerStats_publicContainer = component.containerStats.publicContainer?1u:0;
                 snapshot.containerStats_containerIndex = (int) component.containerStats.containerIndex;
                 snapshot.containerStats_mandatoryProperties = (uint)component.containerStats.mandatoryProperties;
                 snapshot.containerStats_mandatoryData = (int) component.containerStats.mandatoryData;
@@ -85,6 +87,7 @@ namespace Assembly_CSharp_Generated
             float snapshotInterpolationFactor, float snapshotInterpolationFactorRaw, ref Snapshot snapshotBefore, ref Snapshot snapshotAfter)
         {
                 component.containerStats.serverContainer = snapshotBefore.containerStats_serverContainer != 0;
+                component.containerStats.publicContainer = snapshotBefore.containerStats_publicContainer != 0;
                 component.containerStats.containerIndex = (int) snapshotBefore.containerStats_containerIndex;
                 component.containerStats.mandatoryProperties = (MandatoryProperties) snapshotBefore.containerStats_mandatoryProperties;
                 component.containerStats.mandatoryData = (int) snapshotBefore.containerStats_mandatoryData;
@@ -98,6 +101,7 @@ namespace Assembly_CSharp_Generated
         static void RestoreFromBackupGenerated(ref ContainerComponent component, ref ContainerComponent backup)
         {
             component.containerStats.serverContainer = backup.containerStats.serverContainer;
+            component.containerStats.publicContainer = backup.containerStats.publicContainer;
             component.containerStats.containerIndex = backup.containerStats.containerIndex;
             component.containerStats.mandatoryProperties = backup.containerStats.mandatoryProperties;
             component.containerStats.mandatoryData = backup.containerStats.mandatoryData;
@@ -112,6 +116,7 @@ namespace Assembly_CSharp_Generated
             ref GhostDeltaPredictor predictor)
         {
             snapshot.containerStats_serverContainer = (uint)predictor.PredictInt((int)snapshot.containerStats_serverContainer, (int)baseline1.containerStats_serverContainer, (int)baseline2.containerStats_serverContainer);
+            snapshot.containerStats_publicContainer = (uint)predictor.PredictInt((int)snapshot.containerStats_publicContainer, (int)baseline1.containerStats_publicContainer, (int)baseline2.containerStats_publicContainer);
             snapshot.containerStats_containerIndex = predictor.PredictInt(snapshot.containerStats_containerIndex, baseline1.containerStats_containerIndex, baseline2.containerStats_containerIndex);
             snapshot.containerStats_mandatoryProperties = (uint)predictor.PredictInt((int)snapshot.containerStats_mandatoryProperties, (int)baseline1.containerStats_mandatoryProperties, (int)baseline2.containerStats_mandatoryProperties);
             snapshot.containerStats_mandatoryData = predictor.PredictInt(snapshot.containerStats_mandatoryData, baseline1.containerStats_mandatoryData, baseline2.containerStats_mandatoryData);
@@ -127,13 +132,14 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = 0;
             changeMask = (snapshot.containerStats_serverContainer != baseline.containerStats_serverContainer) ? 1u : 0;
-            changeMask |= (snapshot.containerStats_containerIndex != baseline.containerStats_containerIndex) ? (1u<<1) : 0;
-            changeMask |= (snapshot.containerStats_mandatoryProperties != baseline.containerStats_mandatoryProperties) ? (1u<<2) : 0;
-            changeMask |= (snapshot.containerStats_mandatoryData != baseline.containerStats_mandatoryData) ? (1u<<3) : 0;
-            changeMask |= (snapshot.containerStats_capacity != baseline.containerStats_capacity) ? (1u<<4) : 0;
-            changeMask |= (snapshot.containerStats_waterResistance != baseline.containerStats_waterResistance) ? (1u<<5) : 0;
-            changeMask |= (snapshot.parentContainerIndex != baseline.parentContainerIndex) ? (1u<<6) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
+            changeMask |= (snapshot.containerStats_publicContainer != baseline.containerStats_publicContainer) ? (1u<<1) : 0;
+            changeMask |= (snapshot.containerStats_containerIndex != baseline.containerStats_containerIndex) ? (1u<<2) : 0;
+            changeMask |= (snapshot.containerStats_mandatoryProperties != baseline.containerStats_mandatoryProperties) ? (1u<<3) : 0;
+            changeMask |= (snapshot.containerStats_mandatoryData != baseline.containerStats_mandatoryData) ? (1u<<4) : 0;
+            changeMask |= (snapshot.containerStats_capacity != baseline.containerStats_capacity) ? (1u<<5) : 0;
+            changeMask |= (snapshot.containerStats_waterResistance != baseline.containerStats_waterResistance) ? (1u<<6) : 0;
+            changeMask |= (snapshot.parentContainerIndex != baseline.parentContainerIndex) ? (1u<<7) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 8);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -146,16 +152,18 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 0)) != 0)
                 writer.WritePackedUIntDelta(snapshot.containerStats_serverContainer, baseline.containerStats_serverContainer, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedIntDelta(snapshot.containerStats_containerIndex, baseline.containerStats_containerIndex, compressionModel);
+                writer.WritePackedUIntDelta(snapshot.containerStats_publicContainer, baseline.containerStats_publicContainer, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
-                writer.WritePackedUIntDelta(snapshot.containerStats_mandatoryProperties, baseline.containerStats_mandatoryProperties, compressionModel);
+                writer.WritePackedIntDelta(snapshot.containerStats_containerIndex, baseline.containerStats_containerIndex, compressionModel);
             if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedIntDelta(snapshot.containerStats_mandatoryData, baseline.containerStats_mandatoryData, compressionModel);
+                writer.WritePackedUIntDelta(snapshot.containerStats_mandatoryProperties, baseline.containerStats_mandatoryProperties, compressionModel);
             if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.containerStats_capacity, baseline.containerStats_capacity, compressionModel);
+                writer.WritePackedIntDelta(snapshot.containerStats_mandatoryData, baseline.containerStats_mandatoryData, compressionModel);
             if ((changeMask & (1 << 5)) != 0)
-                writer.WritePackedUIntDelta(snapshot.containerStats_waterResistance, baseline.containerStats_waterResistance, compressionModel);
+                writer.WritePackedIntDelta(snapshot.containerStats_capacity, baseline.containerStats_capacity, compressionModel);
             if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedUIntDelta(snapshot.containerStats_waterResistance, baseline.containerStats_waterResistance, compressionModel);
+            if ((changeMask & (1 << 7)) != 0)
                 writer.WritePackedIntDelta(snapshot.parentContainerIndex, baseline.parentContainerIndex, compressionModel);
         }
 
@@ -168,25 +176,28 @@ namespace Assembly_CSharp_Generated
             changeMask = (snapshot.containerStats_serverContainer != baseline.containerStats_serverContainer) ? 1u : 0;
             if ((changeMask & (1 << 0)) != 0)
                 writer.WritePackedUIntDelta(snapshot.containerStats_serverContainer, baseline.containerStats_serverContainer, compressionModel);
-            changeMask |= (snapshot.containerStats_containerIndex != baseline.containerStats_containerIndex) ? (1u<<1) : 0;
+            changeMask |= (snapshot.containerStats_publicContainer != baseline.containerStats_publicContainer) ? (1u<<1) : 0;
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedIntDelta(snapshot.containerStats_containerIndex, baseline.containerStats_containerIndex, compressionModel);
-            changeMask |= (snapshot.containerStats_mandatoryProperties != baseline.containerStats_mandatoryProperties) ? (1u<<2) : 0;
+                writer.WritePackedUIntDelta(snapshot.containerStats_publicContainer, baseline.containerStats_publicContainer, compressionModel);
+            changeMask |= (snapshot.containerStats_containerIndex != baseline.containerStats_containerIndex) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
-                writer.WritePackedUIntDelta(snapshot.containerStats_mandatoryProperties, baseline.containerStats_mandatoryProperties, compressionModel);
-            changeMask |= (snapshot.containerStats_mandatoryData != baseline.containerStats_mandatoryData) ? (1u<<3) : 0;
+                writer.WritePackedIntDelta(snapshot.containerStats_containerIndex, baseline.containerStats_containerIndex, compressionModel);
+            changeMask |= (snapshot.containerStats_mandatoryProperties != baseline.containerStats_mandatoryProperties) ? (1u<<3) : 0;
             if ((changeMask & (1 << 3)) != 0)
-                writer.WritePackedIntDelta(snapshot.containerStats_mandatoryData, baseline.containerStats_mandatoryData, compressionModel);
-            changeMask |= (snapshot.containerStats_capacity != baseline.containerStats_capacity) ? (1u<<4) : 0;
+                writer.WritePackedUIntDelta(snapshot.containerStats_mandatoryProperties, baseline.containerStats_mandatoryProperties, compressionModel);
+            changeMask |= (snapshot.containerStats_mandatoryData != baseline.containerStats_mandatoryData) ? (1u<<4) : 0;
             if ((changeMask & (1 << 4)) != 0)
-                writer.WritePackedIntDelta(snapshot.containerStats_capacity, baseline.containerStats_capacity, compressionModel);
-            changeMask |= (snapshot.containerStats_waterResistance != baseline.containerStats_waterResistance) ? (1u<<5) : 0;
+                writer.WritePackedIntDelta(snapshot.containerStats_mandatoryData, baseline.containerStats_mandatoryData, compressionModel);
+            changeMask |= (snapshot.containerStats_capacity != baseline.containerStats_capacity) ? (1u<<5) : 0;
             if ((changeMask & (1 << 5)) != 0)
-                writer.WritePackedUIntDelta(snapshot.containerStats_waterResistance, baseline.containerStats_waterResistance, compressionModel);
-            changeMask |= (snapshot.parentContainerIndex != baseline.parentContainerIndex) ? (1u<<6) : 0;
+                writer.WritePackedIntDelta(snapshot.containerStats_capacity, baseline.containerStats_capacity, compressionModel);
+            changeMask |= (snapshot.containerStats_waterResistance != baseline.containerStats_waterResistance) ? (1u<<6) : 0;
             if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedUIntDelta(snapshot.containerStats_waterResistance, baseline.containerStats_waterResistance, compressionModel);
+            changeMask |= (snapshot.parentContainerIndex != baseline.parentContainerIndex) ? (1u<<7) : 0;
+            if ((changeMask & (1 << 7)) != 0)
                 writer.WritePackedIntDelta(snapshot.parentContainerIndex, baseline.parentContainerIndex, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 8);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -201,26 +212,30 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.containerStats_serverContainer = baseline.containerStats_serverContainer;
             if ((changeMask & (1 << 1)) != 0)
+                snapshot.containerStats_publicContainer = reader.ReadPackedUIntDelta(baseline.containerStats_publicContainer, compressionModel);
+            else
+                snapshot.containerStats_publicContainer = baseline.containerStats_publicContainer;
+            if ((changeMask & (1 << 2)) != 0)
                 snapshot.containerStats_containerIndex = reader.ReadPackedIntDelta(baseline.containerStats_containerIndex, compressionModel);
             else
                 snapshot.containerStats_containerIndex = baseline.containerStats_containerIndex;
-            if ((changeMask & (1 << 2)) != 0)
+            if ((changeMask & (1 << 3)) != 0)
                 snapshot.containerStats_mandatoryProperties = reader.ReadPackedUIntDelta(baseline.containerStats_mandatoryProperties, compressionModel);
             else
                 snapshot.containerStats_mandatoryProperties = baseline.containerStats_mandatoryProperties;
-            if ((changeMask & (1 << 3)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.containerStats_mandatoryData = reader.ReadPackedIntDelta(baseline.containerStats_mandatoryData, compressionModel);
             else
                 snapshot.containerStats_mandatoryData = baseline.containerStats_mandatoryData;
-            if ((changeMask & (1 << 4)) != 0)
+            if ((changeMask & (1 << 5)) != 0)
                 snapshot.containerStats_capacity = reader.ReadPackedIntDelta(baseline.containerStats_capacity, compressionModel);
             else
                 snapshot.containerStats_capacity = baseline.containerStats_capacity;
-            if ((changeMask & (1 << 5)) != 0)
+            if ((changeMask & (1 << 6)) != 0)
                 snapshot.containerStats_waterResistance = reader.ReadPackedUIntDelta(baseline.containerStats_waterResistance, compressionModel);
             else
                 snapshot.containerStats_waterResistance = baseline.containerStats_waterResistance;
-            if ((changeMask & (1 << 6)) != 0)
+            if ((changeMask & (1 << 7)) != 0)
                 snapshot.parentContainerIndex = reader.ReadPackedIntDelta(baseline.parentContainerIndex, compressionModel);
             else
                 snapshot.parentContainerIndex = baseline.parentContainerIndex;
@@ -234,6 +249,8 @@ namespace Assembly_CSharp_Generated
             var errors = GhostComponentSerializer.ConvertToUnsafeList(errorsList, errorsCount);
             int errorIndex = 0;
             errors[errorIndex] = math.max(errors[errorIndex], (component.containerStats.serverContainer != backup.containerStats.serverContainer) ? 1 : 0);
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], (component.containerStats.publicContainer != backup.containerStats.publicContainer) ? 1 : 0);
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.containerStats.containerIndex - backup.containerStats.containerIndex));
             ++errorIndex;
@@ -261,6 +278,10 @@ namespace Assembly_CSharp_Generated
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".containerStats.serverContainer");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".containerStats.publicContainer");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
@@ -428,7 +449,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 1966819302090705106,
+                    GhostFieldsHash = 16877093822059739888,
                     ComponentType = ComponentType.ReadWrite<ContainerComponent>(),
                     ComponentSize = UnsafeUtility.SizeOf<ContainerComponent>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -436,7 +457,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 7,
+                    ChangeMaskBits = 8,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.All,

@@ -157,6 +157,45 @@ partial struct GoInGameServerSystem : ISystem
         int networkID = state.EntityManager.GetComponentData<NetworkId>(connection).Value;
         return CreateNewContainer(ref state, player,connection,entityCommandBuffer,ref entities,networkID,stats,containerSave,parentContainerIndex);
     }
+  
+    [BurstCompile]
+    public static Entity CreateNewContainer(Entity chunk, EntityCommandBuffer.ParallelWriter entityCommandBuffer,int chunkIndex,ref EntitiesReferences entities,ContainerStats stats,ContainerSave? containerSave = null,int parentContainerIndex = -1, int sortKey = 0)
+    {
+        var e = entityCommandBuffer.Instantiate(sortKey,entities.equipmentContainerEntity);
+        entityCommandBuffer.SetComponent(sortKey,e, new ContainerComponent() {
+            containerStats = stats,
+            parentContainerIndex = parentContainerIndex
+        });
+        if(stats.serverContainer)
+           entityCommandBuffer.AddComponent<ServerContainer>(sortKey,e);
+
+        entityCommandBuffer.SetComponent(sortKey,e,new ContainerOwner(){ owner = chunk});
+        entityCommandBuffer.AddComponent(sortKey,e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
+        entityCommandBuffer.AppendToBuffer<EntityContainers>(sortKey,chunk, new EntityContainers() { entity = e, index = stats.containerIndex});   
+        entityCommandBuffer.SetBuffer<InventorySlot>(sortKey,e).EnsureCapacity(stats.capacity + 1);
+        entityCommandBuffer.SetBuffer<ItemBarData>(sortKey,e).EnsureCapacity(stats.capacity + 1);
+        entityCommandBuffer.AppendToBuffer(sortKey,chunk, new LinkedEntityGroup() { Value = e });
+
+        if(containerSave != null)
+        {
+            for(int i = 0; i < containerSave.Value.slots.Length;i++)
+            {
+                SlotSave slot = containerSave.Value.slots[i];
+                if(slot.itemId >= 0)
+                {
+                    entityCommandBuffer.AppendToBuffer(sortKey,e,new InventorySlot(slot,i));
+                    BarDataSave barDataSave = containerSave.Value.barData[i];
+                    if(barDataSave.value >= 0)
+                    {
+                        entityCommandBuffer.AppendToBuffer(sortKey,e,new ItemBarData(barDataSave,i));
+                    }
+                }
+            }
+        }
+        entityCommandBuffer.AddComponent<GhostChunk>(sortKey,e,new GhostChunk(){current = chunkIndex});
+        entityCommandBuffer.AddComponent<NewChunk>(sortKey,e);
+        return e;
+    }
     public static Entity CreateNewContainer(ref SystemState state,Entity player,Entity connection, EntityCommandBuffer entityCommandBuffer,ref EntitiesReferences entities,int networkID,ContainerStats stats,ContainerSave? containerSave = null,int parentContainerIndex = -1)
     {
         var e = state.EntityManager.Instantiate(entities.equipmentContainerEntity);
@@ -169,13 +208,13 @@ partial struct GoInGameServerSystem : ISystem
             entityCommandBuffer.AddComponent<ServerContainer>(e);
 
         entityCommandBuffer.AddComponent(e, new ServerEquipmentEventCounter() { index = uint.MaxValue });
-        entityCommandBuffer.AppendToBuffer<PlayerContainers>(player, new PlayerContainers() { entity = e, index = stats.containerIndex});
-        
+        entityCommandBuffer.AppendToBuffer<EntityContainers>(player, new EntityContainers() { entity = e, index = stats.containerIndex});   
         entityCommandBuffer.SetBuffer<InventorySlot>(e).EnsureCapacity(stats.capacity + 1);
         entityCommandBuffer.SetBuffer<ItemBarData>(e).EnsureCapacity(stats.capacity + 1);
         entityCommandBuffer.AppendToBuffer(connection, new LinkedEntityGroup() { Value = e });
-        entityCommandBuffer.AddComponent(e,new PlayerContainer(){ player = player});
-       
+        entityCommandBuffer.AddComponent(e,new ContainerOwner(){ owner = player});
+
+
         if(containerSave != null)
         {
             for(int i = 0; i < containerSave.Value.slots.Length;i++)
@@ -194,4 +233,5 @@ partial struct GoInGameServerSystem : ISystem
         }
         return e;
     }
+
 }

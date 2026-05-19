@@ -42,7 +42,7 @@ partial struct EquipmentClientSystem : ISystem
 
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<LinkedContainers> linkedContainers;
 
 
@@ -54,7 +54,7 @@ partial struct EquipmentClientSystem : ISystem
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>(true);
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);
         linkedContainers =  SystemAPI.GetBufferLookup<LinkedContainers>(true);
     }
 

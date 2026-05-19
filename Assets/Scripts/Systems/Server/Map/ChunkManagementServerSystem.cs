@@ -110,7 +110,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             Entity e = entities[sortKey];
             if(mapSettings.CheckChunkIndex(loadChunk.chunkIndex))
             {
-                
+     
                 CreateChunk(loadChunk.chunkIndex,sortKey,out Entity entity);
                 var loadedChunk = new LoadedChunks()
                 {
@@ -154,6 +154,9 @@ public partial class ChunkManagementServerSystem : SystemBase
             ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity); 
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
+            ecb.AddBuffer<EntityContainers>(sortKey,chunkEntity);
+
+
             ecb.AddComponent(sortKey,chunkEntity, new ChunkTimestamp(){ timestamp = time });
 
             NativeArray<ChunkTiles> chunkTiles = new NativeArray<ChunkTiles>(mapSettings.tilesCount,Allocator.Temp);
@@ -170,11 +173,21 @@ public partial class ChunkManagementServerSystem : SystemBase
                 ecb.AppendToBuffer(sortKey,chunkEntity,bObject);
                 ecb.AppendToBuffer<LinkedEntityGroup>(sortKey,chunkEntity,BuildingObjectCreator.CreateObjectServer(ref ecb,bObject,sortKey));
             }
+            
+            GoInGameServerSystem.CreateNewContainer(chunkEntity,ecb,index,ref entitiesReferences,new ContainerStats()
+            {
+                capacity = 1000,
+                containerIndex = EquipmentConfig.chunkItems_ContainerIndex,
+                serverContainer = true,
+                publicContainer = true,
+                waterResistance = 0,
+                mandatoryProperties = MandatoryProperties.none,
+                mandatoryData = 0,
+            },null,-1,sortKey);
 
 
             ecb.SetComponent(sortKey,chunkEntity, chunkComponent);
             entity = chunkEntity;
-
             chunkTiles.Dispose();
             buildingObjects.Dispose();
             return true;

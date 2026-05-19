@@ -34,7 +34,7 @@ partial struct ContainerClientSystem : ISystem
         foreach ((RefRO<ContainerComponent> containerComponent,RefRO<GhostOwner> containerOwner, Entity entity) in SystemAPI.Query<RefRO<ContainerComponent>,RefRO<GhostOwner>>().WithNone<ContainerLoaded>().WithEntityAccess())
         {        
             bool found = false;
-            foreach ((RefRO<Player> player,RefRO<GhostOwner> owner,DynamicBuffer<PlayerContainers> playerContainers, Entity e) in SystemAPI.Query<RefRO<Player>,RefRO<GhostOwner>,DynamicBuffer<PlayerContainers>>().WithNone<NewPlayerTag>().WithEntityAccess())
+            foreach ((RefRO<Player> player,RefRO<GhostOwner> owner,DynamicBuffer<EntityContainers> playerContainers, Entity e) in SystemAPI.Query<RefRO<Player>,RefRO<GhostOwner>,DynamicBuffer<EntityContainers>>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(owner.ValueRO.NetworkId == containerOwner.ValueRO.NetworkId)
                 {
@@ -61,7 +61,7 @@ partial struct ContainerClientSystem : ISystem
                     }
 
 
-                    playerContainers.Add(new PlayerContainers() 
+                    playerContainers.Add(new EntityContainers() 
                     {
                         entity = entity,
                         index = containerComponent.ValueRO.containerIndex

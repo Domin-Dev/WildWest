@@ -14,7 +14,7 @@ partial struct RPCProcessingSystem : ISystem
 {
 
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
     private BufferLookup<LinkedContainers> linkedContainers;
@@ -33,7 +33,7 @@ partial struct RPCProcessingSystem : ISystem
         entityQueryBuilder.Dispose();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         linkedContainers = SystemAPI.GetBufferLookup<LinkedContainers>();
@@ -60,8 +60,6 @@ partial struct RPCProcessingSystem : ISystem
                 wait.ValueRW = false;
             }          
         }
- 
-
 
         foreach ((RefRO<PlayerActionRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
         SystemAPI.Query<RefRO<PlayerActionRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
@@ -231,15 +229,13 @@ partial struct RPCProcessingSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
             StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
-
-            
+       
             if(ItemsAsset.instance.TryGetItem<RangedWeapon>(rpc.ValueRO.weaponID,out var item))
             {
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.unloadCooldown)});
                 state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.unloading});
                 RPCHelper.CreateSerwerLocalEvent(new EndUnload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.unloadCooldown),false);
             }
-
 
             for(int i = 1; i < toPlayers.Length;i++)
                 RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               

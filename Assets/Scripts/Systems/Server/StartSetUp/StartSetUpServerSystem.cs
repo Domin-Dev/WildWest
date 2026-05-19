@@ -37,7 +37,7 @@ partial struct StartSetUpServerSystem : ISystem
                 tileSize = 0.25f,
 
                 playerRenderSize = 2,
-                maxChunksPerClient = 30,
+                maxChunksPerClient = 20,
             }); 
 
 

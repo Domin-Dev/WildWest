@@ -48,9 +48,10 @@ namespace Assembly_CSharp_Generated
             public float insulation;
             public float waterResistance;
             public float aesthetic;
+            public float wetness;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 6;
+        private const int ChangeMaskBits = 7;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -75,6 +76,7 @@ namespace Assembly_CSharp_Generated
                 snapshot.insulation = component.insulation;
                 snapshot.waterResistance = component.waterResistance;
                 snapshot.aesthetic = component.aesthetic;
+                snapshot.wetness = component.wetness;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.CopyFromSnapshotGenerated"/>
@@ -88,6 +90,7 @@ namespace Assembly_CSharp_Generated
                 component.insulation = snapshotBefore.insulation;
                 component.waterResistance = snapshotBefore.waterResistance;
                 component.aesthetic = snapshotBefore.aesthetic;
+                component.wetness = snapshotBefore.wetness;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.RestoreFromBackupGenerated"/>
@@ -100,6 +103,7 @@ namespace Assembly_CSharp_Generated
             component.insulation = backup.insulation;
             component.waterResistance = backup.waterResistance;
             component.aesthetic = backup.aesthetic;
+            component.wetness = backup.wetness;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.PredictDeltaGenerated"/>
@@ -121,7 +125,8 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.insulation != baseline.insulation) ? (1u<<3) : 0;
             changeMask |= (snapshot.waterResistance != baseline.waterResistance) ? (1u<<4) : 0;
             changeMask |= (snapshot.aesthetic != baseline.aesthetic) ? (1u<<5) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 6);
+            changeMask |= (snapshot.wetness != baseline.wetness) ? (1u<<6) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -143,6 +148,8 @@ namespace Assembly_CSharp_Generated
                 writer.WritePackedFloatDelta(snapshot.waterResistance, baseline.waterResistance, compressionModel);
             if ((changeMask & (1 << 5)) != 0)
                 writer.WritePackedFloatDelta(snapshot.aesthetic, baseline.aesthetic, compressionModel);
+            if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedFloatDelta(snapshot.wetness, baseline.wetness, compressionModel);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -169,7 +176,10 @@ namespace Assembly_CSharp_Generated
             changeMask |= (snapshot.aesthetic != baseline.aesthetic) ? (1u<<5) : 0;
             if ((changeMask & (1 << 5)) != 0)
                 writer.WritePackedFloatDelta(snapshot.aesthetic, baseline.aesthetic, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 6);
+            changeMask |= (snapshot.wetness != baseline.wetness) ? (1u<<6) : 0;
+            if ((changeMask & (1 << 6)) != 0)
+                writer.WritePackedFloatDelta(snapshot.wetness, baseline.wetness, compressionModel);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -203,6 +213,10 @@ namespace Assembly_CSharp_Generated
                 snapshot.aesthetic = reader.ReadPackedFloatDelta(baseline.aesthetic, compressionModel);
             else
                 snapshot.aesthetic = baseline.aesthetic;
+            if ((changeMask & (1 << 6)) != 0)
+                snapshot.wetness = reader.ReadPackedFloatDelta(baseline.wetness, compressionModel);
+            else
+                snapshot.wetness = baseline.wetness;
         }
 
 #if UNITY_EDITOR || NETCODE_DEBUG
@@ -221,6 +235,8 @@ namespace Assembly_CSharp_Generated
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.waterResistance - backup.waterResistance));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.aesthetic - backup.aesthetic));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.wetness - backup.wetness));
             ++errorIndex;
         }
 
@@ -246,6 +262,10 @@ namespace Assembly_CSharp_Generated
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
             names.Append((FixedString512Bytes)".aesthetic");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".wetness");
             ++nameCount;
             return nameCount;
         }
@@ -389,7 +409,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 5032326342240550756,
+                    GhostFieldsHash = 1966819302090705106,
                     ComponentType = ComponentType.ReadWrite<Player>(),
                     ComponentSize = UnsafeUtility.SizeOf<Player>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -397,7 +417,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 6,
+                    ChangeMaskBits = 7,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.All,

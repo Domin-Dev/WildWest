@@ -89,7 +89,7 @@ public struct EquipmentEventBuffer : IBufferElementData, IIndexed
     //
 }
 
-public struct PlayerContainers : IBufferElementData
+public struct EntityContainers : IBufferElementData
 {
     public Entity entity;
     public int index;

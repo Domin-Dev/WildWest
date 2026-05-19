@@ -16,7 +16,7 @@ partial struct EventsServerSystem : ISystem
 
 
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> containersLookup;
+    private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
     private ComponentLookup<PlayerInputSync> playerInputSyncLookup;
@@ -33,7 +33,7 @@ partial struct EventsServerSystem : ISystem
         state.RequireForUpdate<EquipmentEvent>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        containersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        containersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         playerInputSyncLookup = SystemAPI.GetComponentLookup<PlayerInputSync>();
@@ -113,8 +113,8 @@ partial struct EventsServerSystem : ISystem
 
     public Entity CreateNewEquipmentEvent(ref SystemState state,EntityCommandBuffer ecb,EquipmentEvent equipmentEvent)
     {
-        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<GhostOwner> ghostOwner, RefRO<ContainerComponent> container, RefRW<ServerEquipmentEventCounter> counter, RefRO<EquipmentEventCounter> clientCounter,RefRO<PlayerContainer> playerContainer, Entity entity)
-        in SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>, RefRO<GhostOwner>, RefRO<ContainerComponent>, RefRW<ServerEquipmentEventCounter>, RefRO<EquipmentEventCounter>,RefRO<PlayerContainer>>().WithEntityAccess())
+        foreach ((DynamicBuffer<EquipmentEventBuffer> events, RefRO<GhostOwner> ghostOwner, RefRO<ContainerComponent> container, RefRW<ServerEquipmentEventCounter> counter, RefRO<EquipmentEventCounter> clientCounter,RefRO<ContainerOwner> playerContainer, Entity entity)
+        in SystemAPI.Query<DynamicBuffer<EquipmentEventBuffer>, RefRO<GhostOwner>, RefRO<ContainerComponent>, RefRW<ServerEquipmentEventCounter>, RefRO<EquipmentEventCounter>,RefRO<ContainerOwner>>().WithEntityAccess())
         {
             if (ghostOwner.ValueRO.NetworkId == equipmentEvent.networkID && container.ValueRO.containerIndex == equipmentEvent.containerIndex)
             {
@@ -123,7 +123,7 @@ partial struct EventsServerSystem : ISystem
                 counter.ValueRW.index++;
                 ClearBuffer(events, clientCounter.ValueRO.index);
                 ecb.SetComponentEnabled<ToSave>(entity,true);
-                var input = playerInputSyncLookup.GetRefRW(playerContainer.ValueRO.player);         
+                var input = playerInputSyncLookup.GetRefRW(playerContainer.ValueRO.owner);         
                
 
                
@@ -131,16 +131,16 @@ partial struct EventsServerSystem : ISystem
                 {
                     if(input.ValueRO.slotInHand == equipmentEvent.slotPosition.slotIndex)
                     {
-                        var playerChunk = SystemAPI.GetComponentRO<GhostChunk>(playerContainer.ValueRO.player);
+                        var playerChunk = SystemAPI.GetComponentRO<GhostChunk>(playerContainer.ValueRO.owner);
                         var to = new SlotPosition(EquipmentConfig.itemInHand_ContainerIndex,0);
                         
-                        EQHelper.Clone(equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.player,out var newSlot,out var newBarData);
+                        EQHelper.Clone(equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.owner,out var newSlot,out var newBarData);
                         int itemID = newSlot.HasValue ? newSlot.Value.itemId : -1;
-                        RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){ itemID = itemID},ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerContainer.ValueRO.player,playerChunk.ValueRO.GetChunk(),tick);
+                        RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){ itemID = itemID},ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerContainer.ValueRO.owner,playerChunk.ValueRO.GetChunk(),tick);
                     }
                 }
 
-                return playerContainer.ValueRO.player;  
+                return playerContainer.ValueRO.owner;  
             }
         }
         return Entity.Null;

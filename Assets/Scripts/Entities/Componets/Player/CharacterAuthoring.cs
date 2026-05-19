@@ -51,7 +51,7 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
 
-            AddBuffer<PlayerContainers>(entity);
+            AddBuffer<EntityContainers>(entity);
         }
     }
 }

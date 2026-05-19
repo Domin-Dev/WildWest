@@ -17,7 +17,7 @@ using UnityEngine.InputSystem.Processors;
 partial struct UpdateWetnessServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<EntityContainers> playerContainersLookup;
 
     private int simulationTickRate;
 
@@ -31,7 +31,7 @@ partial struct UpdateWetnessServerSystem : ISystem
     //    entityQueryBuilder.Dispose();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        playerContainersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
     public void OnUpdate(ref SystemState state)

@@ -9,7 +9,7 @@ using UnityEngine;
 partial struct OnEquipServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<EntityContainers> playerContainersLookup;
     private BufferLookup<ItemBarData> barsLookup;
     public void OnCreate(ref SystemState state)
     {
@@ -23,7 +23,7 @@ partial struct OnEquipServerSystem : ISystem
 
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        playerContainersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
     }
     public void OnUpdate(ref SystemState state)

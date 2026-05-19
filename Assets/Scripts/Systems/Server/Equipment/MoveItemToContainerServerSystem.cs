@@ -18,7 +18,7 @@ using UnityEngine.InputSystem.Processors;
 partial struct MoveItemToContainerServerSystem : ISystem
 {
     private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<PlayerContainers> playerContainersLookup;
+    private BufferLookup<EntityContainers> playerContainersLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<LinkedContainers> linkedLookup;
     public void OnCreate(ref SystemState state)
@@ -31,7 +31,7 @@ partial struct MoveItemToContainerServerSystem : ISystem
         entityQueryBuilder.Dispose();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
-        playerContainersLookup = SystemAPI.GetBufferLookup<PlayerContainers>();
+        playerContainersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
     }
