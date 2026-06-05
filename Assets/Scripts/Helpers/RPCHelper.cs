@@ -166,7 +166,8 @@ public static class RPCHelper
             if(chunkTmp.chunkIndex == chunkIndex)
                 chunk = chunkTmp.chunkEntity;
         }
-        Debug.Log(" Chunk "+ chunk);
+
+        
         if(chunk == Entity.Null) return false;
 
         var players = playerNeedChunkLookup[chunk];

@@ -349,6 +349,17 @@ partial struct RPCProcessingSystem : ISystem
         }
 
 
+
+        foreach ((RefRO<CreateWorldItem> serwerEvent,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
+        SystemAPI.Query<RefRO<CreateWorldItem>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            Entity player = toPlayers.ElementAt(0).connection;
+            
+            ecb.DestroyEntity(entity);
+        }
+
+
+
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
         ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -372,6 +383,14 @@ partial struct RPCProcessingSystem : ISystem
             ecb.DestroyEntity(entity);
         }
 
+
+        foreach ((RefRW<DropItemRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
+        SystemAPI.Query<RefRW<DropItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            for(int i = 1; i < toPlayers.Length;i++)
+                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);   
+            ecb.DestroyEntity(e);
+        }
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

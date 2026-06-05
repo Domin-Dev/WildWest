@@ -180,8 +180,6 @@ public class UIManager : MonoBehaviour
             //openWindows.Remove(equipment);
             ResetSelectedItem();        
             if(timer != null) timer.Cancel();
-
-            Debug.Log("nie dziala!!!");
         };
 
     }
@@ -189,7 +187,6 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
         UpdateButtonSize();
-        Debug.Log(EventSystem.current.IsPointerOverGameObject() + " mouse over UI  = " + MouseOverUI.MouseIsOverUI());
     }
     public void FixedUpdate()
     {

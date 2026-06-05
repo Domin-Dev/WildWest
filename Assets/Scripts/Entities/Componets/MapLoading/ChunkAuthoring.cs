@@ -14,7 +14,9 @@ public class ChunkAuthoring : MonoBehaviour
             AddComponent(entity, new NewChunk());
             AddBuffer<ChunkTiles>(entity);
             AddBuffer<BuildingObjects>(entity);
-            AddBuffer<GhostChildren>(entity);            
+            AddBuffer<GhostChildren>(entity);
+            AddBuffer<EntityContainers>(entity);   
+            AddBuffer<WorldItems>(entity);
         }
     }
 }

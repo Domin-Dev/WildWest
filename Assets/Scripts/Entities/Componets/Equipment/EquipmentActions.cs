@@ -91,9 +91,28 @@ public struct EquipmentEventBuffer : IBufferElementData, IIndexed
 
 public struct EntityContainers : IBufferElementData
 {
-    public Entity entity;
-    public int index;
+   [GhostField]  public Entity entity;
+   [GhostField]  public int index;
 }
+
+
+public struct WorldItems : IBufferElementData, IGetSlot
+{
+    public int slot;
+    public Entity worldItem;
+
+    public int GetSlot()
+    {
+        return slot;
+    }
+
+    public void SetSlot(int slot)
+    {
+        this.slot = slot;
+    }
+}
+
+
 
 [GhostComponent(PrefabType = GhostPrefabType.All)]
 public struct EquipmentEventCounter : IInputComponentData

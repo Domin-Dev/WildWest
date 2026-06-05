@@ -14,7 +14,7 @@ public class UpdateShadow : MonoBehaviour
     private void CreateShadow()
     {
         Shadow shadow =  this.GetOrAddComponent<Shadow>();
-        ShadowSettings shadowSettings = GamePreferences.instance.GetShadowSettings();
+        ShadowSettings shadowSettings = GamePreferences.GetShadowSettings();
         shadow.effectColor = shadowSettings.color;
         shadow.effectDistance = shadowSettings.offset;
     }

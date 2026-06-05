@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4134094511920997482}
   - component: {fileID: 1054561386310290843}
   m_Layer: 8
-  m_Name: Square
+  m_Name: ItemSprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 7091430915438816202}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.02, z: 0}
+  m_LocalPosition: {x: 0, y: 0.09, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -57,7 +57,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 94115dc145ecd64fb8080a5982c8edd7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -79,7 +79,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -435012594, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  m_Sprite: {fileID: 1956137989, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1197223523401413803}
   - component: {fileID: 7784525501215063399}
-  - component: {fileID: 1050769400459927043}
+  - component: {fileID: 882166089725585451}
   m_Layer: 8
   m_Name: Item
   m_TagString: Untagged
@@ -182,7 +182,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1050769400459927043
+--- !u!114 &882166089725585451
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -191,8 +191,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8553173326923410488}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 202939834ba8df449b770c91dbfd2ac0, type: 3}
+  m_Script: {fileID: 11500000, guid: eae22f57f6dd9ff61a6e62c245607f25, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  itemChunkIndex: 0
-  chunkIndex: 0
+  m_EditorClassIdentifier: Assembly-CSharp::WorldItemAuthoring
+  bodyPartType: 0

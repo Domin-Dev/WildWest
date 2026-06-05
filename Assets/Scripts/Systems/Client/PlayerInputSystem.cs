@@ -2,6 +2,7 @@ using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Rendering;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -12,8 +13,6 @@ using UnityEngine.SceneManagement;
 partial struct PlayerInputSystem : ISystem
 {   
     public static event Action<int,InventorySlot?> onNewSlotInHand;
-
-
 
 
     private BufferLookup<InventorySlot> slotsLookup;

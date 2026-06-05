@@ -38,34 +38,6 @@ partial struct ContainerClientSystem : ISystem
             {
                 if(owner.ValueRO.NetworkId == containerOwner.ValueRO.NetworkId)
                 {
-                    if(containerComponent.ValueRO.parentContainerIndex >= 0)
-                    {
-                        for(int i = 0; i < playerContainers.Length;i++)
-                        {
-                            var element = playerContainers[i];
-                            if(element.index == containerComponent.ValueRO.parentContainerIndex)
-                            {
-                                var buffer = linkedContaines[element.entity];
-                                for(int k = 0; k < buffer.Length;k++)
-                                {
-                                    var item = buffer[k];
-                                    if(item.containerIndex == containerComponent.ValueRO.containerIndex)
-                                    {
-                                        buffer.ElementAt(k).containerEntity = entity; 
-                                        break;
-                                    }
-                                }                           
-                                break;
-                            }
-                        }
-                    }
-
-
-                    playerContainers.Add(new EntityContainers() 
-                    {
-                        entity = entity,
-                        index = containerComponent.ValueRO.containerIndex
-                    });
 
                     if(containerComponent.ValueRO.containerIndex == EquipmentConfig.itemInHand_ContainerIndex)
                         entityCommandBuffer.AddComponent<ContainersLoaded>(e);
@@ -76,8 +48,6 @@ partial struct ContainerClientSystem : ISystem
                 }
             }
             if(!found) continue;
-
-
 
 
             if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(entity)) 

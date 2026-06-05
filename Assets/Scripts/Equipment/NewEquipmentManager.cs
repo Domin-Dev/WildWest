@@ -450,6 +450,8 @@ public class NewEquipmentManager : MonoBehaviour
    
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
+        Debug.Log("drop" + slotPosition);
+
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
             if(container.TryGetItemStats(slotPosition.slotIndex,out var lastItem))

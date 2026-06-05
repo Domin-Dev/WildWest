@@ -60,7 +60,6 @@ public partial class FindChunksToUnloadServerSystem : SystemBase
         }
         .ScheduleParallel(chunkQuery,Dependency);
 
-        Debug.Log("Unloading chunks!!!");
     }   
 
     [BurstCompile]

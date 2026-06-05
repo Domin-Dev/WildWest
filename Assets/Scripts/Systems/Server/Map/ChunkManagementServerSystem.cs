@@ -154,7 +154,6 @@ public partial class ChunkManagementServerSystem : SystemBase
             ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity); 
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);
-            ecb.AddBuffer<EntityContainers>(sortKey,chunkEntity);
 
 
             ecb.AddComponent(sortKey,chunkEntity, new ChunkTimestamp(){ timestamp = time });

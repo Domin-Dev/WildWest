@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Rendering;
+using Unity.Transforms;
 using UnityEngine;
 
 
@@ -14,6 +17,7 @@ partial struct DropItemsServerSystem : ISystem
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<EntityContainers> playerContainersLookup;
     private BufferLookup<LinkedContainers> linkedLookup;
+    private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -28,41 +32,57 @@ partial struct DropItemsServerSystem : ISystem
         playerContainersLookup = SystemAPI.GetBufferLookup<EntityContainers>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
+        playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
     }
     public void OnUpdate(ref SystemState state)
     {
         UpdateLookups(ref state);
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        SystemAPI.TryGetSingletonBuffer<LoadedChunks>(out var loadedChunks,true);
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var currentTick = networkTime.ServerTick;
+
 
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQDropItem> command, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<EQDropItem>>().WithEntityAccess())
         {
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
+
             SlotPosition from =  command.ValueRO.position;
-            Entity chunkEntity = SystemAPI.GetComponent<GhostChunk>(player).currentChunkEntity;
+            GhostChunk ghostChunk = SystemAPI.GetComponent<GhostChunk>(player);
+            PlayerInput playerInput = SystemAPI.GetComponent<PlayerInput>(player);
+            LocalTransform localTransform = SystemAPI.GetComponent<LocalTransform>(player);
+            float2 direction = playerInput.sightDirection - new float2(localTransform.Position.x, localTransform.Position.y);
+            float randomValue = UnityEngine.Random.Range(0.15f,0.3f);
+            direction = math.normalize(direction) * randomValue + new float2(localTransform.Position.x,localTransform.Position.y);
+            Entity chunkEntity = ghostChunk.currentChunkEntity;
 
 
             if(command.ValueRO.position.IsNullSlot())
                 from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
 
-            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player, from.containerIndex);
-            var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+            var containerFrom = EQHelper.GetContainer(playerContainersLookup, player, from.containerIndex);
+            var containerTo = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
 
             List<EquipmentEvent> events = new List<EquipmentEvent>();
-            if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity))
+            if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, from.slotIndex, containerFrom.Value.entity, out int itemID, out int index))
             {
-                var tab = EQHelper.MoveBetweenContainers(ref state, ref entityCommandBuffer,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
-                    containerFrom.Value, containerTo.Value, EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex), from.slotIndex,moveBetweenObjects:true,serverMove:true);
+                int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
+                var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
+                    containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,moveBetweenObjects:true,serverMove:true);
+                   
+                RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(ghostChunk.GetChunk(),slotIndex,direction,randomValue * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,ghostChunk.GetChunk(),currentTick);      
+                RPCHelper.CreateSerwerLocalEvent<CreateWorldItem>(new CreateWorldItem(),ecb,player, networkID,currentTick,false);
                 if (tab != null) events.AddRange(tab);
             }
 
             events.Add(new EquipmentEvent(new EquipmentEventData(EQHelperClient.GetNormalSlotIndex(from.slotIndex), 1), from.containerIndex));
-            EQHelper.SendEvents(ref entityCommandBuffer,networkID,events.ToArray());
-            entityCommandBuffer.DestroyEntity(entity);
+            EQHelper.SendEvents(ref ecb,networkID,events.ToArray());
+            ecb.DestroyEntity(entity);
         }
-        entityCommandBuffer.Playback(state.EntityManager);
-        entityCommandBuffer.Dispose();
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose(); 
     }
 
     private void UpdateLookups(ref SystemState state)
@@ -71,5 +91,6 @@ partial struct DropItemsServerSystem : ISystem
         playerContainersLookup.Update(ref state);
         barsLookup.Update(ref state);
         linkedLookup.Update(ref state);
+        playerNeedChunkLookup.Update(ref state);
     }
 }

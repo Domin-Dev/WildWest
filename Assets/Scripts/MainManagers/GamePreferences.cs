@@ -21,8 +21,8 @@ public class TextTypePair
 [Serializable]
 public class ShadowSettings
 {
-    public Color color;
-    public Vector2 offset;
+    public Color color = Color.black;
+    public Vector2 offset = Vector2.down;
 }
 
 
@@ -61,9 +61,9 @@ public class GamePreferences : MonoBehaviour
         }
         return null;
     }
-    public ShadowSettings GetShadowSettings()
+    public static ShadowSettings GetShadowSettings()
     {
-        return shadowSettings;
+        return instance == null ? new ShadowSettings()  : instance.shadowSettings;
     }
     public void NewFont(int index)
     {

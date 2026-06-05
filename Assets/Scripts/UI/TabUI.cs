@@ -25,7 +25,6 @@ public class TabUI : MonoBehaviour
             tabButton.onClick.AddListener(() => ChangeTab());
             OnDisable = null;
             OnEnable = null;      
-            Debug.Log("clear"); 
         }
         public void CleanUp()
         {

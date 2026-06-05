@@ -107,6 +107,7 @@ public class DragManager : MonoBehaviour
     }
     public void UpdateSelected(ItemStats stats)
     {
+        Debug.Log("item " + stats.ToSafeString());
         if (stats != null && stats.quantity >= 1)
         {
             if(dragItem == null) dragItem = UIManager.instance.CreateDragItem();
@@ -147,7 +148,11 @@ public class DragManager : MonoBehaviour
     }
     private void Update()
     {
-        UpdateSelectedItemPosition();
+        if (dragItem != null)
+        {
+            UpdateSelectedItemPosition();
+            Actions();
+        }
     }
 
     private void UpdateSelectedItemPosition()
@@ -163,16 +168,19 @@ public class DragManager : MonoBehaviour
                 out anchoredPos
             );
             dragItem.anchoredPosition = anchoredPos;
+        }
+    }
 
-            if (Input.GetMouseButton(0))
+
+    private void Actions()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            if(!EventSystem.current.IsPointerOverGameObject())
             {
-                if(!EventSystem.current.IsPointerOverGameObject())
-                {
-                    Destroy(dragItem.gameObject);
-                    dragItem = null;
-                    Sounds.instance.Click();
-                    RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = SlotPosition.NullSlot });
-                }
+                Destroy(dragItem.gameObject);
+                dragItem = null;
+                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = SlotPosition.NullSlot });
             }
         }
     }

@@ -50,7 +50,7 @@ partial struct CombineItemsServerSystem : ISystem
             int networkID = SystemAPI.GetComponent<NetworkId>(connection).Value;
             
             EquipmentEvent[] events = null;
-            var container = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.ValueRO.position.containerIndex);
+            var container = EQHelper.GetContainer(playerContainersLookup, player, command.ValueRO.position.containerIndex);
 
 
             if(container.HasValue && !SystemAPI.HasComponent<ServerContainer>(container.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, command.ValueRO.position.slotIndex,container.Value.entity, out InventorySlot? item, out int bufferIndex))           

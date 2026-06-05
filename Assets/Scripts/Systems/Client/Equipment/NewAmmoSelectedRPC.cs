@@ -1,5 +1,7 @@
 
+using NUnit.Framework.Constraints;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
 public struct NewAmmoSelectedRPC : IRpcCommand, ISetPlayer
@@ -41,6 +43,36 @@ public struct ReloadRPC : IRpcCommand, ISetPlayer
         };
     }
 }
+
+public struct DropItemRPC : IRpcCommand, ISetPlayer
+{
+    public int networkID;
+    public NetworkTick tick;
+    public int chunkIndex;
+    public int slotIndex;
+    public float2 dropPosition;
+    public float duration;
+
+    public DropItemRPC(int chunkIndex, int slotIndex, float2 dropPosition, float duration)
+    {
+        this.chunkIndex = chunkIndex;
+        this.slotIndex = slotIndex;
+        this.dropPosition = dropPosition;
+        this.networkID = 0;
+        this.duration = duration;
+        this.tick = NetworkTick.Invalid;
+    }
+
+    public void SetPlayer(int networkID,NetworkTick tick)
+    {
+        this.networkID = networkID;
+        this.tick = tick;
+    }
+}
+
+
+
+
 
 
 public struct UnloadRPC : IRpcCommand, ISetPlayer
@@ -106,3 +138,14 @@ public struct FutureReload : IComponentData,ISetPlayer
     }
 }
 
+
+public struct CreateWorldItem : IComponentData,ISetPlayer
+{
+    public int networkID;
+    public NetworkTick tick;
+    public void SetPlayer(int networkID,NetworkTick tick)
+    {
+        this.networkID = networkID;
+        this.tick = tick;
+    }
+}

@@ -49,7 +49,7 @@ partial struct MoveItemToContainerServerSystem : ISystem
             Entity player = SystemAPI.GetComponent<LinkedCharacter>(rpcCommandRequest.ValueRO.SourceConnection).entity;
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
             var selectedSlot = SystemAPI.GetComponentRW<ContainerSettings>(player);
-            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player,command.ValueRO.from.containerIndex);
+            var containerFrom = EQHelper.GetContainer(playerContainersLookup, player,command.ValueRO.from.containerIndex);
 
             if(containerFrom.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity))
             {

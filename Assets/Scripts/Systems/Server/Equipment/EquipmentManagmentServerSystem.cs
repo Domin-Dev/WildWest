@@ -45,8 +45,8 @@ partial struct EquipmentManagmentServerSystem : ISystem
                 from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
 
 
-            var containerFrom = EQHelper.GetPlayerContainer(playerContainersLookup, player, from.containerIndex);
-            var containerTo = EQHelper.GetPlayerContainer(playerContainersLookup, player, command.ValueRO.to.containerIndex);
+            var containerFrom = EQHelper.GetContainer(playerContainersLookup, player, from.containerIndex);
+            var containerTo = EQHelper.GetContainer(playerContainersLookup, player, command.ValueRO.to.containerIndex);
 
             List<EquipmentEvent> events = new List<EquipmentEvent>();
             if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && 

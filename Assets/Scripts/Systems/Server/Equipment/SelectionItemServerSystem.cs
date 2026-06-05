@@ -70,7 +70,7 @@ partial struct SelectionItemServerSystem : ISystem
     }
     private void SelectItem(ref SystemState state,EntityCommandBuffer ecb, Entity player, EQSelectItem selectItem)
     {
-        var container = EQHelper.GetPlayerContainer(playerContainersLookup,player, selectItem.position.containerIndex);
+        var container = EQHelper.GetContainer(playerContainersLookup,player, selectItem.position.containerIndex);
 
         if (!container.HasValue || SystemAPI.HasComponent<ServerContainer>(container.Value.entity)) return;
         if (selectItem.position.slotIndex >= 0 && EQHelper.TryGetBufferIndex(slotsLookup,selectItem.position.slotIndex, container.Value.entity, out int itemid, out int bufferIndex))

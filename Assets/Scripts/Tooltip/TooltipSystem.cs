@@ -92,8 +92,6 @@ public class TooltipSystem : MonoBehaviour
 
     public static bool IsDisplaying(object obj)
     {
-        Debug.Log(obj +  ",,, " + current.displayingObj);
-        Debug.Log(obj == current.displayingObj);
         return obj.Equals(current.displayingObj);
     }
     public static bool IsDisplaying<T>()
