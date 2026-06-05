@@ -122,7 +122,7 @@ partial struct CharacterAimSystem : ISystem
                                 if(weapon.hasMagazine)
                                 {
                                     var magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,playerContainer.Value.entity,playerAspect.playerInputSync.ValueRO.slotInHand, out Entity linkedContainerEntity);
-                                    if(magazine.Length == 0)
+                                    if(magazine == null  || magazine.Length == 0)
                                     {
                                         var emptyMagazine = new EmptyMagazineRPC()
                                         {

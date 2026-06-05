@@ -916,7 +916,7 @@ public static class EQHelper
     public static InventorySlot[] ReadLinkedContainer(BufferLookup<InventorySlot> slotLookup,BufferLookup<LinkedContainers> linkedContainers, Entity container, int slotIndex, out Entity linkedContainerEntity)
     {
         Debug.Log("nullll " + slotIndex + "  " + container);
-        if(TryGetBufferIndex(linkedContainers,slotIndex,container,out var element, out int bufferIndex))
+        if(TryGetBufferIndex(linkedContainers,slotIndex,container,out var element, out int bufferIndex) && slotLookup.EntityExists(element.Value.containerEntity))
         {
             linkedContainerEntity = element.Value.containerEntity;
             var slots = slotLookup[element.Value.containerEntity];
@@ -986,28 +986,30 @@ public static class EQHelper
         for (int i = 0; i < playerContainers.Length; i++)
         {
             var container = playerContainers[i];
-            var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.entity);
-            if(containerComponent.containerType != ContainerType.Standard) continue;
-            
-            if(CheckRequirementsTag(containerComponent,tagID, out bool AllItemsHaveTheTag))
+            if(state.EntityManager.Exists(container.entity))
             {
-                var slots = slotLookup[container.entity];
-
-                for (int j = 0; j < slots.Length; j++)
+                var containerComponent = state.EntityManager.GetComponentData<ContainerComponent>(container.entity);
+                if(containerComponent.containerType != ContainerType.Standard) continue;
+                if(CheckRequirementsTag(containerComponent,tagID, out bool AllItemsHaveTheTag))
                 {
-                    var slot = slots[j];
-                    if (slot.slot < 0) continue;
-                    if (AllItemsHaveTheTag || ItemsAsset.instance.ItemHasTheTag(slot.itemId,tagID))
+                    var slots = slotLookup[container.entity];
+
+                    for (int j = 0; j < slots.Length; j++)
                     {
-                        counter += slot.quantity;
-                        if(foundSlots.ContainsKey(slot.itemId))
+                        var slot = slots[j];
+                        if (slot.slot < 0) continue;
+                        if (AllItemsHaveTheTag || ItemsAsset.instance.ItemHasTheTag(slot.itemId,tagID))
                         {
-                            var temp = foundSlots[slot.itemId] ;
-                            temp.quantity += slot.quantity;
-                            foundSlots[slot.itemId] = temp;
+                            counter += slot.quantity;
+                            if(foundSlots.ContainsKey(slot.itemId))
+                            {
+                                var temp = foundSlots[slot.itemId] ;
+                                temp.quantity += slot.quantity;
+                                foundSlots[slot.itemId] = temp;
+                            }
+                            else
+                                foundSlots.Add(slot.itemId, slot);  
                         }
-                        else
-                            foundSlots.Add(slot.itemId, slot);  
                     }
                 }
             }

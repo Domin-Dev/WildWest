@@ -22,12 +22,13 @@ public partial struct CollisionSystem : ISystem
     private const float CleanupInterval = 90f;
     readonly static int hitBoxLayer = 3;
     readonly static bool[,] collisionTab =
-    //                  Buildings Players Bullets HitBox
-    {                   // 0      1       2     3
-     /*Buildings 0  */  { false, true  ,true  , false },
-     /*Players   1  */  { true , false ,false , false },
-     /*Bullets   2  */  { true , false ,false , true  },
-     /*HitBox    3  */  { false, false ,true , false },
+    //                  Buildings Players Bullets HitBox WorldItem
+    {                   // 0      1       2     3       4
+     /*Buildings 0  */  { false, true  ,true  , false ,  false},
+     /*Players   1  */  { true , false ,false , false ,  true},
+     /*Bullets   2  */  { true , false ,false , true  ,  false},
+     /*HitBox    3  */  { false, false ,true , false  ,  false},
+     /*World Item 4 */  { false, true , false , false , false}
     };
     readonly static Color damageColor = new Color(0.69f,0.16f,0.16f,1f);
     readonly static Color criticalHitColor = new Color(1f,0.0f,0.0f,1f);
@@ -62,7 +63,6 @@ public partial struct CollisionSystem : ISystem
     ComponentLookup<Physics2D> getPhysics;
     ComponentLookup<ForceImpulse2D> getForceImpulse;
     ComponentLookup<Parent> getParent;
-
     BufferLookup<PhysicsChildrenBuffer> childrenBuffer;
 
 
@@ -183,6 +183,8 @@ public partial struct CollisionSystem : ISystem
         }
 
 
+
+
         deltaTime = SystemAPI.Time.DeltaTime;
 
         EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
@@ -221,10 +223,6 @@ public partial struct CollisionSystem : ISystem
                 tempHitbox1.offset.y + tempTransform1.y + tempHitbox1.size.y * 0.5f
             );
 
-            if (SystemAPI.HasComponent<Bullet>(entity))
-            {
-                Debug.Log(entity  + "  bullet " + getPosition[entity].Rotation);
-            }
 
             float3 vel = new float3(0, 0, 0);
             float3 pos = float3.zero;

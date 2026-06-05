@@ -116,7 +116,7 @@ partial struct CharacterHandsEvents : ISystem
                 foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<PlayerInputSync> input, Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<PlayerInputSync>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
                 {
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
-                    if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
+                    if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(player))
                     {
                         if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                         {

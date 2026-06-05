@@ -85,8 +85,9 @@ partial struct NewItemInHandSystem : ISystem
                     {
                         if(networkTime.InterpolationTick.IsNewerThan(rpcCommand.ValueRO.tick))
                         {
-                            if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                            if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer) && SystemAPI.Exists(playerContainer.Value.entity))
                             {    
+                                Debug.Log( "co jest " + playerContainer.Value.index+ " " + playerContainer.Value.entity);
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                                 int itemId = slot.HasValue ? slot.Value.itemId : -1;
 
@@ -94,8 +95,8 @@ partial struct NewItemInHandSystem : ISystem
                                 {
                                     Item item = ItemsAsset.instance.GetItem(itemId);
                                     ChangeItemInHand(ref state,item, hands);
-   
-                                    if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+
+                                    if(state.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(player))
                                     {
                                         CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                         state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
@@ -120,12 +121,13 @@ partial struct NewItemInHandSystem : ISystem
                     {
                         if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                         {
+                            Debug.Log("container "+ playerContainer.Value.entity + " " + playerContainer.Value.index);
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;
                             Item item = ItemsAsset.instance.GetItem(itemId);
                             ChangeItemInHand(ref state,item,hands);
                             
-                            if(state.EntityManager.HasComponent<GhostOwnerIsLocal>(player))
+                            if(state.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(player))
                             {
                                 var cooldownTick = tick;
                                 if(tick == NetworkTick.Invalid)
@@ -195,6 +197,7 @@ partial struct NewItemInHandSystem : ISystem
             NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID); 
             input.ValueRW.ammoSelectedItemID = ammoID;
 
+            Debug.Log("item!!!!!!!!!! + "+ itemSlot.Value.itemId);
             if(item.hasMagazine)
             {
                 magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,hotBarContainer,input.ValueRO.slotInHand);
