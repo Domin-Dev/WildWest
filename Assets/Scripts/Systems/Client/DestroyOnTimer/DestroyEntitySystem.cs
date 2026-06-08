@@ -10,14 +10,13 @@ using UnityEngine.UIElements;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
-[BurstCompile]
 public partial class DestroyEntitySystem : SystemBase
 {
 
 
     private BufferLookup<ChunkObjects> chunkObjects;
 
-    [BurstCompile]
+
     protected override void OnCreate()
     {
         RequireForUpdate<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
@@ -25,10 +24,10 @@ public partial class DestroyEntitySystem : SystemBase
         chunkObjects = SystemAPI.GetBufferLookup<ChunkObjects>();
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-       .WithAll<DestroyEntityTag,Simulate>();
+       .WithAll<DestroyEntityTag>();
         RequireForUpdate(GetEntityQuery(entityQueryBuilder));
     }
-    [BurstCompile]
+
     protected override void OnUpdate()
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
@@ -40,8 +39,9 @@ public partial class DestroyEntitySystem : SystemBase
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
 
 
-        foreach (var(localTransform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<DestroyEntityTag,Simulate>().WithEntityAccess())
+        foreach (var(localTransform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<DestroyEntityTag>().WithEntityAccess())
         {
+            Debug.Log("niszczenie!!!");
             if(World.IsServer())
             {
                 if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
@@ -70,7 +70,7 @@ public partial class DestroyEntitySystem : SystemBase
             {
                 if(SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);  
                 localTransform.ValueRW.Position = new float3(100000, 100000,100000);
-                ecb.RemoveComponent<Simulate>(entity);
+                //ecb.RemoveComponent<Simulate>(entity);
                 if (!EntityManager.HasComponent<GhostInstance>(entity))
                 {
                     ecb.DestroyEntity(entity);

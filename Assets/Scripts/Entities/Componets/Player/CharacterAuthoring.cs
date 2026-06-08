@@ -51,6 +51,8 @@ public class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new Hunger());
             AddComponent(entity, new Thirst());
 
+
+            AddBuffer<DamageBuffer>(entity);
             AddBuffer<EntityContainers>(entity);
         }
     }
@@ -183,15 +185,18 @@ public struct GhostChunk : IComponentData
     public int spawnChunk;
     public int current;
     public int lastChunk;
-
+    
     public Entity currentChunkEntity;
+    public float3 lastPosition;
 
+    public readonly static float3 incorrectPosition = new float3(float.MinValue,float.MinValue,float.MinValue);
 
     public GhostChunk StartValues()
     {
         current = int.MinValue;
         lastChunk = int.MinValue;
         spawnChunk = int.MinValue;
+        lastPosition = incorrectPosition;
         return this;
     }
 
@@ -201,8 +206,13 @@ public struct GhostChunk : IComponentData
         this.spawnChunk = ghostChunk.spawnChunk;
         this.lastChunk = ghostChunk.lastChunk;
         this.currentChunkEntity = ghostChunk.currentChunkEntity;
+        this.lastPosition = ghostChunk.lastPosition;
     }
     
+    public bool LastPositionIsCorrect()
+    {
+        return lastPosition.x != incorrectPosition.x;
+    }
 
     public void SetChunkEntity(Entity entity)
     {

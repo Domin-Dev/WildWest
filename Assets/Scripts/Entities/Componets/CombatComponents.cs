@@ -17,8 +17,7 @@ public struct CurrentHitPoints : IComponentData
 }
 
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct DamageBufferElement : IBufferElementData
+public struct DamageBuffer : IBufferElementData
 {
     public int value;
 }

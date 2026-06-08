@@ -64,7 +64,7 @@ public class DebugManager : MonoBehaviour
     }
     private void OnDisable()
     {
-        CollisionSystem.onPlayerMove -= UpdatePosition;
+        GhostChangesPositionSystem.onPlayerMove -= UpdatePosition;
       //  GridVisualization.instance.onChangeChunk -= UpdateChunkDebugger;
         if (debuggingChunks.Count > 0) TurnOffChunkDebugger();
         StopCoroutine(UpdateStats());
@@ -118,7 +118,7 @@ public class DebugManager : MonoBehaviour
         SetUpDebugStats();
         StartCoroutine(UpdateStats());
 
-        CollisionSystem.onPlayerMove += UpdatePosition;
+        GhostChangesPositionSystem.onPlayerMove += UpdatePosition;
         gameVersionText.text = Application.productName + " " + Application.version;
         var query = world.EntityManager.CreateEntityQuery(
          ComponentType.ReadOnly<Player>(),

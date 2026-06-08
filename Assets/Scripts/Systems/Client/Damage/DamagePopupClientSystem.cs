@@ -8,15 +8,9 @@ using UnityEngine;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+[RequireMatchingQueriesForUpdate]
 partial struct DamagePopupClientSystem : ISystem
 {
-    public void OnCreate(ref SystemState state)
-    {
-        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<DamagePopup, Simulate>();
-        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
-        entityQueryBuilder.Dispose();
-    }
 
     public void OnUpdate(ref SystemState state)
     {

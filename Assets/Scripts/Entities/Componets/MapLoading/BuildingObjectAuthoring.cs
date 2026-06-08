@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Physics;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -11,8 +12,10 @@ public class BuildingObjectAuthoring : MonoBehaviour
         public override void Bake(BuildingObjectAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent<NewBuildingObject>(entity);
+            AddComponent<EnvironmentObject>(entity);
+            AddComponent<PhysicsCollider>(entity);            
         }
     }
 }
 
+ 

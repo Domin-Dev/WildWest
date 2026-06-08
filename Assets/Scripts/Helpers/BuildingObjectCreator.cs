@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,27 +22,38 @@ public static class BuildingObjectCreator
         float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
         float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
-        RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
-           
+        RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox; 
         Entity entity  = entityCommand.CreateEntity(unfilteredChunkIndex);
         entityCommand.AddComponent(unfilteredChunkIndex,entity, localTransform);
-        entityCommand.AddComponent(unfilteredChunkIndex, entity, new Physics2D()
-        {
-            layer = 0,
-            cellIndex = new int2(int.MinValue, int.MinValue)
-        });     
-        
-        
+        entityCommand.AddComponent(unfilteredChunkIndex,entity, new EnvironmentObject());
+
         if (rectangleHitbox != null)
         {
-            entityCommand.AddComponent(unfilteredChunkIndex,entity, new IsChanged());
-            entityCommand.SetComponentEnabled(unfilteredChunkIndex,entity, typeof(IsChanged), true);
-            entityCommand.AddComponent(unfilteredChunkIndex,entity, new BoxCollider2D()
+            float2 offset = rectangleHitbox.offset +  new Vector2(0,shadow);
+            var boxGeometry = new BoxGeometry
             {
-                offset = rectangleHitbox.offset +  new Vector2(0,shadow),
-                size = rectangleHitbox.size
+                Center = new float3(offset,0),
+                Size = new float3(rectangleHitbox.size.x,rectangleHitbox.size.y,300f),
+                Orientation = quaternion.identity,
+                BevelRadius = 0f
+            };
+            var collisionFilter = new CollisionFilter()
+            {
+                BelongsTo =  1u << 10,
+                CollidesWith =  (1u << 11) | (1u << 9)
+            };
+            var material = new Unity.Physics.Material()
+            {
+                Friction = 0f,
+                Restitution = 0f,    
+            };
+
+            var collider = Unity.Physics.BoxCollider.Create(boxGeometry,collisionFilter,material);
+            entityCommand.AddComponent(unfilteredChunkIndex,entity, new PhysicsCollider
+            {
+                Value = collider,
             });
-            entityCommand.AddComponent(unfilteredChunkIndex,entity, new Velocity2D() { Value = float2.zero });
+            entityCommand.AddSharedComponent<PhysicsWorldIndex>(unfilteredChunkIndex,entity,new PhysicsWorldIndex());
         }
         return entity;
     }
@@ -56,7 +68,6 @@ public static class BuildingObjectCreator
  
         Entity entity = entityManagern.Instantiate(entitiesReferences.buildObjectEntity);
 
-
         Entity sprite = entityManagern.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
         SpriteRenderer spriteRenderer = entityManagern.GetComponentObject<SpriteRenderer>(sprite);
         LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));
@@ -67,14 +78,32 @@ public static class BuildingObjectCreator
 
         if (rectangleHitbox != null)
         {
-            entityCommand.AddComponent(entity, new IsChanged());
-            entityCommand.SetComponentEnabled(entity, typeof(IsChanged), true);
-            entityCommand.AddComponent(entity, new BoxCollider2D()
+            float2 offset = rectangleHitbox.offset +  new Vector2(0,shadow);
+            var boxGeometry = new BoxGeometry
             {
-                offset = rectangleHitbox.offset +  new Vector2(0,shadow),
-                size = rectangleHitbox.size
+                Center = new float3(offset,0),
+                Size = new float3(rectangleHitbox.size.x,rectangleHitbox.size.y,300f),
+                Orientation = quaternion.identity,
+                BevelRadius = 0f
+            };
+            var collisionFilter = new CollisionFilter()
+            {
+                BelongsTo =  1u << 10,
+                CollidesWith =  (1u << 11) | (1u << 9)
+            };
+
+            var material = new Unity.Physics.Material()
+            {
+                Friction = 0f,
+                Restitution = 0f
+            };
+
+            var collider = Unity.Physics.BoxCollider.Create(boxGeometry,collisionFilter,material);
+            entityCommand.SetComponent(entity, new PhysicsCollider
+            {
+                Value = collider
             });
-            entityCommand.AddComponent(entity, new Velocity2D() { Value = float2.zero });
+            entityCommand.AddSharedComponent<PhysicsWorldIndex>(entity,new PhysicsWorldIndex());
         }
         return entity;
     }

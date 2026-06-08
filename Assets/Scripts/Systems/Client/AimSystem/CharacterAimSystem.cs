@@ -240,7 +240,7 @@ partial struct CharacterAimSystem : ISystem
                                         entityCommandBuffer.AddComponent(bullet, new NewChunk());
                                         entityCommandBuffer.AddComponent(bullet, new EntityToHide());
                                         NewBullet bulletComp = SystemAPI.GetComponent<NewBullet>(bullet);
-                                        bulletComp.isOnServer = true;
+
                                         entityCommandBuffer.SetComponent(bullet, bulletComp);
                                     }
                                     else

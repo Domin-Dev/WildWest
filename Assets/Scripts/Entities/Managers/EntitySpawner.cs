@@ -101,16 +101,19 @@ public class EntitySpawner : MonoBehaviour
     public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion)
     {
         Entity prefab = GetParticleIndex(indexParticle);
-
         Entity entity = entityManager.Instantiate(prefab);
         position.z = position.y;
         LocalTransform localTransform = LocalTransform.FromPosition(position);
         entityManager.SetComponentData(entity, localTransform.Rotate(quaternion));
     }
 
-
-
-
+    public static void SpawnParticle(EntityCommandBuffer ecb,Entity prefab, float3 position, quaternion quaternion)
+    {
+        Entity entity = ecb.Instantiate(prefab);
+        position.z = position.y;
+        LocalTransform localTransform = LocalTransform.FromPosition(position);
+        ecb.SetComponent(entity, localTransform.Rotate(quaternion));
+    }
 
 
     public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion,NewParticles target)

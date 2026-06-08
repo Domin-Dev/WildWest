@@ -33,7 +33,7 @@ public partial struct CollisionSystem : ISystem
     readonly static Color damageColor = new Color(0.69f,0.16f,0.16f,1f);
     readonly static Color criticalHitColor = new Color(1f,0.0f,0.0f,1f);
 
-    public static event Action<float2> onPlayerMove;
+   // public static event Action<float2> onPlayerMove;
 
     struct Box
     {
@@ -143,322 +143,321 @@ public partial struct CollisionSystem : ISystem
 
 
 
-    public void OnUpdate(ref SystemState state)
-    {
-        UpdateLookups(ref state);
+    // public void OnUpdate(ref SystemState state)
+    // {
+    //     UpdateLookups(ref state);
 
-        ShootingConfig shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
-        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+    //     ShootingConfig shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
+    //     var networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
-       // Debug.Log("kkk " + networkTime.SimulationStepBatchSize);
+    //    // Debug.Log("kkk " + networkTime.SimulationStepBatchSize);
 
-        if (state.World.Flags == WorldFlags.GameServer)
-        {
-            foreach (var (playerInputSync, playerInput, player, velocity,spread, entity)
-                in SystemAPI.Query<RefRW<PlayerInputSync>, RefRW<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>,RefRW<PlayerActionSpread>>().WithAll<Simulate>().WithEntityAccess())
-            {
-                playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
-                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
-                if(networkTime.IsFirstTimeFullyPredictingTick) 
-                    spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRO.Value) * networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
+    //     if (state.World.Flags == WorldFlags.GameServer)
+    //     {
+    //         foreach (var (playerInputSync, playerInput, player, velocity,spread, entity)
+    //             in SystemAPI.Query<RefRW<PlayerInputSync>, RefRW<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>,RefRW<PlayerActionSpread>>().WithAll<Simulate>().WithEntityAccess())
+    //         {
+    //             playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
+    //             velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
+    //             if(networkTime.IsFirstTimeFullyPredictingTick) 
+    //                 spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRO.Value) * networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
 
-                bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
-                if(shouldBeChanged) 
-                    state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
-            }
-        }
-        else
-        {
-            foreach (var (playerInput, player, velocity,spread, entity)
-            in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>,RefRW<PlayerActionSpread>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
-            {
-                velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
-                if(networkTime.IsFirstTimeFullyPredictingTick) 
-                    spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRO.Value) *  networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
+    //             bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
+    //             if(shouldBeChanged) 
+    //                 state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
+    //         }
+    //     }
+    //     else
+    //     {
+    //         foreach (var (playerInput, player, velocity,spread, entity)
+    //         in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<Velocity2D>,RefRW<PlayerActionSpread>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
+    //         {
+    //             velocity.ValueRW.Value = playerInput.ValueRO.movementDirection * player.ValueRO.speed;
+    //             if(networkTime.IsFirstTimeFullyPredictingTick) 
+    //                 spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRO.Value) *  networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
 
-                bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
-                if (shouldBeChanged) 
-                    state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
-            }
-        }
-
-
+    //             bool shouldBeChanged = !(playerInput.ValueRO.movementDirection.x == 0 && playerInput.ValueRO.movementDirection.y == 0);
+    //             if (shouldBeChanged) 
+    //                 state.EntityManager.SetComponentEnabled<IsChanged>(entity, true);
+    //         }
+    //     }
 
 
-        deltaTime = SystemAPI.Time.DeltaTime;
+    //     deltaTime = SystemAPI.Time.DeltaTime;
 
-        EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate>().Build();
+    //     EntityQuery entities = SystemAPI.QueryBuilder().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate,AlwaysUpdate>()
+    //     .AddAdditionalQuery().WithAll<Velocity2D, BoxCollider2D, LocalTransform, Physics2D, Simulate,IsChanged>().Build();
 
-        NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
-        NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
-        NativeArray<Velocity2D> velocities = entities.ToComponentDataArray<Velocity2D>(Allocator.TempJob);
-        NativeArray<BoxCollider2D> hitboxes = entities.ToComponentDataArray<BoxCollider2D>(Allocator.TempJob);
-        NativeArray<Physics2D> physics = entities.ToComponentDataArray<Physics2D>(Allocator.TempJob);
-        UpdateEntityMap(ref state, entityArray, physics, transforms);
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
-        NativeHashMap<int, float> collisions = new NativeHashMap<int, float>(50, Allocator.TempJob);
+    //     NativeArray<Entity> entityArray = entities.ToEntityArray(Allocator.TempJob);
+    //     NativeArray<LocalTransform> transforms = entities.ToComponentDataArray<LocalTransform>(Allocator.TempJob);
+    //     NativeArray<Velocity2D> velocities = entities.ToComponentDataArray<Velocity2D>(Allocator.TempJob);
+    //     NativeArray<BoxCollider2D> hitboxes = entities.ToComponentDataArray<BoxCollider2D>(Allocator.TempJob);
+    //     NativeArray<Physics2D> physics = entities.ToComponentDataArray<Physics2D>(Allocator.TempJob);
+    //     UpdateEntityMap(ref state, entityArray, physics, transforms);
+    //     EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+    //     NativeHashMap<int, float> collisions = new NativeHashMap<int, float>(50, Allocator.TempJob);
       
-        if(state.World.IsServer())
-        {
-            loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
-            map = SystemAPI.GetSingleton<MapSettings>();
-        }
+    //     if(state.World.IsServer())
+    //     {
+    //         loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
+    //         map = SystemAPI.GetSingleton<MapSettings>();
+    //     }
 
-        for (int i = 0; i < entityArray.Length; i++)
-        {
-            Entity entity = entityArray[i];          
-            if (!((isChanged.HasComponent(entity) && isChanged.IsComponentEnabled(entity)) || (alwaysUpdate.HasComponent(entity) && alwaysUpdate.IsComponentEnabled(entity))))
-                continue;
-            int layer = physics[i].layer;
-            if (layer == 3) continue;
-
-
-
-            BoxCollider2D tempHitbox1 = hitboxes[i];
-            float3 tempTransform1 = GetWorldPosition(entity);
-            float2 velocity1 = GetVelocity(ref state, ref entityCommandBuffer, entity);
-            float2 topLeft1 =
-                new float2(
-                tempHitbox1.offset.x + tempTransform1.x - tempHitbox1.size.x * 0.5f,
-                tempHitbox1.offset.y + tempTransform1.y + tempHitbox1.size.y * 0.5f
-            );
-
-
-            float3 vel = new float3(0, 0, 0);
-            float3 pos = float3.zero;
-            float3 offset = float3.zero;
-
-
-            float minTime = float.MaxValue;
-            int index = -1;
-            float2 collision = float2.zero;
-            NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
-            bool destroy = false;
-
-            for (int j = 0; j < potentialCollisions.Length; j++)
-            {
-                Entity entityToCheck = potentialCollisions[j];
-                if (!SystemAPI.Exists(entityToCheck)) continue;
-                if (entityToCheck == entity || !getPhysics.HasComponent(entityToCheck) || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
-
-                float3 tempTransform2 = GetWorldPosition(entityToCheck);
-                BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
-
-                float2 topLeft2 =
-                new float2(
-                 tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
-                 tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
-                );
-
-                Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
-                Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
-                float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
-
-                if (collisiontime < 1f)
-                {
-                    if (layer == 2 && BulletHit(ref state, ref entityCommandBuffer, entityToCheck, entity))
-                    {
-                        destroy = true;
-                        break;
-                    }
-                    collisions.Add(j, collisiontime);
-                    if (collisiontime < minTime)
-                    {
-                        pos = tempTransform1;
-                        vel = new float3(0, 0, 0);
-
-                        minTime = collisiontime;
-                        collision = new float2(normalx, normaly);
-                        index = j;
-                        pos.x = tempTransform1.x + box1.velocity.x * collisiontime;
-                        pos.y = tempTransform1.y + box1.velocity.y * collisiontime;
-
-                        float remainingtime = 1.0f - collisiontime;
-                        float2 tempVel = float2.zero;
-                        Box tempBox = box1;
-                        tempBox.pos += box1.velocity * collisiontime;
-
-                        if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
-                        else tempVel.x = 0;
-
-                        if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
-                        else tempVel.y = 0;
-
-                        if (math.abs(tempVel.x) > math.abs(vel.x))
-                        {
-                            vel.x = tempVel.x;
-                        }
-                        if (math.abs(tempVel.y) > math.abs(vel.y))
-                        {
-                            vel.y = tempVel.y;
-                        }
-                    }
-                }
-            }
-
-
-            if (destroy)
-            {
-                entityCommandBuffer.AddComponent(entity, new DestroyEntityTag());
-                entityCommandBuffer.RemoveComponent<Physics2D>(entity);
-                if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
-                entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(new float3(100000, 100000, 100000)));
-            }
-            else
-            {
-                if (minTime < 1f)
-                {
-                    topLeft1 =
-                    new float2(
-                    tempHitbox1.offset.x + pos.x - tempHitbox1.size.x * 0.5f,
-                    tempHitbox1.offset.y + pos.y + tempHitbox1.size.y * 0.5f
-                    );
-
-                    tempTransform1 = pos;
-                    velocity1.x = vel.x;
-                    velocity1.y = vel.y;
-                    minTime = float.MaxValue;
-                    Box box1;
-                    bool s = true;
-                    if (vel.x != 0 || vel.y != 0)
-                    {
-                        for (int j = i + 1; j < potentialCollisions.Length; j++)
-                        {
-                            Entity entityToCheck = potentialCollisions[j];
-
-                            if (!state.EntityManager.Exists(entityToCheck) || !getPhysics.HasComponent(entityToCheck) || entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
-
-
-                            float3 tempTransform2 = GetWorldPosition(entityToCheck);
-                            BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
-
-                            float2 topLeft2 =
-                            new float2(
-                            tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
-                            tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
-                            );
-
-                            box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
-                            Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
-                            float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
-
-                            if (collisiontime < 1f)
-                            {
-                                collisions.TryAdd(j, collisiontime);
-                                if (collisiontime <= minTime && j != index && ((normalx != 0 && collision.x == 0) ||
-                                    (normaly != 0 && collision.y == 0)))
-                                {
-                                    if (s)
-                                    {
-                                        vel = float3.zero;
-                                        s = false;
-                                    }
-                                    if (collisiontime < minTime)
-                                    {
-                                        pos = tempTransform1;
-                                        vel = new float3(0, 0, 0);
-                                    }
-                                    minTime = collisiontime;
-                                    pos.x = tempTransform1.x + box1.velocity.x * collisiontime;
-                                    pos.y = tempTransform1.y + box1.velocity.y * collisiontime;
+    //     for (int i = 0; i < entityArray.Length; i++)
+    //     {
+    //         Entity entity = entityArray[i];          
+    //         if (!((isChanged.HasComponent(entity) && isChanged.IsComponentEnabled(entity)) || (alwaysUpdate.HasComponent(entity) && alwaysUpdate.IsComponentEnabled(entity))))
+    //             continue;
+    //         int layer = physics[i].layer;
+    //         if (layer == 3) continue;
 
 
 
-                                    float remainingtime = 1.0f - collisiontime;
-
-                                    float2 tempVel = float2.zero;
-
-                                    Box tempBox = box1;
-                                    tempBox.pos += box1.velocity * collisiontime;
-
-                                    if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
-                                    else tempVel.x = 0;
-
-                                    if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
-                                    else tempVel.y = 0;
+    //         BoxCollider2D tempHitbox1 = hitboxes[i];
+    //         float3 tempTransform1 = GetWorldPosition(entity);
+    //         float2 velocity1 = GetVelocity(ref state, ref entityCommandBuffer, entity);
+    //         float2 topLeft1 =
+    //             new float2(
+    //             tempHitbox1.offset.x + tempTransform1.x - tempHitbox1.size.x * 0.5f,
+    //             tempHitbox1.offset.y + tempTransform1.y + tempHitbox1.size.y * 0.5f
+    //         );
 
 
-
-                                    if (math.abs(tempVel.x) > math.abs(vel.x))
-                                    {
-                                        vel.x = tempVel.x;
-                                    }
-                                    if (math.abs(tempVel.y) > math.abs(vel.y))
-                                    {
-                                        vel.y = tempVel.y;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    box1 = new Box(new float2(topLeft1.x + vel.x, topLeft1.y + vel.y), tempHitbox1.size, velocity1);
-                    foreach (var item in collisions)
-                    {
-                        Entity entityToCheck = potentialCollisions[item.Key];
-
-                        float3 tempTransform2 = GetWorldPosition(entityToCheck);
-                        BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
-                        float2 topLeft2 =
-                        new float2(
-                        tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
-                        tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
-                        );
-                        Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
-                        if (StaticAABB(box1, box2))
-                        {
-                            float3 localOffset = GetMTV(box1, box2);
-                            if (math.abs(localOffset.x) > math.abs(offset.x))
-                            {
-                                offset.x = localOffset.x;
-                            }
-                            if (math.abs(localOffset.y) > math.abs(offset.y))
-                            {
-                                offset.y = localOffset.y;
-                            }
-                        }
-                    }
-
-                    tempTransform1 = pos;
-                    tempTransform1 += offset;
-                    tempTransform1 += vel;
-                }
-                else
-                    tempTransform1 += new float3(velocity1.x, velocity1.y, 0);
-
-                tempTransform1.z = tempTransform1.y;
+    //         float3 vel = new float3(0, 0, 0);
+    //         float3 pos = float3.zero;
+    //         float3 offset = float3.zero;
 
 
-                LocalTransform localTransform = getPosition[entity];
+    //         float minTime = float.MaxValue;
+    //         int index = -1;
+    //         float2 collision = float2.zero;
+    //         NativeList<Entity> potentialCollisions = GetPotentialCollisions(physics[i].cellIndex);
+    //         bool destroy = false;
 
-                localTransform.Position = tempTransform1;
-                EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform, out bool chunkIsLoaded);
+    //         for (int j = 0; j < potentialCollisions.Length; j++)
+    //         {
+    //             Entity entityToCheck = potentialCollisions[j];
+    //             if (!SystemAPI.Exists(entityToCheck)) continue;
+    //             if (entityToCheck == entity || !getPhysics.HasComponent(entityToCheck) || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
+
+    //             float3 tempTransform2 = GetWorldPosition(entityToCheck);
+    //             BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
+
+    //             float2 topLeft2 =
+    //             new float2(
+    //              tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
+    //              tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
+    //             );
+
+    //             Box box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
+    //             Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
+    //             float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
+
+    //             if (collisiontime < 1f)
+    //             {
+    //                 if (layer == 2 && BulletHit(ref state, ref entityCommandBuffer, entityToCheck, entity))
+    //                 {
+    //                     destroy = true;
+    //                     break;
+    //                 }
+    //                 collisions.Add(j, collisiontime);
+    //                 if (collisiontime < minTime)
+    //                 {
+    //                     pos = tempTransform1;
+    //                     vel = new float3(0, 0, 0);
+
+    //                     minTime = collisiontime;
+    //                     collision = new float2(normalx, normaly);
+    //                     index = j;
+    //                     pos.x = tempTransform1.x + box1.velocity.x * collisiontime;
+    //                     pos.y = tempTransform1.y + box1.velocity.y * collisiontime;
+
+    //                     float remainingtime = 1.0f - collisiontime;
+    //                     float2 tempVel = float2.zero;
+    //                     Box tempBox = box1;
+    //                     tempBox.pos += box1.velocity * collisiontime;
+
+    //                     if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
+    //                     else tempVel.x = 0;
+
+    //                     if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
+    //                     else tempVel.y = 0;
+
+    //                     if (math.abs(tempVel.x) > math.abs(vel.x))
+    //                     {
+    //                         vel.x = tempVel.x;
+    //                     }
+    //                     if (math.abs(tempVel.y) > math.abs(vel.y))
+    //                     {
+    //                         vel.y = tempVel.y;
+    //                     }
+    //                 }
+    //             }
+    //         }
+
+
+    //         if (destroy)
+    //         {
+    //             entityCommandBuffer.AddComponent(entity, new DestroyEntityTag());
+    //             entityCommandBuffer.RemoveComponent<Physics2D>(entity);
+    //             if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
+    //             entityCommandBuffer.SetComponent(entity, LocalTransform.FromPosition(new float3(100000, 100000, 100000)));
+    //         }
+    //         else
+    //         {
+    //             if (minTime < 1f)
+    //             {
+    //                 topLeft1 =
+    //                 new float2(
+    //                 tempHitbox1.offset.x + pos.x - tempHitbox1.size.x * 0.5f,
+    //                 tempHitbox1.offset.y + pos.y + tempHitbox1.size.y * 0.5f
+    //                 );
+
+    //                 tempTransform1 = pos;
+    //                 velocity1.x = vel.x;
+    //                 velocity1.y = vel.y;
+    //                 minTime = float.MaxValue;
+    //                 Box box1;
+    //                 bool s = true;
+    //                 if (vel.x != 0 || vel.y != 0)
+    //                 {
+    //                     for (int j = i + 1; j < potentialCollisions.Length; j++)
+    //                     {
+    //                         Entity entityToCheck = potentialCollisions[j];
+
+    //                         if (!state.EntityManager.Exists(entityToCheck) || !getPhysics.HasComponent(entityToCheck) || entityToCheck == entity || !collisionTab[getPhysics[entityToCheck].layer, layer]) continue;
+
+
+    //                         float3 tempTransform2 = GetWorldPosition(entityToCheck);
+    //                         BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
+
+    //                         float2 topLeft2 =
+    //                         new float2(
+    //                         tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
+    //                         tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
+    //                         );
+
+    //                         box1 = new Box(new float2(topLeft1.x, topLeft1.y), tempHitbox1.size, velocity1);
+    //                         Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
+    //                         float collisiontime = SweptAABB(box1, box2, out float normalx, out float normaly);
+
+    //                         if (collisiontime < 1f)
+    //                         {
+    //                             collisions.TryAdd(j, collisiontime);
+    //                             if (collisiontime <= minTime && j != index && ((normalx != 0 && collision.x == 0) ||
+    //                                 (normaly != 0 && collision.y == 0)))
+    //                             {
+    //                                 if (s)
+    //                                 {
+    //                                     vel = float3.zero;
+    //                                     s = false;
+    //                                 }
+    //                                 if (collisiontime < minTime)
+    //                                 {
+    //                                     pos = tempTransform1;
+    //                                     vel = new float3(0, 0, 0);
+    //                                 }
+    //                                 minTime = collisiontime;
+    //                                 pos.x = tempTransform1.x + box1.velocity.x * collisiontime;
+    //                                 pos.y = tempTransform1.y + box1.velocity.y * collisiontime;
+
+
+
+    //                                 float remainingtime = 1.0f - collisiontime;
+
+    //                                 float2 tempVel = float2.zero;
+
+    //                                 Box tempBox = box1;
+    //                                 tempBox.pos += box1.velocity * collisiontime;
+
+    //                                 if (normalx == 0 || velocity1.x * normalx >= 0) tempVel.x = velocity1.x * remainingtime;
+    //                                 else tempVel.x = 0;
+
+    //                                 if (normaly == 0 || velocity1.y * normaly >= 0) tempVel.y = velocity1.y * remainingtime;
+    //                                 else tempVel.y = 0;
+
+
+
+    //                                 if (math.abs(tempVel.x) > math.abs(vel.x))
+    //                                 {
+    //                                     vel.x = tempVel.x;
+    //                                 }
+    //                                 if (math.abs(tempVel.y) > math.abs(vel.y))
+    //                                 {
+    //                                     vel.y = tempVel.y;
+    //                                 }
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+
+    //                 box1 = new Box(new float2(topLeft1.x + vel.x, topLeft1.y + vel.y), tempHitbox1.size, velocity1);
+    //                 foreach (var item in collisions)
+    //                 {
+    //                     Entity entityToCheck = potentialCollisions[item.Key];
+
+    //                     float3 tempTransform2 = GetWorldPosition(entityToCheck);
+    //                     BoxCollider2D tempHitbox2 = getHitbox[entityToCheck];
+    //                     float2 topLeft2 =
+    //                     new float2(
+    //                     tempHitbox2.offset.x + tempTransform2.x - tempHitbox2.size.x * 0.5f,
+    //                     tempHitbox2.offset.y + tempTransform2.y + tempHitbox2.size.y * 0.5f
+    //                     );
+    //                     Box box2 = new Box(new float2(topLeft2.x, topLeft2.y), tempHitbox2.size, GetVelocity(ref state, ref entityCommandBuffer, entityToCheck));
+    //                     if (StaticAABB(box1, box2))
+    //                     {
+    //                         float3 localOffset = GetMTV(box1, box2);
+    //                         if (math.abs(localOffset.x) > math.abs(offset.x))
+    //                         {
+    //                             offset.x = localOffset.x;
+    //                         }
+    //                         if (math.abs(localOffset.y) > math.abs(offset.y))
+    //                         {
+    //                             offset.y = localOffset.y;
+    //                         }
+    //                     }
+    //                 }
+
+    //                 tempTransform1 = pos;
+    //                 tempTransform1 += offset;
+    //                 tempTransform1 += vel;
+    //             }
+    //             else
+    //                 tempTransform1 += new float3(velocity1.x, velocity1.y, 0);
+
+    //             tempTransform1.z = tempTransform1.y;
+
+
+    //             LocalTransform localTransform = getPosition[entity];
+
+    //             localTransform.Position = tempTransform1;
+                // EntityChangePosition(ref state, ref entityCommandBuffer, entity, localTransform, out bool chunkIsLoaded);
                
-                if(chunkIsLoaded)
-                    getPosition[entity] = localTransform;
-            }
+                // if(chunkIsLoaded)
+                //     getPosition[entity] = localTransform;
+    //         }
            
           
-            collisions.Clear();
-            potentialCollisions.Dispose();
-        }
-        foreach ((RefRW<ForceImpulse2D> velocity, Entity e) in SystemAPI.Query<RefRW<ForceImpulse2D>>().WithAll<Simulate>().WithEntityAccess())
-        {
-            velocity.ValueRW.Value -= velocity.ValueRO.Value * DampingValue * deltaTime;
-            isChanged.SetComponentEnabled(e, true);
-            if (math.lengthsq(velocity.ValueRO.Value) < 0.01f)
-                entityCommandBuffer.RemoveComponent<ForceImpulse2D>(e);
-        }
+    //         collisions.Clear();
+    //         potentialCollisions.Dispose();
+    //     }
+    //     foreach ((RefRW<ForceImpulse2D> velocity, Entity e) in SystemAPI.Query<RefRW<ForceImpulse2D>>().WithAll<Simulate>().WithEntityAccess())
+    //     {
+    //         velocity.ValueRW.Value -= velocity.ValueRO.Value * DampingValue * deltaTime;
+    //         isChanged.SetComponentEnabled(e, true);
+    //         if (math.lengthsq(velocity.ValueRO.Value) < 0.01f)
+    //             entityCommandBuffer.RemoveComponent<ForceImpulse2D>(e);
+    //     }
 
-        entityCommandBuffer.Playback(state.EntityManager);
-        entityCommandBuffer.Dispose();
-        physics.Dispose();
-        collisions.Dispose();
-        entityArray.Dispose();
-        transforms.Dispose();
-        velocities.Dispose();
-        hitboxes.Dispose();
-    }
+    //     entityCommandBuffer.Playback(state.EntityManager);
+    //     entityCommandBuffer.Dispose();
+    //     physics.Dispose();
+    //     collisions.Dispose();
+    //     entityArray.Dispose();
+    //     transforms.Dispose();
+    //     velocities.Dispose();
+    //     hitboxes.Dispose();
+    // }
 
     private void EntityChangePosition(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer, Entity entity, LocalTransform localTransform, out bool chunkIsLoaded)
     {
@@ -477,9 +476,9 @@ public partial struct CollisionSystem : ISystem
             }
             else if(SystemAPI.HasComponent<Player>(entity) && SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))
             {
-                onPlayerMove?.Invoke(MyTools.ConvertFloat(localTransform.Position));
+               // onPlayerMove?.Invoke(MyTools.ConvertFloat(localTransform.Position));
             }
-            if(hasChanged)isChanged.SetComponentEnabled(entity, false);
+
         }
     }
 
@@ -537,6 +536,9 @@ public partial struct CollisionSystem : ISystem
         else
             return getPosition[entity].Position;
     } 
+
+
+
     public float2 GetVelocity(ref SystemState state,ref EntityCommandBuffer entityCommandBuffer,Entity entity)
     {
         float2 velocity = getVelocity[entity].Value;
@@ -576,9 +578,9 @@ public partial struct CollisionSystem : ISystem
                     if (health.Value <= 0)
                     {
                         PlayerIsDead(ref state,ref entityCommandBuffer,player);
-                        ChatManager.instance.Print(SystemAPI.GetComponent<PlayerName>(connection.value).name + "was killed");
+                        //ChatManager.instance.Print(SystemAPI.GetComponent<PlayerName>(connection.value).name + "was killed");
                     }
-                    RPCHelper.SendRpc(entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
+                //    RPCHelper.SendRpc(entityCommandBuffer, connection.value, new LifeStatsChangedRPC());
                 }
                 else if(SystemAPI.GetSingleton<NetworkId>().Value == bulletOwner)
                 {
@@ -592,10 +594,6 @@ public partial struct CollisionSystem : ISystem
                         elapsedTime = 0,
                         moveDirection = new float3(0, 0.4f, 0)
                     });
-
-                    TextMesh textMesh = state.EntityManager.GetComponentObject<TextMesh>(popup);
-                    textMesh.text =  "-" + damage.ToString();
-                    textMesh.color = GetPopupColor(hitBoxSettings.damageMultiplier);
                 }
 
                // EntitySpawner.instance.SpawnParticle(3, new float3(lt.Position.x, lt.Position.y, -1),quaternion.identity);
@@ -646,9 +644,11 @@ public partial struct CollisionSystem : ISystem
     }
     private void UpdateEntityMap(ref SystemState state,NativeArray<Entity> entityArray, NativeArray<Physics2D> physics, NativeArray<LocalTransform> transforms)
     {
+        Debug.Log("map " +entityArray.Length);
         for (int i = 0; i < entityArray.Length; i++)
         {
             Entity entity = entityArray[i];
+            Debug.Log("map "+entity);
             UpdateEntity(entity);
             if (childrenBuffer.HasBuffer(entity))
             {

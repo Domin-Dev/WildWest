@@ -188,7 +188,7 @@ public class MapGenerator
                 variant = 1
             };
 
-            if(value > 0.5f)
+            if(value > 0.67f)
             {    
                 buildingObjects.Add(new BuildingObjects()
                 {

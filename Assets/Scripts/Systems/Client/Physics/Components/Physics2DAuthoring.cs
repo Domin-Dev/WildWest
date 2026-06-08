@@ -23,6 +23,7 @@ public struct ForceImpulse2D: IComponentData
     public float2 Value;
 }
 public struct IsChanged : IComponentData, IEnableableComponent {  }
+
 public struct AlwaysUpdate: IComponentData, IEnableableComponent { }
 
 public class Physics2DAuthoring : MonoBehaviour

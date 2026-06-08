@@ -2,6 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -18,13 +19,14 @@ partial struct NewPlayerSystem : ISystem
     }
 
 
+    
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach ((RefRO<Player> player, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>, RefRW<PlayerLook>>().WithAll<Simulate,NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRO<Player> player,RefRW<PhysicsMass> mass, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>,RefRW<PhysicsMass>, RefRW<PlayerLook>>().WithAll<Simulate,NewPlayerTag>().WithEntityAccess())
         {
-
+            mass.ValueRW.InverseInertia = float3.zero;
             if (!SystemAPI.HasBuffer<Child>(entity)) continue;
 
             Hands hands = new Hands() { rotated = true};
@@ -84,12 +86,6 @@ partial struct NewPlayerSystem : ISystem
                 SetPlayerLook(ref playerLook.ValueRW, ref hands, ref character, ref state);
             }
 
-
-            var physicsChildren = SystemAPI.GetBuffer<PhysicsChildrenBuffer>(entity);
-            foreach (var item in physicsChildren)
-            {
-              //  entityCommandBuffer.addComp item.LinkedEntity
-            }
 
             entityCommandBuffer.SetComponent(entity, character);
             entityCommandBuffer.SetComponent(entity, hands);

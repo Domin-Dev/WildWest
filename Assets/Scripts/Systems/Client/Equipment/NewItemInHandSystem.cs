@@ -76,7 +76,6 @@ partial struct NewItemInHandSystem : ISystem
         {     
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
-            Debug.Log("nowey item!!!");
             foreach ((RefRO<GhostOwner> owner, RefRW<Hands> hands, RefRW<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRW<Hands>,RefRW<PlayerInputSync>>().WithAll<Player,Simulate,ContainersLoaded>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
@@ -87,7 +86,6 @@ partial struct NewItemInHandSystem : ISystem
                         {
                             if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer) && SystemAPI.Exists(playerContainer.Value.entity))
                             {    
-                                Debug.Log( "co jest " + playerContainer.Value.index+ " " + playerContainer.Value.entity);
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                                 int itemId = slot.HasValue ? slot.Value.itemId : -1;
 
@@ -134,7 +132,7 @@ partial struct NewItemInHandSystem : ISystem
                                     cooldownTick = networkTime.ServerTick;
 
                                 CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
-                                Debug.Log("new item!!! " + cooldownTick.TickIndexForValidTick + "  " + EntityHelper.AddTime(cooldownTick,20).TickIndexForValidTick);
+                                //Debug.Log("new item!!! " + cooldownTick.TickIndexForValidTick + "  " + EntityHelper.AddTime(cooldownTick,20).TickIndexForValidTick);
                                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(cooldownTick,20)});
                                 UpdateUI(ref state,input,player,slot,out var ammoID,playerContainer.Value.entity);
                             }

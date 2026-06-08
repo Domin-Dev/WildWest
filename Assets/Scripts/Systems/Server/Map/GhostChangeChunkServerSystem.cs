@@ -127,8 +127,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                                 Connection = player.networkID,
                                 Ghost = child.ghostID
                             };
-                            Debug.Log("stop!!! " + element.Connection + "  " + element.Ghost);
-
                             if(ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
                                 ghostRelevancy.ValueRW.GhostRelevancySet.Remove(element);
                         }

@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
 using Unity.Transforms;
 
 
@@ -18,7 +19,7 @@ partial struct CalculateChunksForBulletsServerSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        bulletsQuery =  SystemAPI.QueryBuilder().WithAll<LocalTransform,Velocity2D,Bullet>().WithNone<NewBullet,ProcessedBullet>().Build();
+        bulletsQuery =  SystemAPI.QueryBuilder().WithAll<LocalTransform,PhysicsVelocity,Bullet>().WithNone<ProcessedBullet>().WithDisabled<NewBullet>().Build();
         state.RequireForUpdate<MapSettings>();
         state.RequireForUpdate(bulletsQuery);
     }
@@ -40,6 +41,8 @@ partial struct CalculateChunksForBulletsServerSystem : ISystem
         }
         .ScheduleParallel(bulletsQuery,state.Dependency);
     }
+
+
     [BurstCompile]
 
     public partial struct CalculateChunksForBulletsJob : IJobEntity
@@ -50,10 +53,10 @@ partial struct CalculateChunksForBulletsServerSystem : ISystem
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
 
         [BurstCompile]
-        public void Execute(Entity bulletEntity,in LocalTransform localTransform,in Velocity2D velocity2D,in Bullet bullet, [EntityIndexInQuery] int sortKey)
+        public void Execute(Entity bulletEntity,in LocalTransform localTransform,in Bullet bullet, [EntityIndexInQuery] int sortKey)
         {
             NativeQueue<int2> chunks = new NativeQueue<int2>(Allocator.TempJob);
-            NextChunks(MyTools.ConvertFloat(localTransform.Position),velocity2D.Value,bullet.range,map.chunkSizeInEnginePos,chunks);
+            NextChunks(MyTools.ConvertFloat(localTransform.Position),MyTools.ConvertFloat(localTransform.Right()),bullet.range,map.chunkSizeInEnginePos,chunks);
             int prio = 0;
             while(chunks.TryDequeue(out int2 chunk))
             {

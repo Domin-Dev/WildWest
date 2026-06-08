@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4403541794487979881}
   - component: {fileID: 905722347153845052}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BuildingObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -100,10 +100,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2475631014030168912}
   - component: {fileID: -6189627049894099754}
-  - component: {fileID: 1703982717358438135}
-  - component: {fileID: 1265433961167961928}
   - component: {fileID: 8677591747613589709}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BuildingObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,38 +136,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea825c0e7b9be99c6bc9ed84c2b223f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingObjectAuthoring
---- !u!114 &1703982717358438135
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9169308965752663696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d9f44a8849fa704485a569b7a7d9d49, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  physicsLayer: 0
-  updateAfterChange: 1
---- !u!114 &1265433961167961928
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9169308965752663696}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2084fa4c2c1d22841b42c4864c6d8d0d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  size:
-    x: 0
-    y: 0
-  offset:
-    x: 0
-    y: 0
 --- !u!114 &8677591747613589709
 MonoBehaviour:
   m_ObjectHideFlags: 0

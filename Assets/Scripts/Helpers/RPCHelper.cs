@@ -46,7 +46,7 @@ public static class RPCHelper
     {
         SendRpc(ref ecb, new T());
     }
-    public static void SendMessageToClients(ref EntityCommandBuffer ecb, string serverMessage)
+    public static void SendMessageToClients(EntityCommandBuffer ecb, string serverMessage)
     {
         var rpc = new NewMessageServerRPC()
         {

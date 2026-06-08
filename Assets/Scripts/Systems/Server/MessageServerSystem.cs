@@ -75,7 +75,7 @@ public partial class MessageServerSystem : SystemBase
                         }
                         else
                         {
-                            RPCHelper.SendMessageToClient(ref entityCommandBuffer, "You don’t have permission!", connectionEntity);
+                            RPCHelper.SendMessageToClient(ref entityCommandBuffer, "You donï¿½t have permission!", connectionEntity);
                         }
                     }
                 }      

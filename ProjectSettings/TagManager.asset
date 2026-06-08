@@ -25,9 +25,9 @@ TagManager:
   - Hitbox
   - Weapon
   - Items
-  - Player
-  - Horse
-  - 
+  - CharacterCollider
+  - Environment
+  - Bullet
   - 
   - 
   - 

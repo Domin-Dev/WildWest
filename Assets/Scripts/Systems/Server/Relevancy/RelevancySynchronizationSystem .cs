@@ -15,7 +15,7 @@ public partial struct RelevancySynchronizationSystem : ISystem
     {
         state.RequireForUpdate<GhostRelevancy>();
         state.RequireForUpdate(SystemAPI.QueryBuilder().WithAll<GhostInstance,SynchronizeRelevancyWithParent>().WithAll<Simulate>().Build());
-        
+       
         needChunkRO = SystemAPI.GetBufferLookup<PlayersNeedChunk>(true);
     }
 

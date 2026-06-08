@@ -36,7 +36,6 @@ public struct Bullet : IComponentData
     public int damage;
 }
 
-public struct NewBullet : IComponentData
+public struct NewBullet : IComponentData, IEnableableComponent
 {
-    public bool isOnServer;
 }
