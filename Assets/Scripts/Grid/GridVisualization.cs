@@ -840,28 +840,28 @@ public class GridVisualization : MonoBehaviour
 
         WorldItem witem = itemTransform.GetComponent<WorldItem>();
 
-        witem.SetItem(item, target, itemChunkIndex,chunkIndex);
+    //    witem.SetItem(item, target, itemChunkIndex,chunkIndex);
 
         if (item.quantity < ItemsAsset.instance.GetStackMax(item.itemID))
         {
             ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, itemChunkIndex, item.itemID);
-            if (chunkItem != null) witem.AddStacks(chunkItem, newItem,false);
+           // if (chunkItem != null) witem.AddStacks(chunkItem, newItem,false);
         }
     }
 
     public void StartAddStacks(Vector2 worldPosition,int chunkIndex, WorldItem worldItem)
     {
-        Vector2 vector2 = GetGridPosition(worldPosition);
-        ChunkItem oldchunkItem = map.chunks[chunkIndex].items[worldItem.itemChunkIndex];
+//         Vector2 vector2 = GetGridPosition(worldPosition);
+//         //ChunkItem oldchunkItem = map.chunks[chunkIndex].items[worldItem.itemChunkIndex];
 
-        if (worldItem.itemStats.quantity < ItemsAsset.instance.GetStackMax(worldItem.itemStats.itemID))
-        {
-            ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, worldItem.itemChunkIndex, worldItem.itemStats.itemID);
-            if (chunkItem != null)
-            {
-                worldItem.AddStacks(chunkItem, oldchunkItem,true);
-            }
-        }
+//      //   if (worldItem.itemStats.quantity < ItemsAsset.instance.GetStackMax(worldItem.itemStats.itemID))
+//         {
+//             ChunkItem chunkItem = CheckNeighboringWorldItems(vector2, chunkIndex, worldItem.itemChunkIndex, worldItem.itemStats.itemID);
+//             if (chunkItem != null)
+//             {
+//    //             worldItem.AddStacks(chunkItem, oldchunkItem,true);
+//             }
+//         }
     }
     public bool AddStacks(ChunkItem chunkItem,ItemStats itemStats)
     {
@@ -973,11 +973,11 @@ public class GridVisualization : MonoBehaviour
 
         Transform wItem = Instantiate(worldItem,pos, Quaternion.identity, transform).transform;
         item.worldItem = wItem;
-        wItem.GetComponent<WorldItem>().SetItem(item.item, pos, itemChunkIndex,chunk.chunkIndex);
+       //wItem.GetComponent<WorldItem>().SetItem(item.item, pos, itemChunkIndex,chunk.chunkIndex);
     }
     public void UnloadWorldItem(ChunkItem chunkItem)
     {
-        chunkItem.worldItem.GetComponent<WorldItem>().ClearTimers();
+      //  chunkItem.worldItem.GetComponent<WorldItem>().ClearTimers();
         Destroy(chunkItem.worldItem.gameObject);
     }
 
@@ -990,8 +990,8 @@ public class GridVisualization : MonoBehaviour
             if (itemChunkIndex != -1)
             {
                 Transform worldItem = chunk.items[itemChunkIndex].worldItem;
-                worldItem.GetComponent<WorldItem>().ClearTimers();
-                worldItem.GetComponent<WorldItem>().itemChunkIndex = -1;
+           //     worldItem.GetComponent<WorldItem>().ClearTimers();
+           //     worldItem.GetComponent<WorldItem>().itemChunkIndex = -1;
                 Destroy(worldItem.gameObject);
                 chunk.RemoveItem(itemChunkIndex);
             }

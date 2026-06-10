@@ -6,4 +6,5 @@ using UnityEngine;
 public struct EQDropItem : IRpcCommand
 {
     public SlotPosition position;
+    public int count;
 }

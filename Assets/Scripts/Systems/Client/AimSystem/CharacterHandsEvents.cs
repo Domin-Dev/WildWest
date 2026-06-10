@@ -14,6 +14,7 @@ using UnityEngine.XR;
 [UpdateInGroup(typeof(PresentationSystemGroup))]
 [UpdateBefore(typeof(CharacterHandsSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+[RequireMatchingQueriesForUpdate]
 partial struct CharacterHandsEvents : ISystem
 {
     private ComponentLookup<LocalTransform> transformLookup;
@@ -48,13 +49,6 @@ partial struct CharacterHandsEvents : ISystem
         containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);
 
         state.RequireForUpdate<VisualEffectsBuffer>();
-
-        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAny<PlayerActionRPC,NewAmmoSelectedRPC,EmptyMagazineRPC,StopReloadRPC,UnloadRPC,DropItemRPC>();   
-
-        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
-        entityQueryBuilder.Dispose();
-
     }
 
 
@@ -188,12 +182,63 @@ partial struct CharacterHandsEvents : ISystem
             entityCommandBuffer.DestroyEntity(rpc);
         }
         
+
+
+
+        foreach ((RefRO<CreateWorldItemRPC> action,Entity rpc) in SystemAPI.Query<RefRO<CreateWorldItemRPC>>().WithEntityAccess())
+        {    
+            if(currentTime.InterpolationTick.IsNewerThan(action.ValueRO.tick))
+            {
+                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<LocalTransform> position,Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<LocalTransform>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+                {
+                    if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
+                    foreach((RefRO<ChunkComponent> chunkComponent, DynamicBuffer<WorldItems> worldItems,Entity chunkEntity) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<WorldItems>>().WithAll<Simulate>().WithEntityAccess())
+                    {
+                        if(chunkComponent.ValueRO.chunkIndex != action.ValueRO.chunkIndex) continue;
+                        var container = EQHelper.GetContainer(containersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+                        if(container.HasValue)
+                        {
+                            EQHelper.TryGetBufferIndex(slotsLookup,action.ValueRO.slotIndex,container.Value.entity,out InventorySlot? slot,out int bufferIndex);
+                            if(slot.HasValue)
+                            {
+                                Entity worldItem = state.EntityManager.Instantiate(prefabs.worldItemEntity);
+                                Entity spriteEntity = state.EntityManager.GetBuffer<LinkedEntityGroup>(worldItem)[1].Value;
+                                state.EntityManager.GetComponentObject<SpriteRenderer>(spriteEntity).sprite = ItemsAsset.instance.GetIcon(slot.Value.itemId);
+                                entityCommandBuffer.SetComponent(worldItem, LocalTransform.FromPosition(position.ValueRO.Position));
+                                entityCommandBuffer.SetComponent<WorldItem>(worldItem,new WorldItem()
+                                {
+                                   chunkIndex = action.ValueRO.chunkIndex,
+                                   slotIndex = action.ValueRO.slotIndex
+                                });
+                                worldItems.Add(new WorldItems()
+                                {
+                                   slot = action.ValueRO.slotIndex,
+                                   worldItem = worldItem
+                                });
+                            }
+                        }
+                        break;
+                    }
+                    break;
+                }
+                entityCommandBuffer.DestroyEntity(rpc);
+            }
+            else if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(rpc))
+            {
+                var command = SystemAPI.GetComponent<ReceiveRpcCommandRequest>(rpc);
+                if(!command.IsConsumed)
+                {
+                    command.Consume();
+                    SystemAPI.SetComponent(rpc,command);
+                }
+            }
+        }
+
         
         foreach ((RefRO<DropItemRPC> action,Entity rpc) in SystemAPI.Query<RefRO<DropItemRPC>>().WithEntityAccess())
         {    
             if(currentTime.InterpolationTick.IsNewerThan(action.ValueRO.tick))
             {
-                Debug.Log("drop new!!!");
                 Sounds.instance.Click();
                 foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<LocalTransform> position,Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<LocalTransform>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
                 {
@@ -206,25 +251,33 @@ partial struct CharacterHandsEvents : ISystem
                         {
                             EQHelper.TryGetBufferIndex(slotsLookup,action.ValueRO.slotIndex,container.Value.entity,out InventorySlot? slot,out int bufferIndex);
                         
-                            Debug.Log("drop container " +container.Value.entity);
                             if(slot.HasValue)
                             {
                                 Entity worldItem = state.EntityManager.Instantiate(prefabs.worldItemEntity);
                                 Entity spriteEntity = state.EntityManager.GetBuffer<LinkedEntityGroup>(worldItem)[1].Value;
-                                state.EntityManager.GetComponentObject<SpriteRenderer>(spriteEntity).sprite = ItemsAsset.instance.GetIcon(slot.Value.itemId);
+                                SpriteRenderer spriteRenderer =  state.EntityManager.GetComponentObject<SpriteRenderer>(spriteEntity);
+                                spriteRenderer.sprite = ItemsAsset.instance.GetIcon(slot.Value.itemId);
+                                Color? color = slot.Value.color.ConvertToUnityColor();
+                                HeroEditor.SetMaterialColor(spriteRenderer,"_Color",color.HasValue ? color.Value : Color.white);
                                 entityCommandBuffer.SetComponent(worldItem, LocalTransform.FromPosition(position.ValueRO.Position));
-                                entityCommandBuffer.SetComponent<MoveToTarget>(worldItem,new MoveToTarget()
+                                entityCommandBuffer.AddComponent<MoveToTarget>(worldItem,new MoveToTarget()
                                 {
                                     duration = action.ValueRO.duration,
                                     startTick = action.ValueRO.tick,
                                     target = action.ValueRO.dropPosition,
                                     startPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y)
                                 });
-                                worldItems.Append(new WorldItems()
+                                entityCommandBuffer.SetComponent<WorldItem>(worldItem,new WorldItem()
+                                {
+                                   chunkIndex = action.ValueRO.chunkIndex,
+                                   slotIndex = action.ValueRO.slotIndex
+                                });
+                                worldItems.Add(new WorldItems()
                                 {
                                    slot = action.ValueRO.slotIndex,
                                    worldItem = worldItem
                                 });
+                                
                             }
                         }
                         break;
@@ -246,6 +299,51 @@ partial struct CharacterHandsEvents : ISystem
             }
         }
 
+        foreach ((RefRO<PickUpItemRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PickUpItemRPC>>().WithEntityAccess())
+        {    
+            if(currentTime.InterpolationTick.IsNewerThan(action.ValueRO.tick))
+            {
+                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<LocalTransform> position,Entity player) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<LocalTransform>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+                {
+                    if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
+                    foreach((RefRO<ChunkComponent> chunkComponent, DynamicBuffer<WorldItems> worldItems,Entity chunkEntity) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<WorldItems>>().WithAll<Simulate>().WithEntityAccess())
+                    {
+                        if(chunkComponent.ValueRO.chunkIndex != action.ValueRO.chunkIndex) continue;
+                        foreach(var item in worldItems)
+                        {
+                            if(item.slot == action.ValueRO.slotIndex)
+                            {
+                                if(transformLookup.TryGetComponent(item.worldItem,out var transform))
+                                {
+                                    Sounds.instance.Click();
+                                    entityCommandBuffer.AddComponent<MoveToTarget>(item.worldItem,new MoveToTarget()
+                                    {
+                                        duration = action.ValueRO.duration,
+                                        startTick = action.ValueRO.tick,
+                                        targetEntity = player,
+                                        destroy = action.ValueRO.destroyItem,
+                                        startPosition = new float2(transform.Position.x,transform.Position.y)
+                                    });
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    break;
+                }
+                entityCommandBuffer.DestroyEntity(rpc);
+            }
+            else if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(rpc))
+            {
+                var command = SystemAPI.GetComponent<ReceiveRpcCommandRequest>(rpc);
+                if(!command.IsConsumed)
+                {
+                    command.Consume();
+                    SystemAPI.SetComponent(rpc,command);
+                }
+            }
+        }
 
 
 

@@ -53,7 +53,6 @@ public partial class CalculateChunksForPlayersServerSystem : SystemBase
         public EntityCommandBuffer.ParallelWriter ecb;
         public MapSettings map;
         [ReadOnly] public DynamicBuffer<LoadedChunks> loadedChunks;
-
         [ReadOnly] public NativeParallelHashMap<int,LoadedChunks>.ReadOnly loadedChunksMap;
 
 

@@ -49,6 +49,8 @@ partial struct PlayerInputSystem : ISystem
         bool right = InputManager.i.sideAction.inProgress;
         bool reloadButton = InputManager.i.reload.inProgress;
         bool unloadButton = InputManager.i.unload.inProgress;
+        bool drop =  InputManager.i.dropItemInhand.WasPerformedThisFrame();
+
         if (math.lengthsq(input) > 1) input = math.normalize(input);
 
 
@@ -178,6 +180,23 @@ partial struct PlayerInputSystem : ISystem
             else
                 playerInput.ValueRW.unloadButton = default;
 
+            if(drop)
+                RPCHelper.SendRpc(ecb,new EQDropItem()
+                {
+                    count = 1,
+                    position = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot)
+                });
+
+            if(InputManager.i.sideAction.WasPerformedThisFrame())
+            {
+                RPCHelper.SendRpc(ecb,new EQDoubleClickAction()
+                {
+                    action = true,
+                    position = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot)
+                });
+            }
+
+            
         } 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();  

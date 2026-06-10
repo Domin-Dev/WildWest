@@ -18,4 +18,9 @@ public class BuildingObjectAuthoring : MonoBehaviour
     }
 }
 
+
+public struct kkkk : ICleanupComponentData
+{
+    public int value;
+}
  

@@ -37,3 +37,8 @@ public interface ISetPlayer
 {
     public void SetPlayer(int networkID,NetworkTick tick);
 }
+
+public interface ISetTick
+{
+    public void SetTick(NetworkTick tick);
+}

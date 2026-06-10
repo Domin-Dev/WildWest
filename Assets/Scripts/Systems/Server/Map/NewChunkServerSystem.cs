@@ -6,11 +6,11 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.NetCode;
 using UnityEngine;
 
 
 
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup),OrderFirst = true)]
 [RequireMatchingQueriesForUpdate]
 [BurstCompile]
@@ -23,9 +23,13 @@ public partial class NewChunkServerSystem : SystemBase
     protected override void OnCreate()
     {
         query = SystemAPI.QueryBuilder().WithAll<ChunkComponent,NewChunk,Simulate>().Build();
-        chunkManagerSystem = World.GetExistingSystemManaged<ChunkManagementServerSystem>();
+        if(World.IsServer()) 
+        {
+            chunkManagerSystem = World.GetExistingSystemManaged<ChunkManagementServerSystem>();
+            RequireForUpdate<MapSettings>();
+        }
         RequireForUpdate(query);
-        RequireForUpdate<MapSettings>();    
+;    
     }
 
     [BurstCompile]
@@ -35,12 +39,16 @@ public partial class NewChunkServerSystem : SystemBase
         var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
         foreach ((RefRO<ChunkComponent> chunkComponent, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>>().WithAll<NewChunk,Simulate>().WithNone<QueuedRequest>().WithEntityAccess())
         {
-            ChunkManagementServerSystem.loadedChunks.TryAdd(chunkComponent.ValueRO.chunkIndex,new LoadedChunks()
-            {
-                chunkEntity = entity,
-                chunkIndex = chunkComponent.ValueRO.chunkIndex,
-            });
+            ecb.AddBuffer<WorldItems>(entity);
             ecb.RemoveComponent<NewChunk>(entity);
+            if(World.IsServer())
+            {
+                ChunkManagementServerSystem.loadedChunks.TryAdd(chunkComponent.ValueRO.chunkIndex,new LoadedChunks()
+                {
+                    chunkEntity = entity,
+                    chunkIndex = chunkComponent.ValueRO.chunkIndex,
+                });
+            }
         }
     }
 }

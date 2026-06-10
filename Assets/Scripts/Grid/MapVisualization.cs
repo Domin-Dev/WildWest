@@ -531,6 +531,7 @@ public class MapVisualization : MonoBehaviour
             int w = (i % bordertextureSize) * t.width;
             int h = (i / bordertextureSize) * t.height;
            // uv00 = new Vector2(w / maxWidth, h / maxHeight);
+
             CopyTexture(w,h, tex.Value, texture);
 
             borderUV.Add(tex.Key, new Vector2((float)w / maxWidth, (float)h / maxHeight));
@@ -538,7 +539,6 @@ public class MapVisualization : MonoBehaviour
         }
         texture.Apply(true, true);
         borderTexture = texture;
-
 
 
 

@@ -12,11 +12,11 @@ public class ChunkAuthoring : MonoBehaviour
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new ChunkComponent());
             AddComponent(entity, new NewChunk());
+            AddComponent(entity, new ChunkTag());
             AddBuffer<ChunkTiles>(entity);
             AddBuffer<BuildingObjects>(entity);
             AddBuffer<GhostChildren>(entity);
             AddBuffer<EntityContainers>(entity);   
-            AddBuffer<WorldItems>(entity);
         }
     }
 }

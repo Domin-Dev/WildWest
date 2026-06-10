@@ -591,7 +591,6 @@ public partial struct CollisionSystem : ISystem
                     {
                         lifetime = 1.5f,
                         startPosition = lt.Position,
-                        elapsedTime = 0,
                         moveDirection = new float3(0, 0.4f, 0)
                     });
                 }

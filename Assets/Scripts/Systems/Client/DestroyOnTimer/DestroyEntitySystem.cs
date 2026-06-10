@@ -10,6 +10,7 @@ using UnityEngine.UIElements;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
+[UpdateBefore(typeof(EndPredictedSimulationEntityCommandBufferSystem))]
 public partial class DestroyEntitySystem : SystemBase
 {
 

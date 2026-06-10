@@ -15,15 +15,22 @@ public class WorldItemAuthoring : MonoBehaviour
         public override void Bake(WorldItemAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent<MoveToTarget>(entity);
+            AddComponent<WorldItem>(entity);
+            AddComponent<kkkk>(entity);
         }
     }
 }
 public struct MoveToTarget : IComponentData
 {
     public NetworkTick startTick;
+
     public float2 target;
+    public Entity targetEntity;
+    public bool destroy;
+
+
     public float2 startPosition;
     public float duration; 
 }
+
 

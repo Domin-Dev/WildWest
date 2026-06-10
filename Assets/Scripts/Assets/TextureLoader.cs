@@ -28,6 +28,7 @@ public class TextureLoader : MonoBehaviour
         }
         return textures;
     }
+    
 
     public static void UnloadTextures(Dictionary<int, Texture2D> floors)
     {

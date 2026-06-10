@@ -52,22 +52,21 @@ partial struct CombineItemsServerSystem : ISystem
             EquipmentEvent[] events = null;
             var container = EQHelper.GetContainer(playerContainersLookup, player, command.ValueRO.position.containerIndex);
 
-
             if(container.HasValue && !SystemAPI.HasComponent<ServerContainer>(container.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, command.ValueRO.position.slotIndex,container.Value.entity, out InventorySlot? item, out int bufferIndex))           
             {
                 if(EQHelper.TryFindContainerForItem(ref state,playerContainersLookup,player,out EntityContainers? newContainer,ContainerType.Outfit,item.Value.itemId))
                 {
                     // try to find free slot or try combine the item in target container
                     if(EQHelper.TryFindSlotForItem(ref state, slotsLookup,playerContainersLookup, player,item.Value,out EQTransferData[] data, newContainer.Value.index))
-                        events = EQHelper.MoveItems(ref state,ref ecb,linkedLookup,barsLookup,slotsLookup,connection,playerContainersLookup,command.ValueRO.position, player,data);
+                        events = EQHelper.MoveItems(ref state, ecb,linkedLookup,barsLookup,slotsLookup,connection,playerContainersLookup,command.ValueRO.position, player,data);
                     else
                         events = EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedLookup,barsLookup,slotsLookup,connection,player,container.Value,newContainer.Value,0,command.ValueRO.position.slotIndex,int.MaxValue,true);
                 }
-                else
+                else if(!command.ValueRO.action)
                 {
                     events = CombineItems(ref state, ref ecb, player,rpcCommandRequest.ValueRO.SourceConnection,container.Value,item.Value,bufferIndex,command.ValueRO.position.slotIndex);
                 }
-
+                
                 EQHelper.SendEvents(ref ecb, networkID,command.ValueRO.position, events);
             }
 

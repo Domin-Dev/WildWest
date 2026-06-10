@@ -54,7 +54,7 @@ partial struct DropItemsServerSystem : ISystem
             PlayerInput playerInput = SystemAPI.GetComponent<PlayerInput>(player);
             LocalTransform localTransform = SystemAPI.GetComponent<LocalTransform>(player);
             float2 direction = playerInput.sightDirection - new float2(localTransform.Position.x, localTransform.Position.y);
-            float randomValue = UnityEngine.Random.Range(0.15f,0.3f);
+            float randomValue = UnityEngine.Random.Range(0.2f,0.3f);
             direction = math.normalize(direction) * randomValue + new float2(localTransform.Position.x,localTransform.Position.y);
             Entity chunkEntity = ghostChunk.currentChunkEntity;
 
@@ -69,11 +69,12 @@ partial struct DropItemsServerSystem : ISystem
             if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, from.slotIndex, containerFrom.Value.entity, out int itemID, out int index))
             {
                 int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
+                int count = command.ValueRO.count >= 1 ? command.ValueRO.count : int.MaxValue;
+
                 var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
-                    containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,moveBetweenObjects:true,serverMove:true);
+                    containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,count,moveBetweenObjects:true,serverMove:true);
                    
-                RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(ghostChunk.GetChunk(),slotIndex,direction,randomValue * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,ghostChunk.GetChunk(),currentTick);      
-                RPCHelper.CreateSerwerLocalEvent<CreateWorldItem>(new CreateWorldItem(),ecb,player, networkID,currentTick,false);
+                RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(ghostChunk.GetChunk(),slotIndex,direction,randomValue * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,ghostChunk.GetChunk(),currentTick,true);      
                 if (tab != null) events.AddRange(tab);
             }
 

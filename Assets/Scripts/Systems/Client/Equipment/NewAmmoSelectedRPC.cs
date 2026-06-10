@@ -71,6 +71,55 @@ public struct DropItemRPC : IRpcCommand, ISetPlayer
 }
 
 
+public struct PickUpItemRPC : IRpcCommand, ISetPlayer
+{
+    public int networkID;
+    public NetworkTick tick;
+    public int chunkIndex;
+    public int slotIndex;
+    public float duration;
+    public bool destroyItem;
+    public PickUpItemRPC(int chunkIndex, int slotIndex, float duration, bool destroyItem)
+    {
+        this.chunkIndex = chunkIndex;
+        this.slotIndex = slotIndex;
+        this.networkID = 0;
+        this.duration = duration;
+        this.tick = NetworkTick.Invalid;
+        this.destroyItem = destroyItem;
+    }
+
+    public void SetPlayer(int networkID,NetworkTick tick)
+    {
+        this.networkID = networkID;
+        this.tick = tick;
+    }
+}
+
+public struct SpawnWorldItem : IComponentData
+{
+    public float2 dropPosition;
+    public int slotIndex;
+    public int chunkIndex;
+    public  InventorySlot item;
+    public Entity chunk;
+}
+
+
+public struct PickUpItemCompleted : IComponentData, ISetPlayer
+{
+    public int networkID;
+    public NetworkTick tick;
+    public int chunkIndex;
+    public int slotIndex;
+ 
+    public void SetPlayer(int networkID,NetworkTick tick)
+    {
+        this.networkID = networkID;
+        this.tick = tick;
+    }
+}
+
 
 
 
@@ -139,10 +188,14 @@ public struct FutureReload : IComponentData,ISetPlayer
 }
 
 
-public struct CreateWorldItem : IComponentData,ISetPlayer
+public struct CreateWorldItemRPC : IRpcCommand,ISetPlayer
 {
     public int networkID;
     public NetworkTick tick;
+    public int chunkIndex;
+    public int slotIndex;
+
+
     public void SetPlayer(int networkID,NetworkTick tick)
     {
         this.networkID = networkID;

@@ -43,7 +43,7 @@ public class DragManager : MonoBehaviour
     }
     public bool ItemSelected(DragItem dragDrop, DropSlot dropSlot, PointerEventData eventData)
     {
-        if (dragItem == null)
+        if (dragItem == null && dragDrop != null)
         {
             dragItemSlot = dragDrop.GetSlotPosition();
             if (lastSlotPostion.Compare(dragItemSlot) && Time.time - lastSelectionTime < doubleClickThreshold)
@@ -51,17 +51,17 @@ public class DragManager : MonoBehaviour
                 NewEquipmentManager.instance.DoubleClick(dragItemSlot);
                 return false;
             }
-            if (InputManager.i.moveTheItem.inProgress)
+            if (InputManager.input.Eqipment.MoveTheItem.inProgress)
             {
                 RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveItemToContainer() { from = dragItemSlot });
                 return false;
             }
-            if (InputManager.i.moveAllTheItems.inProgress)
+            if (InputManager.input.Eqipment.MoveAllTheItems.inProgress)
             {
                 RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveAllItemsToContainer() { from = dragItemSlot });
                 return false;
             }
-            if (InputManager.i.dropItem.inProgress)
+            if (InputManager.input.Eqipment.DropItem.inProgress)
             {
                 RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = dragItemSlot });
                 return false;
@@ -137,9 +137,9 @@ public class DragManager : MonoBehaviour
         n = 1;
         if (pointerEventData.button == PointerEventData.InputButton.Left)
         {
-            if (InputManager.i.moveTheItem.inProgress)
+            if (InputManager.input.Eqipment.MoveTheItem.inProgress)
                 n = 5;
-            else if (InputManager.i.moveAllTheItems.inProgress)
+            else if (InputManager.input.Eqipment.MoveAllTheItems.inProgress)
                 n = 10;
             else
                 mode = SelectionMode.All;

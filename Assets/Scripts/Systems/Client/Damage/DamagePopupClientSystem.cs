@@ -8,16 +8,16 @@ using UnityEngine;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
+[UpdateInGroup(typeof(PresentationSystemGroup))]
 [RequireMatchingQueriesForUpdate]
 partial struct DamagePopupClientSystem : ISystem
 {
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         float deltaTime = SystemAPI.Time.DeltaTime;
 
-        foreach ((RefRW<DamagePopup> damagePopup, RefRW<LocalTransform> localTransform, Entity e) in SystemAPI.Query<RefRW<DamagePopup>, RefRW<LocalTransform>>().WithAll<Simulate>().WithNone<NetworkStreamInGame>().WithEntityAccess())
+        foreach ((RefRW<DamagePopup> damagePopup, RefRW<LocalTransform> localTransform, Entity e) in SystemAPI.Query<RefRW<DamagePopup>, RefRW<LocalTransform>>().WithAll<Simulate>().WithEntityAccess())
         {
             var dt = damagePopup.ValueRW;
 
@@ -39,4 +39,5 @@ partial struct DamagePopupClientSystem : ISystem
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();
     }
+
 }

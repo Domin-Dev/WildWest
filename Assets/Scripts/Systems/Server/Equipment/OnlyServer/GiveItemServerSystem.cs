@@ -54,7 +54,6 @@ partial struct GiveItemServerSystem : ISystem
 
             var slots = EQHelper.FindSlotForItem(ref state, slotsLookup, playerContainersLookup, player,command.ValueRO.item);
             var events = EQHelper.AddItems(ref state,entityCommandBuffer,ref entitiesReferences,linkedContainersLookup,barsLookup,slotsLookup, playerContainersLookup, player, slots, command.ValueRO);
-           
             EQHelper.SendEvents(ref entityCommandBuffer, networkID, events);
             entityCommandBuffer.DestroyEntity(entity);
         }

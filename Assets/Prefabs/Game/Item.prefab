@@ -194,4 +194,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae22f57f6dd9ff61a6e62c245607f25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorldItemAuthoring
-  bodyPartType: 0

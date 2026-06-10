@@ -39,8 +39,6 @@ partial struct OnEquipServerSystem : ISystem
         {
             if(SystemAPI.Exists(command.ValueRO.player))
             {
-                Debug.Log("Player outfit " + command.ValueRO.player);
-
                 Entity connection = SystemAPI.GetComponent<PlayerSourceConnection>(command.ValueRO.player).value;
                 int networkID =  SystemAPI.GetComponent<NetworkId>(connection).Value;
                 var playerComp = SystemAPI.GetComponentRW<Player>(command.ValueRO.player);

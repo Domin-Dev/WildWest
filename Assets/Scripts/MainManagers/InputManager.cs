@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
-    public static NewInput input;
+    public static NewInput input { private set; get; }
     public static InputManager i { private set; get; }
 
     private InputActionAsset action;
@@ -14,10 +14,6 @@ public class InputManager : MonoBehaviour
 
 
 
-
-    public InputAction dropItem { private set; get; }
-    public InputAction moveAllTheItems { private set; get; }
-    public InputAction moveTheItem { private set; get; }
 
 
     public InputAction playerList { private set; get; }
@@ -39,6 +35,7 @@ public class InputManager : MonoBehaviour
     public InputAction nextAmmo { private set; get; }
     public InputAction reload { private set; get; }
     public InputAction unload { private set; get; }
+    public InputAction dropItemInhand { private set; get; }
 
 
 
@@ -56,6 +53,7 @@ public class InputManager : MonoBehaviour
         if (i == null)
         {
             input = new NewInput();
+            input.Enable();
             i = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -65,10 +63,6 @@ public class InputManager : MonoBehaviour
     public void SetUp(InputActionAsset inputAsset)
     {
         action = inputAsset;
-
-        dropItem = action.FindAction("DropItem");
-        moveAllTheItems = action.FindAction("MoveAllTheItems");
-        moveTheItem = action.FindAction("MoveTheItem");  
 
         playerList = action.FindAction("PlayerList");
         chat = action.FindAction("Chat");
@@ -80,6 +74,8 @@ public class InputManager : MonoBehaviour
         sideAction = action.FindAction("SideAction");
         reload = action.FindAction("Reload");
         unload = action.FindAction("Unload");
+        dropItemInhand = action.FindAction("DropItemInhand");
+
 
         previousSlot = action.FindAction("PreviousSlot");
         nextSlot = action.FindAction("NextSlot");
@@ -98,8 +94,8 @@ public class InputManager : MonoBehaviour
 
 
         previousSlot.performed += PreviousSlot_performed;
-        moveTheItem.performed += PlayerList_performed;
-
+        //moveTheItem.performed += PlayerList_performed;
+        
         move.performed += Move_performed;
     }
 

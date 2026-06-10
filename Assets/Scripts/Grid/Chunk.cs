@@ -126,7 +126,7 @@ public struct Chunk
             ChunkItem chunkItem = items[i];
             if (chunkItem != null && chunkItem.position == posXY)
             {
-                chunkItem.worldItem.GetComponent<WorldItem>().Move(newWorldPosition, chunkItem, currentChunk, newChunk);
+              //  chunkItem.worldItem.GetComponent<WorldItem>().Move(newWorldPosition, chunkItem, currentChunk, newChunk);
             }
         }
     }

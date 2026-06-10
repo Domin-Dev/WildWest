@@ -28,6 +28,7 @@ public partial struct TriggerSystem : ISystem
 
         var job = new TriggerJob()
         {
+            destroyEntityLookup = SystemAPI.GetComponentLookup<DestroyEntityTag>(true),
             bulletLookup = SystemAPI.GetComponentLookup<Bullet>(true),
             environmentLookup = SystemAPI.GetComponentLookup<EnvironmentObject>(true),
             positionLookup = SystemAPI.GetComponentLookup<LocalTransform>(true),
@@ -49,7 +50,7 @@ public partial struct TriggerSystem : ISystem
 public struct TriggerJob : ITriggerEventsJob
 {
 
-
+    [ReadOnly] public ComponentLookup<DestroyEntityTag> destroyEntityLookup;
     [ReadOnly] public ComponentLookup<Bullet> bulletLookup;
     [ReadOnly] public ComponentLookup<EnvironmentObject> environmentLookup; 
     [ReadOnly] public ComponentLookup<LocalTransform> positionLookup;
@@ -74,13 +75,9 @@ public struct TriggerJob : ITriggerEventsJob
     public bool Bullet(TriggerEvent triggerEvent)
     {
         Entity bullet; 
-
         Entity collider;
         ColliderKey colliderKey;
 
-
-
-        Debug.Log(triggerEvent.EntityA + " koli " + triggerEvent.EntityB);
         if(bulletLookup.HasComponent(triggerEvent.EntityA))
         {
             bullet = triggerEvent.EntityA;
@@ -96,7 +93,7 @@ public struct TriggerJob : ITriggerEventsJob
         else
             return false;
 
-
+        if(destroyEntityLookup.HasComponent(bullet) || destroyEntityLookup.HasComponent(collider)) return true;
         if(BulletHitbox(bullet,collider,colliderKey)) return true;
         if(BulletEnviroment(bullet,collider)) return true;
         return true;
@@ -141,13 +138,13 @@ public struct TriggerJob : ITriggerEventsJob
             {
                 Entity popup = ecb.Instantiate(entitiesReferences.worldTextEntity);
                 float3 bulletPos = positionLookup[bullet].Position;
-                ecb.SetComponent(popup, LocalTransform.FromPosition(new float3(bulletPos.x,bulletPos.y, bulletPos.y + 100)));
+                ecb.SetComponent(popup, LocalTransform.FromPosition(new float3(bulletPos.x,bulletPos.y, -1)));
                 ecb.SetComponent(popup, new DamagePopup()
                 {
                     lifetime = 1.5f,
-                    startPosition = bulletPos,
                     elapsedTime = 0,
-                    moveDirection = new float3(0, 0.4f, 0)
+                    moveDirection = new float3(0, 0.4f, 0),
+                    damageTag = hitBoxSettings.damageMultiplier > 1f ? DamageTag.Critical : DamageTag.Normal
                 });
             }
             else
@@ -170,6 +167,20 @@ public struct TriggerJob : ITriggerEventsJob
             EntitySpawner.SpawnParticle(ecb,entitiesReferences.spark,new float3(position.x, position.y,0), quaternion.identity);         
         }
         ecb.AddComponent(bullet, new DestroyEntityTag());
+
+        if(isClient)
+        {
+            Entity popup = ecb.Instantiate(entitiesReferences.worldTextEntity);
+            ecb.SetComponent(popup, LocalTransform.FromPosition(new float3(position.x,position.y, -1)));
+            ecb.SetComponent(popup, new DamagePopup()
+            {
+                lifetime = 1.5f,
+                elapsedTime = 0,
+                moveDirection = new float3(0, 0.4f, 0),
+                damageTag = DamageTag.Critical,
+                damageValue = 10
+            });
+        }
         return true;
     }
 }

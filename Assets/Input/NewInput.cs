@@ -104,6 +104,15 @@ namespace UnityEngine.InputSystem
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""DropItemInhand"",
+                    ""type"": ""Button"",
+                    ""id"": ""7efa0caa-1ddf-4bba-a5ac-c882f705e742"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Move"",
                     ""type"": ""Value"",
                     ""id"": ""e38dc7c0-5911-4387-9d67-88ebe4f7a6e7"",
@@ -511,6 +520,17 @@ namespace UnityEngine.InputSystem
                     ""processors"": """",
                     ""groups"": "";Gamepad"",
                     ""action"": ""Equipment"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0ddb79db-65e6-4787-b2be-ad49baf48326"",
+                    ""path"": ""<Keyboard>/g"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""DropItemInhand"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -1273,6 +1293,7 @@ namespace UnityEngine.InputSystem
             // Player
             m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
             m_Player_Equipment = m_Player.FindAction("Equipment", throwIfNotFound: true);
+            m_Player_DropItemInhand = m_Player.FindAction("DropItemInhand", throwIfNotFound: true);
             m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
             m_Player_SideAction = m_Player.FindAction("SideAction", throwIfNotFound: true);
             m_Player_MainAction = m_Player.FindAction("MainAction", throwIfNotFound: true);
@@ -1396,6 +1417,7 @@ namespace UnityEngine.InputSystem
         private readonly InputActionMap m_Player;
         private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
         private readonly InputAction m_Player_Equipment;
+        private readonly InputAction m_Player_DropItemInhand;
         private readonly InputAction m_Player_Move;
         private readonly InputAction m_Player_SideAction;
         private readonly InputAction m_Player_MainAction;
@@ -1432,6 +1454,10 @@ namespace UnityEngine.InputSystem
             /// Provides access to the underlying input action "Player/Equipment".
             /// </summary>
             public InputAction @Equipment => m_Wrapper.m_Player_Equipment;
+            /// <summary>
+            /// Provides access to the underlying input action "Player/DropItemInhand".
+            /// </summary>
+            public InputAction @DropItemInhand => m_Wrapper.m_Player_DropItemInhand;
             /// <summary>
             /// Provides access to the underlying input action "Player/Move".
             /// </summary>
@@ -1545,6 +1571,9 @@ namespace UnityEngine.InputSystem
                 @Equipment.started += instance.OnEquipment;
                 @Equipment.performed += instance.OnEquipment;
                 @Equipment.canceled += instance.OnEquipment;
+                @DropItemInhand.started += instance.OnDropItemInhand;
+                @DropItemInhand.performed += instance.OnDropItemInhand;
+                @DropItemInhand.canceled += instance.OnDropItemInhand;
                 @Move.started += instance.OnMove;
                 @Move.performed += instance.OnMove;
                 @Move.canceled += instance.OnMove;
@@ -1622,6 +1651,9 @@ namespace UnityEngine.InputSystem
                 @Equipment.started -= instance.OnEquipment;
                 @Equipment.performed -= instance.OnEquipment;
                 @Equipment.canceled -= instance.OnEquipment;
+                @DropItemInhand.started -= instance.OnDropItemInhand;
+                @DropItemInhand.performed -= instance.OnDropItemInhand;
+                @DropItemInhand.canceled -= instance.OnDropItemInhand;
                 @Move.started -= instance.OnMove;
                 @Move.performed -= instance.OnMove;
                 @Move.canceled -= instance.OnMove;
@@ -2132,6 +2164,13 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnEquipment(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "DropItemInhand" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnDropItemInhand(InputAction.CallbackContext context);
             /// <summary>
             /// Method invoked when associated input action "Move" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
             /// </summary>
