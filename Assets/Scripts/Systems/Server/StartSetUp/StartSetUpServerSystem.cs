@@ -11,7 +11,7 @@ partial struct StartSetUpServerSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        if(GameInfo.instance != null && GameInfo.instance. startGame)
+        if(GameInfo.instance != null && GameInfo.instance.startGame)
         {
             GameInfo data = GameInfo.instance;
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -81,6 +81,17 @@ partial struct StartSetUpServerSystem : ISystem
                 savedChunksInTickPerClient = 5,
                 maxSavedChunksInTick = 50,
                 defragmentationLimit = 0.6f
+            });
+
+            var mask = LayerMask.NameToLayer("WorldItems");
+            EntityHelper.CreateEntityWithComponent(ecb, new WorldItemsConfig()
+            {
+                FilterToFindSimilarWorldItems = new Unity.Physics.CollisionFilter()
+                {
+                    BelongsTo = uint.MaxValue,
+                    CollidesWith = (uint) math.pow(2,mask)
+                },
+                sizeWorldItemCollider = new float2(0.23f,0.23f)
             });
 
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);

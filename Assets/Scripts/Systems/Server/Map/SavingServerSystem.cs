@@ -97,7 +97,7 @@ public partial class SavingServerSystem : SystemBase
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged);
         var playersList = SystemAPI.GetSingletonBuffer<PlayersList>(true);
 
-        foreach ((RefRO<ChunkComponent> chunkComp,DynamicBuffer<ChunkTiles> tiles,DynamicBuffer<BuildingObjects> buildingObjects, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<ChunkTiles>,DynamicBuffer<BuildingObjects>>().WithAll<ToSave>().WithNone<NewChunk>().WithEntityAccess())
+        foreach ((RefRO<ChunkComponent> chunkComp,DynamicBuffer<ChunkTiles> tiles,DynamicBuffer<BuildingObjects> buildingObjects,EnabledRefRW<ToSave> toSave, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<ChunkTiles>,DynamicBuffer<BuildingObjects>,EnabledRefRW<ToSave>>().WithNone<NewChunk>().WithEntityAccess())
         {
             NativeArray<TileSave> tileDatas = new NativeArray<TileSave>(tiles.Length,Allocator.Persistent);
             NativeArray<BuildingObjectSave> buildingObjs = new NativeArray<BuildingObjectSave>(buildingObjects.Length,Allocator.Persistent);
@@ -115,7 +115,7 @@ public partial class SavingServerSystem : SystemBase
                 tiles = tileDatas,
                 objects = buildingObjs
             }));
-            ecb.SetComponentEnabled<ToSave>(entity,false);
+            toSave.ValueRW = false;
         }
     
         // foreach ((RefRO<GhostOwner> owner,RefRO<ContainerComponent> containerComponent,DynamicBuffer<InventorySlot> slots,DynamicBuffer<ItemBarData> barData, Entity entity) in SystemAPI.Query<RefRO<GhostOwner>,RefRO<ContainerComponent>,DynamicBuffer<InventorySlot>,DynamicBuffer<ItemBarData>>().WithAll<ToSave>().WithEntityAccess())

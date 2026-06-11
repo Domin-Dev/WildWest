@@ -15,10 +15,11 @@ public struct ChunkComponent : IComponentData
     [GhostField] public int regionIndex;
 }
 
-public struct ChunkTag : ICleanupComponentData
-{
-    public int value;
 
+
+public struct ChunkComponentCleanUp : ICleanupComponentData
+{
+    public int chunkIndex;
 }
 
 public struct ChunkTimestamp : IComponentData

@@ -24,7 +24,7 @@ TagManager:
   - UI
   - Hitbox
   - Weapon
-  - Items
+  - WorldItems
   - CharacterCollider
   - Environment
   - Bullet

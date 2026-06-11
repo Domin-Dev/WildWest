@@ -353,6 +353,14 @@ partial struct RPCProcessingSystem : ISystem
         }
 
 
+        foreach ((RefRO<MergeItemsPRC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
+        SystemAPI.Query<RefRO<MergeItemsPRC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            for(int i = 1; i < toPlayers.Length;i++)
+                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
+            ecb.DestroyEntity(entity);
+        }
+
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

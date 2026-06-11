@@ -91,6 +91,7 @@ public struct TriggerServerJob : ITriggerEventsJob
         if(!worldItemLookup.IsComponentEnabled(worldItem))
             return;
 
+
         WorldItem worldItemComponent = worldItemLookup[worldItem];
         if(EQHelper.FindSlotForItem(contComponentLookup,slotLookup,entityContainersLookup,player,worldItemComponent.item,out int remains).Length > 0)
         {
@@ -100,9 +101,4 @@ public struct TriggerServerJob : ITriggerEventsJob
             ecb.AddComponent<DestroyEntityTag>(worldItem);
         }
     }
-
-
-
-
-
 }

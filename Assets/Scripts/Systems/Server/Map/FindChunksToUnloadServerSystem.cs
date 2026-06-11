@@ -21,7 +21,7 @@ public partial class FindChunksToUnloadServerSystem : SystemBase
     protected override void OnCreate()
     {
         players = SystemAPI.QueryBuilder().WithAll<Player>().Build();
-        chunkQuery = SystemAPI.QueryBuilder().WithAll<ChunkComponent,ChunkTimestamp,PlayersNeedChunk,ChunkObjects>().WithNone<NewChunk>().Build();
+        chunkQuery = SystemAPI.QueryBuilder().WithAll<ChunkComponent,ChunkTimestamp,PlayersNeedChunk,ChunkObjects>().WithNone<NewChunk>().WithDisabled<ToSave>().Build();
         nextUpdate = NetworkTick.Invalid;
 
         RequireForUpdate<MapSettings>();

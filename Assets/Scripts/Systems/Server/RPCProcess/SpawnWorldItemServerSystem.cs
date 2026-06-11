@@ -4,6 +4,11 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+public struct NewWorldItem : IComponentData
+{
+    
+    
+}
 
 public struct WorldItem : IComponentData, IEnableableComponent
 {
@@ -34,32 +39,38 @@ partial struct SpawnWorldItemServerSystem : ISystem
     {
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<LoadedChunks>();
+        state.RequireForUpdate<WorldItemsConfig>();
 
-        worldItemArchetype = state.EntityManager.CreateArchetype(
-            typeof(LocalTransform),typeof(PhysicsCollider),typeof(PhysicsWorldIndex),typeof(WorldItem));
+        if(SystemAPI.TryGetSingleton<WorldItemsConfig>(out var worldItemsConfig))
+        {
+            worldItemArchetype = state.EntityManager.CreateArchetype(
+                typeof(LocalTransform),typeof(PhysicsCollider),typeof(PhysicsWorldIndex),typeof(WorldItem),typeof(NewWorldItem));
 
-        var boxGeometry = new BoxGeometry
-        {
-            Center = new float3(0,0.1f,0),
-            Size = new float3(0.23f,0.23f,300f),
-            Orientation = quaternion.identity,
-            BevelRadius = 0f
-        };
-        var collisionFilter = new CollisionFilter()
-        {
-            BelongsTo =  1u << 8,
-            CollidesWith = 1u << 9
-        };
-        var material = new Unity.Physics.Material()
-        {
-            Friction = 0f,
-            Restitution = 0f,   
-            CollisionResponse = CollisionResponsePolicy.RaiseTriggerEvents,
-        };
-        collider = Unity.Physics.BoxCollider.Create(boxGeometry,collisionFilter,material);
+            var boxGeometry = new BoxGeometry
+            {
+                Center = new float3(0,0.1f,0),
+                Size = new float3(worldItemsConfig.sizeWorldItemCollider,300f),
+                Orientation = quaternion.identity,
+                BevelRadius = 0f
+            };
+            var collisionFilter = new CollisionFilter()
+            {
+                BelongsTo =  1u << 8,
+                CollidesWith = 1u << 9
+            };
+            var material = new Unity.Physics.Material()
+            {
+                Friction = 0f,
+                Restitution = 0f,   
+                CollisionResponse = CollisionResponsePolicy.RaiseTriggerEvents,
+            };
+            collider = Unity.Physics.BoxCollider.Create(boxGeometry,collisionFilter,material);
+        }
+
     }
     public void OnUpdate(ref SystemState state)
     {
+        var worldItems = SystemAPI.GetSingleton<WorldItemsConfig>();
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRW<SpawnWorldItem> rpc, Entity e) in
         SystemAPI.Query<RefRW<SpawnWorldItem>>().WithNone<WaitForProcess>().WithEntityAccess())
@@ -84,7 +95,7 @@ partial struct SpawnWorldItemServerSystem : ISystem
                 worldItem = entity
             });
         }
-        ecb.Playback(state.EntityManager);
+        ecb.Playback(state.EntityManager);  
         ecb.Dispose();
     }
 }

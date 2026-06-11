@@ -96,6 +96,31 @@ public struct PickUpItemRPC : IRpcCommand, ISetPlayer
     }
 }
 
+public struct MergeItemsPRC : IRpcCommand, ISetPlayer
+{
+    public int networkID;
+    public NetworkTick tick;
+
+    public int fromChunkIndex;
+    public int fromSlotIndex;
+
+    public int toChunkIndex;
+    public int toSlotIndex;
+
+
+    public float duration;
+
+
+
+    public void SetPlayer(int networkID,NetworkTick tick)
+    {
+        this.networkID = networkID;
+        this.tick = tick;
+    }
+}
+
+
+
 public struct SpawnWorldItem : IComponentData
 {
     public float2 dropPosition;

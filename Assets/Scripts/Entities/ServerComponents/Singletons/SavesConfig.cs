@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -20,4 +21,11 @@ public struct SavesConfig: IComponentData
     /// it defines the maximum amount of unused space allowed in the file. 0.3 => 30% max unused
     /// </summary>
     public float defragmentationLimit;
+}
+
+
+public struct WorldItemsConfig: IComponentData
+{
+    public CollisionFilter FilterToFindSimilarWorldItems;
+    public float2 sizeWorldItemCollider;
 }

@@ -37,6 +37,7 @@ partial struct CharacterHandsEvents : ISystem
     {
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<NetworkTime>();
+        state.RequireForUpdate<ClientChunks>();
 
         transformLookup = SystemAPI.GetComponentLookup<LocalTransform>();
         animationLookup = SystemAPI.GetComponentLookup<AnimationComponent>();
@@ -70,8 +71,8 @@ partial struct CharacterHandsEvents : ISystem
         state.CompleteDependency();
         var currentTime = SystemAPI.GetSingleton<NetworkTime>();
         var prefabs = SystemAPI.GetSingleton<EntitiesReferences>();
+        var chunks = SystemAPI.GetSingleton<ClientChunks>();
         
-
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {      
@@ -344,7 +345,6 @@ partial struct CharacterHandsEvents : ISystem
                 }
             }
         }
-
 
 
 

@@ -7,8 +7,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateInGroup(typeof(PresentationSystemGroup),OrderLast = true)]
-
+[UpdateInGroup(typeof(TransformSystemGroup))]
 partial struct MoveToTargetSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
