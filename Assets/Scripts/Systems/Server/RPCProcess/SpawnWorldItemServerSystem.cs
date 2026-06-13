@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
@@ -21,26 +22,15 @@ public struct WorldItem : IComponentData, IEnableableComponent
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [RequireMatchingQueriesForUpdate]
-[UpdateAfter(typeof(RPCProcessingSystem))]
+[UpdateAfter(typeof(WorldItemServerSystem))]
 partial struct SpawnWorldItemServerSystem : ISystem
 {
-
-    private BufferLookup<InventorySlot> slotsLookup;
-    private BufferLookup<EntityContainers> containersLookup;
-    private BufferLookup<ItemBarData> barsLookup;
-    private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
-    private BufferLookup<LinkedContainers> linkedContainers;
-
-
     private EntityArchetype worldItemArchetype;
     private BlobAssetReference<Unity.Physics.Collider> collider;
 
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<EntitiesReferences>();
-        state.RequireForUpdate<LoadedChunks>();
         state.RequireForUpdate<WorldItemsConfig>();
-
         if(SystemAPI.TryGetSingleton<WorldItemsConfig>(out var worldItemsConfig))
         {
             worldItemArchetype = state.EntityManager.CreateArchetype(
@@ -67,11 +57,15 @@ partial struct SpawnWorldItemServerSystem : ISystem
             collider = Unity.Physics.BoxCollider.Create(boxGeometry,collisionFilter,material);
         }
 
+        state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<LoadedChunks>();
+        state.RequireForUpdate<Chunks>();
     }
     public void OnUpdate(ref SystemState state)
     {
-        var worldItems = SystemAPI.GetSingleton<WorldItemsConfig>();
+
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+
         foreach ((RefRW<SpawnWorldItem> rpc, Entity e) in
         SystemAPI.Query<RefRW<SpawnWorldItem>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
@@ -95,6 +89,7 @@ partial struct SpawnWorldItemServerSystem : ISystem
                 worldItem = entity
             });
         }
+        
         ecb.Playback(state.EntityManager);  
         ecb.Dispose();
     }

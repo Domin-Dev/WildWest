@@ -1,4 +1,5 @@
 
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -111,6 +112,29 @@ public struct MapSettings: IComponentData
         else
             return -1;
     }
+
+    [BurstCompile]
+    public float2 GetCorrectPosition(float2 enginePosition)
+    {
+        return new float2(math.clamp(enginePosition.x,0,mapSizeInEngine),math.clamp(enginePosition.y,0,mapSizeInEngine));
+    }
+
+
+    [BurstCompile]
+    public void GetCorrectChunkAndPosition(float2 enginePosition,out int chunkIndex,out float2 correctPosition)
+    {
+        chunkIndex = GetChunkIndexFromEnginePosition(enginePosition);
+        if(chunkIndex == -1)
+        {
+            correctPosition = GetCorrectPosition(enginePosition);
+            chunkIndex = GetChunkIndexFromEnginePosition(correctPosition);
+        }
+        else
+            correctPosition = enginePosition;
+    }
+
+
+
     [BurstCompile]
     public int GetChunkIndexFromEnginePosition(float3 enginePosition)
     {

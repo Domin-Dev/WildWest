@@ -30,7 +30,7 @@ partial struct StartSetUpClientSystem : ISystem
                 spreadRecovery = 0.06f,
             });
       
-
+      
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }

@@ -12,7 +12,7 @@ using UnityEngine;
 [CreateAfter(typeof(GhostCollectionSystem))]
 
 [BurstCompile]
-public partial struct GrenadeClassificationSystem : ISystem
+public partial struct BulletSpawnClassificationSystem : ISystem
 {
     SnapshotDataLookupHelper snapshotDataLookupHelper;
     BufferLookup<PredictedGhostSpawn> predictedGhostSpawnLookup;

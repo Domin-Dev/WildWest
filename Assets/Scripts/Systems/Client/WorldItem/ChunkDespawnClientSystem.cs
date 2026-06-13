@@ -7,18 +7,20 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[RequireMatchingQueriesForUpdate]
 partial struct ChunkDespawnClientSystem : ISystem
 {
-
-    private ClientChunks clientChunks;
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<Chunks>();
+        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<ChunkComponentCleanUp>().WithNone<ChunkComponent>();
+        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+        entityQueryBuilder.Dispose();
+    }
     public void OnUpdate(ref SystemState state)
     {
-        if(state.World.IsClient())
-        {
-            clientChunks = SystemAPI.GetSingleton<ClientChunks>();
-        }
-
+        var clientChunks = SystemAPI.GetSingleton<Chunks>();
+        
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
         foreach((DynamicBuffer<WorldItems> worldItems,RefRO<ChunkComponentCleanUp> chunkindex ,Entity entity) in SystemAPI.Query<DynamicBuffer<WorldItems>,RefRO<ChunkComponentCleanUp>>().WithNone<ChunkComponent>().WithEntityAccess())
         {
@@ -27,10 +29,8 @@ partial struct ChunkDespawnClientSystem : ISystem
                 if(SystemAPI.Exists(i.worldItem))   
                     ecb.AddComponent<DestroyEntityTag>(i.worldItem);
             }
-            if(state.World.IsClient())
-            {
-                clientChunks.currentChunks.Remove(chunkindex.ValueRO.chunkIndex);
-            }
+
+            clientChunks.currentChunks.Remove(chunkindex.ValueRO.chunkIndex);        
             ecb.RemoveComponent<WorldItems>(entity);
             ecb.RemoveComponent<ChunkComponentCleanUp>(entity);
         }

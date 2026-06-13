@@ -33,6 +33,8 @@ partial struct DropItemsServerSystem : ISystem
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>();
         linkedLookup = SystemAPI.GetBufferLookup<LinkedContainers>();
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
+
+        state.RequireForUpdate<Chunks>();
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -40,6 +42,8 @@ partial struct DropItemsServerSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         SystemAPI.TryGetSingletonBuffer<LoadedChunks>(out var loadedChunks,true);
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        Chunks chunks = SystemAPI.GetSingleton<Chunks>();
+
         var currentTick = networkTime.ServerTick;
 
 
@@ -50,37 +54,43 @@ partial struct DropItemsServerSystem : ISystem
             int networkID = SystemAPI.GetComponent<NetworkId>(rpcCommandRequest.ValueRO.SourceConnection).Value;
 
             SlotPosition from =  command.ValueRO.position;
-            GhostChunk ghostChunk = SystemAPI.GetComponent<GhostChunk>(player);
             PlayerInput playerInput = SystemAPI.GetComponent<PlayerInput>(player);
             LocalTransform localTransform = SystemAPI.GetComponent<LocalTransform>(player);
             float2 direction = playerInput.sightDirection - new float2(localTransform.Position.x, localTransform.Position.y);
             float randomValue = UnityEngine.Random.Range(0.2f,0.3f);
             direction = math.normalize(direction) * randomValue + new float2(localTransform.Position.x,localTransform.Position.y);
-            Entity chunkEntity = ghostChunk.currentChunkEntity;
+            
+            ChunkManagementServerSystem.Map.settings.GetCorrectChunkAndPosition(direction,out int chunkIndex, out var correctPosition);
+            direction = correctPosition;
 
+             Debug.Log(chunkIndex + " drop chunk!!" + chunks.currentChunks.ContainsKey(chunkIndex));
 
-            if(command.ValueRO.position.IsNullSlot())
-                from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
-
-            var containerFrom = EQHelper.GetContainer(playerContainersLookup, player, from.containerIndex);
-            var containerTo = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
-
-            List<EquipmentEvent> events = new List<EquipmentEvent>();
-            if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, from.slotIndex, containerFrom.Value.entity, out int itemID, out int index))
+            if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunkEntity))
             {
-                int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
-                int count = command.ValueRO.count >= 1 ? command.ValueRO.count : int.MaxValue;
 
-                var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
-                    containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,count,moveBetweenObjects:true,serverMove:true);
-                   
-                RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(ghostChunk.GetChunk(),slotIndex,direction,randomValue * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,ghostChunk.GetChunk(),currentTick,true);      
-                if (tab != null) events.AddRange(tab);
+                if(command.ValueRO.position.IsNullSlot())
+                    from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
+
+                var containerFrom = EQHelper.GetContainer(playerContainersLookup, player, from.containerIndex);
+                var containerTo = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+
+                List<EquipmentEvent> events = new List<EquipmentEvent>();
+                if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, from.slotIndex, containerFrom.Value.entity, out int itemID, out int index))
+                {
+                    int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
+                    int count = command.ValueRO.count >= 1 ? command.ValueRO.count : int.MaxValue;
+
+                    var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
+                        containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,count,moveBetweenObjects:true,serverMove:true);
+                               
+                    RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(chunkIndex,slotIndex,direction,randomValue * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,chunkIndex,currentTick,true);      
+                    if (tab != null) events.AddRange(tab);
+                }
+
+                events.Add(new EquipmentEvent(new EquipmentEventData(EQHelperClient.GetNormalSlotIndex(from.slotIndex), 1), from.containerIndex));
+                EQHelper.SendEvents(ref ecb,networkID,events.ToArray());
+                ecb.DestroyEntity(entity);
             }
-
-            events.Add(new EquipmentEvent(new EquipmentEventData(EQHelperClient.GetNormalSlotIndex(from.slotIndex), 1), from.containerIndex));
-            EQHelper.SendEvents(ref ecb,networkID,events.ToArray());
-            ecb.DestroyEntity(entity);
         }
         ecb.Playback(state.EntityManager);
         ecb.Dispose(); 

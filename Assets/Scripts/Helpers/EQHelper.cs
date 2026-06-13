@@ -310,12 +310,14 @@ public static class EQHelper
         {
             if (fromIndex >= 0)
             {
+                Debug.Log("ckoko");
                 var fromBuffer = slotsLookup[containersFrom.entity];
                 var toBuffer = slotsLookup[containersTo.entity];
 
                 // swap selected item
                 if (itemTo.HasValue && (itemFrom.Value.itemId != itemTo.Value.itemId || itemFrom.Value.quality != itemTo.Value.quality || itemTo.Value.quantity >= stackMax))
                 {
+                    Debug.Log("chec");
                     // if is selected by player
                     ref var slot = ref toBuffer.ElementAt(toIndex);
                     if(slotFrom < 0)
@@ -327,13 +329,16 @@ public static class EQHelper
                             linked[containersTo.entity].ElementAt(linkedToIndex).slot = slot.slot; 
 
 
-                        var entity = ecb.CreateEntity();
-                        ecb.AddComponent(entity, new ReceiveRpcCommandRequest() { SourceConnection = connection });
-                        ecb.AddComponent(entity, new EQSelectItem
+                        if(connection != Entity.Null)
                         {
-                            position = new SlotPosition(containersTo.index, slot.slot),
-                            value = slot.quantity
-                        });
+                            var entity = ecb.CreateEntity();
+                            ecb.AddComponent(entity, new ReceiveRpcCommandRequest() { SourceConnection = connection });
+                            ecb.AddComponent(entity, new EQSelectItem
+                            {
+                                position = new SlotPosition(containersTo.index, slot.slot),
+                                value = slot.quantity
+                            });
+                        }
                     }
                     // swap slots 
                     else
@@ -384,8 +389,12 @@ public static class EQHelper
                     value = itemFrom.Value.quantity;
                 }
 
-                NewItemInTheSlot(ecb, containerCompTo,slotTo,player,itemTo);
-                if(slotFrom >= 0)NewItemInTheSlot(ecb, containerCompFrom,slotFrom ,player,itemFrom);
+
+                if(player != Entity.Null)
+                {
+                    NewItemInTheSlot(ecb, containerCompTo,slotTo,player,itemTo);
+                    if(slotFrom >= 0)NewItemInTheSlot(ecb, containerCompFrom,slotFrom ,player,itemFrom);
+                }
 
 
                 
@@ -407,6 +416,10 @@ public static class EQHelper
                     to = from.quantity;
             
 
+
+                Debug.Log(toIndex);
+
+
                 if (toIndex >= 0)
                 {
                     ref var i = ref toBuffer.ElementAt(toIndex);
@@ -426,7 +439,9 @@ public static class EQHelper
                 }
                 else
                 {
-                    if (containersFrom.index == containersTo.index && number <= 0)
+                    Debug.Log(containersFrom.index == containersTo.index);
+
+                    if (!moveBetweenObjects && containersFrom.index == containersTo.index && number <= 0)
                     {
                         from.slot = slotTo;
                         if(haveBarFrom) barsLookup[containersFrom.entity].ElementAt(barFromIndex).slot = slotTo;
@@ -434,6 +449,9 @@ public static class EQHelper
                     }
                     else
                     { 
+                        Debug.Log("dodanie do buffer");
+
+
                         toBuffer.Add(new InventorySlot()
                         {
                             slot = slotTo,

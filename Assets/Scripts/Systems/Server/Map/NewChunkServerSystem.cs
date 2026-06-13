@@ -10,7 +10,7 @@ using Unity.NetCode;
 using UnityEngine;
 
 
-public struct ClientChunks : IComponentData
+public struct Chunks : IComponentData
 {
     public  NativeHashMap<int,Entity> currentChunks;
 }
@@ -19,7 +19,7 @@ public struct ClientChunks : IComponentData
 [UpdateInGroup(typeof(MapSystemGroup),OrderFirst = true)]
 [RequireMatchingQueriesForUpdate]
 [BurstCompile]
-public partial class NewChunSystem : SystemBase
+public partial class NewChunkSystem : SystemBase
 {
     EntityQuery query;
     ChunkManagementServerSystem chunkManagerSystem;
@@ -34,15 +34,13 @@ public partial class NewChunSystem : SystemBase
             chunkManagerSystem = World.GetExistingSystemManaged<ChunkManagementServerSystem>();
             RequireForUpdate<MapSettings>();
         }
-        else
+
+        currentChunks = new NativeHashMap<int, Entity>(32,Allocator.Persistent);
+        var entity = EntityManager.CreateEntity(typeof(Chunks));
+        SystemAPI.SetComponent(entity,new Chunks()
         {
-            currentChunks = new NativeHashMap<int, Entity>(32,Allocator.Persistent);
-            var entity = World.EntityManager.CreateEntity(typeof(ClientChunks));
-            SystemAPI.SetComponent(entity,new ClientChunks()
-            {
-                currentChunks = currentChunks
-            });
-        }
+            currentChunks = currentChunks
+        });
 
         RequireForUpdate(query);
 ;    
@@ -51,6 +49,7 @@ public partial class NewChunSystem : SystemBase
     [BurstCompile]
     protected override void OnDestroy()
     {
+        CompleteDependency();
         currentChunks.Dispose();
     }
 
@@ -64,9 +63,9 @@ public partial class NewChunSystem : SystemBase
         foreach ((RefRO<ChunkComponent> chunkComponent, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>>().WithAll<NewChunk,Simulate>().WithNone<QueuedRequest>().WithEntityAccess())
         {
             ecb.AddBuffer<WorldItems>(entity);
-            ecb.AddComponent(entity,new ChunkComponentCleanUp() {chunkIndex = chunkComponent.ValueRO.chunkIndex});
-            
+            ecb.AddComponent(entity,new ChunkComponentCleanUp() {chunkIndex = chunkComponent.ValueRO.chunkIndex});          
             ecb.RemoveComponent<NewChunk>(entity);
+            
             if(World.IsServer())
             {
                 ChunkManagementServerSystem.loadedChunks.TryAdd(chunkComponent.ValueRO.chunkIndex,new LoadedChunks()
@@ -75,13 +74,8 @@ public partial class NewChunSystem : SystemBase
                     chunkIndex = chunkComponent.ValueRO.chunkIndex,
                 });
             }
-            else
-            {
-                if(currentChunks.ContainsKey(chunkComponent.ValueRO.chunkIndex))
-                    currentChunks[chunkComponent.ValueRO.chunkIndex] = entity;
-                else
-                    currentChunks.Add(chunkComponent.ValueRO.chunkIndex,entity);
-            }
+
+            currentChunks[chunkComponent.ValueRO.chunkIndex] = entity;   
         }
     }
 }

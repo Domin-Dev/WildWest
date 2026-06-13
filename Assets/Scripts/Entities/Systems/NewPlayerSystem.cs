@@ -3,11 +3,15 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
-using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.XR;
+
+
+public struct PlayerCleanUp : ICleanupComponentData
+{
+    public int networkID;
+}
+
 
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 partial struct NewPlayerSystem : ISystem
@@ -15,14 +19,14 @@ partial struct NewPlayerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NewPlayerTag>();
-        state.RequireForUpdate<Player>();
+        state.RequireForUpdate<Players>();
     }
 
-
-    
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        var players = SystemAPI.GetSingleton<Players>();
+        
 
         foreach ((RefRO<Player> player,RefRW<PhysicsMass> mass, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>,RefRW<PhysicsMass>, RefRW<PlayerLook>>().WithAll<Simulate,NewPlayerTag>().WithEntityAccess())
         {
@@ -36,14 +40,19 @@ partial struct NewPlayerSystem : ISystem
             SetUpPlayer(ref children, ref state, ref hands, ref character);
 
 
+
+            int networkID =  state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
+            players.hashMap[networkID] = entity;
+            entityCommandBuffer.AddComponent<PlayerCleanUp>(entity,new PlayerCleanUp(){ networkID = networkID});
+
+
             if(state.World.IsServer())
             {
-                Debug.Log("juzzzzzzzzzzzzzzzzz");
                 entityCommandBuffer.AddComponent(entity, new LastAction() { tick = NetworkTick.Invalid });
                 PlayerSourceConnection connection = new PlayerSourceConnection();
-                foreach ( (NetworkId netId,Entity e) in SystemAPI.Query<NetworkId>().WithEntityAccess())
+                foreach ((NetworkId netId,Entity e) in SystemAPI.Query<NetworkId>().WithEntityAccess())
                 {
-                    if (netId.Value == state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId)
+                    if (netId.Value == networkID)
                     {
                         connection.value = e;
                         entityCommandBuffer.AddComponent(entity, connection);
@@ -53,9 +62,7 @@ partial struct NewPlayerSystem : ISystem
             }
             else
             {
-                Debug.Log("update new postac!!");
-                Entity update = entityCommandBuffer.CreateEntity();
-                
+                Entity update = entityCommandBuffer.CreateEntity();             
                 entityCommandBuffer.AddComponent(update, new LifeStatsChangedRPC());
                 entityCommandBuffer.AddComponent(update, new PlayerStatsChangedRPC());
             }
