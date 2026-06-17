@@ -9,7 +9,6 @@ using UnityEngine;
 
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-[RequireMatchingQueriesForUpdate]
 [UpdateAfter(typeof(RPCProcessingSystem))]
 partial struct WorldItemServerSystem : ISystem
 {
@@ -20,7 +19,10 @@ partial struct WorldItemServerSystem : ISystem
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
     private BufferLookup<LinkedContainers> linkedContainers;
     private ComponentLookup<ContainerComponent> componentLookup;
-    private BufferLookup<WorldItems> worldItemsLookup;
+    private BufferLookup<WorldItemEntity> worldItemEntityLookup;
+    private BufferLookup<WorldItemPosition> worldItemPositionLookup;
+
+    private ComponentLookup<WorldItem> worldItemComponentLookup;
 
 
     public void OnCreate(ref SystemState state)
@@ -35,7 +37,9 @@ partial struct WorldItemServerSystem : ISystem
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         linkedContainers = SystemAPI.GetBufferLookup<LinkedContainers>();
         componentLookup = SystemAPI.GetComponentLookup<ContainerComponent>();
-        worldItemsLookup = SystemAPI.GetBufferLookup<WorldItems>();
+        worldItemEntityLookup = SystemAPI.GetBufferLookup<WorldItemEntity>();
+        worldItemComponentLookup = SystemAPI.GetComponentLookup<WorldItem>();
+        worldItemPositionLookup = SystemAPI.GetBufferLookup<WorldItemPosition>();
 
     }
     public void OnUpdate(ref SystemState state)
@@ -47,7 +51,9 @@ partial struct WorldItemServerSystem : ISystem
         playerNeedChunkLookup.Update(ref state);
         linkedContainers.Update(ref state);
         componentLookup.Update(ref state);
-        worldItemsLookup.Update(ref state);
+        worldItemEntityLookup.Update(ref state);
+        worldItemComponentLookup.Update(ref state);
+        worldItemPositionLookup.Update(ref state);
 
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -63,7 +69,7 @@ partial struct WorldItemServerSystem : ISystem
                 {
                     if(EQHelper.TryGetBufferIndex(slotsLookup,rpc.ValueRO.slotIndex,container.Value.entity,out InventorySlot? item,out int bufferIndex))
                     {
-                        RPCHelper.CreateSerwerLocalEvent(new SpawnWorldItem(){ 
+                        RPCHelper.CreateLocalEvent(new SpawnWorldItem(){ 
                             chunkIndex = rpc.ValueRO.chunkIndex,
                             slotIndex = rpc.ValueRO.slotIndex,
                             dropPosition = rpc.ValueRO.dropPosition,
@@ -76,6 +82,20 @@ partial struct WorldItemServerSystem : ISystem
                     }
                 }
             }
+            ecb.DestroyEntity(e);
+        }
+             
+        foreach ((RefRW<PickUpItemRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
+        SystemAPI.Query<RefRW<PickUpItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            Entity player = toPlayers.ElementAt(0).connection;
+            RPCHelper.CreateLocalEvent(new PickUpItemCompleted(){ 
+                chunkIndex = rpc.ValueRO.chunkIndex,
+                slotIndex = rpc.ValueRO.slotIndex        
+             },ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(rpc.ValueRO.tick,rpc.ValueRO.duration),false);
+        
+            for(int i = 1; i < toPlayers.Length;i++)
+                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
             ecb.DestroyEntity(e);
         }
         
@@ -98,8 +118,11 @@ partial struct WorldItemServerSystem : ISystem
 
                     if(events != null) EQHelper.SendEvents(ecb, rpc.ValueRO.networkID, events);
 
-                    if(EQHelper.TryGetBufferIndex(worldItemsLookup,rpc.ValueRO.slotIndex,chunkEntity,out var worldItem,out int bufferId))
-                        worldItemsLookup[chunkEntity].RemoveAtSwapBack(bufferId);
+                    if(EQHelper.TryGetBufferIndex(worldItemEntityLookup,rpc.ValueRO.slotIndex,chunkEntity,out var worldItem,out int bufferId))
+                        worldItemEntityLookup[chunkEntity].RemoveAtSwapBack(bufferId);
+
+                    if(EQHelper.TryGetBufferIndex(worldItemPositionLookup,rpc.ValueRO.slotIndex,chunkEntity,out var itemPosition,out bufferId))
+                        worldItemPositionLookup[chunkEntity].RemoveAtSwapBack(bufferId);
 
                     if(remains > 0)
                     {
@@ -109,20 +132,17 @@ partial struct WorldItemServerSystem : ISystem
                         int chunkIndex = rpc.ValueRO.chunkIndex;
                         int newSlot = rpc.ValueRO.slotIndex;
 
-
-                        Debug.Log(rpc.ValueRO.chunkIndex + "   zostalo " + chunk.GetChunk() + " " + chunk.currentChunkEntity);
                         if(rpc.ValueRO.chunkIndex != chunk.GetChunk())
                         {
                             if(EQHelper.TryGetPlayerContainer(containersLookup, chunk.currentChunkEntity ,EquipmentConfig.chunkItems_ContainerIndex,out var containerTo)) 
                             {   
-                                Debug.Log("zostalo!!! +" + containerTo.Value.entity + " " + containerTo.Value.index);
                                 chunkIndex = chunk.GetChunk();
                                 newSlot = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,containersLookup,chunk.currentChunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
                                 EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedContainers,barsLookup,slotsLookup,Entity.Null,Entity.Null,container.Value,containerTo.Value,newSlot,rpc.ValueRO.slotIndex,int.MaxValue,false,true,true);
                             }
                         }
-                        
-                        RPCHelper.CreateSerwerLocalEvent(new SpawnWorldItem(){ 
+          
+                        RPCHelper.CreateLocalEvent(new SpawnWorldItem(){ 
                             chunkIndex = chunkIndex,
                             slotIndex = newSlot,
                             dropPosition = new float2(position.x,position.y),
@@ -138,7 +158,84 @@ partial struct WorldItemServerSystem : ISystem
             RPCProcessingSystem.CleanUpEventBuffer(buffer,e);
             ecb.DestroyEntity(e);
         }
+
+        foreach ((RefRO<MergeItems> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
+        SystemAPI.Query<RefRO<MergeItems>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            for(int i = 1; i < toPlayers.Length;i++)
+                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO.mergeItemsPRC);
+            
+            Entity chunkFrom;
+            Entity chunkTo;
+            EntityContainers? containerFrom;
+            EntityContainers? containerTo;
+
+            if(rpc.ValueRO.mergeItemsPRC.fromChunkIndex == rpc.ValueRO.mergeItemsPRC.toChunkIndex)
+            {
+                if(chunks.currentChunks.TryGetValue(rpc.ValueRO.mergeItemsPRC.fromChunkIndex, out var chunkEntity) &&
+                EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex,out var container))
+                {
+                    chunkFrom = chunkTo = chunkEntity;
+                    containerFrom = containerTo = container.Value;
+                }
+                else
+                    break;
+            }
+            else
+            {
+                if(!(chunks.currentChunks.TryGetValue(rpc.ValueRO.mergeItemsPRC.toChunkIndex, out chunkTo) &&
+                chunks.currentChunks.TryGetValue(rpc.ValueRO.mergeItemsPRC.fromChunkIndex,out chunkFrom) &&
+                EQHelper.TryGetPlayerContainer(containersLookup,chunkTo,EquipmentConfig.chunkItems_ContainerIndex,out containerTo) && 
+                EQHelper.TryGetPlayerContainer(containersLookup,chunkFrom,EquipmentConfig.chunkItems_ContainerIndex,out containerFrom)))
+                    break;
+            } 
+            
+            EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedContainers,barsLookup,slotsLookup,Entity.Null,Entity.Null,containerFrom.Value,containerTo.Value,rpc.ValueRO.mergeItemsPRC.toSlotIndex,rpc.ValueRO.mergeItemsPRC.fromSlotIndex,moveBetweenObjects: chunkTo != chunkFrom,serverMove:true,ignoreStackMax:true);
+            if(EQHelper.TryGetBufferIndex(slotsLookup,rpc.ValueRO.mergeItemsPRC.toSlotIndex,containerTo.Value.entity,out InventorySlot? inventorySlot,out int bufferIndex))
+                worldItemComponentLookup.GetRefRW(rpc.ValueRO.worldItemTo).ValueRW.item = inventorySlot.Value;
+
+
+            if(EQHelper.TryGetBufferIndex(worldItemEntityLookup,rpc.ValueRO.mergeItemsPRC.fromSlotIndex,chunkFrom,out var worldItem,out int bufferId))
+                worldItemEntityLookup[chunkFrom].RemoveAtSwapBack(bufferId);
+
+            if(EQHelper.TryGetBufferIndex(worldItemPositionLookup,rpc.ValueRO.mergeItemsPRC.fromSlotIndex,chunkFrom,out var itemPosition,out bufferId))
+                worldItemPositionLookup[chunkFrom].RemoveAtSwapBack(bufferId);
+
+
+            RPCHelper.CreateLocalEvent<MergeItemsCompleted>(new MergeItemsCompleted()
+            {
+                rpc = rpc.ValueRO
+            },ecb,EntityHelper.AddTime(rpc.ValueRO.mergeItemsPRC.tick,rpc.ValueRO.mergeItemsPRC.duration),false);
+
+            ecb.AddComponent<DestroyEntityTag>(rpc.ValueRO.worldItemFrom);
+            ecb.DestroyEntity(entity);
+        }
         
+        foreach ((RefRO<MergeItemsCompleted> rpc, Entity entity) in
+        SystemAPI.Query<RefRO<MergeItemsCompleted>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            if(worldItemComponentLookup.EntityExists(rpc.ValueRO.rpc.worldItemTo))
+            {
+                var worldItem = worldItemComponentLookup.GetRefRW(rpc.ValueRO.rpc.worldItemTo);
+                worldItem.ValueRW.mergeCounter--;
+                if(worldItem.ValueRW.mergeCounter == 0)
+                {
+                    worldItemComponentLookup.SetComponentEnabled(rpc.ValueRO.rpc.worldItemTo,true);
+                }
+            }
+            ecb.DestroyEntity(entity);
+        }
+
+        foreach ((RefRO<CreateWorldItemRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
+        SystemAPI.Query<RefRO<CreateWorldItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            for(int i = 1; i < toPlayers.Length;i++)
+                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
+            ecb.DestroyEntity(entity);
+        }
+
+
+
         ecb.Playback(state.EntityManager);  
         ecb.Dispose();
     }

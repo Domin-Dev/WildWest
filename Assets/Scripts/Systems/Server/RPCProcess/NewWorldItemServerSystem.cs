@@ -23,7 +23,7 @@ partial struct NewWorldItemServerSystem : ISystem
     {
        state.RequireForUpdate<WorldItemsConfig>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<NewWorldItem,WorldItem,LocalTransform>();
+            .WithAll<NewWorldItem,LocalTransform>().WithDisabled<WorldItem>();
         entityQuery = state.GetEntityQuery(entityQueryBuilder);
         state.RequireForUpdate(entityQuery);
         state.RequireForUpdate<PhysicsWorldSingleton>();
@@ -31,7 +31,7 @@ partial struct NewWorldItemServerSystem : ISystem
 
 
 
-        worldItemLookup = SystemAPI.GetComponentLookup<WorldItem>(true);
+        worldItemLookup = SystemAPI.GetComponentLookup<WorldItem>();
         connections = SystemAPI.GetComponentLookup<PlayerSourceConnection>(true);
         playerNeedLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>(true);
         
@@ -39,7 +39,6 @@ partial struct NewWorldItemServerSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        Debug.Log("update new world!!");
         var config = SystemAPI.GetSingleton<WorldItemsConfig>();
         var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         worldItemLookup.Update(ref state);
@@ -60,53 +59,69 @@ partial struct NewWorldItemServerSystem : ISystem
         {
             var e = entities[i];
             ecb.RemoveComponent<NewWorldItem>(e);
-            if(worldItemLookup.IsComponentEnabled(e))
+            var worldItem = worldItemLookup.GetRefRW(e);
+            var transform = transforms[i];
+            if(ItemsAsset.instance.GetStackMax(worldItem.ValueRO.item.itemId) <= 1)
             {
-                var worldItem = worldItemLookup[e];
-                var transform = transforms[i];
+                worldItemLookup.SetComponentEnabled(e,true);
+                continue;
+            }
 
-                if(ItemsAsset.instance.GetStackMax(worldItem.item.itemId) <= 1)
-                    continue;
-
-                var aabbInput = new OverlapAabbInput()
+            var aabbInput = new OverlapAabbInput()
+            {
+                Aabb = new Aabb()
                 {
-                    Aabb = new Aabb()
-                    {
-                        Min = transform.Position - size,
-                        Max = transform.Position + size,
+                    Min = transform.Position - size,
+                    Max = transform.Position + size,
 
-                    },
-                    Filter = config.FilterToFindSimilarWorldItems
-                };
+                },
+                Filter = config.FilterToFindSimilarWorldItems
+            };
 
-                var overlapHits = new NativeList<int>(state.WorldUpdateAllocator);
-                if(!physicsWorldSingleton.OverlapAabb(aabbInput,ref overlapHits))
+            var overlapHits = new NativeList<int>(state.WorldUpdateAllocator);
+            if(!physicsWorldSingleton.OverlapAabb(aabbInput,ref overlapHits))
+            {
+                worldItemLookup.SetComponentEnabled(e,true);
+                continue;
+            }
+
+            bool isMerge = false; 
+            foreach(var hit in overlapHits)
+            {
+                var currentHit = physicsWorldSingleton.Bodies[hit].Entity;
+                if(currentHit == e || !worldItemLookup.EntityExists(currentHit))
                     continue;
+                var worldItemHit = worldItemLookup.GetRefRW(currentHit);
 
-                foreach(var hit in overlapHits)
+                if(worldItem.ValueRO.item.itemId == worldItemHit.ValueRO.item.itemId && worldItemHit.ValueRW.mergeCounter >= 0 && !SystemAPI.HasComponent<DestroyEntityTag>(currentHit))
                 {
-                    var currentHit = physicsWorldSingleton.Bodies[hit].Entity;
-                    if(currentHit == e)
-                        continue;
-                    var worldItemHit = worldItemLookup[currentHit];
-                    if(worldItem.item.itemId == worldItemHit.item.itemId)
+                    RPCHelper.SendEventsToClients(new MergeItems()
                     {
-                        RPCHelper.SendEventsToClients(new MergeItemsPRC()
+                        mergeItemsPRC = new MergeItemsPRC()
                         {
                             duration = 0.4f,
-                            fromChunkIndex = worldItemHit.chunkIndex,
-                            fromSlotIndex = worldItemHit.slotIndex,
-                            toChunkIndex = worldItem.chunkIndex,
-                            toSlotIndex = worldItem.slotIndex
-                        },connections,playerNeedLookup,loadedChunks,ecb,worldItem.chunkIndex,tick,true);
-                    }
-                    Debug.Log("hit : " + currentHit);
-                }  
-            }
+                            fromChunkIndex = worldItemHit.ValueRO.chunkIndex,
+                            fromSlotIndex = worldItemHit.ValueRO.slotIndex,
+                            toChunkIndex = worldItem.ValueRO.chunkIndex,
+                            toSlotIndex = worldItem.ValueRO.slotIndex
+                        },
+                        worldItemFrom =  currentHit,
+                        worldItemTo = e
+                    },connections,playerNeedLookup,loadedChunks,ecb,worldItem.ValueRO.chunkIndex,tick,true);
+
+
+                    worldItemHit.ValueRW.mergeCounter--;
+                    worldItem.ValueRW.mergeCounter++;
+
+                    worldItemLookup.SetComponentEnabled(currentHit,false); 
+                    worldItemLookup.SetComponentEnabled(e,false);
+                    isMerge = true;
+                }
+            }  
+
+            if(!isMerge)
+                worldItemLookup.SetComponentEnabled(e,true);    
         }
-
-
-
 
         ecb.Playback(state.EntityManager);  
         ecb.Dispose();

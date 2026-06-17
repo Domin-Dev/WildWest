@@ -25,11 +25,11 @@ public struct FutureEventsForPlayer : IBufferElementData
     public Entity entityEvent;
 }
 
-public struct ServerEventData  : IComponentData
+public struct SystemEventData  : IComponentData
 {
     public NetworkTick tick;
 
-    public ServerEventData(NetworkTick networkTick)
+    public SystemEventData(NetworkTick networkTick)
     {
         this.tick = networkTick;
     }

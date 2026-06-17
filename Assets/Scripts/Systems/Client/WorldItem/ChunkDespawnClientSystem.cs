@@ -22,7 +22,7 @@ partial struct ChunkDespawnClientSystem : ISystem
         var clientChunks = SystemAPI.GetSingleton<Chunks>();
         
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        foreach((DynamicBuffer<WorldItems> worldItems,RefRO<ChunkComponentCleanUp> chunkindex ,Entity entity) in SystemAPI.Query<DynamicBuffer<WorldItems>,RefRO<ChunkComponentCleanUp>>().WithNone<ChunkComponent>().WithEntityAccess())
+        foreach((DynamicBuffer<WorldItemEntity> worldItems,RefRO<ChunkComponentCleanUp> chunkindex ,Entity entity) in SystemAPI.Query<DynamicBuffer<WorldItemEntity>,RefRO<ChunkComponentCleanUp>>().WithNone<ChunkComponent>().WithEntityAccess())
         {
             foreach(var i in worldItems)
             {
@@ -31,7 +31,7 @@ partial struct ChunkDespawnClientSystem : ISystem
             }
 
             clientChunks.currentChunks.Remove(chunkindex.ValueRO.chunkIndex);        
-            ecb.RemoveComponent<WorldItems>(entity);
+            ecb.RemoveComponent<WorldItemEntity>(entity);
             ecb.RemoveComponent<ChunkComponentCleanUp>(entity);
         }
         ecb.Playback(state.EntityManager);

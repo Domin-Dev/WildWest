@@ -96,7 +96,7 @@ public struct TriggerServerJob : ITriggerEventsJob
         if(EQHelper.FindSlotForItem(contComponentLookup,slotLookup,entityContainersLookup,player,worldItemComponent.item,out int remains).Length > 0)
         {
             int networkId = ghostOwner[player].NetworkId;
-            RPCHelper.SendEventsToClientsAndOwner<PickUpItemRPC>(new PickUpItemRPC(worldItemComponent.chunkIndex,worldItemComponent.slotIndex,0.3f,remains == 0),connectionLookup,needLookup,loadedChunks,ecb,networkId,player,worldItemComponent.chunkIndex,tick,true);
+            RPCHelper.SendEventsToClientsAndOwner<PickUpItemRPC>(new PickUpItemRPC(worldItemComponent.chunkIndex,worldItemComponent.slotIndex,0.5f,remains == 0),connectionLookup,needLookup,loadedChunks,ecb,networkId,player,worldItemComponent.chunkIndex,tick,true);
             worldItemLookup.SetComponentEnabled(worldItem,false);     
             ecb.AddComponent<DestroyEntityTag>(worldItem);
         }

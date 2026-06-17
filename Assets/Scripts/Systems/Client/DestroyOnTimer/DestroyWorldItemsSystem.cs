@@ -24,7 +24,7 @@ public partial class DestroyWorldItemsSystem : SystemBase
     {
         foreach (var (localTransform, worldItem, entity) in SystemAPI.Query<RefRW<LocalTransform>,RefRO<WorldItem>>().WithAll<DestroyEntityTag>().WithEntityAccess())
         {
-            foreach((RefRO<ChunkComponent> chunkComponent, DynamicBuffer<WorldItems> worldItems) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<WorldItems>>())
+            foreach((RefRO<ChunkComponent> chunkComponent, DynamicBuffer<WorldItemEntity> worldItems) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<WorldItemEntity>>())
             {
                 if(chunkComponent.ValueRO.chunkIndex != worldItem.ValueRO.chunkIndex) continue;
                 for(int i = 0; i < worldItems.Length; i++)

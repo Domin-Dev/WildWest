@@ -7,7 +7,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateInGroup(typeof(TransformSystemGroup))]
+[UpdateInGroup(typeof(PresentationSystemGroup))]
 partial struct MoveToTargetSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

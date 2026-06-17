@@ -1,4 +1,6 @@
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 
@@ -15,8 +17,23 @@ public class ChunkAuthoring : MonoBehaviour
             AddBuffer<ChunkTiles>(entity);
             AddBuffer<BuildingObjects>(entity);
             AddBuffer<GhostChildren>(entity);
-            AddBuffer<EntityContainers>(entity);   
+            AddBuffer<EntityContainers>(entity);
+            AddBuffer<WorldItemPosition>(entity);
         }
     }
 }
 
+
+[GhostComponent(OwnerSendType = SendToOwnerType.All)]
+public struct WorldItemPosition : IBufferElementData,IGetSlot
+{
+    [GhostField] public float2 worldItemPos;
+    [GhostField] public int slot;
+
+    public void SetSlot(int slot)
+    {
+        this.slot = slot;
+    }
+    public int GetSlot() { return slot; }
+
+}

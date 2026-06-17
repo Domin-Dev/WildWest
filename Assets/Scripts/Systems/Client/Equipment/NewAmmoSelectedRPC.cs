@@ -107,10 +107,7 @@ public struct MergeItemsPRC : IRpcCommand, ISetPlayer
     public int toChunkIndex;
     public int toSlotIndex;
 
-
     public float duration;
-
-
 
     public void SetPlayer(int networkID,NetworkTick tick)
     {
@@ -118,6 +115,26 @@ public struct MergeItemsPRC : IRpcCommand, ISetPlayer
         this.tick = tick;
     }
 }
+
+public struct MergeItems : IComponentData, ISetPlayer
+{
+    public MergeItemsPRC mergeItemsPRC;
+    public Entity worldItemFrom;
+    public Entity worldItemTo;
+    public void SetPlayer(int networkID,NetworkTick tick)
+    {
+        mergeItemsPRC.SetPlayer(networkID,tick);
+    }
+}
+public struct MergeItemsCompleted  : IComponentData
+{
+    public MergeItems rpc;
+}
+
+
+
+
+
 
 
 
@@ -145,6 +162,11 @@ public struct PickUpItemCompleted : IComponentData, ISetPlayer
     }
 }
 
+
+public struct PickUpItemCompletedClient : IComponentData
+{
+    public InventorySlot item;
+}
 
 
 
@@ -219,6 +241,7 @@ public struct CreateWorldItemRPC : IRpcCommand,ISetPlayer
     public NetworkTick tick;
     public int chunkIndex;
     public int slotIndex;
+    public float2 position;
 
 
     public void SetPlayer(int networkID,NetworkTick tick)

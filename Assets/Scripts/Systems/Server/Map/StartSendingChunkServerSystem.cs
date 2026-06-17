@@ -41,6 +41,8 @@ public partial class StartSendingChunkServerSystem : SystemBase
         chunkObjectsRO.Update(this);
         childrenRO.Update(this);
 
+        CompleteDependency();
+
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(EntityManager.WorldUnmanaged);
         var entities = this.requests.ToEntityArray(Allocator.TempJob);
@@ -53,7 +55,6 @@ public partial class StartSendingChunkServerSystem : SystemBase
             var buffer = chunkObjectsRO[item.chunkEntity];
             foreach(var chunkObj in buffer)
             {
-                Debug.Log("start sending!  " + chunkObj.entity);
                 var ghost = new RelevantGhostForConnection()
                 {
                     Connection = item.networkID,
@@ -64,7 +65,6 @@ public partial class StartSendingChunkServerSystem : SystemBase
                 {
                     var owner = SystemAPI.GetComponent<GhostOwner>(chunkObj.entity);
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(item.playerEntity);
-                    Debug.Log("wyslanie gracza!!! " + owner.NetworkId + " " + connection.value);
                     RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       
                 }
     

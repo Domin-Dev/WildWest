@@ -20,7 +20,7 @@ partial struct RPCProcessingSystem : ISystem
     private BufferLookup<PlayersNeedChunk> playerNeedChunkLookup;
     private BufferLookup<LinkedContainers> linkedContainers;
     private ComponentLookup<ContainerComponent> componentLookup;
-    private BufferLookup<WorldItems> worldItemsLookup;
+    private BufferLookup<WorldItemEntity> worldItemsLookup;
 
 
 
@@ -40,15 +40,15 @@ partial struct RPCProcessingSystem : ISystem
         playerNeedChunkLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         linkedContainers = SystemAPI.GetBufferLookup<LinkedContainers>();
         componentLookup = SystemAPI.GetComponentLookup<ContainerComponent>();
-        worldItemsLookup = SystemAPI.GetBufferLookup<WorldItems>();
+        worldItemsLookup = SystemAPI.GetBufferLookup<WorldItemEntity>();
 
         EntitiesReferences entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
         var loadedChunks = SystemAPI.GetSingletonBuffer<LoadedChunks>(true);
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
 
-        foreach ((EnabledRefRW<WaitForProcess> wait,RefRO<ServerEventData> eventData) in
-        SystemAPI.Query<EnabledRefRW<WaitForProcess>,RefRO<ServerEventData>>())
+        foreach ((EnabledRefRW<WaitForProcess> wait,RefRO<SystemEventData> eventData) in
+        SystemAPI.Query<EnabledRefRW<WaitForProcess>,RefRO<SystemEventData>>())
         {
             if(!eventData.ValueRO.tick.IsNewerThan(tick))
             {
@@ -65,7 +65,7 @@ partial struct RPCProcessingSystem : ISystem
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && !item.hasMagazine)
             {
-                RPCHelper.CreateSerwerLocalEvent(new FutureReload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.shootCooldown),false);
+                RPCHelper.CreateLocalEvent(new FutureReload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.shootCooldown),false);
             }
 
             for(int i = 1; i < toPlayers.Length;i++)
@@ -190,7 +190,7 @@ partial struct RPCProcessingSystem : ISystem
             {
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.reloadCooldown)});               
                 state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = item.reloadingState});
-                RPCHelper.CreateSerwerLocalEvent(new EndReload(){ammoID = rpc.ValueRO.ammoID},ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.reloadCooldown),false);
+                RPCHelper.CreateLocalEvent(new EndReload(){ammoID = rpc.ValueRO.ammoID},ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.reloadCooldown),false);
             }
             
             var newRPC = rpc.ValueRO.GetRPC();
@@ -229,7 +229,7 @@ partial struct RPCProcessingSystem : ISystem
             {
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.unloadCooldown)});
                 state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.unloading});
-                RPCHelper.CreateSerwerLocalEvent(new EndUnload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.unloadCooldown),false);
+                RPCHelper.CreateLocalEvent(new EndUnload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.unloadCooldown),false);
             }
 
             for(int i = 1; i < toPlayers.Length;i++)
@@ -344,24 +344,6 @@ partial struct RPCProcessingSystem : ISystem
 
 
 
-        foreach ((RefRO<CreateWorldItemRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
-        SystemAPI.Query<RefRO<CreateWorldItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
-        {
-            for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
-            ecb.DestroyEntity(entity);
-        }
-
-
-        foreach ((RefRO<MergeItemsPRC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity entity) in
-        SystemAPI.Query<RefRO<MergeItemsPRC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
-        {
-            for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
-            ecb.DestroyEntity(entity);
-        }
-
-
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
         ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
@@ -388,21 +370,6 @@ partial struct RPCProcessingSystem : ISystem
 
         containersLookup.Update(ref state);
         slotsLookup.Update(ref state); 
-
-
-        foreach ((RefRW<PickUpItemRPC> rpc,DynamicBuffer<SendEventToPlayers> toPlayers, Entity e) in
-        SystemAPI.Query<RefRW<PickUpItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
-        {
-            Entity player = toPlayers.ElementAt(0).connection;
-            RPCHelper.CreateSerwerLocalEvent(new PickUpItemCompleted(){ 
-                chunkIndex = rpc.ValueRO.chunkIndex,
-                slotIndex = rpc.ValueRO.slotIndex        
-             },ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(rpc.ValueRO.tick,rpc.ValueRO.duration),false);
-        
-            for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
-            ecb.DestroyEntity(e);
-        }
 
 
         containersLookup.Update(ref state);   

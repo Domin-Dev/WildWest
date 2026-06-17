@@ -279,12 +279,12 @@ public static class EQHelper
 
 
     public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb,BufferLookup<LinkedContainers> linked, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, Entity connection, Entity player, EntityContainers containersFrom, EntityContainers containersTo,
-    int slotTo, int slotFrom, int value = int.MaxValue,bool eventForSlotFrom = false,bool moveBetweenObjects = false, bool serverMove = false)
+    int slotTo, int slotFrom, int value = int.MaxValue,bool eventForSlotFrom = false,bool moveBetweenObjects = false, bool serverMove = false,bool ignoreStackMax = false)
     { 
-        return MoveBetweenContainers(ref state,ref ecb,linked,barsLookup,slotsLookup,connection,player,containersFrom,containersTo,slotTo,slotFrom,value,out int c,eventForSlotFrom,moveBetweenObjects,serverMove);
+        return MoveBetweenContainers(ref state,ref ecb,linked,barsLookup,slotsLookup,connection,player,containersFrom,containersTo,slotTo,slotFrom,value,out int c,eventForSlotFrom,moveBetweenObjects,serverMove,ignoreStackMax);
     }
     public static EquipmentEvent[] MoveBetweenContainers(ref SystemState state,ref EntityCommandBuffer ecb, BufferLookup<LinkedContainers> linked, BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotsLookup, Entity connection,Entity player, EntityContainers containersFrom, EntityContainers containersTo,
-    int slotTo, int slotFrom, int value, out int transferValue, bool eventForSlotFrom = false,bool moveBetweenObjects = false, bool serverMove = false)
+    int slotTo, int slotFrom, int value, out int transferValue, bool eventForSlotFrom = false,bool moveBetweenObjects = false, bool serverMove = false,bool ignoreStackMax = false)
     {
         TryGetBufferIndex(slotsLookup, slotFrom, containersFrom.entity, out InventorySlot? itemFrom, out int fromIndex);
         TryGetBufferIndex(slotsLookup, slotTo, containersTo.entity, out InventorySlot? itemTo, out int toIndex);
@@ -298,7 +298,7 @@ public static class EQHelper
         if (!itemFrom.HasValue) return new EquipmentEvent[] { new EquipmentEvent(new EquipmentEventData(slotTo, 1), containersTo.index) };
         
         int number;
-        int stackMax = ItemsAsset.instance.GetStackMax(itemFrom.Value.itemId);
+        int stackMax = ignoreStackMax ? int.MaxValue : ItemsAsset.instance.GetStackMax(itemFrom.Value.itemId);
         var containerCompTo = state.EntityManager.GetComponentData<ContainerComponent>(containersTo.entity);
         var containerCompFrom = state.EntityManager.GetComponentData<ContainerComponent>(containersFrom.entity);
 

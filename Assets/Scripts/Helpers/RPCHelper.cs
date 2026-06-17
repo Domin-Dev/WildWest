@@ -91,19 +91,19 @@ public static class RPCHelper
         serverWorld.QuitUpdate = true; 
         serverWorld.Dispose();         
     }
-    public static void CreateSerwerLocalEvent<T>(T rpc,EntityCommandBuffer ecb,NetworkTick tick,bool instantProcess = true) where T : unmanaged, IComponentData
+    public static void CreateLocalEvent<T>(T rpc,EntityCommandBuffer ecb,NetworkTick tick,bool instantProcess = true) where T : unmanaged, IComponentData
     {
         var rpcEvent = ecb.CreateEntity();
-        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent(rpcEvent,new SystemEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
         ecb.AddComponent(rpcEvent,rpc);
     }
-    public static void CreateSerwerLocalEvent<T>(T rpc,EntityCommandBuffer ecb,Entity playerEntity,int networkID,NetworkTick tick,bool instantProcess = true) where T : unmanaged, IComponentData, ISetPlayer
+    public static void CreateLocalEvent<T>(T rpc,EntityCommandBuffer ecb,Entity playerEntity,int networkID,NetworkTick tick,bool instantProcess = true) where T : unmanaged, IComponentData, ISetPlayer
     {
         var rpcEvent = ecb.CreateEntity();
-        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent(rpcEvent,new SystemEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
@@ -145,7 +145,7 @@ public static class RPCHelper
 
 
         var rpcEvent = ecb.CreateEntity();
-        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent(rpcEvent,new SystemEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
@@ -173,7 +173,7 @@ public static class RPCHelper
         return true;
     }
     public static bool SendEventsToClients<T>(T rpc,ComponentLookup<PlayerSourceConnection> connections,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb, int chunkIndex, NetworkTick tick, bool instantProcess = true)
-    where T : unmanaged, IRpcCommand,ISetPlayer
+    where T : unmanaged, IComponentData,ISetPlayer
     {
         Entity chunk = Entity.Null; 
         foreach(var chunkTmp in loadedChunks)
@@ -187,7 +187,7 @@ public static class RPCHelper
 
 
         var rpcEvent = ecb.CreateEntity();
-        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent(rpcEvent,new SystemEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
@@ -227,7 +227,7 @@ public static class RPCHelper
 
         var rpcEvent = ecb.CreateEntity();
 
-        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent(rpcEvent,new SystemEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
@@ -269,7 +269,7 @@ public static class RPCHelper
 
         var rpcEvent = ecb.CreateEntity();
 
-        ecb.AddComponent(rpcEvent,new ServerEventData(tick));
+        ecb.AddComponent(rpcEvent,new SystemEventData(tick));
         ecb.AddComponent<WaitForProcess>(rpcEvent);
         if(instantProcess)
             ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);

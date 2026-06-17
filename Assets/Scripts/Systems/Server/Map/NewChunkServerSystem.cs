@@ -59,10 +59,11 @@ public partial class NewChunkSystem : SystemBase
     {
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
+        var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
-        foreach ((RefRO<ChunkComponent> chunkComponent, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>>().WithAll<NewChunk,Simulate>().WithNone<QueuedRequest>().WithEntityAccess())
+        foreach ((RefRO<ChunkComponent> chunkComponent,DynamicBuffer<WorldItemPosition> worldItems, Entity entity) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<WorldItemPosition>>().WithAll<NewChunk,Simulate>().WithNone<QueuedRequest>().WithEntityAccess())
         {
-            ecb.AddBuffer<WorldItems>(entity);
+            ecb.AddBuffer<WorldItemEntity>(entity);
             ecb.AddComponent(entity,new ChunkComponentCleanUp() {chunkIndex = chunkComponent.ValueRO.chunkIndex});          
             ecb.RemoveComponent<NewChunk>(entity);
             
@@ -73,6 +74,21 @@ public partial class NewChunkSystem : SystemBase
                     chunkEntity = entity,
                     chunkIndex = chunkComponent.ValueRO.chunkIndex,
                 });
+            }
+            else
+            {
+                var oldTick = tick;
+                oldTick.Subtract(1u);
+                foreach(var position in worldItems)
+                {
+                    EntityHelper.CreateEntityWithComponent(ecb,new CreateWorldItemRPC()
+                    {
+                        chunkIndex = chunkComponent.ValueRO.chunkIndex,
+                        position = position.worldItemPos,
+                        slotIndex = position.slot,
+                        tick = oldTick
+                    });
+                }
             }
 
             currentChunks[chunkComponent.ValueRO.chunkIndex] = entity;   

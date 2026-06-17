@@ -4,6 +4,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Localization.PropertyVariants.TrackedProperties;
 
 public struct NewWorldItem : IComponentData
 {
@@ -15,6 +16,7 @@ public struct WorldItem : IComponentData, IEnableableComponent
 {
     public int chunkIndex;
     public int slotIndex;
+    public int mergeCounter;
     public InventorySlot item;
 }
 
@@ -76,6 +78,7 @@ partial struct SpawnWorldItemServerSystem : ISystem
                 chunkIndex = rpc.ValueRO.chunkIndex,
                 item = rpc.ValueRO.item
             });
+            ecb.SetComponentEnabled<WorldItem>(entity,false);
             ecb.SetComponent(entity,LocalTransform.FromPosition(new float3(rpc.ValueRO.dropPosition,rpc.ValueRO.dropPosition.y)));
             ecb.SetComponent(entity, new PhysicsCollider
             {
@@ -83,10 +86,15 @@ partial struct SpawnWorldItemServerSystem : ISystem
             });
             ecb.SetSharedComponent<PhysicsWorldIndex>(entity,new PhysicsWorldIndex());
             ecb.DestroyEntity(e);
-            ecb.AppendToBuffer(rpc.ValueRO.chunk,new WorldItems()
+            ecb.AppendToBuffer(rpc.ValueRO.chunk,new WorldItemEntity()
             {
                 slot = rpc.ValueRO.slotIndex,
                 worldItem = entity
+            });
+            ecb.AppendToBuffer(rpc.ValueRO.chunk,new WorldItemPosition()
+            {
+                slot = rpc.ValueRO.slotIndex,
+                worldItemPos = rpc.ValueRO.dropPosition
             });
         }
         

@@ -16,7 +16,7 @@ public class WorldItemAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent<WorldItem>(entity);
-            AddComponent<kkkk>(entity);
+            SetComponentEnabled<WorldItem>(entity,false);
         }
     }
 }

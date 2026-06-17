@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
 using Unity.Rendering;
 using Unity.Transforms;
 using UnityEngine;
@@ -22,6 +23,10 @@ partial struct DropItemsServerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
+        state.RequireForUpdate<PhysicsWorldSingleton>();
+        state.RequireForUpdate<WorldItemsConfig>();
+
+
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAny<EQDropItem>().WithAll<ReceiveRpcCommandRequest>();
 
@@ -43,8 +48,9 @@ partial struct DropItemsServerSystem : ISystem
         SystemAPI.TryGetSingletonBuffer<LoadedChunks>(out var loadedChunks,true);
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         Chunks chunks = SystemAPI.GetSingleton<Chunks>();
-
+        var physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
         var currentTick = networkTime.ServerTick;
+        var config = SystemAPI.GetSingleton<WorldItemsConfig>();
 
 
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, RefRO<EQDropItem> command, Entity entity) in
@@ -56,18 +62,33 @@ partial struct DropItemsServerSystem : ISystem
             SlotPosition from =  command.ValueRO.position;
             PlayerInput playerInput = SystemAPI.GetComponent<PlayerInput>(player);
             LocalTransform localTransform = SystemAPI.GetComponent<LocalTransform>(player);
-            float2 direction = playerInput.sightDirection - new float2(localTransform.Position.x, localTransform.Position.y);
-            float randomValue = UnityEngine.Random.Range(0.2f,0.3f);
-            direction = math.normalize(direction) * randomValue + new float2(localTransform.Position.x,localTransform.Position.y);
-            
-            ChunkManagementServerSystem.Map.settings.GetCorrectChunkAndPosition(direction,out int chunkIndex, out var correctPosition);
-            direction = correctPosition;
+            float2 dropPosition,dropDir = math.normalize(playerInput.sightDirection - new float2(localTransform.Position.x, localTransform.Position.y));
+            float randomValue = UnityEngine.Random.Range(config.dropRangeMin,config.dropRangeMax);
+            dropPosition = dropDir * config.dropRangeMax + new float2(localTransform.Position.x,localTransform.Position.y);
+         
+            RaycastInput rayInput = new RaycastInput
+            {
+                Start = localTransform.Position,
+                End = new float3(dropPosition,dropPosition.y),
+                Filter = config.FilterToFindEnvironment
+            };
 
-             Debug.Log(chunkIndex + " drop chunk!!" + chunks.currentChunks.ContainsKey(chunkIndex));
+            if(physicsWorldSingleton.CastRay(rayInput, out Unity.Physics.RaycastHit hit))
+            {
+                dropPosition = MyTools.ConvertFloat(hit.Position);
+            }
+            float distance = math.distance(dropPosition,MyTools.ConvertFloat(localTransform.Position));
+            if(distance > randomValue)
+            {
+                dropPosition = dropDir * randomValue + new float2(localTransform.Position.x,localTransform.Position.y);
+                distance = randomValue;
+            }
+            
+            ChunkManagementServerSystem.Map.settings.GetCorrectChunkAndPosition(dropPosition,out int chunkIndex, out var correctPosition);
+            dropPosition = correctPosition;
 
             if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunkEntity))
             {
-
                 if(command.ValueRO.position.IsNullSlot())
                     from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
 
@@ -83,7 +104,7 @@ partial struct DropItemsServerSystem : ISystem
                     var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
                         containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,count,moveBetweenObjects:true,serverMove:true);
                                
-                    RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(chunkIndex,slotIndex,direction,randomValue * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,chunkIndex,currentTick,true);      
+                    RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(chunkIndex,slotIndex,dropPosition,distance * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,chunkIndex,currentTick,true);      
                     if (tab != null) events.AddRange(tab);
                 }
 

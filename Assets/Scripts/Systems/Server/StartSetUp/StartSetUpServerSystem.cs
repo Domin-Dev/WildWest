@@ -83,15 +83,23 @@ partial struct StartSetUpServerSystem : ISystem
                 defragmentationLimit = 0.6f
             });
 
-            var mask = LayerMask.NameToLayer("WorldItems");
+            var maskItems = LayerMask.NameToLayer("WorldItems");
+            var maskEnvironment = LayerMask.NameToLayer("Environment");
             EntityHelper.CreateEntityWithComponent(ecb, new WorldItemsConfig()
             {
                 FilterToFindSimilarWorldItems = new Unity.Physics.CollisionFilter()
                 {
                     BelongsTo = uint.MaxValue,
-                    CollidesWith = (uint) math.pow(2,mask)
+                    CollidesWith = (uint) math.pow(2,maskItems)
                 },
-                sizeWorldItemCollider = new float2(0.23f,0.23f)
+                FilterToFindEnvironment = new Unity.Physics.CollisionFilter()
+                {
+                    BelongsTo = uint.MaxValue,
+                    CollidesWith = (uint) math.pow(2,maskEnvironment)
+                },
+                sizeWorldItemCollider = new float2(0.23f,0.23f),
+                dropRangeMin = 0.22f,
+                dropRangeMax = 0.3f
             });
 
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);

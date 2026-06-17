@@ -96,7 +96,7 @@ public struct EntityContainers : IBufferElementData
 }
 
 
-public struct WorldItems : ICleanupBufferElementData, IGetSlot
+public struct WorldItemEntity : ICleanupBufferElementData, IGetSlot
 {
     public int slot;
     public Entity worldItem;
