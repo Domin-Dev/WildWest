@@ -7,7 +7,7 @@ using UnityEngine;
 
 
 
-[UpdateAfter(typeof(CollisionSystem))]
+[UpdateAfter(typeof(PlayerMoveSystem))]
 [UpdateBefore(typeof(GhostSendSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]

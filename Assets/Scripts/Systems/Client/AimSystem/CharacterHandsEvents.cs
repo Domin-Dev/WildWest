@@ -50,6 +50,7 @@ partial struct CharacterHandsEvents : ISystem
         containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);
 
         state.RequireForUpdate<VisualEffectsBuffer>();
+
     }
 
 
@@ -91,7 +92,7 @@ partial struct CharacterHandsEvents : ISystem
         
         foreach ((RefRO<EmptyMagazineRPC> action,Entity rpc) in SystemAPI.Query<RefRO<EmptyMagazineRPC>>().WithEntityAccess())
         {      
-            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
@@ -154,7 +155,7 @@ partial struct CharacterHandsEvents : ISystem
 
         foreach ((RefRO<StopReloadRPC> action,Entity rpc) in SystemAPI.Query<RefRO<StopReloadRPC>>().WithEntityAccess())
         {    
-                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner,RefRO<Velocity2D> vel, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>,RefRO<Velocity2D>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+                foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
                 {
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                     state.EntityManager.SetComponentData<Cooldown>(e,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,20) });

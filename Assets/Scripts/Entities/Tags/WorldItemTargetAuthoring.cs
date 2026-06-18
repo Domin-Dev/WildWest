@@ -3,8 +3,6 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-using Unity.Entities;
-using UnityEngine;
 
 public class WorldItemTargetAuthoring : MonoBehaviour
 {

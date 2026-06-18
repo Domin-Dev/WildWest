@@ -6,7 +6,7 @@ using Unity.Collections;
 using System;
 
 
-[UpdateAfter(typeof(CollisionSystem))]
+[UpdateAfter(typeof(PlayerMoveSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MapGeneratorServerSystem : SystemBase
 {
@@ -29,5 +29,6 @@ public partial class MapGeneratorServerSystem : SystemBase
         entityCommandBuffer.Playback(this.EntityManager);
         entityCommandBuffer.Dispose();
     }
+    
 }
 

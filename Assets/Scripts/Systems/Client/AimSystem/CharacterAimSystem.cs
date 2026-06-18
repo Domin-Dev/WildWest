@@ -9,7 +9,7 @@ using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [UpdateAfter(typeof(VariableSynchronizationServerSystem))]
-[UpdateAfter(typeof(CollisionSystem))]
+[UpdateAfter(typeof(PlayerMoveSystem))]
 
 partial struct CharacterAimSystem : ISystem
 {
@@ -104,8 +104,6 @@ partial struct CharacterAimSystem : ISystem
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
-                                Debug.Log("shoot!!! " + rot + "  spread => " +  playerAspect.spread.ValueRO.Spread   +  " "   + state.World.Flags + " " + testTick.TickIndexForValidTick +  " cool = " +  playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick);
-
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                                     break;
 
@@ -269,7 +267,6 @@ partial struct CharacterAimSystem : ISystem
                     }
                     else if (playerAspect.playerState.ValueRO.state == PlayerState.reloading  || playerAspect.playerState.ValueRO.state == PlayerState.unloading)
                     {
-                        Debug.Log("jest input!!!");
                         testTick.Subtract(1);
                         if (playerAspect.input.GetDataAtTick(testTick, out var input2))
                         {

@@ -1184,9 +1184,8 @@ public class UIManager : MonoBehaviour
     private void SetCollectItem(int itemID, int itemCount , Transform obj)
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
-        obj.GetChild(0).GetComponent<TextMeshProUGUI>().text = "+" + itemCount;
-        obj.GetChild(1).GetComponent<Image>().sprite = item.icon;
-        obj.GetChild(2).GetComponent<TextMeshProUGUI>().text = item.name;
+        obj.GetChild(0).GetComponent<Image>().sprite = item.icon;
+        obj.GetChild(1).GetComponent<TextMeshProUGUI>().text = UIStringsHelper.GetColorfulString(itemCount == 1 ? "" : itemCount.ToString(),GamePreferences.instance.highlightColorStr)  + " " +item.name;
     }
 
 

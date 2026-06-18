@@ -5,7 +5,7 @@ using Unity.NetCode;
 using UnityEngine;
 
 
-[UpdateAfter(typeof(CollisionSystem))]
+[UpdateAfter(typeof(PlayerMoveSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup))]
 [RequireMatchingQueriesForUpdate]

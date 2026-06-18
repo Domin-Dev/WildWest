@@ -5,13 +5,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.VFX;
-using UnityEngine.XR;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct EventsAtTickClientSystem : ISystem

@@ -9,7 +9,7 @@ using UnityEngine;
 
 
 [UpdateInGroup(typeof(GhostSimulationSystemGroup))]
-[UpdateAfter(typeof(CollisionSystem))]
+[UpdateAfter(typeof(PlayerMoveSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
  partial struct PlayersInputsServiceClientSystem : ISystem
   {
