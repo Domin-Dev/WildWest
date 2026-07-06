@@ -29,6 +29,7 @@ partial struct CharacterHandsEvents : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<EntityContainers> containersLookup;
+    private BufferLookup<BuildingObjects> objectsLookup;
 
 
     private DynamicBuffer<VisualEffectsBuffer> visualEffects;
@@ -38,12 +39,14 @@ partial struct CharacterHandsEvents : ISystem
         state.RequireForUpdate<EntitiesReferences>();
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<Chunks>();
+        state.RequireForUpdate<MapSettings>();
 
         transformLookup = SystemAPI.GetComponentLookup<LocalTransform>();
         animationLookup = SystemAPI.GetComponentLookup<AnimationComponent>();
         handsLookup = SystemAPI.GetComponentLookup<Hands>();
         framesLookup = SystemAPI.GetBufferLookup<AnimationFrames>();
         eventsLookup = SystemAPI.GetBufferLookup<AnimationEvents>();
+        objectsLookup = SystemAPI.GetBufferLookup<BuildingObjects>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
@@ -68,12 +71,14 @@ partial struct CharacterHandsEvents : ISystem
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
+        objectsLookup.Update(ref state);
 
         state.CompleteDependency();
         var currentTime = SystemAPI.GetSingleton<NetworkTime>();
         var prefabs = SystemAPI.GetSingleton<EntitiesReferences>();
         var chunks = SystemAPI.GetSingleton<Chunks>();
-        
+        var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+        visualEffects = SystemAPI.GetSingletonBuffer<VisualEffectsBuffer>();
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {      
@@ -83,8 +88,29 @@ partial struct CharacterHandsEvents : ISystem
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
-                    StartAnimation(ref state,item,hands,item.shotAnim,animationLookup,transformLookup,framesLookup,eventsLookup); 
+                    StartAnimation(ref state,item,hands,item.shotAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup); 
                 }
+                else if(ItemsAsset.instance.TryGetItem<Weapon>(action.ValueRO.itemID,out Weapon weapon))
+                {
+                    state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
+
+                    int2 tilePosition = mapSettings.GetTilePostionFromEnginePosition(action.ValueRO.mousePosition);
+                    int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(action.ValueRO.mousePosition);
+                    float3 enginePosition = mapSettings.GetEnginePositionFromTilePosition(tilePosition);
+                    int[] args = null;
+
+                    if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk))
+                    {
+                        if(EntityHelper.TryFindBuildingObject(chunk,tilePosition,objectsLookup,out var buildingObj,out int index) &&
+                        ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData))
+                        {
+                            args = new []{itemData.hitParticles,itemData.hitSound,3};
+                        }
+                    }
+                    hands.ValueRW.pointerPosition = enginePosition;
+                    StartAnimation(ref state,weapon,hands,weapon.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,0,args);
+                } 
+
                 break;
             }
             entityCommandBuffer.DestroyEntity(rpc);
@@ -98,7 +124,7 @@ partial struct CharacterHandsEvents : ISystem
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
                     float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
-                    StartAnimation(ref state,item,hands,item.emptyMagazine,animationLookup,transformLookup,framesLookup,eventsLookup,time); 
+                    StartAnimation(ref state,item,hands,item.emptyMagazine.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time); 
                 }
                 break;
             }
@@ -130,11 +156,11 @@ partial struct CharacterHandsEvents : ISystem
                         {
                             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,item.reloadCooldown)});
                             state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = item.reloadingState});
-                            StartAnimation(ref state,item,hands,item.reloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID}); 
+                            StartAnimation(ref state,item,hands,item.reloadAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID}); 
                         }
                         else
                         {
-                            StartAnimation(ref state,item,hands,item.lostAmmo,animationLookup,transformLookup,framesLookup,eventsLookup,time,null); 
+                            StartAnimation(ref state,item,hands,item.lostAmmo.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time,null); 
                         }
                     }
                     entityCommandBuffer.DestroyEntity(rpc);
@@ -177,7 +203,7 @@ partial struct CharacterHandsEvents : ISystem
                     float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
                     state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(action.ValueRO.tick,item.reloadCooldown)});
                     state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = PlayerState.unloading});
-                    StartAnimation(ref state,item,hands,item.unloadAnim,animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID});
+                    StartAnimation(ref state,item,hands,item.unloadAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time,new int[]{action.ValueRO.ammoID});
                 }
                 break;
             }
@@ -207,7 +233,7 @@ partial struct CharacterHandsEvents : ISystem
             animation.ValueRW.hasStartPosition = false;
         }
     }
-    public static void StartAnimation(ref SystemState state,RangedWeapon item,RefRW<Hands> hands, List<KeyFrame> frames,
+    public static void StartAnimation(ref SystemState state,Weapon item,RefRW<Hands> hands, KeyFrame[] frames,
     ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup,float elapsedTime = 0,int[] args = null)
     {
         ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
@@ -233,6 +259,10 @@ partial struct CharacterHandsEvents : ISystem
             index++;
         }
     } 
+
+
+
+
     public static void ResetAnimation(Hands hands,ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup)
     {
         ClearAnimationComponent(hands.GetBodyPart(BodyPartType.MainHand),animationLookup,transformLookup,framesLookup,eventsLookup);

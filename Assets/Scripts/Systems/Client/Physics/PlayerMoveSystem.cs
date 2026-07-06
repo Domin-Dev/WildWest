@@ -40,7 +40,9 @@ public partial struct PlayerMoveSystem : ISystem
                 in SystemAPI.Query<RefRW<PlayerInputSync>, RefRW<PlayerInput>, RefRO<Player>, RefRW<PhysicsVelocity>,RefRW<PlayerActionSpread>>().WithAll<Simulate>().WithEntityAccess())
             {
                 playerInputSync.ValueRW.movementDir = playerInput.ValueRO.movementDirection;
-                velocity.ValueRW.Linear = new float3(playerInput.ValueRO.movementDirection.x,playerInput.ValueRO.movementDirection.y,0) * player.ValueRO.speed;
+                float2 dir = math.normalizesafe(playerInput.ValueRO.movementDirection);
+
+                velocity.ValueRW.Linear = new float3(dir.x,dir.y,0) * player.ValueRO.speed;
                 if(networkTime.IsFirstTimeFullyPredictingTick) 
                     spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRW.Linear) * networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
 
@@ -51,7 +53,8 @@ public partial struct PlayerMoveSystem : ISystem
             foreach (var (playerInput, player, velocity,spread, entity)
             in SystemAPI.Query<RefRO<PlayerInput>, RefRO<Player>, RefRW<PhysicsVelocity>,RefRW<PlayerActionSpread>>().WithAll<Simulate, GhostOwnerIsLocal>().WithEntityAccess())
             {
-                velocity.ValueRW.Linear = new float3(playerInput.ValueRO.movementDirection.x,playerInput.ValueRO.movementDirection.y,0) * player.ValueRO.speed;
+                float2 dir = math.normalizesafe(playerInput.ValueRO.movementDirection);
+                velocity.ValueRW.Linear = new float3(dir.x,dir.y,0) * player.ValueRO.speed;
                 if(networkTime.IsFirstTimeFullyPredictingTick) 
                     spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRW.Linear) *  networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
 

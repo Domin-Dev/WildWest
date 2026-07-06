@@ -37,7 +37,6 @@ partial struct PlayerInputSystem : ISystem
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
 
-
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
 
@@ -93,7 +92,7 @@ partial struct PlayerInputSystem : ISystem
             playerInputSync.ValueRW.movementDir = input;
 
             playerInput.ValueRW.sightDirection = sightDirection;
-            playerInputSync.ValueRW.sightDirection = sightDirection;
+            playerInputSync.ValueRW.sightPosition = sightDirection;
 
             int newSlot = InputManager.i.GetNextSlotInHand(playerInput.ValueRO.slotInHand);
             int newAmmoIndex = InputManager.i.GetNextAmmoIndex(playerInput.ValueRO.ammoSelectedIndex);
@@ -198,6 +197,12 @@ partial struct PlayerInputSystem : ISystem
 
             
         } 
+        
+        
+        
+        GamePointer.SetPosition(MapVisualization.instance.clientMap.EnginePositionToTileEnginePosition(sightDirection));
+        
+        
         ecb.Playback(state.EntityManager);
         ecb.Dispose();  
     }

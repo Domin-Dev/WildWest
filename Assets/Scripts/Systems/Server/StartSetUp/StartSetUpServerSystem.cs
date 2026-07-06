@@ -36,8 +36,8 @@ partial struct StartSetUpServerSystem : ISystem
                 mapOffset = new Vector2(0,0),
                 tileSize = 0.25f,
 
-                playerRenderSize = 2,
-                maxChunksPerClient = 20,
+                playerRenderSize = 1,
+                maxChunksPerClient = 12,
             }); 
 
 

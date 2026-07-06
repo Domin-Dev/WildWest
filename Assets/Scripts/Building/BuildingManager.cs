@@ -136,8 +136,8 @@ public class BuildingManager : MonoBehaviour
     }
     private void SetUpPointer()
     {
-        pointerObject = Instantiate(pointer, parent).transform;
-        pointerObject.gameObject.SetActive(false);
+//        pointerObject = Instantiate(pointer, parent).transform;
+   //     pointerObject.gameObject.SetActive(false);
     }
     private void UpdateBar()
     {

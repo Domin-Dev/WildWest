@@ -14,6 +14,8 @@ public class Drop
 
 public abstract class BuildingItem : Item
 {
+    public int hitSound;
+    [Min(0)] public int hitParticles;
     public int durability;
     [Header("Drop")]
     public Drop[] drop;
@@ -22,7 +24,6 @@ public abstract class BuildingItem : Item
 }
 public abstract class VariantItem : BuildingItem
 {
-    public GameObject HitParticles;
     public ObjectVariant[] objectVariants;
     public int shadowPixels = 19;
     public int2 size = new int2(27, 51);

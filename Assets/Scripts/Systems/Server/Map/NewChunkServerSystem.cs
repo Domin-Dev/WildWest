@@ -12,7 +12,7 @@ using UnityEngine;
 
 public struct Chunks : IComponentData
 {
-    public  NativeHashMap<int,Entity> currentChunks;
+    public NativeHashMap<int,Entity> currentChunks;
 }
 
 

@@ -66,7 +66,7 @@ public static class EntityHelper
     }
 
 
-    public static void SpawnEntityPrefab(EntityCommandBuffer entityCommandBuffer, Entity prefab, float3 position, quaternion quaternion, NewParticles target)
+    public static void SpawnEntityPrefab(EntityCommandBuffer entityCommandBuffer, Entity prefab, float3 position, quaternion quaternion, NewParticles target = default)
     {
         Entity entity = entityCommandBuffer.Instantiate(prefab);
         position.z = position.y;
@@ -78,6 +78,26 @@ public static class EntityHelper
         };
         entityCommandBuffer.SetComponent(entity, localTransform);
         entityCommandBuffer.SetComponent(entity, target);
+    }
+
+    public static bool TryFindBuildingObject(Entity chunk,int2 tilePosition, BufferLookup<BuildingObjects> objects,out BuildingObjects result,out int index)
+    {
+        if(objects.TryGetBuffer(chunk,out var buffer))
+        {
+            for (int i = 0; i < buffer.Length;i++)
+            {
+                var element = buffer[i];
+                if(element.globalTilePos.x == tilePosition.x && element.globalTilePos.y == tilePosition.y)
+                {
+                    result = element;
+                    index = i;
+                    return true;
+                }
+            }
+        }
+        result = default;
+        index = -1;
+        return false;
     }
 
 }

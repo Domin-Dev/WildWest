@@ -17,12 +17,13 @@ public struct Hands : IComponentData
     public bool twoHanded;
 
 
+
     public Entity mainhand;
     public Entity sidehand;
 
 
 
-
+    public float3 pointerPosition;
 
     public Entity aimPoint;
     public Entity reloadPoint;

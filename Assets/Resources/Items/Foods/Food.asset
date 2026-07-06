@@ -16,7 +16,9 @@ MonoBehaviour:
   description: 
   stackMax: 50
   ID: 86
-  icon: {fileID: 479024344, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: -1851974820, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
   tags: []
   crafingIngredients:
   - itemID: 0

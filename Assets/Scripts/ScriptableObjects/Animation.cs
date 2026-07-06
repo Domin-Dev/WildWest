@@ -53,9 +53,9 @@ public class AnimationEvent
     public AnimationEvents GetEvent(int frameIndex,int[] args)
     {
         int index = id;
-        if(indexType == IndexType.ArgumentID && args != null)
+        if(indexType == IndexType.ArgumentID)
         {
-            if(args.Length > id && id >= 0)
+            if(args != null && args.Length > id && id >= 0)
                 index = args[id];
             else
                 index = -1;
@@ -92,6 +92,7 @@ public enum EventType :  byte
     SpawnParticle,
     SpawnParticleAtAimPoint,
     SpawnParticleAtReloadPoint,
+    SpawnParticleAtPointer,
     ChangeItemSprite,
     ChangeSpriteInSideHand
 }
@@ -100,6 +101,7 @@ public enum PositionMode :  byte
     MoveLocal = 0,
     SetLocal = 1,
     MoveRelativeToStart = 2,
-    MoveRelativeToReloadPoint = 3
+    MoveRelativeToReloadPoint = 3,
 }
+
 

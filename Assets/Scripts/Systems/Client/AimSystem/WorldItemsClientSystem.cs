@@ -178,6 +178,16 @@ partial struct WorldItemsClientSystem : ISystem
                                 if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,chunkEntity,slotPosition,out var item,out int newbufferIndex))
                                     RPCHelper.CreateLocalEvent(new PickUpItemCompletedClient() {item = item.Value },ecb,EntityHelper.AddTime(tick,action.ValueRO.duration));         
                             }
+
+
+                            var childs = SystemAPI.GetBuffer<Child>(worldItem.Value.worldItem);
+                            if(childs.Length > 0)
+                            {
+                                Entity worlditem = SystemAPI.GetBuffer<Child>(worldItem.Value.worldItem)[0].Value;
+                                var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(worlditem);
+                                HeroEditor.SetMaterialBool(sprite,"_IsRunning",false);
+                            }
+
                         }
                         worldItemsLookup[chunkEntity].RemoveAtSwapBack(bufferIndex);
                     }
@@ -251,6 +261,14 @@ partial struct WorldItemsClientSystem : ISystem
                         destroy = true,
                         startPosition = new float2(transform.Position.x,transform.Position.y)
                     });
+
+                    var childs = SystemAPI.GetBuffer<Child>(from.worldItem);
+                    if(childs.Length > 0)
+                    {
+                        Entity worlditem = SystemAPI.GetBuffer<Child>(worldItem.Value.worldItem)[0].Value;
+                        var sprite = state.EntityManager.GetComponentObject<SpriteRenderer>(worlditem);
+                        HeroEditor.SetMaterialBool(sprite,"_IsRunning",false);
+                    }
                 }        
                 ecb.DestroyEntity(rpc);
             }

@@ -14,12 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Stone3
   description: 
-  ID: 45
   stackMax: 50
+  ID: 45
   icon: {fileID: 681433858, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients: []
   craftTables: 
   numberItem: 1
+  hitSound: 10
+  hitParticles: 4
   durability: 50
   drop:
   - maxNumber: 2
@@ -33,7 +38,6 @@ MonoBehaviour:
       itemID: 43
       number: 1
   toolRequired: 3
-  HitParticles: {fileID: 8503829923926787638, guid: 42ce0afd134097f4aa18bf9920ec5927, type: 3}
   objectVariants:
   - variants:
     - hitbox:

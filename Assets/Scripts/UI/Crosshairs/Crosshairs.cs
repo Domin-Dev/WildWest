@@ -49,7 +49,7 @@ public class Crosshairs : MonoBehaviour
     }
     public void Awake()
     {
-        if(i == null)
+        if(i == null || i == this)
         {
             i = this; 
             rectTransform = GetComponent<RectTransform>();

@@ -1,4 +1,5 @@
 using Unity.Collections;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
@@ -18,5 +19,14 @@ public struct AnswerPlayerVerificationRPC : IRpcCommand
 }
 public struct MapIsLoaded : IRpcCommand
 {
-    public int widthInChunks;
+    public MapSetUp mapSetUp;
+}
+
+public struct MapSetUp
+{
+    public int mapSizeInRegions;
+    public int regionSizeInChunks;
+    public int chunkSizeInTiles;
+    public float tileSize;
+    public float2 mapOffset;
 }

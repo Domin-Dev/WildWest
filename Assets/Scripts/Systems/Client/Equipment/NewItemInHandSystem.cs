@@ -181,7 +181,6 @@ partial struct NewItemInHandSystem : ISystem
         ammoID = -1;      
         InventorySlot[] ammo = null;
         InventorySlot[] magazine = null;
-
         int selectedAmmo = -1;
 
         if(itemSlot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(itemSlot.Value.itemId,out var item))
@@ -195,7 +194,6 @@ partial struct NewItemInHandSystem : ISystem
             NewEquipmentManager.instance.SetAmmoTag(item.ammoTagID); 
             input.ValueRW.ammoSelectedItemID = ammoID;
 
-            Debug.Log("item!!!!!!!!!! + "+ itemSlot.Value.itemId);
             if(item.hasMagazine)
             {
                 magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,hotBarContainer,input.ValueRO.slotInHand);
@@ -213,6 +211,7 @@ partial struct NewItemInHandSystem : ISystem
     public static void ChangeItemInHand(ref SystemState state,Item item, RefRW<Hands> hands)
     {
         Crosshairs.Swtich(item is RangedWeapon);
+        GamePointer.Switch(item is Tool);
 
 
         if (item is Weapon)

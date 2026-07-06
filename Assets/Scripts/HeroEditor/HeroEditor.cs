@@ -177,6 +177,10 @@ public class HeroEditor: MonoBehaviour
         materialPropertyBlock.SetInt(name, newValue);
         spriteRenderer.SetPropertyBlock(materialPropertyBlock);
     }
+    public static void SetMaterialBool(SpriteRenderer spriteRenderer,string name, bool boolValue)
+    {
+        SetMaterialInt(spriteRenderer,name,boolValue ? 1 : 0);
+    }
     public static void SetMaterialColor(SpriteRenderer spriteRenderer, string name, Color value)
     {
         MaterialPropertyBlock materialPropertyBlock = new MaterialPropertyBlock();

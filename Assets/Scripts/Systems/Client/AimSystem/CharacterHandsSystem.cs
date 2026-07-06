@@ -116,6 +116,9 @@ partial struct CharacterHandsSystem : ISystem
                             case EventType.SpawnParticleAtReloadPoint:
                                 CreatePrefab(entityCommandBuffer,hands.reloadPoint,eventFrame);
                                 break;
+                            case EventType.SpawnParticleAtPointer:
+                                CreatePrefab(entityCommandBuffer,Entity.Null,eventFrame,hands.pointerPosition);
+                                break;
                             case EventType.ChangeItemSprite:
                                 ChangeItemSprite(ref state,hands.itemInMainHand,eventFrame.id,animation.ValueRO.itemID);
                                 break;
@@ -192,19 +195,21 @@ partial struct CharacterHandsSystem : ISystem
             } 
         }
     }
-    private void CreatePrefab(EntityCommandBuffer entityCommandBuffer, Entity target,AnimationEvents eventFrame)
+    private void CreatePrefab(EntityCommandBuffer entityCommandBuffer, Entity target,AnimationEvents eventFrame, float3 postion = default)
     {
-        LocalToWorld localToWorld = worldLookup[target];
+        worldLookup.TryGetComponent(target,out LocalToWorld localToWorld);
+        if(eventFrame.id < 0 || eventFrame.id >= visualEffects.Length)
+            return;
+
         var prefab = visualEffects[eventFrame.id].entity;
-
-
         quaternion rotation;
         if(eventFrame.relativeRotation)
             rotation = math.normalize(math.mul(eventFrame.rotation, localToWorld.Rotation));
         else
             rotation = eventFrame.rotation;
 
-        EntityHelper.SpawnEntityPrefab(entityCommandBuffer,prefab, localToWorld.Position + math.rotate(localToWorld.Rotation, eventFrame.position), rotation ,new NewParticles()
+
+        EntityHelper.SpawnEntityPrefab(entityCommandBuffer,prefab, localToWorld.Position + postion + math.rotate(localToWorld.Rotation, eventFrame.position), rotation ,new NewParticles()
         {
             offset = eventFrame.position,
             target = target,

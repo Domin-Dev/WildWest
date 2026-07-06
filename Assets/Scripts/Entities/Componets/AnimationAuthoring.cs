@@ -88,7 +88,7 @@ public struct AnimationFrames : IBufferElementData
     public quaternion targetRotation;
     public Entity targetEntity;
 
-    public void Process(AnimationComponent animationComponent,Hands hands,LocalTransform  localTransform)
+    public void Process(AnimationComponent animationComponent,Hands hands,LocalTransform localTransform)
     {
         processed = true;
         targetEntity = Entity.Null;

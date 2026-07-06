@@ -15,11 +15,19 @@ public class Weapon : Destroyable
     public Vector2 gripPoint1;
     public Vector2 gripPoint2;
 
-    public bool twoHanded  => gripPoint2.x != -100;
+    [Header("Visual effects")]
+    public Animation usageAnim;
 
+    public bool twoHanded  => gripPoint2.x != -100;
     public override Sprite GetWorldSprite => weaponImage;
     public override ItemStats GetItemStats()
     {
         return base.GetItemStats();
     }
+}
+
+[System.Serializable]
+public class Animation
+{
+    public KeyFrame[] frames;
 }

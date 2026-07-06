@@ -62,7 +62,7 @@ public static class DebugController
                         var character = entityManager.GetComponentData<LinkedCharacter>(e).entity;
                         GhostChunk ghostChunk = entityManager.GetComponentData<GhostChunk>(character);
 
-                        var position =  LocalTransform.FromPosition(map.MapPositionToWorldPosition(x, y));
+                        var position =  LocalTransform.FromPosition(map.GetTilePositionToEnginePosition(x, y));
                         ecb.SetComponent(character, position);
                         ghostChunk.SetNewChunk();
                         ecb.SetComponent(character,ghostChunk);

@@ -28,7 +28,7 @@ public class Actions : MonoBehaviour
 
     private void Start()
     {
-        pointerTransform = Instantiate(pointer, parent).transform;
+     //   pointerTransform = Instantiate(pointer, parent).transform;
     }
 
     public static Vector2 GetMousePosXY()
@@ -107,7 +107,7 @@ public class Actions : MonoBehaviour
             float lastRotation = transform.eulerAngles.z;
 
             VariantItem variantItem = ItemsAsset.instance.GetItem(gridObject.ID) as VariantItem;
-            if (variantItem.HitParticles != null) Instantiate(variantItem.HitParticles, gridObject.objectTransform.position + (Vector3)variantItem.objectVariants[gridObject.variantIndex].variants[0].particlePoint, Quaternion.identity);
+            //if (variantItem.HitParticles != null) Instantiate(variantItem.HitParticles, gridObject.objectTransform.position + (Vector3)variantItem.objectVariants[gridObject.variantIndex].variants[0].particlePoint, Quaternion.identity);
             GridTile[] neighbors = gridTile.GetNeighbors();
 
             if (gridTile.DecreaseHitPoints(20))

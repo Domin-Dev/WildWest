@@ -28,7 +28,7 @@ public partial class MapLoadingClientSystem : SystemBase
 
     public void SetMapSettings(MapIsLoaded map)
     { 
-        clientMap.widthInChunks = map.widthInChunks;
+    //    clientMap.widthInChunks = map.widthInChunks;
     }
     protected override void OnCreate()
     {
@@ -54,11 +54,12 @@ public partial class MapLoadingClientSystem : SystemBase
     private float timer = 0f;
     protected override void OnUpdate()
     {
-        float deltaTime = SystemAPI.Time.DeltaTime;
-        timer += deltaTime;
+        // float deltaTime = SystemAPI.Time.DeltaTime;
+        // timer += deltaTime;
 
-        if (timer < 0.25f) return; 
-        timer = 0f;
+        // if (timer < 0.05) return; 
+        // timer = 0f;
+
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
 
@@ -69,7 +70,7 @@ public partial class MapLoadingClientSystem : SystemBase
            {
             while (true)
            {
-               bool isEvent = false;
+             //  bool isEvent = false;
                for (int i = 0; i < events.Length; i++)
                {
                    var ev = events[i];
@@ -89,11 +90,12 @@ public partial class MapLoadingClientSystem : SystemBase
                                break;
                        }
 
-                       isEvent = true;
+                       //isEvent = true;
                        break;
                    }
                }
-               if (!isEvent) break; 
+              // if (!isEvent) break; 
+              break;
            }
             ecb.SetComponent(e, counter);
            }

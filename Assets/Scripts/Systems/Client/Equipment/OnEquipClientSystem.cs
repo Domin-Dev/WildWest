@@ -36,7 +36,6 @@ partial struct OnEquipClientSystem : ISystem
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
         foreach ((RefRO<EQOnEquipClient> onEquip , Entity entity) in SystemAPI.Query<RefRO<EQOnEquipClient>>().WithEntityAccess())
         {
-            Debug.Log("player outfit client");
             foreach ((RefRO<Character> character, RefRO<GhostOwner> owner , Entity player) in SystemAPI.Query<RefRO<Character>,RefRO<GhostOwner>>().WithAll<Player>().WithEntityAccess())
             {
                 if(owner.ValueRO.NetworkId == onEquip.ValueRO.ownerID)

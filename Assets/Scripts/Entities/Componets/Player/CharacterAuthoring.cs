@@ -94,7 +94,7 @@ public struct PlayerInput : IInputComponentData
 public struct PlayerInputSync : IComponentData
 {
     [GhostField] public float2 movementDir;
-    [GhostField] public float2 sightDirection;
+    [GhostField] public float2 sightPosition;
     
     [GhostField] public InputEvent rightButton;
     [GhostField] public InputEvent leftButton;

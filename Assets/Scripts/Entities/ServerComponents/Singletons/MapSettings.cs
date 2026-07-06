@@ -14,7 +14,6 @@ public struct MapSettings: IComponentData
     public int seed;
 
 
-
     /// Map Size
     public int mapSizeInRegions;
     public int regionSizeInChunks;
@@ -24,23 +23,50 @@ public struct MapSettings: IComponentData
 
 
     public float mapSizeInEngine => mapSizeInChunks * chunkSizeInEnginePos;
-    public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;
+    public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;    
 
-    
-    
+
     public int chunksCountInRegion => regionSizeInChunks * regionSizeInChunks;
     public int chunksCount => mapSizeInChunks*mapSizeInChunks;
     public int regionsCount => mapSizeInRegions*mapSizeInRegions;
     public int tilesCount => chunkSizeInTiles*chunkSizeInTiles;
-
     public float chunkSizeInEnginePos => chunkSizeInTiles * tileSize;
 
+   
     #region Chunks limits
     public int playerRenderCount => (2 * playerRenderSize + 1)*(2 * playerRenderSize + 1);
     public int playerRenderSize; 
     public int maxChunksPerClient;
 
     #endregion
+
+
+
+    [BurstCompile]
+    public MapSetUp GetSetUp()
+    {
+        return new MapSetUp()
+        {
+            chunkSizeInTiles = chunkSizeInTiles,
+            mapOffset = mapOffset,
+            mapSizeInRegions = mapSizeInRegions,
+            regionSizeInChunks = regionSizeInChunks,
+            tileSize = tileSize
+        };
+    }
+    
+    [BurstCompile]
+    public MapSettings LoadSetUp(MapSetUp mapSetUp)
+    {
+        this.chunkSizeInTiles = mapSetUp.chunkSizeInTiles;
+        this.mapOffset = mapSetUp.mapOffset;
+        this.mapSizeInRegions = mapSetUp.mapSizeInRegions;
+        this.regionSizeInChunks = mapSetUp.regionSizeInChunks;
+        this.tileSize = mapSetUp.tileSize;
+        return this;
+    }
+
+
 
 
     [BurstCompile]
@@ -141,7 +167,21 @@ public struct MapSettings: IComponentData
         return GetChunkIndexFromEnginePosition(MyTools.ConvertFloat(enginePosition));
     }
     [BurstCompile]
-    public float3 MapPositionToWorldPosition(int x, int y)
+    public int2 GetTilePostionFromEnginePosition(float2 enginePosition)
+    {
+        return new int2((int)((enginePosition.x - mapOffset.x) / tileSize), (int)((enginePosition.y - mapOffset.y) / tileSize));
+    }
+
+
+    [BurstCompile]
+    public float3 GetEnginePositionFromTilePosition(int2 xy)
+    {
+        float y = mapOffset.y + (xy.y + 0.5f) * tileSize;
+        return new float3(mapOffset.x + (xy.x + 0.5f) * tileSize,y,y); 
+    }
+
+    [BurstCompile]
+    public float3 GetTilePositionToEnginePosition(int x, int y)
     {
         return new float3(mapOffset.x + (x + 0.5f) * tileSize, mapOffset.y + (y + 0.5f) * tileSize, mapOffset.y + (y + 0.5f) * tileSize); 
     }
@@ -178,4 +218,7 @@ public struct MapSettings: IComponentData
     {
         return chunkCoordinates * chunkSizeInTiles + tileLocalPos;
     }
+
+
+
 }

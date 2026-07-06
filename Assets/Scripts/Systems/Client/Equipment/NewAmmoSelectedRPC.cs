@@ -169,6 +169,11 @@ public struct PickUpItemCompletedClient : IComponentData
 }
 
 
+public struct BuildingObjectHit : IComponentData
+{
+    public int id;
+    public float3 position;
+}
 
 
 public struct UnloadRPC : IRpcCommand, ISetPlayer

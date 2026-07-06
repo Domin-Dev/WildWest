@@ -27,6 +27,7 @@ partial struct GoInGameCilientSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RefRO<MapIsLoaded> map, Entity rpc) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<MapIsLoaded>>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(rpc);
+            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new MapSettings().LoadSetUp(map.ValueRO.mapSetUp));
 
             foreach ((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
             {
@@ -35,7 +36,6 @@ partial struct GoInGameCilientSystem : ISystem
                 Entity rpcEntity = entityCommandBuffer.CreateEntity();
 
                 var mapData = entityCommandBuffer.CreateEntity();
-                entityCommandBuffer.AddComponent(mapData, new MapClientData() { widthInChunks = map.ValueRO.widthInChunks });
                 ClientServerBootstrap.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetMapSettings(map.ValueRO);
 
                 PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();

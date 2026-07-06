@@ -15,5 +15,4 @@ public class Tool : Weapon
 {
     public ToolType toolType;
     public int efficiency;
-
 }

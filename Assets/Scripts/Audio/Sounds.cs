@@ -52,7 +52,7 @@ public class Sounds : MonoBehaviour
 
     public void PlayerSound(int id)
     {
-        if(soundsConfig.Sounds.Count > id)
+        if(soundsConfig.Sounds.Count > id && id >= 0)
         {
             audioSource.PlayOneShot(soundsConfig.Sounds[id]);
         }
@@ -60,7 +60,8 @@ public class Sounds : MonoBehaviour
 
     public void PlayerSound(AudioClip shot)
     {
-        audioSource.PlayOneShot(shot);
+        if(shot != null)
+            audioSource.PlayOneShot(shot);
     }
 
     public void Shot()

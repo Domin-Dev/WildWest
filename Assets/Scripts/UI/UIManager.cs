@@ -1188,8 +1188,6 @@ public class UIManager : MonoBehaviour
         obj.GetChild(1).GetComponent<TextMeshProUGUI>().text = UIStringsHelper.GetColorfulString(itemCount == 1 ? "" : itemCount.ToString(),GamePreferences.instance.highlightColorStr)  + " " +item.name;
     }
 
-
-
     #region  Containers Funcs
 
     public Transform CreateUIContainer(ContainerType type)
