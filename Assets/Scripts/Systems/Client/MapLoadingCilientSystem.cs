@@ -1,15 +1,6 @@
 using Game.Client.Map;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.NetCode;
-using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEngine;
 
 
 [DisableAutoCreation]
@@ -19,6 +10,11 @@ public partial class MapLoadingClientSystem : SystemBase
     private ClientMap clientMap;
     private EntitiesReferences entitiesReferences;
     private NativeHashSet<int> chunksToLoad;
+
+
+    private BufferLookup<BuildingObjects> objectsLookup;
+    private BufferLookup<LocalBuildingObjects> localObjectsLookup;
+    private BufferLookup<LinkedEntityGroup> linkedLookup;
 
     public void SetUp()
     {
@@ -35,12 +31,17 @@ public partial class MapLoadingClientSystem : SystemBase
         base.OnCreate();
         chunksToLoad = new NativeHashSet<int>(30,Allocator.Persistent);
         RequireForUpdate<EntitiesReferences>();
+        RequireForUpdate<Chunks>();
         //var entityQueryDesc = new EntityQueryDesc
         //{
         //    All = new ComponentType[] { typeof(ReceiveRpcCommandRequest) },
         //    Any = new ComponentType[] { typeof(FixedChunk), typeof(FixedBuildingObjects) }
         //};
         //RequireForUpdate(GetEntityQuery(entityQueryDesc));
+
+        objectsLookup = SystemAPI.GetBufferLookup<BuildingObjects>();
+        localObjectsLookup = SystemAPI.GetBufferLookup<LocalBuildingObjects>();
+        linkedLookup = SystemAPI.GetBufferLookup<LinkedEntityGroup>();
     }
     protected override void OnDestroy()
     {
@@ -62,6 +63,11 @@ public partial class MapLoadingClientSystem : SystemBase
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
+        var chunks = SystemAPI.GetSingleton<Chunks>();
+        objectsLookup.Update(this);
+        localObjectsLookup.Update(this);
+        linkedLookup.Update(this);
+
 
        Entities
        .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
@@ -78,16 +84,38 @@ public partial class MapLoadingClientSystem : SystemBase
                    {
                        counter.index++;
 
-                     // Debug.Log(counter.index + "akcja!" + ev.flags);
-
+                      ///Debug.Log(counter.index + "akcja!" + ev.flags);
                        switch (ev.flags)
                        {
-                           case 1:
-                               chunksToLoad.Add(ev.value.x);
+                            case ChunkEventType.LoadChunk:
+                               chunksToLoad.Add(ev.chunk);
                                break;
-                           case 2:
-                               clientMap.RemoveChunk(ev.value.x);
+                            case ChunkEventType.UnloadChunk:
+                               clientMap.RemoveChunk(ev.chunk);
                                break;
+                            case ChunkEventType.UpdateBuildingObject:
+                                if(chunks.currentChunks.TryGetValue(ev.chunk,out Entity chunkEntity))
+                                {
+                                    if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,objectsLookup,out var result,out int index))
+                                    {
+                                        
+                                    }
+                                    else if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
+                                    {
+                                        var buffer = linkedLookup[chunkEntity];
+                                        for (int k = buffer.Length - 1; k >= 0; k--)
+                                        {
+                                            if (buffer[k].Value == localResult.localEntity)
+                                            {
+                                                buffer.RemoveAtSwapBack(k);
+                                                break;
+                                            }
+                                        }
+                                        ecb.AddComponent<DestroyEntityTag>(localResult.localEntity);
+                                        localObjectsLookup[chunkEntity].RemoveAtSwapBack(localIndex);
+                                    }
+                                }
+                                break;
                        }
 
                        //isEvent = true;
@@ -104,16 +132,24 @@ public partial class MapLoadingClientSystem : SystemBase
 
         if (!chunksToLoad.IsEmpty)
         {
-            Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects) =>
+            Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects, DynamicBuffer<LocalBuildingObjects> localBuildingObjects) =>
             {
                 if(chunksToLoad.Contains(chunk.chunkIndex))
                 {
                     clientMap.AddChunk(chunk.chunkIndex, e);
                     chunksToLoad.Remove(chunk.chunkIndex);
 
-                    foreach (var item in buildingObjects)
+                    for(int i = 0; i < buildingObjects.Length; i++)
                     {
-                       ecb.AppendToBuffer<LinkedEntityGroup>(e,BuildingObjectCreator.CreateObject(entitiesReferences,EntityManager,ecb,item));
+                        var item = buildingObjects[i];
+                        Entity obj = BuildingObjectCreator.CreateObject(entitiesReferences,EntityManager,ecb,item,out Entity spriteEntity);   
+                        ecb.AppendToBuffer<LinkedEntityGroup>(e,obj);
+                        ecb.AppendToBuffer(e,new LocalBuildingObjects()
+                        {
+                            globalTilePos = item.globalTilePos,
+                            localEntity = obj,
+                            localSpriteEntity = spriteEntity 
+                        });
                     }
                 }
             }).WithoutBurst().Run();

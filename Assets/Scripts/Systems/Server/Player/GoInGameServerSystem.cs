@@ -123,6 +123,8 @@ partial struct GoInGameServerSystem : ISystem
         ecb.AddComponent<ContainerSettings>(character, new ContainerSettings() {
             Position = SlotPosition.NullSlot,
             targetContainer = -1,
+        });
+        ecb.AddComponent<NextTempIndex>(character, new NextTempIndex() {
             nextTempIndex = EquipmentConfig.start_ContainerIndex
         });
 

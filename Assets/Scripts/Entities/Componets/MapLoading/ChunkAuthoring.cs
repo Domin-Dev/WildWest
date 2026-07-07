@@ -16,8 +16,12 @@ public class ChunkAuthoring : MonoBehaviour
             AddComponent(entity, new NewChunk());
             AddBuffer<ChunkTiles>(entity);
             AddBuffer<BuildingObjects>(entity);
+            AddBuffer<LocalBuildingObjects>(entity);
             AddBuffer<GhostChildren>(entity);
             AddBuffer<EntityContainers>(entity);
+            AddComponent<NextTempIndex>(entity, new NextTempIndex() {
+                    nextTempIndex = EquipmentConfig.start_ContainerIndex
+            });
             AddBuffer<WorldItemPosition>(entity);
         }
     }

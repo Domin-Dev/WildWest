@@ -20,6 +20,9 @@ public partial struct GlobalRelevancySystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         var gh = SystemAPI.GetSingletonRW<GhostRelevancy>();
+        state.RequireForUpdate<MapSettings>();
+
+
         gh.ValueRW.GhostRelevancyMode = GhostRelevancyMode.SetIsRelevant;
         NetCodeConnectionEventListener.OnClientDisconnected += OnClientDisconnected;
     }
@@ -32,6 +35,7 @@ public partial struct GlobalRelevancySystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         var ghostRelevancy = SystemAPI.GetSingletonRW<GhostRelevancy>();
+        var mapSettings = SystemAPI.GetSingleton<MapSettings>();
 
         foreach ((RefRO<GhostOwner> ghostOwner,RefRO<GhostInstance> ghost, Entity entity)
         in SystemAPI.Query<RefRO<GhostOwner>, RefRO<GhostInstance>>().WithAll<SendToOwner>().WithEntityAccess())
@@ -47,8 +51,8 @@ public partial struct GlobalRelevancySystem : ISystem
         }
 
 
-        foreach ((RefRO<GhostInstance> ghost, DynamicBuffer<ChunkServerActions> chunkRecipients, Entity entity)
-        in SystemAPI.Query<RefRO<GhostInstance> , DynamicBuffer<ChunkServerActions>>().WithAll<NewChunkServerAction>().WithEntityAccess())
+        foreach ((RefRO<ChunkComponent> chunkComponent, RefRO<GhostInstance> ghost, DynamicBuffer<ChunkServerActions> chunkRecipients,DynamicBuffer<BuildingObjects> buildingObjects, Entity entity)
+        in SystemAPI.Query<RefRO<ChunkComponent>,RefRO<GhostInstance> , DynamicBuffer<ChunkServerActions>,DynamicBuffer<BuildingObjects>>().WithAll<NewChunkServerAction>().WithEntityAccess())
         {
             if (ghost.ValueRO.ghostId == 0) continue;
             
@@ -57,7 +61,7 @@ public partial struct GlobalRelevancySystem : ISystem
                 ChunkServerActions action = chunkRecipients[i];
                 switch(action.action)
                 {
-                    case 1:
+                    case ServerAction.StartStreamingChunk:
                         var key = new RelevantGhostForConnection()
                         {
                             Ghost =  ghost.ValueRO.ghostId,
@@ -66,7 +70,7 @@ public partial struct GlobalRelevancySystem : ISystem
                         ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(key, 0);
                         StartStreamingChunks(ref state,action, ghost.ValueRO.ghostId, entity);
                         break;
-                    case 2:
+                    case ServerAction.StopStreamingChunk:
                         var key2 = new RelevantGhostForConnection()
                         {
                             Ghost =  ghost.ValueRO.ghostId,
@@ -74,6 +78,52 @@ public partial struct GlobalRelevancySystem : ISystem
                         };
                         ghostRelevancy.ValueRW.GhostRelevancySet.Remove(key2);
                         StopStreamingChunks(ref state,action, ghost.ValueRO.ghostId, entity);
+                        break;
+                    case ServerAction.DamageBuildingObject:
+                        if(EntityHelper.TryFindBuildingObject(action.tilePosition,buildingObjects,out var result,out int index))
+                        {
+                            int hp = math.clamp(result.hitPoints - action.value,0,result.maxHitPoints);
+                            if(hp == 0)
+                            {
+                                entityCommandBuffer.DestroyEntity(result.localEntity);
+                                buildingObjects.RemoveAtSwapBack(index);
+
+                                if(ItemsAsset.instance.TryGetItem<BuildingObject>(result.id,out var itemData))
+                                {
+                                    float2 startPos = MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(result.globalTilePos));
+                                    foreach(var drop in itemData.drop)
+                                    {
+                                        if(drop.probability >= UnityEngine.Random.Range(0f,1f))
+                                        {
+                                            int quantity = UnityEngine.Random.Range(drop.ingredient.number,drop.maxNumber + 1);
+                                            for(int k = 0; k < quantity; k++)
+                                            {
+                                                float2 targetPos = startPos + new float2(UnityEngine.Random.Range(- 0.5f * mapSettings.tileSize,mapSettings.tileSize * 0.5f),
+                                                UnityEngine.Random.Range(- 0.5f * mapSettings.tileSize,mapSettings.tileSize * 0.5f));
+                                                
+                                                float distance = math.distance(targetPos,startPos);
+                                                EntityHelper.CreateEntityWithComponent<EQSpawnItem>(entityCommandBuffer,new EQSpawnItem(){ 
+
+                                                    chunkIndex =  chunkComponent.ValueRO.chunkIndex,
+                                                    item = new InventorySlot() { itemId = drop.ingredient.itemID, quantity = 1}, 
+                                                    position = targetPos,
+                                                    fromPosition = startPos,
+                                                    duration = distance * 5f});
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                                buildingObjects.ElementAt(index).hitPoints = hp;
+
+                            CreateNewChunkEvent(ref state,action.networkID, new ChunkEvents()
+                            {
+                                chunk = chunkComponent.ValueRO.chunkIndex,
+                                tilePosition = action.tilePosition,
+                                flags = ChunkEventType.UpdateBuildingObject
+                            });
+                        }
                         break;
                 }
 
@@ -90,8 +140,8 @@ public partial struct GlobalRelevancySystem : ISystem
     {
         CreateNewChunkEvent(ref state,action.networkID, new ChunkEvents()
         {
-            value = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
-            flags = 1
+            chunk = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
+            flags = ChunkEventType.LoadChunk
         });
     }
     private void CreateNewChunkEvent(ref SystemState state, int networkID, ChunkEvents chunkEvent)
@@ -124,8 +174,8 @@ public partial struct GlobalRelevancySystem : ISystem
     {
         CreateNewChunkEvent(ref state, action.networkID, new ChunkEvents()
         {
-            value = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
-            flags = 2
+            chunk = SystemAPI.GetComponent<ChunkComponent>(entity).chunkIndex,
+            flags = ChunkEventType.UnloadChunk
         });
     }
 

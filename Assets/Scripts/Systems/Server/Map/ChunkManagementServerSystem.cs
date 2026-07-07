@@ -137,7 +137,7 @@ public partial class ChunkManagementServerSystem : SystemBase
                     ecb.AppendToBuffer(sortKey,entity, new ChunkServerActions()
                     {
                         networkID = loadChunk.networkID,
-                        action = 1
+                        action = ServerAction.StartStreamingChunk
                     });
                 }
             }
@@ -169,10 +169,13 @@ public partial class ChunkManagementServerSystem : SystemBase
                 ecb.AppendToBuffer(sortKey,chunkEntity,tile);
             }
 
-            foreach(BuildingObjects bObject in buildingObjects)
+            for (int i = 0; i < buildingObjects.Length;i++)
             {      
+                var bObject = buildingObjects[i];
+                Entity obj = BuildingObjectCreator.CreateObjectServer(ref ecb,bObject,sortKey);
+                bObject.localEntity = obj;
                 ecb.AppendToBuffer(sortKey,chunkEntity,bObject);
-                ecb.AppendToBuffer<LinkedEntityGroup>(sortKey,chunkEntity,BuildingObjectCreator.CreateObjectServer(ref ecb,bObject,sortKey));
+                ecb.AppendToBuffer<LinkedEntityGroup>(sortKey,chunkEntity,obj);
             }
             
             GoInGameServerSystem.CreateNewContainer(chunkEntity,ecb,index,ref entitiesReferences,new ContainerStats()

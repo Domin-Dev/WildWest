@@ -56,16 +56,33 @@ public struct ChunkTiles : IBufferElementData
 
 
 [GhostComponent(OwnerSendType = SendToOwnerType.All)]
-public struct BuildingObjects : IBufferElementData
+public struct BuildingObjects : IBufferElementData,IGetGlobalTilePosition
 {
+    public int2 GlobalTilePosition => globalTilePos;
+    [GhostField(SendData = false)] public Entity localEntity;
     [GhostField] public int2 globalTilePos;
     [GhostField] public int  id;
     [GhostField] public short variantIndex;
     [GhostField] public short stateIndex;
 
-    [GhostField] public float hitPoints;
-    [GhostField] public float maxHitPoints;
+    [GhostField] public int hitPoints;
+    [GhostField] public int maxHitPoints;
 }
+
+public struct LocalBuildingObjects : IBufferElementData, IGetGlobalTilePosition
+{
+    public int2 GlobalTilePosition => globalTilePos;
+    public Entity localSpriteEntity;
+    public Entity localEntity;
+    public int2 globalTilePos;
+}
+
+public interface IGetGlobalTilePosition
+{
+    public int2 GlobalTilePosition {get;}        
+}
+
+
 
 public struct NewChunk : IComponentData, IEnableableComponent{}
 

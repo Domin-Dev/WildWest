@@ -30,6 +30,7 @@ partial struct CharacterHandsEvents : ISystem
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<EntityContainers> containersLookup;
     private BufferLookup<BuildingObjects> objectsLookup;
+    private BufferLookup<LocalBuildingObjects> localobjectsLookup;
 
 
     private DynamicBuffer<VisualEffectsBuffer> visualEffects;
@@ -47,6 +48,7 @@ partial struct CharacterHandsEvents : ISystem
         framesLookup = SystemAPI.GetBufferLookup<AnimationFrames>();
         eventsLookup = SystemAPI.GetBufferLookup<AnimationEvents>();
         objectsLookup = SystemAPI.GetBufferLookup<BuildingObjects>();
+        localobjectsLookup = SystemAPI.GetBufferLookup<LocalBuildingObjects>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>(true);
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
@@ -72,6 +74,7 @@ partial struct CharacterHandsEvents : ISystem
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
         objectsLookup.Update(ref state);
+        localobjectsLookup.Update(ref state);
 
         state.CompleteDependency();
         var currentTime = SystemAPI.GetSingleton<NetworkTime>();
@@ -82,33 +85,51 @@ partial struct CharacterHandsEvents : ISystem
 
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {      
+            float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
             foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
                 {
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
-                    StartAnimation(ref state,item,hands,item.shotAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup); 
+                    StartAnimation(ref state,item,hands,item.shotAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time); 
                 }
                 else if(ItemsAsset.instance.TryGetItem<Weapon>(action.ValueRO.itemID,out Weapon weapon))
                 {
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
 
-                    int2 tilePosition = mapSettings.GetTilePostionFromEnginePosition(action.ValueRO.mousePosition);
-                    int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(action.ValueRO.mousePosition);
+                    int2 tilePosition = mapSettings.GetTilePostionFromEnginePosition(action.ValueRO.pointerPosition);
+                    int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(action.ValueRO.pointerPosition);
                     float3 enginePosition = mapSettings.GetEnginePositionFromTilePosition(tilePosition);
+
                     int[] args = null;
 
                     if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk))
                     {
                         if(EntityHelper.TryFindBuildingObject(chunk,tilePosition,objectsLookup,out var buildingObj,out int index) &&
-                        ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData))
+                        ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData) && 
+                        EntityHelper.TryFindBuildingObject(chunk,tilePosition,localobjectsLookup,out var localObj,out int localindex))
                         {
                             args = new []{itemData.hitParticles,itemData.hitSound,3};
+                            float2 randomValue = new float2(UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f),UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f));
+                            if(SystemAPI.HasComponent<GhostOwnerIsLocal>(e))
+                                RPCHelper.CreateLocalEvent(new SpawnDamagePopup(){
+                                     damageTag = DamageTag.Mining,
+                                     position = enginePosition + new float3(randomValue,randomValue.y),
+                                     value = 10
+                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,weapon.hitDelay),false);
+                            
+                            entityCommandBuffer.AddComponent(localObj.localSpriteEntity, new HitScaleAnimation
+                            {
+                                Timer = 0f,
+                                Duration = 0.12f,
+                                MaxScale = 1.15f,
+                                OriginalScale = 1f
+                            });
                         }
                     }
                     hands.ValueRW.pointerPosition = enginePosition;
-                    StartAnimation(ref state,weapon,hands,weapon.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,0,args);
+                    StartAnimation(ref state,weapon,hands,weapon.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,time,args);
                 } 
 
                 break;

@@ -160,7 +160,7 @@ public partial class StopSendingChunkServerSystem : SystemBase
                 ecb.AppendToBuffer(sortKey,loadedChunk.chunkEntity, new ChunkServerActions()
                 {
                     networkID = request.networkID,
-                    action = 2
+                    action = ServerAction.StopStreamingChunk
                 });
                 toRemove.Enqueue((loadedChunk.chunkEntity,request));
             }

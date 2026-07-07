@@ -10,7 +10,7 @@ public struct PlayerActionRPC : IRpcCommand,ISetPlayer
     public Entity player;
 
 
-    public float2 mousePosition;
+    public float2 pointerPosition;
     public int itemID;
 
     public void SetPlayer(int networkID,NetworkTick tick)

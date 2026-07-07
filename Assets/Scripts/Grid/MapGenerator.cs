@@ -196,6 +196,8 @@ public class MapGenerator
                     globalTilePos = globalTilePos,
                     variantIndex = 0,
                     stateIndex = 0,
+                    maxHitPoints = 60,
+                    hitPoints = 60
                 });
             }
         }

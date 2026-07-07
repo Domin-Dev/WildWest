@@ -133,7 +133,7 @@ public partial class StartSendingChunkServerSystem : SystemBase
                 ecb.AppendToBuffer(sortKey,request.chunkEntity, new ChunkServerActions()
                 {
                     networkID = request.networkID,
-                    action = 1
+                    action = ServerAction.StartStreamingChunk
                 });
             }
 

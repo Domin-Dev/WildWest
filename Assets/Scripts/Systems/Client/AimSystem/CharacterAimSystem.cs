@@ -120,6 +120,7 @@ partial struct CharacterAimSystem : ISystem
 
 
                                 NetworkTick cooldownTick = NetworkTick.Invalid;
+                                float2 pointerPos = playerAspect.playerInputSync.ValueRO.sightPosition;
 
                                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out RangedWeapon rangedWeapon))
                                 {
@@ -252,9 +253,10 @@ partial struct CharacterAimSystem : ISystem
                                 {
                                    // testTick.Add(1u);
                                     cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown);
-                                    var mousePostion = playerAspect.playerInputSync.ValueRO.sightPosition;
-                                    int2 tilePosition = mapSettings.GetTilePostionFromEnginePosition(mousePostion);
-                                    int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(mousePostion);
+                                    int2 tilePosition = mapSettings.GetPointerPosition(playerAspect.playerInputSync.ValueRO.sightPosition,playerAspect.localToWorld.ValueRO.Position);
+                                    pointerPos = MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(tilePosition));
+                                    int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(pointerPos);
+                                    
                                     if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk))
                                     {
                                         if(EntityHelper.TryFindBuildingObject(chunk,tilePosition,objectsLookup,out var buildingObj,out int index) &&
@@ -264,9 +266,16 @@ partial struct CharacterAimSystem : ISystem
                                             {
                                               //  Sounds.instance.PlayerSound(itemData.hitSound);
                                             }
-                                            else
+                                            else    
                                             {
-                                                
+                                                entityCommandBuffer.AppendToBuffer<ChunkServerActions>(chunk,new ChunkServerActions()
+                                                {
+                                                   action = ServerAction.DamageBuildingObject,
+                                                   networkID = playerAspect.networkId,
+                                                   tilePosition = tilePosition,
+                                                   value = 10 
+                                                });
+                                                entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk,true);
                                             }
                                             Debug.Log("<Color=red>  k " + tilePosition + " " + chunkIndex + " tile " + buildingObj.id);
                                         }
@@ -282,7 +291,7 @@ partial struct CharacterAimSystem : ISystem
                                     networkID = playerAspect.networkId,
                                     itemID = itemId,
                                     tick = testTick,
-                                    mousePosition = playerAspect.playerInputSync.ValueRO.sightPosition
+                                    pointerPosition = pointerPos
                                 };                               
 
                                 playerAspect.playerState.ValueRW.state = PlayerState.shooting;

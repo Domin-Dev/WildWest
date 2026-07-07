@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Stone
   description: 
-  ID: 43
   stackMax: 50
-  icon: {fileID: -14862457, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  ID: 43
+  icon: {fileID: 331307920, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients:
   - itemID: 0
     number: 0

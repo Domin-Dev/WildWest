@@ -50,6 +50,8 @@ public struct DropItemRPC : IRpcCommand, ISetPlayer
     public NetworkTick tick;
     public int chunkIndex;
     public int slotIndex;
+
+    public float2 fromPosition;
     public float2 dropPosition;
     public float duration;
 
@@ -61,6 +63,7 @@ public struct DropItemRPC : IRpcCommand, ISetPlayer
         this.networkID = 0;
         this.duration = duration;
         this.tick = NetworkTick.Invalid;
+        this.fromPosition = float2.zero;
     }
 
     public void SetPlayer(int networkID,NetworkTick tick)
@@ -169,10 +172,11 @@ public struct PickUpItemCompletedClient : IComponentData
 }
 
 
-public struct BuildingObjectHit : IComponentData
+public struct SpawnDamagePopup: IComponentData
 {
-    public int id;
     public float3 position;
+    public DamageTag damageTag;
+    public int value;
 }
 
 

@@ -59,7 +59,7 @@ public static class BuildingObjectCreator
     }
 
 
-    public static Entity CreateObject(EntitiesReferences entitiesReferences,EntityManager entityManagern,EntityCommandBuffer entityCommand, BuildingObjects buildingObject)
+    public static Entity CreateObject(EntitiesReferences entitiesReferences,EntityManager entityManagern,EntityCommandBuffer entityCommand, BuildingObjects buildingObject, out Entity spriteEntity)
     {
         float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
         float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2(ClientMap.cellSize * 0.5f,0);
@@ -67,12 +67,12 @@ public static class BuildingObjectCreator
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
  
         Entity entity = entityManagern.Instantiate(entitiesReferences.buildObjectEntity);
+        spriteEntity = entityManagern.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
 
-        Entity sprite = entityManagern.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
-        SpriteRenderer spriteRenderer = entityManagern.GetComponentObject<SpriteRenderer>(sprite);
+        SpriteRenderer spriteRenderer = entityManagern.GetComponentObject<SpriteRenderer>(spriteEntity);
         LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));
         spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
-        entityCommand.SetComponent(sprite, spriteTransform);
+        entityCommand.SetComponent(spriteEntity, spriteTransform);
         entityCommand.SetComponent(entity, localTransform);
 
 

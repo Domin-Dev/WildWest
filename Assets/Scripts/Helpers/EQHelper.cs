@@ -417,9 +417,6 @@ public static class EQHelper
             
 
 
-                Debug.Log(toIndex);
-
-
                 if (toIndex >= 0)
                 {
                     ref var i = ref toBuffer.ElementAt(toIndex);
@@ -617,14 +614,19 @@ public static class EQHelper
             }
         }
     }
+
     public static EquipmentEvent[] AddItems(ref SystemState state,EntityCommandBuffer ecb,ref EntitiesReferences entitiesReferences,BufferLookup<LinkedContainers> linkedContainers,BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player, EQTransferData[] values, EQGiveItem itemData)
+    {
+       return AddItems(ref state,ecb,ref entitiesReferences, linkedContainers,barsLookup,slotLookup,containers,player,values,itemData.item,itemData.barValue);
+    }
+    public static EquipmentEvent[] AddItems(ref SystemState state,EntityCommandBuffer ecb,ref EntitiesReferences entitiesReferences,BufferLookup<LinkedContainers> linkedContainers,BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player, EQTransferData[] values, InventorySlot itemData, float valueBar)
     {
         List<EquipmentEvent> equipmentEvents = new List<EquipmentEvent>();
         if (values == null) return null;
-        bool hasBar = ItemsAsset.instance.TryGetBarValues(itemData.item.itemId, out float startValue, out float maxValue);
-        bool hasLinkedContainer = ItemsAsset.instance.hasLinkedContainer(itemData.item.itemId,out int capacity,out MandatoryProperties mandatoryProperties, out int mandatoryData);      
-        float barVal = maxValue * Math.Clamp(itemData.barValue, 0f, 1f);
-        var value = state.EntityManager.GetComponentData<ContainerSettings>(player);
+        bool hasBar = ItemsAsset.instance.TryGetBarValues(itemData.itemId, out float startValue, out float maxValue);
+        bool hasLinkedContainer = ItemsAsset.instance.hasLinkedContainer(itemData.itemId,out int capacity,out MandatoryProperties mandatoryProperties, out int mandatoryData);      
+        float barVal = maxValue * Math.Clamp(valueBar, 0f, 1f);
+        var value = state.EntityManager.GetComponentData<NextTempIndex>(player);
 
 
         foreach (EQTransferData item in values)
@@ -640,7 +642,7 @@ public static class EQHelper
                         barsLookup[container.Value.entity].ElementAt(barIndex).value = EQHelperClient.CalculateMixPercentage(i.quantity,barValue.Value.value,item.quantity, barVal);
                     }
 
-                    i.wetness = EQHelperClient.CalculateMixPercentage(i.quantity, i.wetness, item.quantity, itemData.item.wetness);             
+                    i.wetness = EQHelperClient.CalculateMixPercentage(i.quantity, i.wetness, item.quantity, itemData.wetness);             
                     i.quantity += item.quantity;
                     equipmentEvents.Add(new EquipmentEvent(new EquipmentEventData(item.pos.slotIndex, 1), container.Value.index));
                 }
@@ -653,12 +655,12 @@ public static class EQHelper
             {             
                 slotLookup[container.Value.entity].Add(new InventorySlot()
                 {
-                    itemId = itemData.item.itemId,
+                    itemId = itemData.itemId,
                     quantity = item.quantity,
                     slot = item.pos.slotIndex,
-                    wetness = itemData.item.wetness,
-                    quality = itemData.item.quality,
-                    color = itemData.item.color,
+                    wetness = itemData.wetness,
+                    quality = itemData.quality,
+                    color = itemData.color,
                 });
 
                 if(hasBar)
@@ -696,7 +698,6 @@ public static class EQHelper
             }
         }
         ecb.SetComponent(player,value);
-
         return equipmentEvents.ToArray();
     }
     public static EquipmentEvent[] MoveItems(ref SystemState state,EntityCommandBuffer ecb,BufferLookup<LinkedContainers> linked,BufferLookup<ItemBarData> barsLookup, BufferLookup<InventorySlot> slotLookup,Entity connection, BufferLookup<EntityContainers> containers,SlotPosition from, Entity player, EQTransferData[] values)

@@ -59,13 +59,17 @@ partial struct NewWorldItemServerSystem : ISystem
         {
             var e = entities[i];
             ecb.RemoveComponent<NewWorldItem>(e);
+
             var worldItem = worldItemLookup.GetRefRW(e);
             var transform = transforms[i];
+            if(worldItem.ValueRO.mergeCounter < 0)
+                continue;
             if(ItemsAsset.instance.GetStackMax(worldItem.ValueRO.item.itemId) <= 1)
             {
                 worldItemLookup.SetComponentEnabled(e,true);
                 continue;
             }
+
 
             var aabbInput = new OverlapAabbInput()
             {
@@ -95,6 +99,7 @@ partial struct NewWorldItemServerSystem : ISystem
 
                 if(worldItem.ValueRO.item.itemId == worldItemHit.ValueRO.item.itemId && worldItemHit.ValueRW.mergeCounter >= 0 && !SystemAPI.HasComponent<DestroyEntityTag>(currentHit))
                 {
+                    
                     RPCHelper.SendEventsToClients(new MergeItems()
                     {
                         mergeItemsPRC = new MergeItemsPRC()
@@ -105,7 +110,7 @@ partial struct NewWorldItemServerSystem : ISystem
                             toChunkIndex = worldItem.ValueRO.chunkIndex,
                             toSlotIndex = worldItem.ValueRO.slotIndex
                         },
-                        worldItemFrom =  currentHit,
+                        worldItemFrom = currentHit,
                         worldItemTo = e
                     },connections,playerNeedLookup,loadedChunks,ecb,worldItem.ValueRO.chunkIndex,tick,true);
 

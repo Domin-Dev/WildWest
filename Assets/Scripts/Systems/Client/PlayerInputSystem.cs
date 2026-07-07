@@ -25,6 +25,7 @@ partial struct PlayerInputSystem : ISystem
     {
         state.RequireForUpdate<NetworkStreamInGame>();
         state.RequireForUpdate<PlayerInput>();
+        state.RequireForUpdate<MapSettings>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
@@ -43,6 +44,7 @@ partial struct PlayerInputSystem : ISystem
         float2 input = (float2)InputManager.i.move.ReadValue<Vector2>();
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         var shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
+        var mapSettings = SystemAPI.GetSingleton<MapSettings>();
 
         bool left = InputManager.i.mainAction.inProgress;
         bool right = InputManager.i.sideAction.inProgress;
@@ -68,8 +70,8 @@ partial struct PlayerInputSystem : ISystem
 
         
 
-        foreach ((RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,var spread,RefRW<Cooldown> cooldown, Entity playerEntity) in 
-            SystemAPI.Query<RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<PlayerActionSpread>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRO<LocalToWorld> position,RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,var spread,RefRW<Cooldown> cooldown, Entity playerEntity) in 
+            SystemAPI.Query<RefRO<LocalToWorld>,RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<PlayerActionSpread>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             if(!UIManager.instance.WindowsAreClosed)
             {
@@ -195,12 +197,13 @@ partial struct PlayerInputSystem : ISystem
                 });
             }
 
-            
+            int2 pointer = mapSettings.GetPointerPosition(sightDirection,position.ValueRO.Position);
+            GamePointer.SetPosition(MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(pointer)));
         } 
         
         
         
-        GamePointer.SetPosition(MapVisualization.instance.clientMap.EnginePositionToTileEnginePosition(sightDirection));
+  
         
         
         ecb.Playback(state.EntityManager);

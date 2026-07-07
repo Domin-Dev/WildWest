@@ -32,7 +32,8 @@ public struct DamagePopup : IComponentData
 public enum DamageTag : byte
 {
     Normal,
-    Critical
+    Critical,
+    Mining,
 }
 
 

@@ -36,7 +36,7 @@ partial struct GoInGameCilientSystem : ISystem
                 Entity rpcEntity = entityCommandBuffer.CreateEntity();
 
                 var mapData = entityCommandBuffer.CreateEntity();
-                ClientServerBootstrap.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetMapSettings(map.ValueRO);
+                //.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetMapSettings(map.ValueRO);
 
                 PlayerName playerName = SystemAPI.GetSingleton<PlayerName>();
                 LocalPlayerLook look = SystemAPI.GetSingleton<LocalPlayerLook>();

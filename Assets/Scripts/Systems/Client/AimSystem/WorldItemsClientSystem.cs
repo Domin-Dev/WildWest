@@ -100,7 +100,8 @@ partial struct WorldItemsClientSystem : ISystem
             if(currentTime.InterpolationTick.IsNewerThan(action.ValueRO.tick))
             {
                 Sounds.instance.Click();
-                if(players.hashMap.TryGetValue(action.ValueRO.networkID,out Entity player))
+                Entity player = Entity.Null;
+                if(action.ValueRO.networkID == 0 || players.hashMap.TryGetValue(action.ValueRO.networkID,out player))
                 {
                     if(chunks.currentChunks.TryGetValue(action.ValueRO.chunkIndex,out Entity chunkEntity))
                     {
@@ -110,20 +111,20 @@ partial struct WorldItemsClientSystem : ISystem
                             EQHelper.TryGetBufferIndex(slotsLookup,action.ValueRO.slotIndex,container.Value.entity,out InventorySlot? slot,out int bufferIndex);  
                             if(slot.HasValue)
                             {
-                                LocalTransform localTransform = transformLookup[player];
+                                float3 postiion = player == Entity.Null ? new float3(action.ValueRO.fromPosition,action.ValueRO.fromPosition.y) : transformLookup[player].Position;
                                 Entity worldItem = state.EntityManager.Instantiate(prefabs.worldItemEntity);
                                 Entity spriteEntity = state.EntityManager.GetBuffer<LinkedEntityGroup>(worldItem)[1].Value;
                                 SpriteRenderer spriteRenderer =  state.EntityManager.GetComponentObject<SpriteRenderer>(spriteEntity);
                                 spriteRenderer.sprite = ItemsAsset.instance.GetIcon(slot.Value.itemId);
                                 Color? color = slot.Value.color.ConvertToUnityColor();
                                 HeroEditor.SetMaterialColor(spriteRenderer,"_Color",color.HasValue ? color.Value : Color.white);
-                                ecb.SetComponent(worldItem, LocalTransform.FromPosition(localTransform.Position));
+                                ecb.SetComponent(worldItem, LocalTransform.FromPosition(postiion));
                                 ecb.AddComponent<MoveToTarget>(worldItem,new MoveToTarget()
                                 {
                                     duration = action.ValueRO.duration,
                                     startTick = action.ValueRO.tick,
                                     target = action.ValueRO.dropPosition,
-                                    startPosition = new float2(localTransform.Position.x,localTransform.Position.y)
+                                    startPosition = new float2(postiion.x,postiion.y)
                                 });
                                 ecb.SetComponent<WorldItem>(worldItem,new WorldItem()
                                 {

@@ -80,24 +80,33 @@ public static class EntityHelper
         entityCommandBuffer.SetComponent(entity, target);
     }
 
-    public static bool TryFindBuildingObject(Entity chunk,int2 tilePosition, BufferLookup<BuildingObjects> objects,out BuildingObjects result,out int index)
+    public static bool TryFindBuildingObject<T>(Entity chunk,int2 tilePosition, BufferLookup<T> objects,out T result,out int index) where T : unmanaged,IGetGlobalTilePosition,IBufferElementData
     {
         if(objects.TryGetBuffer(chunk,out var buffer))
         {
-            for (int i = 0; i < buffer.Length;i++)
+            return TryFindBuildingObject(tilePosition,buffer,out result,out index);
+        }
+        result = default;
+        index = -1;
+        return false;
+    }
+
+    public static bool TryFindBuildingObject<T>(int2 tilePosition,DynamicBuffer<T> buffer,out T result,out int index) where T : unmanaged,IGetGlobalTilePosition,IBufferElementData
+    {
+        for (int i = 0; i < buffer.Length;i++)
+        {
+            var element = buffer[i];
+            if(element.GlobalTilePosition.x == tilePosition.x && element.GlobalTilePosition.y == tilePosition.y)
             {
-                var element = buffer[i];
-                if(element.globalTilePos.x == tilePosition.x && element.globalTilePos.y == tilePosition.y)
-                {
-                    result = element;
-                    index = i;
-                    return true;
-                }
+                result = element;
+                index = i;
+                return true;
             }
         }
         result = default;
         index = -1;
         return false;
     }
+
 
 }

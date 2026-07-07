@@ -37,6 +37,11 @@ MonoBehaviour:
     ingredient:
       itemID: 43
       number: 1
+  - maxNumber: 1
+    probability: 0.2
+    ingredient:
+      itemID: 47
+      number: 1
   toolRequired: 3
   objectVariants:
   - variants:
