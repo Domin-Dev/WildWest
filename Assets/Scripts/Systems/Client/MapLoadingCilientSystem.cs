@@ -1,6 +1,7 @@
 using Game.Client.Map;
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 
 [DisableAutoCreation]
@@ -94,11 +95,16 @@ public partial class MapLoadingClientSystem : SystemBase
                                clientMap.RemoveChunk(ev.chunk);
                                break;
                             case ChunkEventType.UpdateBuildingObject:
-                                if(chunks.currentChunks.TryGetValue(ev.chunk,out Entity chunkEntity))
+                                if(chunks.currentChunks.TryGetValue(ev.chunk,out Entity chunkEntity))  
                                 {
                                     if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,objectsLookup,out var result,out int index))
                                     {
-                                        
+                                        if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
+                                        {
+                                            float hp = (float)result.hitPoints / result.maxHitPoints;
+                                            int condition = Mathf.Clamp((int)((1f - hp) * 3f), 0, 2);
+                                            EntityManager.GetComponentObject<SpriteRenderer>(localResult.localSpriteEntity).sprite = ItemsAsset.instance.GetBuildingObjectSprite(result.id,result.variantIndex,condition);
+                                        }
                                     }
                                     else if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
                                     {
@@ -111,6 +117,9 @@ public partial class MapLoadingClientSystem : SystemBase
                                                 break;
                                             }
                                         }
+                                        if(ItemsAsset.instance.TryGetItem<BuildingObject>(localResult.id,out var itemData))
+                                            Sounds.instance.PlayerSound(itemData.destructionSound);
+
                                         ecb.AddComponent<DestroyEntityTag>(localResult.localEntity);
                                         localObjectsLookup[chunkEntity].RemoveAtSwapBack(localIndex);
                                     }
@@ -148,7 +157,8 @@ public partial class MapLoadingClientSystem : SystemBase
                         {
                             globalTilePos = item.globalTilePos,
                             localEntity = obj,
-                            localSpriteEntity = spriteEntity 
+                            localSpriteEntity = spriteEntity,
+                            id = item.id
                         });
                     }
                 }

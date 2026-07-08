@@ -548,6 +548,8 @@ public static class EQHelper
 
     public static void SendEvents(ref EntityCommandBuffer entityCommandBuffer,int networkID, params EquipmentEvent[] events)
     {
+        if(events == null) return;
+        
         foreach (EquipmentEvent eventData in events)
         {
             eventData.SetNetworkID(networkID);
@@ -615,6 +617,45 @@ public static class EQHelper
         }
     }
 
+    public static void RemoveItem(int slot,EntityCommandBuffer ecb,BufferLookup<LinkedEntityGroup> groupLookup,BufferLookup<LinkedContainers> linkedContainers,BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers,Entity container,Entity entity,out int itemID)
+    {
+        if(TryGetBufferIndex(linkedContainers,slot,container,out var linked,out int bufferindex))
+        {
+            var buffer = containers[entity];
+            for (int k = buffer.Length - 1; k >= 0; k--)
+            {
+                if (buffer[k].entity == linked.Value.containerEntity)
+                {
+                    buffer.RemoveAtSwapBack(k);
+                    break;
+                }
+            }
+            var buffer2 = groupLookup[entity];
+            for (int k = buffer2.Length - 1; k >= 0; k--)
+            {
+                if (buffer2[k].Value == linked.Value.containerEntity)
+                {
+                    buffer2.RemoveAtSwapBack(k);
+                    break;
+                }
+            }
+
+            ecb.DestroyEntity(linked.Value.containerEntity);
+            linkedContainers[container].RemoveAtSwapBack(bufferindex);
+        }
+
+
+        if(TryGetBufferIndex(slotLookup,slot,container,out InventorySlot? s,out int bufferindex2))
+        {
+            itemID = s.Value.itemId;
+            slotLookup[container].RemoveAtSwapBack(bufferindex2); 
+        }
+        else
+            itemID = -1; 
+
+        if(TryGetBufferIndex(barsLookup,slot,container,out ItemBarData? b,out int bufferindex3))
+            barsLookup[container].RemoveAtSwapBack(bufferindex3);
+    }
     public static EquipmentEvent[] AddItems(ref SystemState state,EntityCommandBuffer ecb,ref EntitiesReferences entitiesReferences,BufferLookup<LinkedContainers> linkedContainers,BufferLookup<ItemBarData> barsLookup,BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player, EQTransferData[] values, EQGiveItem itemData)
     {
        return AddItems(ref state,ecb,ref entitiesReferences, linkedContainers,barsLookup,slotLookup,containers,player,values,itemData.item,itemData.barValue);

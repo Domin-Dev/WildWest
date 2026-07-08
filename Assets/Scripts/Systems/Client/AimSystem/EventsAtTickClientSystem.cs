@@ -41,6 +41,7 @@ partial struct EventsAtTickClientSystem : ISystem
             ecb.DestroyEntity(entity);
         }
 
+
         foreach ((RefRO<SpawnDamagePopup> rpc, Entity entity) in
         SystemAPI.Query<RefRO<SpawnDamagePopup>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
@@ -57,7 +58,13 @@ partial struct EventsAtTickClientSystem : ISystem
             ecb.DestroyEntity(entity);
         }
 
-
+        foreach ((RefRO<HitScaleAnimationEvent> rpc, Entity entity) in
+        SystemAPI.Query<RefRO<HitScaleAnimationEvent>>().WithNone<WaitForProcess>().WithEntityAccess())
+        {
+            if(state.EntityManager.Exists(rpc.ValueRO.entity))
+                ecb.AddComponent(rpc.ValueRO.entity,rpc.ValueRO.anim);
+            ecb.DestroyEntity(entity);
+        }
 
 
         ecb.Playback(state.EntityManager);

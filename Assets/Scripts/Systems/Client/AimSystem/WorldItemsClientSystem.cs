@@ -111,7 +111,11 @@ partial struct WorldItemsClientSystem : ISystem
                             EQHelper.TryGetBufferIndex(slotsLookup,action.ValueRO.slotIndex,container.Value.entity,out InventorySlot? slot,out int bufferIndex);  
                             if(slot.HasValue)
                             {
+
                                 float3 postiion = player == Entity.Null ? new float3(action.ValueRO.fromPosition,action.ValueRO.fromPosition.y) : transformLookup[player].Position;
+                                
+                                Debug.Log("Pozycja" + postiion + " " + action.ValueRO.dropPosition);
+
                                 Entity worldItem = state.EntityManager.Instantiate(prefabs.worldItemEntity);
                                 Entity spriteEntity = state.EntityManager.GetBuffer<LinkedEntityGroup>(worldItem)[1].Value;
                                 SpriteRenderer spriteRenderer =  state.EntityManager.GetComponentObject<SpriteRenderer>(spriteEntity);
@@ -164,6 +168,7 @@ partial struct WorldItemsClientSystem : ISystem
                     {
                         if(transformLookup.TryGetComponent(worldItem.Value.worldItem,out var transform))
                         {
+                            Debug.Log(" kkk " + transform.Position);
                             ecb.AddComponent<MoveToTarget>(worldItem.Value.worldItem,new MoveToTarget()
                             {
                                 duration = action.ValueRO.duration,
@@ -193,7 +198,7 @@ partial struct WorldItemsClientSystem : ISystem
                         worldItemsLookup[chunkEntity].RemoveAtSwapBack(bufferIndex);
                     }
                 }
-                ecb.DestroyEntity(rpc);
+                 ecb.DestroyEntity(rpc);
             }
             else if(SystemAPI.HasComponent<ReceiveRpcCommandRequest>(rpc))
             {

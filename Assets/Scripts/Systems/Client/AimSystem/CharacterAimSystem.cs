@@ -94,11 +94,10 @@ partial struct CharacterAimSystem : ISystem
                         newSpread -= shootingConfig.spreadRecovery;
                     }
 
-                  //  Debug.Log(testTick.TickIndexForValidTick + "  " + state.World.Flags  + playerAspect.spread.ValueRO.Spread + " new -> " + newSpread + " , " + rawSpread + "(" + playerAspect.aimRotation.ValueRO.angle + " "  + rot + ")");
-
+                  
                     playerAspect.spread.ValueRW.Spread = math.clamp(newSpread,0,shootingConfig.maxSpread);
                     
-                   // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
+                    Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
                     
                     bool isCooldown = !playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
                     (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick));
@@ -117,6 +116,7 @@ partial struct CharacterAimSystem : ISystem
 
                                 if(!EQHelper.TryGetBufferIndex(slotsLookup,playerAspect.playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex))
                                     break;
+
 
 
                                 NetworkTick cooldownTick = NetworkTick.Invalid;
@@ -249,10 +249,10 @@ partial struct CharacterAimSystem : ISystem
                                     } 
 
                                 }
-                                else if(ItemsAsset.instance.TryGetItem<Weapon>(itemId, out Weapon weapon))
+                                else if(ItemsAsset.instance.TryGetItem<Tool>(itemId, out Tool tool))
                                 {
-                                   // testTick.Add(1u);
-                                    cooldownTick = EntityHelper.AddTime(testTick,weapon.cooldown);
+                                     Debug.Log("input!!! akkkkcja");
+                                    cooldownTick = EntityHelper.AddTime(testTick,tool.cooldown);
                                     int2 tilePosition = mapSettings.GetPointerPosition(playerAspect.playerInputSync.ValueRO.sightPosition,playerAspect.localToWorld.ValueRO.Position);
                                     pointerPos = MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(tilePosition));
                                     int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(pointerPos);
@@ -262,20 +262,28 @@ partial struct CharacterAimSystem : ISystem
                                         if(EntityHelper.TryFindBuildingObject(chunk,tilePosition,objectsLookup,out var buildingObj,out int index) &&
                                         ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData))
                                         {
-                                            if(state.World.IsClient())
+                                            if(itemData.toolRequired == tool.toolType)
                                             {
-                                              //  Sounds.instance.PlayerSound(itemData.hitSound);
-                                            }
-                                            else    
-                                            {
-                                                entityCommandBuffer.AppendToBuffer<ChunkServerActions>(chunk,new ChunkServerActions()
+                                                if(state.World.IsClient())
                                                 {
-                                                   action = ServerAction.DamageBuildingObject,
-                                                   networkID = playerAspect.networkId,
-                                                   tilePosition = tilePosition,
-                                                   value = 10 
-                                                });
-                                                entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk,true);
+                                                
+                                                }
+                                                else    
+                                                {
+                                                    entityCommandBuffer.AppendToBuffer<ChunkServerActions>(chunk,new ChunkServerActions()
+                                                    {
+                                                        action = ServerAction.DamageBuildingObject,
+                                                        networkID = playerAspect.networkId,
+                                                        tilePosition = tilePosition,
+                                                        value = tool.efficiency 
+                                                    });
+                                                    entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk,true);
+                                                    EntityHelper.CreateEntityWithComponent<EQUseItem>(entityCommandBuffer,new EQUseItem()
+                                                    {
+                                                        networkEntity = SystemAPI.GetComponent<PlayerSourceConnection>(entity).value,
+                                                        slotPosition = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerAspect.playerInputSync.ValueRO.slotInHand)
+                                                    });
+                                                }
                                             }
                                             Debug.Log("<Color=red>  k " + tilePosition + " " + chunkIndex + " tile " + buildingObj.id);
                                         }

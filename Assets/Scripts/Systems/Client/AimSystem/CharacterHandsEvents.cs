@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.VFX;
@@ -94,7 +95,7 @@ partial struct CharacterHandsEvents : ISystem
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
                     StartAnimation(ref state,item,hands,item.shotAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time); 
                 }
-                else if(ItemsAsset.instance.TryGetItem<Weapon>(action.ValueRO.itemID,out Weapon weapon))
+                else if(ItemsAsset.instance.TryGetItem<Tool>(action.ValueRO.itemID,out Tool tool))
                 {
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
 
@@ -110,26 +111,40 @@ partial struct CharacterHandsEvents : ISystem
                         ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData) && 
                         EntityHelper.TryFindBuildingObject(chunk,tilePosition,localobjectsLookup,out var localObj,out int localindex))
                         {
-                            args = new []{itemData.hitParticles,itemData.hitSound,3};
-                            float2 randomValue = new float2(UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f),UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f));
-                            if(SystemAPI.HasComponent<GhostOwnerIsLocal>(e))
+                            int efficiency = 0;
+
+                            if(tool.toolType == itemData.toolRequired)
+                            {
+                                efficiency = tool.efficiency;
+                                args = new []{itemData.hitParticles,itemData.hitSound,3};
+                                RPCHelper.CreateLocalEvent(new HitScaleAnimationEvent()
+                                {
+                                    anim = new HitScaleAnimation
+                                    {
+                                        Timer = 0f,
+                                        Duration = 0.12f,
+                                        MaxScale = 1.15f,
+                                        OriginalScale = 1f
+                                    },
+                                    entity = localObj.localSpriteEntity
+                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,tool.hitDelay),false);
+                            }
+                            else
+                                args = new [] {-1,itemData.incorrectToolSound,3};
+
+                            if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(e))
+                            {
+                                float2 randomValue = new float2(UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f),UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f));
                                 RPCHelper.CreateLocalEvent(new SpawnDamagePopup(){
                                      damageTag = DamageTag.Mining,
                                      position = enginePosition + new float3(randomValue,randomValue.y),
-                                     value = 10
-                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,weapon.hitDelay),false);
-                            
-                            entityCommandBuffer.AddComponent(localObj.localSpriteEntity, new HitScaleAnimation
-                            {
-                                Timer = 0f,
-                                Duration = 0.12f,
-                                MaxScale = 1.15f,
-                                OriginalScale = 1f
-                            });
+                                     value = efficiency
+                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,tool.hitDelay),false);
+                            }
                         }
                     }
                     hands.ValueRW.pointerPosition = enginePosition;
-                    StartAnimation(ref state,weapon,hands,weapon.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,time,args);
+                    StartAnimation(ref state,tool,hands,tool.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,time,args);
                 } 
 
                 break;

@@ -14,15 +14,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Steel Hoe
   description: 
-  ID: 73
   stackMax: 1
+  ID: 73
   icon: {fileID: -29435398, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients:
   - itemID: 0
     number: 0
   craftTables: ffffffff
   numberItem: 1
   durability: 10
+  damage: 10
+  cooldown: 0.8
+  hitDelay: 0.23
   weaponImage: {fileID: 1079393987, guid: ba7b70c6d99ccb540978213cd9591bcc, type: 3}
   hitBoxPoints:
   - {x: -0.015, y: 0.024999999}
@@ -41,9 +47,94 @@ MonoBehaviour:
   - {x: 0.044999998, y: 0.044999998}
   - {x: 0.015, y: 0.044999998}
   - {x: 0.015, y: 0.024999999}
+  handOffset: 0.07
   gripPoint1: {x: 0.005, y: -0.035}
   gripPoint2: {x: 0.005, y: -0.074999996}
-  damage: 10
-  cooldown: 0
+  usageAnim:
+    frames:
+    - bodyPartType: 0
+      positionMode: 0
+      rotate:
+        x: 0
+        y: 0
+        z: 40
+      move:
+        x: -0.02
+        y: 0
+        z: 0
+      duration: 0.08
+      events: []
+    - bodyPartType: 0
+      positionMode: 0
+      rotate:
+        x: 0
+        y: 0
+        z: -70
+      move:
+        x: 0.07
+        y: 0.02
+        z: 0
+      duration: 0.15
+      events:
+      - EventType: 0
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 9
+      - EventType: 0
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 1
+        id: 1
+      - EventType: 4
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 1
+        id: 0
+      - EventType: 4
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 1
+        id: 2
+    - bodyPartType: 0
+      positionMode: 2
+      rotate:
+        x: 0
+        y: 0
+        z: 0
+      move:
+        x: 0
+        y: 0
+        z: 0
+      duration: 0.4
+      events: []
   toolType: 4
   efficiency: 0

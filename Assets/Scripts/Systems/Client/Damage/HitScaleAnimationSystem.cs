@@ -5,12 +5,21 @@ using Unity.Transforms;
 
 
 
+
+
+
 public struct HitScaleAnimation : IComponentData
 {
     public float Timer;
     public float Duration;
     public float MaxScale;
     public float OriginalScale;
+}
+
+public struct HitScaleAnimationEvent : IComponentData
+{
+    public Entity entity;
+    public HitScaleAnimation anim;
 }
 
 [BurstCompile]

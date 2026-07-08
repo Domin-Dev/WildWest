@@ -25,9 +25,10 @@ partial struct DamagePopupClientSystem : ISystem
             float progress = math.saturate(dt.elapsedTime / dt.lifetime);
             float3 offset = dt.moveDirection * progress;
             localTransform.ValueRW.Position = dt.startPosition + offset;
-            Color color = state.EntityManager.GetComponentObject<TextMesh>(e).color;
+            var textmesh = state.EntityManager.GetComponentObject<TextMesh>(e);
+            Color color = textmesh.color;
             color.a = 1 - progress;
-            state.EntityManager.GetComponentObject<TextMesh>(e).color = color;
+            textmesh.color = color;
 
             if (dt.elapsedTime >= dt.lifetime)
             {

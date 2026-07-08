@@ -28,9 +28,10 @@ MonoBehaviour:
     number: 0
   craftTables: ffffffff
   numberItem: 1
-  durability: 10
+  durability: 50
+  destructionSound: 13
   damage: 10
-  cooldown: 0.7
+  cooldown: 0.9
   hitDelay: 0.23
   weaponImage: {fileID: -1655073702, guid: be4caf0e68ca6f044a441f2f2398620f, type: 3}
   hitBoxPoints:
@@ -78,10 +79,10 @@ MonoBehaviour:
       rotate:
         x: 0
         y: 0
-        z: -60
+        z: -70
       move:
-        x: 0.065
-        y: 0
+        x: 0.07
+        y: 0.02
         z: 0
       duration: 0.15
       events:
@@ -143,7 +144,7 @@ MonoBehaviour:
         x: 0
         y: 0
         z: 0
-      duration: 0.4
+      duration: 0.6
       events: []
   toolType: 3
-  efficiency: 0
+  efficiency: 15

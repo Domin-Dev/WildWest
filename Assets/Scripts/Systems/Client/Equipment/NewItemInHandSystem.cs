@@ -76,6 +76,8 @@ partial struct NewItemInHandSystem : ISystem
         {     
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
+
+            Debug.Log("new item!! input");
             foreach ((RefRO<GhostOwner> owner, RefRW<Hands> hands, RefRW<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRW<Hands>,RefRW<PlayerInputSync>>().WithAll<Player,Simulate,ContainersLoaded>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)
@@ -97,6 +99,7 @@ partial struct NewItemInHandSystem : ISystem
                                     if(state.EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(player))
                                     {
                                         CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
+                                        Debug.Log("input!!!! nowe");
                                         state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
                                         if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var hotbar))
                                         {

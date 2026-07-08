@@ -64,10 +64,9 @@ public class VariantItemEditor : ItemEditor
         {
             AssetDatabase.CreateFolder($"{MyTools.buildingObjectsSpritesPath}", $"{variantItem.name}_{variantItem.ID}");
             AssetDatabase.Refresh();
-           // AssetDatabase.fol
         }
 
-        Cut(texture,objectVariants,k,h/2);
+        Cut(texture,objectVariants,k,(h - 1) / 3);
 
         variantItem.objectVariants = objectVariants.ToArray();
         AssetDatabase.SaveAssets();
@@ -87,21 +86,28 @@ public class VariantItemEditor : ItemEditor
             List<Variant> variants = new List<Variant>();
             for (int j = 0; j < numberVariant; j++)
             {
-                Sprite sprite = Sprite.Create(texture, new Rect(i * width, j * height * 2, width, height), new Vector2(13.5f / width, 1f / height));
-                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, j * height * 2 + height, width, height), Vector2.zero);
-                Cutter cutter = new Cutter(hitbox, sprite.pivot);
+                Sprite[] sprites = new Sprite[3];
+                for(int m = 0; m < 3; m ++)
+                {
+                    sprites[m] = Sprite.Create(texture, new Rect(i * width,texture.height - height * (3 * j + 2 + m), width, height), Vector2.zero);
+                }
+
+                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height), Vector2.zero);
+                Cutter cutter = new Cutter(hitbox, Vector2.zero);
                 Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
                 RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
 
-
-                variants.Add(new Variant(rectangle, sprite, rectangle != null ? rectangle.GetMinY() : 0, points[0].Value));
+                variants.Add(new Variant(rectangle,rectangle != null ? rectangle.GetMinY() : 0, points[0].Value,sprites));
             }
 
             objectVariants.Add(new ObjectVariant(variants.ToArray()));
 
             for (int j = 0; j < numberVariant; j++)
             {
-                AssetDatabase.CreateAsset(variants[j].sprite, $"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}/{variantItem.name}_{i+k*j}.asset");
+                for(int m = 0; m < 3; m ++)
+                {
+                    AssetDatabase.CreateAsset(variants[j].sprites[m], $"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}/{variantItem.name}_{i+k*j}_{m}.asset");
+                }
             }
         }
     }

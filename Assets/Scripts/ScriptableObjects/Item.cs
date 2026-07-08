@@ -149,6 +149,7 @@ public class Destroyable : Item, IItemBar
 {
     [Header("Destroyable")]
     public int durability;
+    public int destructionSound;
 
     public string GetBarName()
     {

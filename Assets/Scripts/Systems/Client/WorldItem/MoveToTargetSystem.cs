@@ -24,17 +24,21 @@ partial struct MoveToTargetSystem : ISystem
 
         foreach((RefRO<MoveToTarget> moveToTarget,RefRW<LocalTransform> position ,Entity entity) in SystemAPI.Query<RefRO<MoveToTarget>,RefRW<LocalTransform>>().WithEntityAccess())
         {
-            int lifetimeInTicks = (int)(moveToTarget.ValueRO.duration * simulationTickRate);
+            int lifetimeInTicks = math.max((int)(moveToTarget.ValueRO.duration * simulationTickRate),1);
             int tickSince = networkTime.ServerTick.TicksSince(moveToTarget.ValueRO.startTick);
-            float progress =(float)tickSince/lifetimeInTicks;
+            float progress = math.clamp((float)tickSince/lifetimeInTicks,0f,1f);
             float2 target = moveToTarget.ValueRO.target;
             if(moveToTarget.ValueRO.targetEntity != Entity.Null)
             {
                 if(positionLookup.TryGetComponent(moveToTarget.ValueRO.targetEntity,out var transform))
                     target = new float2(transform.Position.x,transform.Position.y);
             }
+            Debug.Log("update!" + progress );
 
             float2 pos = math.lerp(moveToTarget.ValueRO.startPosition,target,progress);
+
+            Debug.Log(pos);
+
             position.ValueRW.Position = new float3(pos.x,pos.y,pos.y);
             if(progress >= 1)
             {

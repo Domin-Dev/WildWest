@@ -14,7 +14,9 @@ public class Drop
 
 public abstract class BuildingItem : Item
 {
+    public int destructionSound;
     public int hitSound;
+    public int incorrectToolSound;
     [Min(0)] public int hitParticles;
     public int durability;
     [Header("Drop")]
@@ -25,7 +27,7 @@ public abstract class BuildingItem : Item
 public abstract class VariantItem : BuildingItem
 {
     public ObjectVariant[] objectVariants;
-    public int shadowPixels = 19;
+    public int shadowPixels = 0;
     public int2 size = new int2(27, 51);
 }
 
@@ -51,19 +53,14 @@ public class Variant
     public Vector2[] objectPoints;
     public Vector2 particlePoint;
     public float minY;
-    public Sprite sprite;
+    public Sprite[] sprites;
 
-    public Variant(RectangleHitbox hitbox, Sprite sprite, float minY, Vector2 particlePoint)
+    public Variant(RectangleHitbox hitbox, float minY, Vector2 particlePoint,params Sprite[] sprites)
     {
         this.particlePoint = particlePoint;
         this.hitbox = hitbox;
-        this.sprite = sprite;
+        this.sprites = sprites;
         this.minY = minY;
-    }
-
-    public Variant Clone()
-    {
-        return new Variant(hitbox, sprite, minY,particlePoint);
     }
 }
 

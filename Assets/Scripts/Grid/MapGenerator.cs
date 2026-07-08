@@ -8,6 +8,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 
 public class MapGenerator
@@ -200,6 +201,20 @@ public class MapGenerator
                     hitPoints = 60
                 });
             }
+            else if(value > 0.1f && value < 0.2f)
+            {
+                buildingObjects.Add(new BuildingObjects()
+                {
+                    id = 57,
+                    globalTilePos = globalTilePos,
+                    variantIndex = 0,
+                    stateIndex = 0,
+                    maxHitPoints = 60,
+                    hitPoints = 60
+                });
+            }
+
+
         }
        return chunkComponent;
     }

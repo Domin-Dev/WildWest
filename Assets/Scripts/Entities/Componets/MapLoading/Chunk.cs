@@ -75,6 +75,7 @@ public struct LocalBuildingObjects : IBufferElementData, IGetGlobalTilePosition
     public Entity localSpriteEntity;
     public Entity localEntity;
     public int2 globalTilePos;
+    public int id;
 }
 
 public interface IGetGlobalTilePosition

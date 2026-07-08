@@ -84,14 +84,14 @@ public class ItemsAsset : MonoBehaviour
         }
         return null;
     }
-    public Sprite GetBuildingObjectSprite(int id, int index)
+    public Sprite GetBuildingObjectSprite(int id, int index, int condition = 0)
     {
         if (items.ContainsKey(id))
         {
             VariantItem item = items[id] as VariantItem;
             if (item != null && item.objectVariants.Length > index)
             {
-                return item.objectVariants[index].variants[0].sprite;
+                return item.objectVariants[index].variants[0].sprites[condition];
             }
         }
         return null;

@@ -15,6 +15,7 @@ public static class EquipementEventFlags
     public const int UpdateWetness = 4;
     public const int UpdateWeaponMagazine = 5;
     public const int UpdateOutfit = 6;
+    public const int BrokenItem = 7;
 }
 
 public struct EquipmentEventData
@@ -91,8 +92,8 @@ public struct EquipmentEventBuffer : IBufferElementData, IIndexed
 
 public struct EntityContainers : IBufferElementData
 {
-   [GhostField]  public Entity entity;
-   [GhostField]  public int index;
+   [GhostField] public Entity entity;
+   [GhostField] public int index;
 }
 
 

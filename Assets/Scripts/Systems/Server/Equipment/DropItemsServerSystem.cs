@@ -75,9 +75,12 @@ partial struct DropItemsServerSystem : ISystem
 
             if(physicsWorldSingleton.CastRay(rayInput, out Unity.Physics.RaycastHit hit))
             {
-                dropPosition = MyTools.ConvertFloat(hit.Position);
+                Debug.Log("hit pos " + hit.Position);
+                dropPosition = MyTools.ConvertFloat(hit.Position) - dropDir * 0.05f;
             }
+
             float distance = math.distance(dropPosition,MyTools.ConvertFloat(localTransform.Position));
+            Debug.Log("distance " + distance + " " + randomValue);
             if(distance > randomValue)
             {
                 dropPosition = dropDir * randomValue + new float2(localTransform.Position.x,localTransform.Position.y);
@@ -86,6 +89,8 @@ partial struct DropItemsServerSystem : ISystem
             
             ChunkManagementServerSystem.Map.settings.GetCorrectChunkAndPosition(dropPosition,out int chunkIndex, out var correctPosition);
             dropPosition = correctPosition;
+
+            Debug.Log("drop!! " + dropPosition + "  " + distance);
 
             if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunkEntity))
             {

@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Wood
   description: 
-  ID: 42
   stackMax: 50
-  icon: {fileID: 2051067808, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  ID: 42
+  icon: {fileID: -1976129827, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients:
   - itemID: 0
     number: 0

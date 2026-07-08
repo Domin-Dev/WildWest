@@ -248,7 +248,7 @@ public class BuildingManager : MonoBehaviour
                         GridVisualization.instance.GetTileByGridPosition(gridPosition + variant.CoveringPoints[i])?.SetObjectCovering(spriteRenderer);
                     }
                 }
-                spriteRenderer.sprite = variant.sprite;
+                spriteRenderer.sprite = variant.sprites[0];
          
                 CreateGridObject(gridObject.ID, gridPosition, gridObject.variantIndex, obj.parent);
                 MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
@@ -457,7 +457,7 @@ public class BuildingManager : MonoBehaviour
                 obj = gridObject.objectTransform.GetChild(i);
         }
 
-        obj.GetComponent<SpriteRenderer>().sprite = variant.sprite;
+        obj.GetComponent<SpriteRenderer>().sprite = variant.sprites[0];
         PolygonCollider2D polygonCollider2D = obj.GetComponent<PolygonCollider2D>();
         if (polygonCollider2D != null)
         {

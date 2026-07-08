@@ -136,7 +136,7 @@ public static class DebugController
                         item = new InventorySlot
                         {
                             itemId = id,
-                            quantity = quantity
+                            quantity = quantity,
                         },
                         barValue = 1,
                         networkEntity = networkPlayer

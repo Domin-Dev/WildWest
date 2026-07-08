@@ -17,6 +17,8 @@ public struct EqiupmentEventClient
 
     public int slot => data.data.slot;
     public int flag => data.data.flags;
+    public int value => data.data.value;
+
     public SlotPosition slotPosition => new SlotPosition(containerIndex,slot);
 
     public EqiupmentEventClient(EquipmentEventBuffer element, int containerIndex, int owner)

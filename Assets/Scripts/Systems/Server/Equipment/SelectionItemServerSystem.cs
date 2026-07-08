@@ -19,7 +19,6 @@ partial struct SelectionItemServerSystem : ISystem
     private ComponentLookup<ContainerComponent> containerComponents;
 
 
-
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
