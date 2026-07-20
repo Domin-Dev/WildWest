@@ -27,8 +27,21 @@ public abstract class BuildingItem : Item
 public abstract class VariantItem : BuildingItem
 {
     public ObjectVariant[] objectVariants;
-    public int shadowPixels = 0;
     public int2 size = new int2(27, 51);
+
+    public float shadowHeight;
+
+    public BuildingObjects GetBuildingObject(short variantIndex, short stateIndex)
+    {
+        return new BuildingObjects
+        {
+            id = ID,
+            variantIndex = variantIndex,
+            stateIndex = stateIndex,
+            maxHitPoints = durability,
+            hitPoints = durability               
+        };
+    }
 }
 
 [System.Serializable]
@@ -53,6 +66,7 @@ public class Variant
     public Vector2[] objectPoints;
     public Vector2 particlePoint;
     public float minY;
+    public Vector2 shadowSize = new Vector2(0.21f,0.07f);
     public Sprite[] sprites;
 
     public Variant(RectangleHitbox hitbox, float minY, Vector2 particlePoint,params Sprite[] sprites)

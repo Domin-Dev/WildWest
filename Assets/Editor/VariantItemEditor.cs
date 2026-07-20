@@ -86,16 +86,17 @@ public class VariantItemEditor : ItemEditor
             List<Variant> variants = new List<Variant>();
             for (int j = 0; j < numberVariant; j++)
             {
+                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height), new Vector2(0.5f,0));
+                Cutter cutter = new Cutter(hitbox, new Vector2(0.5f,0));
+                Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
+                RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
+                int min = (int)(rectangle.GetMinY() / cutter.pixelSize);
+                
                 Sprite[] sprites = new Sprite[3];
                 for(int m = 0; m < 3; m ++)
                 {
-                    sprites[m] = Sprite.Create(texture, new Rect(i * width,texture.height - height * (3 * j + 2 + m), width, height), Vector2.zero);
+                    sprites[m] = Sprite.Create(texture, new Rect(i * width,texture.height - height * (3 * j + 2 + m), width, height),new Vector2(0.5f,(float)(min)/height) );
                 }
-
-                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height), Vector2.zero);
-                Cutter cutter = new Cutter(hitbox, Vector2.zero);
-                Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
-                RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
 
                 variants.Add(new Variant(rectangle,rectangle != null ? rectangle.GetMinY() : 0, points[0].Value,sprites));
             }

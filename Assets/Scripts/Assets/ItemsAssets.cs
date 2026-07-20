@@ -56,7 +56,7 @@ public class ItemsAsset : MonoBehaviour
         Item item = GetItem(itemID);
         if(item != null && item is VariantItem)
         {
-            return new Vector2(0, ((VariantItem)item).shadowPixels * 0.01f);
+            return new Vector2(0, ((VariantItem)item).shadowHeight * 0.01f);
         }
         return Vector2.zero;
     }

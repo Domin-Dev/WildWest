@@ -32,9 +32,7 @@ partial struct GoInGameCilientSystem : ISystem
             foreach ((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
             {
                 entityCommandBuffer.AddComponent<NetworkStreamInGame>(entity);
-
                 Entity rpcEntity = entityCommandBuffer.CreateEntity();
-
                 var mapData = entityCommandBuffer.CreateEntity();
                 //.ClientWorld.GetExistingSystemManaged<MapLoadingClientSystem>().SetMapSettings(map.ValueRO);
 

@@ -1,4 +1,4 @@
-﻿using Game.Client.Map;
+using Game.Client.Map;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +19,9 @@ public static class BuildingObjectCreator
 
     public static Entity CreateObjectServer(ref EntityCommandBuffer.ParallelWriter entityCommand, BuildingObjects buildingObject, int unfilteredChunkIndex)
     {
-        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
-        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize);
+        var data  = ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).objectVariants[buildingObject.variantIndex].variants[buildingObject.stateIndex];
+    
+        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2(ClientMap.cellSize/2f,data.minY);
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox; 
         Entity entity  = entityCommand.CreateEntity(unfilteredChunkIndex);
@@ -29,10 +30,10 @@ public static class BuildingObjectCreator
 
         if (rectangleHitbox != null)
         {
-            float2 offset = rectangleHitbox.offset +  new Vector2(0,shadow);
+            float2 offset = rectangleHitbox.offset;
             var boxGeometry = new BoxGeometry
             {
-                Center = new float3(offset,0),
+                Center = new float3(offset,0) - new float3(ClientMap.cellSize/2f,data.minY,0),
                 Size = new float3(rectangleHitbox.size.x,rectangleHitbox.size.y,300f),
                 Orientation = quaternion.identity,
                 BevelRadius = 0f
@@ -40,7 +41,7 @@ public static class BuildingObjectCreator
             var collisionFilter = new CollisionFilter()
             {
                 BelongsTo =  1u << 10,
-                CollidesWith =  (1u << 11) | (1u << 9)
+                CollidesWith =  (1u << 11) | (1u << 9) 
             };
             var material = new Unity.Physics.Material()
             {
@@ -61,27 +62,32 @@ public static class BuildingObjectCreator
 
     public static Entity CreateObject(EntitiesReferences entitiesReferences,EntityManager entityManagern,EntityCommandBuffer entityCommand, BuildingObjects buildingObject, out Entity spriteEntity)
     {
-        float shadow = -0.01f * ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).shadowPixels;
-        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize);
+        var data  = ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).objectVariants[buildingObject.variantIndex].variants[buildingObject.stateIndex];
+        
+        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2( ClientMap.cellSize/2f,data.minY);
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
  
         Entity entity = entityManagern.Instantiate(entitiesReferences.buildObjectEntity);
         spriteEntity = entityManagern.GetBuffer<LinkedEntityGroup>(entity)[1].Value;
+        Entity shadowEntity = entityManagern.GetBuffer<LinkedEntityGroup>(entity)[2].Value;
 
         SpriteRenderer spriteRenderer = entityManagern.GetComponentObject<SpriteRenderer>(spriteEntity);
-        LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,shadow,0));
-        spriteRenderer.sprite = ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
+        LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,0,0));
+        var sprite =  ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
+        spriteRenderer.sprite = sprite;
         entityCommand.SetComponent(spriteEntity, spriteTransform);
         entityCommand.SetComponent(entity, localTransform);
 
+        entityCommand.SetComponent(shadowEntity,LocalTransform.FromPosition(new float3(0,0.005f,0)));
+        entityManagern.GetComponentObject<SpriteRenderer>(shadowEntity).size = data.shadowSize;
 
         if (rectangleHitbox != null)
         {
-            float2 offset = rectangleHitbox.offset +  new Vector2(0,shadow);
+            float2 offset = rectangleHitbox.offset;
             var boxGeometry = new BoxGeometry
             {
-                Center = new float3(offset,0),
+                Center = new float3(offset,0) - new float3(ClientMap.cellSize/2f,data.minY,0),
                 Size = new float3(rectangleHitbox.size.x,rectangleHitbox.size.y,300f),
                 Orientation = quaternion.identity,
                 BevelRadius = 0f

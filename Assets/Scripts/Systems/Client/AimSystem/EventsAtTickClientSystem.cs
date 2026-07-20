@@ -58,11 +58,14 @@ partial struct EventsAtTickClientSystem : ISystem
             ecb.DestroyEntity(entity);
         }
 
-        foreach ((RefRO<HitScaleAnimationEvent> rpc, Entity entity) in
-        SystemAPI.Query<RefRO<HitScaleAnimationEvent>>().WithNone<WaitForProcess>().WithEntityAccess())
+        foreach ((RefRO<HitAnimationEvent> rpc, Entity entity) in
+        SystemAPI.Query<RefRO<HitAnimationEvent>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             if(state.EntityManager.Exists(rpc.ValueRO.entity))
-                ecb.AddComponent(rpc.ValueRO.entity,rpc.ValueRO.anim);
+            {
+                ecb.AddComponent(rpc.ValueRO.entity,rpc.ValueRO.scaleAnim);
+                ecb.AddComponent(rpc.ValueRO.entity,rpc.ValueRO.rotationAnim);
+            }
             ecb.DestroyEntity(entity);
         }
 

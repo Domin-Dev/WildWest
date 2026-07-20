@@ -6,7 +6,7 @@ using static UnityEngine.UI.GridLayoutGroup;
 
 public class Cutter
 {
-    float pixelSize;
+    public float pixelSize;
     int width;
     Vector2 middle;
     Color[] texture;

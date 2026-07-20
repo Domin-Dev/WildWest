@@ -97,7 +97,7 @@ partial struct CharacterAimSystem : ISystem
                   
                     playerAspect.spread.ValueRW.Spread = math.clamp(newSpread,0,shootingConfig.maxSpread);
                     
-                    Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
+                   // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
                     
                     bool isCooldown = !playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
                     (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick));

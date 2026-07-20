@@ -218,7 +218,7 @@ public class BuildingManager : MonoBehaviour
         Variant variant = item.objectVariants[rotation % rotationStates].variants[0];
 
         Sounds.instance.Hammer();
-        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f, item.shadowPixels * 0.01f), Quaternion.identity, parent).transform;
+        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f, item.shadowHeight * 0.01f), Quaternion.identity, parent).transform;
         obj.tag = "BuildObject";
         gridTile.SetGridObject(new GridWall(selectedObjectID,0,obj,posXY));
         GridVisualization.instance.SetNewSprite(posXY,selectedObjectID);
@@ -237,7 +237,7 @@ public class BuildingManager : MonoBehaviour
                 break;
             case BuildingObject:
                 VariantItem variantItem = (VariantItem)ItemsAsset.instance.GetItem(gridObject.ID);
-                obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition) - new Vector2(0f, variantItem.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
+                obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(gridPosition) - new Vector2(0f, variantItem.shadowHeight * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
                 obj.tag = "BuildObject";
                 Variant variant = variantItem.objectVariants[gridObject.variantIndex].variants[0];
                 SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
@@ -390,7 +390,7 @@ public class BuildingManager : MonoBehaviour
         }
 
         Sounds.instance.Hammer();
-        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f,item.shadowPixels * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
+        Transform obj = Instantiate(buildingPrefab, GridVisualization.instance.GetWorldPosition(posXY) - new Vector2(0f,item.shadowHeight * 0.01f), Quaternion.identity, parent).transform.GetChild(0);
         obj.tag = "BuildObject";
         SpriteRenderer spriteRenderer = obj.GetComponent<SpriteRenderer>();
 

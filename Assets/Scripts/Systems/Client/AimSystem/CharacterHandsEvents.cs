@@ -5,12 +5,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
-using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.VFX;
-using UnityEngine.XR;
 
 [UpdateInGroup(typeof(PresentationSystemGroup))]
 [UpdateBefore(typeof(CharacterHandsSystem))]
@@ -87,7 +81,7 @@ partial struct CharacterHandsEvents : ISystem
         foreach ((RefRO<PlayerActionRPC> action,Entity rpc) in SystemAPI.Query<RefRO<PlayerActionRPC>>().WithEntityAccess())
         {      
             float time = EntityHelper.TicksToSeconds(currentTime.ServerTick.TicksSince(action.ValueRO.tick));
-            foreach((RefRW<Hands> hands,RefRO<GhostOwner> ghostOwner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<GhostOwner>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
+            foreach((RefRW<Hands> hands,RefRO<LocalTransform> position,RefRO<GhostOwner> ghostOwner, Entity e) in SystemAPI.Query<RefRW<Hands>,RefRO<LocalTransform>,RefRO<GhostOwner>>().WithAll<Player,ContainersLoaded>().WithEntityAccess())
             {
                 if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(action.ValueRO.itemID,out var item))
@@ -117,14 +111,21 @@ partial struct CharacterHandsEvents : ISystem
                             {
                                 efficiency = tool.efficiency;
                                 args = new []{itemData.hitParticles,itemData.hitSound,3};
-                                RPCHelper.CreateLocalEvent(new HitScaleAnimationEvent()
+                                RPCHelper.CreateLocalEvent(new HitAnimationEvent()
                                 {
-                                    anim = new HitScaleAnimation
+                                    scaleAnim = new HitScaleAnimation
                                     {
                                         Timer = 0f,
                                         Duration = 0.12f,
                                         MaxScale = 1.15f,
-                                        OriginalScale = 1f
+                                        OriginalScale = 1f,
+                                    },
+                                    rotationAnim = new HitRotationAnimation
+                                    {
+                                        Timer = 0f,
+                                        Duration = 0.25f,
+                                        RotationAngle = 18 * (position.ValueRO.Position.x > enginePosition.x ? 1 : -1),
+                                        OriginalRotation = 0f
                                     },
                                     entity = localObj.localSpriteEntity
                                 },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,tool.hitDelay),false);

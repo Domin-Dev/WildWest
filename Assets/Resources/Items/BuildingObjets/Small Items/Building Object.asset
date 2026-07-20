@@ -29,7 +29,7 @@ MonoBehaviour:
   hitSound: 14
   incorrectToolSound: 10
   hitParticles: 6
-  durability: 0
+  durability: 60
   drop:
   - maxNumber: 4
     probability: 1
@@ -40,17 +40,83 @@ MonoBehaviour:
   objectVariants:
   - variants:
     - hitbox:
-        size: {x: 0.08, y: 0.07999999}
-        offset: {x: 0.135, y: 0.095}
+        size: {x: 0.080000006, y: 0.07999999}
+        offset: {x: 0.13, y: 0.095}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.125, y: 0.105}
+      particlePoint: {x: 0.12, y: 0.105}
       minY: 0.055000003
+      shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 455fb224b2169c2799bb2360f1af863c, type: 2}
       - {fileID: 21300000, guid: c6fa7a9097fe207f1b427def800d35de, type: 2}
       - {fileID: 21300000, guid: 914eeab1f2150cf37b59826bd6d4c552, type: 2}
-  shadowPixels: 0
+  - variants:
+    - hitbox:
+        size: {x: 0.080000006, y: 0.07999999}
+        offset: {x: 0.13, y: 0.095}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.12, y: 0.105}
+      minY: 0.055000003
+      shadowSize: {x: 0.21, y: 0.07}
+      sprites:
+      - {fileID: 21300000, guid: 3e1ef4de7951b21e494bf79c5d6fe288, type: 2}
+      - {fileID: 21300000, guid: bcd8135d85e69c5b3b69a79dc3458ebe, type: 2}
+      - {fileID: 21300000, guid: 2effd05deb04246bba1031e9f3d68bec, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0.080000006, y: 0.07999999}
+        offset: {x: 0.13, y: 0.095}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.12, y: 0.105}
+      minY: 0.055000003
+      shadowSize: {x: 0.21, y: 0.07}
+      sprites:
+      - {fileID: 21300000, guid: 81bc076fd35e46ffe83fffd2ea54d5b3, type: 2}
+      - {fileID: 21300000, guid: 878605660f2a00aed89a651ce6af4897, type: 2}
+      - {fileID: 21300000, guid: 68b4ab86ddedafb6084f08e2e73f29b3, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0.080000006, y: 0.07999999}
+        offset: {x: 0.13, y: 0.095}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.12, y: 0.105}
+      minY: 0.055000003
+      shadowSize: {x: 0.21, y: 0.07}
+      sprites:
+      - {fileID: 21300000, guid: a3bdc3daf7569edbf80e0eeeb337ee62, type: 2}
+      - {fileID: 21300000, guid: ea70eba4036574f23a711b2d004cf056, type: 2}
+      - {fileID: 21300000, guid: 39952f21f13119aeab60c049d7716294, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0.080000006, y: 0.07999999}
+        offset: {x: 0.13, y: 0.095}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.12, y: 0.105}
+      minY: 0.055000003
+      shadowSize: {x: 0.21, y: 0.07}
+      sprites:
+      - {fileID: 21300000, guid: 095b37042876485a1ab45465a1ec3cae, type: 2}
+      - {fileID: 21300000, guid: 6ef708dc4feab10509fdbd0f6ac408a6, type: 2}
+      - {fileID: 21300000, guid: 8bf38079bccec8b58a108679af640af0, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0.080000006, y: 0.07999999}
+        offset: {x: 0.13, y: 0.095}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoint: {x: 0.12, y: 0.105}
+      minY: 0.055000003
+      shadowSize: {x: 0.21, y: 0.07}
+      sprites:
+      - {fileID: 21300000, guid: cbca943ab067974c8bd513f48f9c4634, type: 2}
+      - {fileID: 21300000, guid: 38b96578716d9307ab6c3a6c05df4942, type: 2}
+      - {fileID: 21300000, guid: b10d867bef4856c61bef48cb89e9a457, type: 2}
   size:
     x: 27
     y: 60
+  shadowHeight: 0

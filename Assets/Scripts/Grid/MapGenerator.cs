@@ -190,28 +190,25 @@ public class MapGenerator
             };
 
             if(value > 0.67f)
-            {    
-                buildingObjects.Add(new BuildingObjects()
+            {   
+                int x = rand.Next() % 3;
+                if(x == 0)
                 {
-                    id = 45,
-                    globalTilePos = globalTilePos,
-                    variantIndex = 0,
-                    stateIndex = 0,
-                    maxHitPoints = 60,
-                    hitPoints = 60
-                });
+                    buildingObjects.Add(GetBuildingObject(globalTilePos,45,rand));
+                }
+                else if(x == 1)
+                {
+                    buildingObjects.Add(GetBuildingObject(globalTilePos,44,rand));
+                }
+                else if(x == 2)
+                {
+                    buildingObjects.Add(GetBuildingObject(globalTilePos,5,rand));
+                }
+                
             }
             else if(value > 0.1f && value < 0.2f)
             {
-                buildingObjects.Add(new BuildingObjects()
-                {
-                    id = 57,
-                    globalTilePos = globalTilePos,
-                    variantIndex = 0,
-                    stateIndex = 0,
-                    maxHitPoints = 60,
-                    hitPoints = 60
-                });
+                buildingObjects.Add(GetBuildingObject(globalTilePos,57,rand));
             }
 
 
@@ -219,6 +216,27 @@ public class MapGenerator
        return chunkComponent;
     }
 
+    private static BuildingObjects GetBuildingObject(int2 globalTilePos,int id,System.Random random)
+    {
+        if(ItemsAsset.instance.TryGetItem<VariantItem>(id,out var item))
+        {
+            var buildingObject = item.GetBuildingObject((short)random.Next(0,item.objectVariants.Length),0);   
+            buildingObject.globalTilePos = globalTilePos;
+            return buildingObject;
+        } 
+        return default;
+    }
+
+    private static BuildingObjects GetBuildingObject(int2 globalTilePos,int id,short variant,short state)
+    {
+        if(ItemsAsset.instance.TryGetItem<VariantItem>(id,out var item))
+        {
+            var buildingObject = item.GetBuildingObject(variant,state);   
+            buildingObject.globalTilePos = globalTilePos;
+            return buildingObject;
+        } 
+        return default;
+    }
 
 
 

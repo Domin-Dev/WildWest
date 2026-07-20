@@ -12,39 +12,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a927e0bf2ca2c49ac3e3e2db9416bc, type: 3}
   m_Name: Building Object 3
   m_EditorClassIdentifier: 
-  name: Stone2
+  name: Stone1
   description: 
-  ID: 44
   stackMax: 50
+  ID: 44
   icon: {fileID: -673249192, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients: []
   craftTables: 
   numberItem: 1
+  destructionSound: 12
+  hitSound: 11
+  incorrectToolSound: 10
+  hitParticles: 4
   durability: 50
   drop:
   - maxNumber: 3
     probability: 1
     ingredient:
       itemID: 43
-      number: 20
+      number: 3
   - maxNumber: 1
     probability: 0.2
     ingredient:
       itemID: 43
       number: 1
   toolRequired: 3
-  HitParticles: {fileID: 8503829923926787638, guid: 42ce0afd134097f4aa18bf9920ec5927, type: 3}
   objectVariants:
   - variants:
     - hitbox:
         size: {x: 0.19999999, y: 0.120000005}
-        offset: {x: 0, y: 0.175}
+        offset: {x: 0.13, y: 0.095}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0, y: 0.185}
-      minY: 0.114999995
-      sprite: {fileID: 21300000, guid: bd56023ae6140d648bacdcd1ebd6724e, type: 2}
-  shadowPixels: 9
+      particlePoint: {x: 0.13, y: 0.105}
+      minY: 0.034999996
+      shadowSize: {x: 0.21, y: 0.07}
+      sprites:
+      - {fileID: 21300000, guid: 04b030a630cc9fc82896f5646c7486b9, type: 2}
+      - {fileID: 21300000, guid: 9cb056526f9f1fa59b4f9ffca044c77f, type: 2}
+      - {fileID: 21300000, guid: 11ccc2c9397b1ca06b5fef1f49f364fc, type: 2}
   size:
     x: 27
     y: 60
+  shadowHeight: 0

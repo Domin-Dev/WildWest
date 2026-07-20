@@ -69,12 +69,12 @@ partial struct UseItemServerSystem : ISystem
                     {
                         EQHelper.RemoveItem(command.ValueRO.slotPosition.slotIndex,entityCommandBuffer,groupLookup,linkedContainersLookup,barsLookup,slotsLookup,playerContainersLookup,container.Value.entity,player, out int itemID);
                         events = new []{ 
-                            new EquipmentEvent(new EquipmentEventData(command.ValueRO.slotPosition.slotIndex, EquipementEventFlags.UpdateSlot),command.ValueRO.slotPosition.containerIndex),
+                            new EquipmentEvent(new EquipmentEventData(command.ValueRO.slotPosition.slotIndex, EquipementEventFlags.UpdateItemStats),command.ValueRO.slotPosition.containerIndex),
                             new EquipmentEvent(new EquipmentEventData(command.ValueRO.slotPosition.slotIndex,EquipementEventFlags.BrokenItem,itemID),command.ValueRO.slotPosition.containerIndex)
                         };
                     }
                     else
-                        events = new []{new EquipmentEvent(new EquipmentEventData(command.ValueRO.slotPosition.slotIndex,EquipementEventFlags.UpdateSlot),command.ValueRO.slotPosition.containerIndex)};
+                        events = new []{new EquipmentEvent(new EquipmentEventData(command.ValueRO.slotPosition.slotIndex,EquipementEventFlags.UpdateItemStats),command.ValueRO.slotPosition.containerIndex)};
                 }
                 EQHelper.SendEvents(ref entityCommandBuffer, networkID,events);
             }

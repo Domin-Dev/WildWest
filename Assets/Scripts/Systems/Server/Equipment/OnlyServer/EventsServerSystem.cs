@@ -127,7 +127,8 @@ partial struct EventsServerSystem : ISystem
                
 
                
-                if(equipmentEvent.containerIndex == EquipmentConfig.hotBar_ContainerIndex || equipmentEvent.data.flags == EquipementEventFlags.ClearAllContainers)
+                if((equipmentEvent.data.flags !=  EquipementEventFlags.UpdateItemStats && equipmentEvent.containerIndex == EquipmentConfig.hotBar_ContainerIndex) 
+                || equipmentEvent.data.flags == EquipementEventFlags.ClearAllContainers)
                 {
                     if(input.ValueRO.slotInHand == equipmentEvent.slotPosition.slotIndex)
                     {

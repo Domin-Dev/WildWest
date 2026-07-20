@@ -450,7 +450,6 @@ public class NewEquipmentManager : MonoBehaviour
    
     public void UpdateSlotIndex(SlotPosition slotPosition)
     {
-
         if (containers.TryGetValue(slotPosition.containerIndex, out Container container))
         {
             if(container.TryGetItemStats(slotPosition.slotIndex,out var lastItem))
@@ -636,6 +635,7 @@ public class NewEquipmentManager : MonoBehaviour
         {
             switch (eqEevent.flag)
             {
+                case EquipementEventFlags.UpdateItemStats:
                 case EquipementEventFlags.UpdateSlot:
                     if (eqEevent.slot >= 0)                          
                         NewEquipmentManager.instance.UpdateSlotIndex(new SlotPosition(eqEevent.containerIndex, eqEevent.slot));
