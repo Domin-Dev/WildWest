@@ -10,6 +10,7 @@ public class VariantItemEditor : ItemEditor
 {
     VariantItem variantItem;
     static readonly Color particlePointColor = new Color(1, 0, 0, 1);
+    static readonly Color shadowPointColor = new Color(0, 0, 1, 1);
 
 
     private void OnEnable()
@@ -23,20 +24,26 @@ public class VariantItemEditor : ItemEditor
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.PrefixLabel("Building Object Texture");
 
-        if (GUILayout.Button("Select texture"))
+        if (GUILayout.Button("Cut texture"))
         {
-            string path = EditorUtility.OpenFilePanel("Select texture", "Assets/Resources/Textures", "png,jpg");
+            // string path = EditorUtility.OpenFilePanel("Select texture", "Assets/Resources/Textures", "png,jpg");
 
-            if (!string.IsNullOrEmpty(path))
+            // if (!string.IsNullOrEmpty(path))
+            // {
+            //     string relativePath = "Assets" + path.Substring(Application.dataPath.Length);
+            //     texture = AssetDatabase.LoadAssetAtPath<Texture2D>(relativePath);
+            // //     if (texture != null)
+            // //     {
+            //         Debug.Log("The texture is set");
+            //         CutSpritesWall(texture);
+            //         NewSaveChanges();
+            //     }
+            // }
+            if(variantItem.texture != null)
             {
-                string relativePath = "Assets" + path.Substring(Application.dataPath.Length);
-                texture = AssetDatabase.LoadAssetAtPath<Texture2D>(relativePath);
-                if (texture != null)
-                {
-                    Debug.Log("The texture is set");
-                    CutSpritesWall(texture);
-                    NewSaveChanges();
-                }
+                texture = variantItem.texture;
+                CutSpritesWall(texture);
+                NewSaveChanges();
             }
         }
 
@@ -66,7 +73,7 @@ public class VariantItemEditor : ItemEditor
             AssetDatabase.Refresh();
         }
 
-        Cut(texture,objectVariants,k,(h - 1) / 3);
+        Cut(texture,objectVariants,k, (h - 1) / variantItem.damageStates);
 
         variantItem.objectVariants = objectVariants.ToArray();
         AssetDatabase.SaveAssets();
@@ -76,7 +83,7 @@ public class VariantItemEditor : ItemEditor
 
     private void Cut(Texture2D texture, List<ObjectVariant> objectVariants, int k,int numberVariant)
     {
-        Color[] pointsColor = { particlePointColor };
+        Color[] pointsColor = {shadowPointColor};
         int width = variantItem.size.x;
         int height = variantItem.size.y;
 
@@ -86,26 +93,35 @@ public class VariantItemEditor : ItemEditor
             List<Variant> variants = new List<Variant>();
             for (int j = 0; j < numberVariant; j++)
             {
-                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height), new Vector2(0.5f,0));
-                Cutter cutter = new Cutter(hitbox, new Vector2(0.5f,0));
-                Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
-                RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
-                int min = (int)(rectangle.GetMinY() / cutter.pixelSize);
-                
-                Sprite[] sprites = new Sprite[3];
-                for(int m = 0; m < 3; m ++)
+
+                Sprite[] sprites = new Sprite[variantItem.damageStates];
+                int min = 0;
+                Vector2 pivot = Vector2.zero;
+                for(int m = 0; m < sprites.Length; m ++)
                 {
-                    sprites[m] = Sprite.Create(texture, new Rect(i * width,texture.height - height * (3 * j + 2 + m), width, height),new Vector2(0.5f,(float)(min)/height) );
+                    var rect = new Rect(i * width,texture.height - height * (sprites.Length * j + 2 + m), width, height);
+                    var sprite = Sprite.Create(texture,rect,Vector2.zero);
+                    min = new Cutter(sprite).GetMin();
+                    pivot = new Vector2(0.5f,(float)min/height);
+                    sprites[m] = Sprite.Create(texture,rect,pivot);
                 }
 
-                variants.Add(new Variant(rectangle,rectangle != null ? rectangle.GetMinY() : 0, points[0].Value,sprites));
+                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height),pivot);
+                Cutter cutter = new Cutter(hitbox,new Vector2(width/2,min));
+                Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
+                Vector2[] particlePoints = cutter.GetPoints(particlePointColor,MyTools.hitboxColor);
+
+                RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
+
+
+                variants.Add(new Variant(variantItem.shadowSize,rectangle,min * 0.01f,particlePoints,points[0],sprites));
             }
 
             objectVariants.Add(new ObjectVariant(variants.ToArray()));
 
             for (int j = 0; j < numberVariant; j++)
             {
-                for(int m = 0; m < 3; m ++)
+                for(int m = 0; m < variantItem.damageStates; m ++)
                 {
                     AssetDatabase.CreateAsset(variants[j].sprites[m], $"{MyTools.buildingObjectsSpritesPath}/{variantItem.name}_{variantItem.ID}/{variantItem.name}_{i+k*j}_{m}.asset");
                 }

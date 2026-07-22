@@ -87,7 +87,7 @@ MonoBehaviour:
         relativeRotation: 0
         indexType: 0
         id: 9
-      - EventType: 0
+      - EventType: 7
         position:
           x: 0
           y: 0
@@ -97,32 +97,8 @@ MonoBehaviour:
           y: 0
           z: 0
         relativeRotation: 0
-        indexType: 1
-        id: 1
-      - EventType: 4
-        position:
-          x: 0
-          y: 0
-          z: 0
-        rotation:
-          x: 0
-          y: 0
-          z: 0
-        relativeRotation: 0
-        indexType: 1
+        indexType: 0
         id: 0
-      - EventType: 4
-        position:
-          x: 0
-          y: 0
-          z: 0
-        rotation:
-          x: 0
-          y: 0
-          z: 0
-        relativeRotation: 0
-        indexType: 1
-        id: 2
     - bodyPartType: 0
       positionMode: 2
       rotate:

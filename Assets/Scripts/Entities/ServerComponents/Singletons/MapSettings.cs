@@ -23,6 +23,7 @@ public struct MapSettings: IComponentData
 
 
     public float mapSizeInEngine => mapSizeInChunks * chunkSizeInEnginePos;
+    public float mapSizeInTiles => mapSizeInChunks * chunkSizeInTiles;
     public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;    
 
 
@@ -135,6 +136,14 @@ public struct MapSettings: IComponentData
         if(enginePosition.x >= 0 && enginePosition.y >= 0 && enginePosition.x < mapSizeInEngine &&  enginePosition.y < mapSizeInEngine)
             return (int)(enginePosition.x / tileSize / chunkSizeInTiles) 
                 + (int)(enginePosition.y / tileSize / chunkSizeInTiles) * mapSizeInChunks;
+        else
+            return -1;
+    }
+    [BurstCompile]
+    public int GetChunkIndexFromTilePosition(int2 tilePosition)
+    {
+        if(tilePosition.x >= 0 && tilePosition.y >= 0 && tilePosition.x < mapSizeInTiles &&  tilePosition.y < mapSizeInTiles)
+            return (int)(tilePosition.x / chunkSizeInTiles) + (int)(tilePosition.y / chunkSizeInTiles) * mapSizeInChunks;
         else
             return -1;
     }

@@ -18,6 +18,7 @@ partial struct PlayerInputSystem : ISystem
     private BufferLookup<InventorySlot> slotsLookup;
     private BufferLookup<ItemBarData> barsLookup;
     private BufferLookup<EntityContainers> containersLookup;
+    private BufferLookup<BuildingObjects> buildingLookup;
 
 
 
@@ -26,17 +27,19 @@ partial struct PlayerInputSystem : ISystem
         state.RequireForUpdate<NetworkStreamInGame>();
         state.RequireForUpdate<PlayerInput>();
         state.RequireForUpdate<MapSettings>();
+        state.RequireForUpdate<Chunks>();
 
         slotsLookup = SystemAPI.GetBufferLookup<InventorySlot>();
         barsLookup = SystemAPI.GetBufferLookup<ItemBarData>(true);
         containersLookup = SystemAPI.GetBufferLookup<EntityContainers>(true);
-
+        buildingLookup = SystemAPI.GetBufferLookup<BuildingObjects>(true);
     }
     public void OnUpdate(ref SystemState state)
     {
         slotsLookup.Update(ref state);
         barsLookup.Update(ref state);
         containersLookup.Update(ref state);
+        buildingLookup.Update(ref state);
 
         EntityCommandBuffer ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
@@ -45,6 +48,7 @@ partial struct PlayerInputSystem : ISystem
         var tick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         var shootingConfig = SystemAPI.GetSingleton<ShootingConfig>();
         var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+        var chunks = SystemAPI.GetSingleton<Chunks>();
 
         bool left = InputManager.i.mainAction.inProgress;
         bool right = InputManager.i.sideAction.inProgress;
@@ -70,8 +74,8 @@ partial struct PlayerInputSystem : ISystem
 
         
 
-        foreach ((RefRO<LocalToWorld> position,RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<Hands> hands, RefRO<GhostOwner> owner,var spread,RefRW<Cooldown> cooldown, Entity playerEntity) in 
-            SystemAPI.Query<RefRO<LocalToWorld>,RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<Hands>,RefRO<GhostOwner>,RefRW<PlayerActionSpread>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
+        foreach ((RefRO<LocalToWorld> position,RefRW<PlayerInput> playerInput, RefRW<PlayerInputSync> playerInputSync , RefRW<PlayerPointer> pointer, RefRO<GhostOwner> owner,var spread,RefRW<Cooldown> cooldown, Entity playerEntity) in 
+            SystemAPI.Query<RefRO<LocalToWorld>,RefRW<PlayerInput>, RefRW<PlayerInputSync>, RefRW<PlayerPointer>,RefRO<GhostOwner>,RefRW<PlayerActionSpread>,RefRW<Cooldown>>().WithAll<GhostOwnerIsLocal,Simulate>().WithNone<NewPlayerTag>().WithEntityAccess())
         {
             if(!UIManager.instance.WindowsAreClosed)
             {
@@ -197,14 +201,24 @@ partial struct PlayerInputSystem : ISystem
                 });
             }
 
-            int2 pointer = mapSettings.GetPointerPosition(sightDirection,position.ValueRO.Position);
-            GamePointer.SetPosition(MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(pointer)));
+            int2 pointerPos = mapSettings.GetPointerPosition(sightDirection,position.ValueRO.Position);
+            if(pointer.ValueRO.updateTileInfo || math.any(pointer.ValueRO.LastGamePointerPosition != pointerPos))
+            {
+                GamePointer.SetPosition(MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(pointerPos)));
+                pointer.ValueRW.LastGamePointerPosition = pointerPos;
+                pointer.ValueRW.updateTileInfo = false;
+                int chunkIndex = mapSettings.GetChunkIndexFromTilePosition(pointerPos);
+                Debug.Log("dizl " + chunkIndex + " " + pointer);
+                if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk) &&
+                EntityHelper.TryFindBuildingObject(chunk,pointerPos,buildingLookup,out var buildingObj,out int index))
+                    GamePointer.SetTileInfo(buildingObj);
+                else
+                    GamePointer.SetTileInfo(null);
+            }
         } 
         
         
-        
-  
-        
+    
         
         ecb.Playback(state.EntityManager);
         ecb.Dispose();  

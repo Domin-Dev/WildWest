@@ -89,15 +89,17 @@ partial struct CharacterHandsEvents : ISystem
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
                     StartAnimation(ref state,item,hands,item.shotAnim.ToArray(),animationLookup,transformLookup,framesLookup,eventsLookup,time); 
                 }
-                else if(ItemsAsset.instance.TryGetItem<Tool>(action.ValueRO.itemID,out Tool tool))
+                else 
                 {
+                    ItemsAsset.instance.TryGetItem<Tool>(action.ValueRO.itemID,out Tool tool);
                     state.EntityManager.SetComponentData<CurrentPlayerState>(e,new CurrentPlayerState(){ state = PlayerState.shooting});
 
                     int2 tilePosition = mapSettings.GetTilePostionFromEnginePosition(action.ValueRO.pointerPosition);
                     int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(action.ValueRO.pointerPosition);
                     float3 enginePosition = mapSettings.GetEnginePositionFromTilePosition(tilePosition);
 
-                    int[] args = null;
+                    AnimationEvent[] animationEvents = null;
+                    float3 objectPosition = float3.zero;
 
                     if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk))
                     {
@@ -105,12 +107,26 @@ partial struct CharacterHandsEvents : ISystem
                         ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData) && 
                         EntityHelper.TryFindBuildingObject(chunk,tilePosition,localobjectsLookup,out var localObj,out int localindex))
                         {
-                            int efficiency = 0;
+                            int efficiency;
+                            float hitDelay;
+                            if(transformLookup.TryGetComponent(buildingObj.localEntity,out var transform))
+                                objectPosition = transform.Position;
 
-                            if(tool.toolType == itemData.toolRequired)
+
+                            if(tool != null)
                             {
                                 efficiency = tool.efficiency;
-                                args = new []{itemData.hitParticles,itemData.hitSound,3};
+                                hitDelay = tool.hitDelay;
+                            }
+                            else
+                            {
+                                efficiency = PlayerConfig.Instance.damage;
+                                hitDelay = PlayerConfig.Instance.hitDelay;
+                            }
+
+                            if((tool != null && tool.toolType == itemData.toolRequired) || itemData.toolRequired == ToolType.None)
+                            {
+                                animationEvents = itemData.HitEvents.GetAnimationEvents(itemData.GetVariant(buildingObj).particlePoints);
                                 RPCHelper.CreateLocalEvent(new HitAnimationEvent()
                                 {
                                     scaleAnim = new HitScaleAnimation
@@ -128,10 +144,14 @@ partial struct CharacterHandsEvents : ISystem
                                         OriginalRotation = 0f
                                     },
                                     entity = localObj.localSpriteEntity
-                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,tool.hitDelay),false);
+                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,hitDelay),false);
                             }
                             else
-                                args = new [] {-1,itemData.incorrectToolSound,3};
+                            {
+                                animationEvents = itemData.IncorrectToolHitEvent.GetAnimationEvents(itemData.GetVariant(buildingObj).particlePoints);
+                                efficiency = 0;
+                            }
+
 
                             if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(e))
                             {
@@ -140,12 +160,13 @@ partial struct CharacterHandsEvents : ISystem
                                      damageTag = DamageTag.Mining,
                                      position = enginePosition + new float3(randomValue,randomValue.y),
                                      value = efficiency
-                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,tool.hitDelay),false);
+                                },entityCommandBuffer,EntityHelper.AddTime(action.ValueRO.tick,hitDelay),false);
                             }
                         }
                     }
+                    UnityEngine.Debug.Log((animationEvents == null) + " nuullll");
                     hands.ValueRW.pointerPosition = enginePosition;
-                    StartAnimation(ref state,tool,hands,tool.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,time,args);
+                    StartAnimation(ref state,tool,hands,tool == null ? PlayerConfig.Instance.punchAnim.frames : tool.usageAnim.frames,animationLookup,transformLookup,framesLookup,eventsLookup,time,null,new []{objectPosition},animationEvents);
                 } 
 
                 break;
@@ -271,7 +292,7 @@ partial struct CharacterHandsEvents : ISystem
         }
     }
     public static void StartAnimation(ref SystemState state,Weapon item,RefRW<Hands> hands, KeyFrame[] frames,
-    ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup,float elapsedTime = 0,int[] args = null)
+    ComponentLookup<AnimationComponent> animationLookup,ComponentLookup<LocalTransform> transformLookup,BufferLookup<AnimationFrames> framesLookup,BufferLookup<AnimationEvents> eventsLookup,float elapsedTime = 0,int[] args = null,float3[] points =  null,params AnimationEvent[][] receivedEvents)
     {
         ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
         NewItemInHandSystem.ChangeItemInHand(ref state,item,hands);
@@ -280,16 +301,29 @@ partial struct CharacterHandsEvents : ISystem
         foreach(var frame in frames)
         {
             var part = hands.ValueRO.GetBodyPart(frame.BodyPartType);
-            if(frame.BodyPartType == BodyPartType.SideHand && item.twoHanded)
+            if(frame.BodyPartType == BodyPartType.SideHand && item != null ? item.twoHanded : false)
                 animationLookup.GetRefRW(part).ValueRW.characterCenterPosition = -1 * transformLookup.GetRefRO(hands.ValueRO.GetBodyPart(BodyPartType.MainHand)).ValueRO.Position + new float3(0,-0.05f,0);
             
-            animationLookup.GetRefRW(part).ValueRW.itemID = item.ID;
+            animationLookup.GetRefRW(part).ValueRW.itemID = item != null ? item.ID : -1;
             animationLookup.GetRefRW(part).ValueRW.elapsedTime = elapsedTime;
             
             framesLookup[part].Add(frame.GetAnimationFrame(index));
             foreach (var eventFrame in frame.Events)
             {
-                eventsLookup[part].Add(eventFrame.GetEvent(index,args));
+                var animEvent = eventFrame.GetEvent(index,args);
+                
+                if(animEvent.eventType == EventType.RunReceivedEvents && receivedEvents != null && receivedEvents.Length > animEvent.id && receivedEvents[animEvent.id] != null)
+                {
+                    foreach(var receivedEvent in receivedEvents[animEvent.id])
+                    {
+                        float3 pos = points[animEvent.id];
+                        var anim = receivedEvent.GetEvent(index,args);
+                        anim.position += pos;
+                        UnityEngine.Debug.Log("spawdz "+ anim.position);
+                        eventsLookup[part].Add(anim);
+                    } 
+                }
+                eventsLookup[part].Add(animEvent);
             }
 
             state.EntityManager.SetComponentEnabled<AnimationIsPaused>(part,false);

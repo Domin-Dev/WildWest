@@ -3,7 +3,10 @@
 
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+using NaughtyAttributes;
+using System.Linq;
 
 [System.Serializable]
 public class KeyFrame
@@ -39,17 +42,33 @@ public class KeyFrame
 
 [System.Serializable]
 public class AnimationEvent
-{
+{   
     public EventType EventType;
+    
+    [ShowIf("hasPostion")]
+    [AllowNesting]
     public float3 position;
+    
+    [ShowIf("hasPostion")]
+    [AllowNesting]
     public float3 rotation;
+    
+    [ShowIf("hasPostion")]
+    [AllowNesting]
     public bool relativeRotation;
 
-    public quaternion Rotation => quaternion.Euler(math.radians(rotation)); 
-
+    [ShowIf("hasID")]
+    [AllowNesting]
     public IndexType indexType;
+    
+    [ShowIf("hasID")]
+    [AllowNesting]
     public int id;
 
+    private bool hasPostion => EventTypeProperties.EventTypeNeedPosition(EventType);
+    private bool hasID => EventTypeProperties.EventTypeNeedID(EventType);
+    public quaternion Rotation => quaternion.Euler(math.radians(rotation)); 
+    
     public AnimationEvents GetEvent(int frameIndex,int[] args)
     {
         int index = id;
@@ -75,6 +94,39 @@ public class AnimationEvent
 }
 
 
+[System.Serializable]
+public class AnimationEventTab
+{
+    [SerializeField] private AnimationEventArg[] Events;
+    public AnimationEvent[] GetAnimationEvents(Vector2[] points)
+    {
+        var animationEvents = new AnimationEvent[Events.Length];
+        for(int i = 0; i < Events.Length;i++)
+        {
+            var e = Events[i];
+            if(e.PointPosition >= 0)
+            {
+                float2 f = points[e.PointPosition];
+                e.Event.position = new float3(f,f.y);
+            }
+            animationEvents[i] = e.Event;
+        }  
+        return animationEvents;
+    }
+
+}
+
+[System.Serializable]
+public class AnimationEventArg
+{
+    public AnimationEvent Event;
+    public int PointPosition;
+}
+
+
+
+
+
 
 public enum IndexType : byte
 {
@@ -94,7 +146,39 @@ public enum EventType :  byte
     SpawnParticleAtReloadPoint,
     SpawnParticleAtPointer,
     ChangeItemSprite,
-    ChangeSpriteInSideHand
+    ChangeSpriteInSideHand,
+    RunReceivedEvents
+}
+public static class EventTypeProperties
+{
+    private static readonly EventType[] _needPosition = new []
+    {
+        EventType.SpawnParticle,
+        EventType.SpawnParticleAtAimPoint,
+        EventType.SpawnParticleAtReloadPoint,
+        EventType.SpawnParticleAtPointer,
+    };    
+    
+    private static readonly EventType[] _needID = new []
+    {
+        EventType.Sound,
+        EventType.SpawnParticle,
+        EventType.SpawnParticleAtAimPoint,
+        EventType.SpawnParticleAtReloadPoint,
+        EventType.SpawnParticleAtPointer,
+        EventType.ChangeItemSprite,
+        EventType.ChangeSpriteInSideHand,
+    };
+
+    public static bool EventTypeNeedPosition(EventType type)
+    {
+        return _needPosition.Contains(type);
+    }
+
+    public static bool EventTypeNeedID(EventType type)
+    {
+        return _needID.Contains(type);
+    }
 }
 public enum PositionMode :  byte
 {

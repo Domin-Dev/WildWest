@@ -28,12 +28,12 @@ public static class BuildingObjectCreator
         entityCommand.AddComponent(unfilteredChunkIndex,entity, localTransform);
         entityCommand.AddComponent(unfilteredChunkIndex,entity, new EnvironmentObject());
 
-        if (rectangleHitbox != null)
+        if (rectangleHitbox != null && rectangleHitbox.offset.sqrMagnitude != 0)
         {
             float2 offset = rectangleHitbox.offset;
             var boxGeometry = new BoxGeometry
             {
-                Center = new float3(offset,0) - new float3(ClientMap.cellSize/2f,data.minY,0),
+                Center = new float3(offset,0),
                 Size = new float3(rectangleHitbox.size.x,rectangleHitbox.size.y,300f),
                 Orientation = quaternion.identity,
                 BevelRadius = 0f
@@ -62,10 +62,13 @@ public static class BuildingObjectCreator
 
     public static Entity CreateObject(EntitiesReferences entitiesReferences,EntityManager entityManagern,EntityCommandBuffer entityCommand, BuildingObjects buildingObject, out Entity spriteEntity)
     {
-        var data  = ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).objectVariants[buildingObject.variantIndex].variants[buildingObject.stateIndex];
+        var item  = ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id);
+        var data = item.objectVariants[buildingObject.variantIndex].variants[buildingObject.stateIndex];
         
         float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2( ClientMap.cellSize/2f,data.minY);
-        LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
+       
+       
+        LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, item.isBackground ? worldPos.y + 0.25f : worldPos.y ));
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
  
         Entity entity = entityManagern.Instantiate(entitiesReferences.buildObjectEntity);
@@ -79,15 +82,21 @@ public static class BuildingObjectCreator
         entityCommand.SetComponent(spriteEntity, spriteTransform);
         entityCommand.SetComponent(entity, localTransform);
 
-        entityCommand.SetComponent(shadowEntity,LocalTransform.FromPosition(new float3(0,0.005f,0)));
-        entityManagern.GetComponentObject<SpriteRenderer>(shadowEntity).size = data.shadowSize;
+        if(item.isShadow)
+        {
+            entityManagern.GetComponentObject<SpriteRenderer>(shadowEntity).size = data.shadowSize;
+            entityCommand.SetComponent(shadowEntity,LocalTransform.FromPosition(new float3(data.shadowPoint.x,data.shadowPoint.y + 0.005f,0)));
+        }
+        else
+            entityManagern.GetComponentObject<SpriteRenderer>(shadowEntity).sprite = null;
+        
 
-        if (rectangleHitbox != null)
+        if (rectangleHitbox != null && rectangleHitbox.offset.sqrMagnitude != 0)
         {
             float2 offset = rectangleHitbox.offset;
             var boxGeometry = new BoxGeometry
             {
-                Center = new float3(offset,0) - new float3(ClientMap.cellSize/2f,data.minY,0),
+                Center = new float3(offset,0),
                 Size = new float3(rectangleHitbox.size.x,rectangleHitbox.size.y,300f),
                 Orientation = quaternion.identity,
                 BevelRadius = 0f

@@ -1,6 +1,7 @@
 using Game.Client.Map;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 
@@ -70,6 +71,7 @@ public partial class MapLoadingClientSystem : SystemBase
         linkedLookup.Update(this);
 
 
+        bool mapIsUpdated = false;
        Entities
        .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
        {
@@ -84,8 +86,6 @@ public partial class MapLoadingClientSystem : SystemBase
                    if (ev.index == counter.index)
                    {
                        counter.index++;
-
-                      ///Debug.Log(counter.index + "akcja!" + ev.flags);
                        switch (ev.flags)
                        {
                             case ChunkEventType.LoadChunk:
@@ -95,6 +95,7 @@ public partial class MapLoadingClientSystem : SystemBase
                                clientMap.RemoveChunk(ev.chunk);
                                break;
                             case ChunkEventType.UpdateBuildingObject:
+                                mapIsUpdated = true;
                                 if(chunks.currentChunks.TryGetValue(ev.chunk,out Entity chunkEntity))  
                                 {
                                     if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,objectsLookup,out var result,out int index))
@@ -139,6 +140,15 @@ public partial class MapLoadingClientSystem : SystemBase
        })
        .WithoutBurst().Run();
 
+
+        if(mapIsUpdated)
+        {
+            foreach (RefRW<PlayerPointer> pointer in SystemAPI.Query<RefRW<PlayerPointer>>().WithAll<Player,GhostOwnerIsLocal>())
+            {
+                pointer.ValueRW.updateTileInfo = true;
+            }
+        }
+
         if (!chunksToLoad.IsEmpty)
         {
             Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects, DynamicBuffer<LocalBuildingObjects> localBuildingObjects) =>
@@ -160,6 +170,8 @@ public partial class MapLoadingClientSystem : SystemBase
                             localSpriteEntity = spriteEntity,
                             id = item.id
                         });
+                        item.localEntity = obj;
+                        buildingObjects.ElementAt(i) = item;
                     }
                 }
             }).WithoutBurst().Run();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class ItemsAsset : MonoBehaviour
@@ -91,7 +92,8 @@ public class ItemsAsset : MonoBehaviour
             VariantItem item = items[id] as VariantItem;
             if (item != null && item.objectVariants.Length > index)
             {
-                return item.objectVariants[index].variants[0].sprites[condition];
+                var s = item.objectVariants[index].variants[0];
+                return s.sprites[Mathf.Clamp(condition, 0, s.sprites.Length - 1)];
             }
         }
         return null;

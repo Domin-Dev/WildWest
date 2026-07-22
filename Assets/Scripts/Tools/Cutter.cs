@@ -19,7 +19,7 @@ public class Cutter
     }
     public Cutter(Sprite sprite,Vector2 middle)
     {
-        this.middle = middle - new Vector2(0.5f, 0.5f); 
+        this.middle = middle;
         Setup(sprite);
     }
 
@@ -44,11 +44,10 @@ public class Cutter
         }
         return null;
     }
-
     public RectangleHitbox CutRectangularHitBox(Color hitboxColor)
     {
         Vector2[] points = CutHitBox(hitboxColor);
-        if (points.Length != 4) return null;
+        if (points == null || points.Length != 4) return null;
         Vector2 center = (points[0] + points[1] + points[2] + points[3]) / 4f;
         Vector2[] localCorners = points.Select(corner => corner - center).ToArray();
 
@@ -81,7 +80,19 @@ public class Cutter
         }
         return results;
     }
+    public Vector2[] GetPoints(Color pointColor,Color hitboxColor)
+    {
+        List<Vector2> points = new List<Vector2>();
 
+        for (int i = 0; i < texture.Length; i++)
+        {
+            Color color = texture[i];
+            if (color.a == 1 && color == pointColor)
+                    points.Add(GetPosition(i));
+        }
+        return points.ToArray();
+    }
+    
     private Vector2 GetPosition(int index)
     {
         return pixelSize * (GetVector(index) - middle);
@@ -186,4 +197,18 @@ public class Cutter
         }
         return neighbors;
     }
+
+    public int GetMin()
+    {
+        for(int i = 0; i < texture.Length; i++)
+        {
+            if(texture[i].a > 0f)
+                return i / width;
+        }
+        return 0;
+    }
+
+
+
+
 }

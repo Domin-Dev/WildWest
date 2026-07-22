@@ -26,6 +26,21 @@ MonoBehaviour:
   destructionSound: 12
   hitSound: 11
   incorrectToolSound: 10
+  HitEvents:
+  - EventType: 2
+    PointIndex: 0
+    position:
+      x: 0
+      y: 0
+      z: 0
+    rotation:
+      x: 0
+      y: 0
+      z: 0
+    relativeRotation: 0
+    indexType: 0
+    id: 0
+  IncorrectToolHitEvent: []
   hitParticles: 4
   durability: 50
   drop:
@@ -40,15 +55,17 @@ MonoBehaviour:
       itemID: 43
       number: 1
   toolRequired: 3
+  texture: {fileID: 2800000, guid: a91db04bb65ac5341a11a98218622441, type: 3}
   objectVariants:
   - variants:
     - hitbox:
-        size: {x: 0.19999999, y: 0.120000005}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.19999999, y: 0.12}
+        offset: {x: 0, y: 0.06}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.13, y: 0.105}
-      minY: 0.034999996
+      particlePoints: []
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.03
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 75f96a25ab30e66c3bec094830e5b64a, type: 2}
@@ -57,4 +74,7 @@ MonoBehaviour:
   size:
     x: 27
     y: 60
+  damageStates: 3
+  isBackground: 0
+  isShadow: 1
   shadowHeight: 0

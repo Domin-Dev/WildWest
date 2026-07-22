@@ -33,11 +33,8 @@ partial struct MoveToTargetSystem : ISystem
                 if(positionLookup.TryGetComponent(moveToTarget.ValueRO.targetEntity,out var transform))
                     target = new float2(transform.Position.x,transform.Position.y);
             }
-            Debug.Log("update!" + progress );
 
             float2 pos = math.lerp(moveToTarget.ValueRO.startPosition,target,progress);
-
-            Debug.Log(pos);
 
             position.ValueRW.Position = new float3(pos.x,pos.y,pos.y);
             if(progress >= 1)

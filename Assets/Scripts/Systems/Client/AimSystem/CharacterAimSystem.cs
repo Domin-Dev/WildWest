@@ -114,9 +114,9 @@ partial struct CharacterAimSystem : ISystem
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                                     break;
 
-                                if(!EQHelper.TryGetBufferIndex(slotsLookup,playerAspect.playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex))
-                                    break;
-
+                                bool isItem = EQHelper.TryGetBufferIndex(slotsLookup,playerAspect.playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex);
+                                    
+                                Debug.Log("dziala!!!" + isItem);
 
 
                                 NetworkTick cooldownTick = NetworkTick.Invalid;
@@ -249,10 +249,25 @@ partial struct CharacterAimSystem : ISystem
                                     } 
 
                                 }
-                                else if(ItemsAsset.instance.TryGetItem<Tool>(itemId, out Tool tool))
+                                else 
                                 {
-                                     Debug.Log("input!!! akkkkcja");
-                                    cooldownTick = EntityHelper.AddTime(testTick,tool.cooldown);
+                                    float cooldown;
+                                    int efficiency;
+                                    bool isTool = false;
+
+                                    if(ItemsAsset.instance.TryGetItem<Tool>(itemId, out Tool tool))
+                                    {
+                                        cooldown = tool.cooldown;
+                                        efficiency = tool.efficiency;
+                                        isTool = true;
+                                    }
+                                    else
+                                    {
+                                        cooldown = PlayerConfig.Instance.cooldown;
+                                        efficiency = PlayerConfig.Instance.damage;
+                                    }
+                                       
+                                    cooldownTick = EntityHelper.AddTime(testTick,cooldown);
                                     int2 tilePosition = mapSettings.GetPointerPosition(playerAspect.playerInputSync.ValueRO.sightPosition,playerAspect.localToWorld.ValueRO.Position);
                                     pointerPos = MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(tilePosition));
                                     int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(pointerPos);
@@ -262,7 +277,7 @@ partial struct CharacterAimSystem : ISystem
                                         if(EntityHelper.TryFindBuildingObject(chunk,tilePosition,objectsLookup,out var buildingObj,out int index) &&
                                         ItemsAsset.instance.TryGetItem<BuildingObject>(buildingObj.id,out var itemData))
                                         {
-                                            if(itemData.toolRequired == tool.toolType)
+                                            if((isTool && itemData.toolRequired == tool.toolType) || (itemData.toolRequired == ToolType.None))
                                             {
                                                 if(state.World.IsClient())
                                                 {
@@ -275,23 +290,24 @@ partial struct CharacterAimSystem : ISystem
                                                         action = ServerAction.DamageBuildingObject,
                                                         networkID = playerAspect.networkId,
                                                         tilePosition = tilePosition,
-                                                        value = tool.efficiency 
+                                                        value = efficiency 
                                                     });
                                                     entityCommandBuffer.SetComponentEnabled<NewChunkServerAction>(chunk,true);
-                                                    EntityHelper.CreateEntityWithComponent<EQUseItem>(entityCommandBuffer,new EQUseItem()
+                                                    if(isTool)
                                                     {
-                                                        networkEntity = SystemAPI.GetComponent<PlayerSourceConnection>(entity).value,
-                                                        slotPosition = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerAspect.playerInputSync.ValueRO.slotInHand)
-                                                    });
+                                                        EntityHelper.CreateEntityWithComponent<EQUseItem>(entityCommandBuffer,new EQUseItem()
+                                                        {
+                                                            networkEntity = SystemAPI.GetComponent<PlayerSourceConnection>(entity).value,
+                                                            slotPosition = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerAspect.playerInputSync.ValueRO.slotInHand)
+                                                        });
+                                                    }
                                                 }
                                             }
-                                            Debug.Log("<Color=red>  k " + tilePosition + " " + chunkIndex + " tile " + buildingObj.id);
                                         }
                                     }
 
                                 }
-                                else
-                                    break;
+
                                 
 
                                 var rpc = new PlayerActionRPC()

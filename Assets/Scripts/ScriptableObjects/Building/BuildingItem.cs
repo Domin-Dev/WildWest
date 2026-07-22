@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using static UnityEngine.Rendering.DebugUI;
 
 [System.Serializable]
@@ -15,20 +18,34 @@ public class Drop
 public abstract class BuildingItem : Item
 {
     public int destructionSound;
-    public int hitSound;
-    public int incorrectToolSound;
-    [Min(0)] public int hitParticles;
+    public AnimationEventTab HitEvents;
+    public AnimationEventTab IncorrectToolHitEvent;
     public int durability;
     [Header("Drop")]
     public Drop[] drop;
     //public string texturePath;
     public ToolType toolRequired = ToolType.None;
+
+    public virtual string GetBuildingObjectInfo(BuildingObjects buildingObjects)
+    {
+        return $"{name} [{buildingObjects.hitPoints}/{buildingObjects.maxHitPoints}]";
+    }
+
+    public override void OnAfterDeserialize()
+    {
+        base.OnAfterDeserialize();
+    }
 }
 public abstract class VariantItem : BuildingItem
 {
+    public Texture2D texture;
     public ObjectVariant[] objectVariants;
     public int2 size = new int2(27, 51);
+    public Vector2 shadowSize = new Vector2(0.21f,0.07f);
 
+    [Min(1)] public int damageStates = 3;
+    public bool isBackground = false;
+    public bool isShadow = true;
     public float shadowHeight;
 
     public BuildingObjects GetBuildingObject(short variantIndex, short stateIndex)
@@ -42,6 +59,16 @@ public abstract class VariantItem : BuildingItem
             hitPoints = durability               
         };
     }
+
+    public Variant GetVariant(short variantIndex, short stateIndex)
+    {
+        return objectVariants[variantIndex].variants[stateIndex];
+    }
+    public Variant GetVariant(BuildingObjects obj)
+    {
+        return GetVariant(obj.variantIndex,obj.stateIndex);
+    }
+ 
 }
 
 [System.Serializable]
@@ -64,19 +91,24 @@ public class Variant
     public RectangleHitbox hitbox;
     public Vector2[] CoveringPoints;
     public Vector2[] objectPoints;
-    public Vector2 particlePoint;
+    public Vector2[] particlePoints;
+    public Vector2 shadowPoint;
     public float minY;
     public Vector2 shadowSize = new Vector2(0.21f,0.07f);
     public Sprite[] sprites;
 
-    public Variant(RectangleHitbox hitbox, float minY, Vector2 particlePoint,params Sprite[] sprites)
+    public Variant(Vector2 shadowSize,RectangleHitbox hitbox, float minY, Vector2[] particlePoints,Vector2? shadowPoint,params Sprite[] sprites)
     {
-        this.particlePoint = particlePoint;
+        this.particlePoints = particlePoints;
         this.hitbox = hitbox;
         this.sprites = sprites;
         this.minY = minY;
+        this.shadowPoint = shadowPoint.HasValue ? shadowPoint.Value : default;
+        this.shadowSize = shadowSize;
     }
 }
+
+
 
 [System.Serializable]
 public class RectangleHitbox

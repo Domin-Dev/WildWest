@@ -26,9 +26,80 @@ MonoBehaviour:
   craftTables: ffffffff
   numberItem: 1
   destructionSound: 15
-  hitSound: 14
-  incorrectToolSound: 10
-  hitParticles: 6
+  HitEvents:
+    Events:
+    - Event:
+        EventType: 0
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 14
+      PointPosition: -1
+    - Event:
+        EventType: 1
+        position:
+          x: -0.01
+          y: 0.089999996
+          z: 0.089999996
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 6
+      PointPosition: 0
+    - Event:
+        EventType: 1
+        position:
+          x: 0.01
+          y: 0.35
+          z: 0.35
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 5
+      PointPosition: 1
+    - Event:
+        EventType: 1
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 3
+      PointPosition: 0
+  IncorrectToolHitEvent:
+    Events:
+    - Event:
+        EventType: 0
+        position:
+          x: 0
+          y: 0.34
+          z: 0.34
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 0
+      PointPosition: 1
   durability: 60
   drop:
   - maxNumber: 4
@@ -37,15 +108,19 @@ MonoBehaviour:
       itemID: 42
       number: 1
   toolRequired: 2
+  texture: {fileID: 2800000, guid: 86ea9f9a96902906a9a64704ee023beb, type: 3}
   objectVariants:
   - variants:
     - hitbox:
-        size: {x: 0.080000006, y: 0.07999999}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.08, y: 0.08}
+        offset: {x: 0, y: 0.07}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.12, y: 0.105}
-      minY: 0.055000003
+      particlePoints:
+      - {x: -0.01, y: 0.08}
+      - {x: 0.01, y: 0.34}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.02
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 455fb224b2169c2799bb2360f1af863c, type: 2}
@@ -53,12 +128,15 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 914eeab1f2150cf37b59826bd6d4c552, type: 2}
   - variants:
     - hitbox:
-        size: {x: 0.080000006, y: 0.07999999}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.08, y: 0.08}
+        offset: {x: 0, y: 0.08}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.12, y: 0.105}
-      minY: 0.055000003
+      particlePoints:
+      - {x: -0.01, y: 0.089999996}
+      - {x: 0, y: 0.35}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.01
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 3e1ef4de7951b21e494bf79c5d6fe288, type: 2}
@@ -66,12 +144,15 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 2effd05deb04246bba1031e9f3d68bec, type: 2}
   - variants:
     - hitbox:
-        size: {x: 0.080000006, y: 0.07999999}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.08, y: 0.08}
+        offset: {x: 0, y: 0.07}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.12, y: 0.105}
-      minY: 0.055000003
+      particlePoints:
+      - {x: -0.01, y: 0.08}
+      - {x: -0.01, y: 0.35}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.02
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 81bc076fd35e46ffe83fffd2ea54d5b3, type: 2}
@@ -79,12 +160,15 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 68b4ab86ddedafb6084f08e2e73f29b3, type: 2}
   - variants:
     - hitbox:
-        size: {x: 0.080000006, y: 0.07999999}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.08, y: 0.08}
+        offset: {x: 0, y: 0.08}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.12, y: 0.105}
-      minY: 0.055000003
+      particlePoints:
+      - {x: -0.01, y: 0.089999996}
+      - {x: 0.01, y: 0.35999998}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.01
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: a3bdc3daf7569edbf80e0eeeb337ee62, type: 2}
@@ -92,12 +176,15 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 39952f21f13119aeab60c049d7716294, type: 2}
   - variants:
     - hitbox:
-        size: {x: 0.080000006, y: 0.07999999}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.08, y: 0.08}
+        offset: {x: 0, y: 0.07}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.12, y: 0.105}
-      minY: 0.055000003
+      particlePoints:
+      - {x: -0.01, y: 0.08}
+      - {x: 0, y: 0.34}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.02
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 095b37042876485a1ab45465a1ec3cae, type: 2}
@@ -105,12 +192,15 @@ MonoBehaviour:
       - {fileID: 21300000, guid: 8bf38079bccec8b58a108679af640af0, type: 2}
   - variants:
     - hitbox:
-        size: {x: 0.080000006, y: 0.07999999}
-        offset: {x: 0.13, y: 0.095}
+        size: {x: 0.08, y: 0.08}
+        offset: {x: 0, y: 0.08}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.12, y: 0.105}
-      minY: 0.055000003
+      particlePoints:
+      - {x: -0.01, y: 0.089999996}
+      - {x: 0.01, y: 0.35}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.01
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: cbca943ab067974c8bd513f48f9c4634, type: 2}
@@ -119,4 +209,7 @@ MonoBehaviour:
   size:
     x: 27
     y: 60
+  damageStates: 3
+  isBackground: 0
+  isShadow: 1
   shadowHeight: 0

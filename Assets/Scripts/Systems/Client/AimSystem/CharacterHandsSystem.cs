@@ -113,6 +113,9 @@ partial struct CharacterHandsSystem : ISystem
                             case EventType.SpawnParticleAtAimPoint:
                                 CreatePrefab(entityCommandBuffer,hands.aimPoint,eventFrame);
                                 break;
+                            case EventType.SpawnParticle:
+                                CreatePrefab(entityCommandBuffer,Entity.Null,eventFrame);
+                                break;
                             case EventType.SpawnParticleAtReloadPoint:
                                 CreatePrefab(entityCommandBuffer,hands.reloadPoint,eventFrame);
                                 break;

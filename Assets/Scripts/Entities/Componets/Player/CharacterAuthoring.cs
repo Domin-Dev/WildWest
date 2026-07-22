@@ -107,6 +107,11 @@ public struct PlayerInputSync : IComponentData
     public int ammoSelectedTagID;
 }
 
+public struct PlayerPointer : IComponentData
+{
+    public int2 LastGamePointerPosition;
+    public bool updateTileInfo;
+}
 
 
 [GhostComponent(SendTypeOptimization = GhostSendType.AllClients)]

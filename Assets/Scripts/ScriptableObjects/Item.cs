@@ -4,7 +4,7 @@ using System.Text;
 using System;
 
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]
-public class Item : ScriptableObject
+public class Item : ScriptableObject,ISerializationCallbackReceiver
 {
     [Header("Item Stats")]
     public string name;
@@ -109,7 +109,11 @@ public class Item : ScriptableObject
                 maxDur = timer;
         }
         return maxDur;
-    } 
+    }
+
+    public virtual void OnBeforeSerialize(){}
+
+    public virtual void OnAfterDeserialize(){}
 }
 
 [System.Serializable]

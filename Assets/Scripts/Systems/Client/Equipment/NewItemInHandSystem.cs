@@ -214,7 +214,7 @@ partial struct NewItemInHandSystem : ISystem
     public static void ChangeItemInHand(ref SystemState state,Item item, RefRW<Hands> hands)
     {
         Crosshairs.Swtich(item is RangedWeapon);
-        GamePointer.Switch(item is Tool);
+        GamePointer.Switch(item == null || item is Tool);
 
 
         if (item is Weapon)

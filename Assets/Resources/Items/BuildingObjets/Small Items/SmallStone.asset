@@ -12,16 +12,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a927e0bf2ca2c49ac3e3e2db9416bc, type: 3}
   m_Name: SmallStone
   m_EditorClassIdentifier: 
-  name: SmallStone
+  name: Stone
   description: 
-  ID: 70
   stackMax: 50
-  icon: {fileID: -837488465, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  ID: 70
+  icon: {fileID: 2132810727, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients:
   - itemID: 0
     number: 0
   craftTables: ffffffff
   numberItem: 1
+  destructionSound: 12
+  HitEvents:
+    Events:
+    - Event:
+        EventType: 0
+        position:
+          x: 0
+          y: 0
+          z: 0
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 11
+      PointPosition: -1
+    - Event:
+        EventType: 1
+        position:
+          x: 0.02
+          y: 0.02
+          z: 0.02
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 4
+      PointPosition: 0
+    - Event:
+        EventType: 1
+        position:
+          x: 0.02
+          y: 0.02
+          z: 0.02
+        rotation:
+          x: 0
+          y: 0
+          z: 0
+        relativeRotation: 0
+        indexType: 0
+        id: 3
+      PointPosition: 0
+  IncorrectToolHitEvent:
+    Events: []
   durability: 10
   drop:
   - maxNumber: 1
@@ -35,7 +85,7 @@ MonoBehaviour:
       itemID: 43
       number: 1
   toolRequired: 0
-  HitParticles: {fileID: 8503829923926787638, guid: 42ce0afd134097f4aa18bf9920ec5927, type: 3}
+  texture: {fileID: 2800000, guid: 1e9e1658994d55f45a720547d9945177, type: 3}
   objectVariants:
   - variants:
     - hitbox:
@@ -43,55 +93,109 @@ MonoBehaviour:
         offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0, y: 0.185}
-      minY: 0.16499999
-      sprite: {fileID: 21300000, guid: aa10518c974c2fa45bbb13d21b2e38d5, type: 2}
+      particlePoints:
+      - {x: 0, y: 0.02}
+      shadowPoint: {x: 0, y: 0}
+      minY: 0.01
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 37d519245688756ffa9556799eb15304, type: 2}
   - variants:
     - hitbox:
         size: {x: 0, y: 0}
         offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.03, y: 0.225}
-      minY: 0.21499999
-      sprite: {fileID: 21300000, guid: c4b5113b49c00d045804353494573187, type: 2}
+      particlePoints:
+      - {x: 0.02, y: 0.02}
+      shadowPoint: {x: 0.02, y: 0}
+      minY: 0.07
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 86c27ec7678547c1e9f9e7fb8f47605d, type: 2}
   - variants:
     - hitbox:
         size: {x: 0, y: 0}
         offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: -0.04, y: 0.265}
-      minY: 0.24499999
-      sprite: {fileID: 21300000, guid: c0bb21750d3cb9a4d9343a4bb11ab681, type: 2}
+      particlePoints:
+      - {x: -0.049999997, y: 0.02}
+      shadowPoint: {x: -0.049999997, y: 0}
+      minY: 0.099999994
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: f60b1c301751cb02d91579552d2c6ee9, type: 2}
   - variants:
     - hitbox:
         size: {x: 0, y: 0}
         offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0.03, y: 0.195}
-      minY: 0.175
-      sprite: {fileID: 21300000, guid: 9236a7ac6842a334892cd33ea39bf185, type: 2}
+      particlePoints:
+      - {x: 0.02, y: 0.02}
+      shadowPoint: {x: 0.02, y: 0}
+      minY: 0.03
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 77438b8f252e4e7b494569d2508664a2, type: 2}
   - variants:
     - hitbox:
         size: {x: 0, y: 0}
         offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: -0.06, y: 0.285}
-      minY: 0.265
-      sprite: {fileID: 21300000, guid: bc77b5f8a8fe55942b0cfd8b826be5d8, type: 2}
+      particlePoints:
+      - {x: -0.07, y: 0.02}
+      shadowPoint: {x: -0.07, y: 0}
+      minY: 0.12
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: c91830b89f2b8829cbc8a722e3d10622, type: 2}
   - variants:
     - hitbox:
         size: {x: 0, y: 0}
         offset: {x: 0, y: 0}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: -0.049999997, y: 0.185}
-      minY: 0.16499999
-      sprite: {fileID: 21300000, guid: e7b572242f2510942a5731a014146a57, type: 2}
-  shadowPixels: 9
+      particlePoints:
+      - {x: -0.06, y: 0.02}
+      shadowPoint: {x: -0.06, y: 0}
+      minY: 0.02
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: f3624cd7e0d0352b4a91bf0615e9e188, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: 0.07, y: 0.02}
+      shadowPoint: {x: 0.07, y: 0}
+      minY: 0.17999999
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: b898a880b14154c968f1f7c0cf3fbfa4, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: 0.06, y: 0.02}
+      shadowPoint: {x: 0.06, y: 0}
+      minY: 0.01
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: adf8499a1b9ffbf4ba0fd89ed99115a3, type: 2}
   size:
     x: 27
-    y: 60
+    y: 25
+  shadowSize: {x: 0.15, y: 0.06}
+  damageStates: 1
+  isBackground: 1
+  isShadow: 1
+  shadowHeight: 0
