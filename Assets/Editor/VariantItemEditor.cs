@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using log4net.Util;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,9 +14,10 @@ public class VariantItemEditor : ItemEditor
     static readonly Color shadowPointColor = new Color(0, 0, 1, 1);
 
 
-    private void OnEnable()
+    protected void OnEnable()
     {
         variantItem = target as VariantItem;
+        base.OnEnable();
     }
 
     Texture2D texture;
@@ -83,7 +85,7 @@ public class VariantItemEditor : ItemEditor
 
     private void Cut(Texture2D texture, List<ObjectVariant> objectVariants, int k,int numberVariant)
     {
-        Color[] pointsColor = {shadowPointColor};
+        Color[] pointsColor = {};
         int width = variantItem.size.x;
         int height = variantItem.size.y;
 
@@ -95,26 +97,35 @@ public class VariantItemEditor : ItemEditor
             {
 
                 Sprite[] sprites = new Sprite[variantItem.damageStates];
-                int min = 0;
+                float min = 0;
+                float left = 0;
                 Vector2 pivot = Vector2.zero;
                 for(int m = 0; m < sprites.Length; m ++)
                 {
                     var rect = new Rect(i * width,texture.height - height * (sprites.Length * j + 2 + m), width, height);
-                    var sprite = Sprite.Create(texture,rect,Vector2.zero);
-                    min = new Cutter(sprite).GetMin();
-                    pivot = new Vector2(0.5f,(float)min/height);
-                    sprites[m] = Sprite.Create(texture,rect,pivot);
+                    var sprite = Sprite.Create(texture,rect,Vector2.zero,100,1,SpriteMeshType.Tight);
+                    var tempCutter = new Cutter(sprite);
+
+                    min = tempCutter.GetMin();
+                    int max =  tempCutter.GetMax();
+                    left =  tempCutter.GetLeftBorder();
+                    int rigth =  tempCutter.GetRightBorder();
+
+                    rect.height -= min + height - max;
+                    rect.width -= left + width - rigth;
+                    pivot = new Vector2(0.5f,0f);
+
+                    rect.x += left;
+                    rect.y += min;
+                    left += rect.width / 2f;
+                    sprites[m] = Sprite.Create(texture,rect,pivot,100,1,SpriteMeshType.Tight);
                 }
 
-                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height),pivot);
+                Sprite hitbox = Sprite.Create(texture, new Rect(i * width, texture.height - height, width, height),pivot,100,1,SpriteMeshType.Tight);
                 Cutter cutter = new Cutter(hitbox,new Vector2(width/2,min));
-                Vector2?[] points = cutter.GetPoints(pointsColor,MyTools.hitboxColor);
                 Vector2[] particlePoints = cutter.GetPoints(particlePointColor,MyTools.hitboxColor);
-
                 RectangleHitbox rectangle = cutter.CutRectangularHitBox(MyTools.hitboxColor);
-
-
-                variants.Add(new Variant(variantItem.shadowSize,rectangle,min * 0.01f,particlePoints,points[0],sprites));
+                variants.Add(new Variant(variantItem.shadowSize,rectangle,new Vector2(left,min) * 0.01f,particlePoints,variantItem.shadowOffset,sprites));
             }
 
             objectVariants.Add(new ObjectVariant(variants.ToArray()));

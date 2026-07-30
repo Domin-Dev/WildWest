@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a927e0bf2ca2c49ac3e3e2db9416bc, type: 3}
+  m_Name: Grass
+  m_EditorClassIdentifier: 
+  name: Grass
+  description: 
+  stackMax: 50
+  ID: 46
+  icon: {fileID: 139923309, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags:
+  - rid: 2706569505754316906
+  crafingIngredients:
+  - itemID: 0
+    number: 0
+  craftTables: 
+  numberItem: 1
+  destructionSound: 0
+  HitEvents:
+    Events: []
+  IncorrectToolHitEvent:
+    Events: []
+  durability: 8
+  drop:
+  - maxNumber: 2
+    probability: 1
+    ingredient:
+      itemID: 49
+      number: 1
+  - maxNumber: 1
+    probability: 0.5
+    ingredient:
+      itemID: 68
+      number: 1
+  toolRequired: 0
+  texture: {fileID: 2800000, guid: 325ddbab5bbbffb49b965260c293337f, type: 3}
+  objectVariants:
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.13499999, y: 0.04}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 0581def5c09be0c6f848a0c056d66cd4, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: 0.03, y: 0}
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.089999996, y: 0.13}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 4f3b31bfbbe9979859cb6a526502d50d, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: -0.01, y: 0.17}
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.105, y: 0.03}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 17040631c1c5eb8599269a1109eb55d3, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: 0.03, y: 0.01}
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.185, y: 0.14}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: bd603ce2632fd18778942e67f197fcb0, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: 0.03, y: 0.01}
+      - {x: 0.04, y: 0.01}
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.085, y: 0.07}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 92ddc286b1f261f3388321fcc49ce2d4, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints:
+      - {x: -0.03, y: 0.13}
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.175, y: 0.02}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 71bc4c676a8a655c78109b1614a1123e, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.195, y: 0.08}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 9cba306e62b70192982d4bbd5faf8dbc, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.13499999, y: 0.14}
+      shadowSize: {x: 0.15, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: ed66fb1e08504ababab6e424afd3817b, type: 2}
+  size:
+    x: 27
+    y: 25
+  shadowSize: {x: 0.15, y: 0.06}
+  shadowOffset: {x: 0, y: 0.01}
+  damageStates: 1
+  isBackground: 0
+  isShadow: 1
+  shadowHeight: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 2706569505754316906
+      type: {class: TagSelectionMaterial, ns: , asm: Assembly-CSharp}
+      data:
+        tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+        material: {fileID: 2100000, guid: 1e8fe2635e854f1aa95e032c6da07abb, type: 2}

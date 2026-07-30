@@ -251,7 +251,7 @@ public class BuildingManager : MonoBehaviour
                 spriteRenderer.sprite = variant.sprites[0];
          
                 CreateGridObject(gridObject.ID, gridPosition, gridObject.variantIndex, obj.parent);
-                MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
+                MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(variant.offset.x, variant.offset.y, 0));
                 break;
             case Hole:  
                     obj = Instantiate(collider, GridVisualization.instance.GetWorldPosition(gridPosition), Quaternion.identity, parent).transform;
@@ -406,7 +406,7 @@ public class BuildingManager : MonoBehaviour
     //    if (variant.hitbox.Length > 1) obj.GetComponent<PolygonCollider2D>().points = variant.hitbox;
     //    else Destroy(obj.GetComponent<PolygonCollider2D>());
         CreateGridObject(itemID, posXY, variantIndex, obj.parent);
-        MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(0, variant.minY, 0));
+        MyTools.ChangePositionPivot(obj.parent, obj.TransformPoint(variant.offset.x, variant.offset.y, 0));
         GridVisualization.instance.MoveWorldItems(posXY);
         builtObject(this, null);
     }
@@ -465,6 +465,6 @@ public class BuildingManager : MonoBehaviour
             polygonCollider2D.usedByComposite = false;
             Timer.Create(2f, () => { if (polygonCollider2D != null) polygonCollider2D.usedByComposite = true; return false; });
         }
-        MyTools.ChangePositionPivot(gridObject.objectTransform, obj.TransformPoint(0, variant.minY, 0));
+      //  MyTools.ChangePositionPivot(gridObject.objectTransform, obj.TransformPoint(0, variant.minY, 0));
     }
 }

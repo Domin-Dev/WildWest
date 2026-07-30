@@ -8,6 +8,7 @@ public class Cutter
 {
     public float pixelSize;
     int width;
+    int height;
     Vector2 middle;
     Color[] texture;
 
@@ -27,6 +28,7 @@ public class Cutter
     {
         pixelSize = 1.0f / sprite.pixelsPerUnit;
         width = (int)sprite.rect.width;
+        height = (int)sprite.rect.height;
         texture = sprite.texture.GetPixels((int)sprite.rect.x, (int)sprite.rect.y, (int)sprite.rect.width, (int)sprite.rect.height);
     }
     public Vector2[] CutHitBox(Color hitboxColor)
@@ -208,7 +210,46 @@ public class Cutter
         return 0;
     }
 
+    public int GetMax()
+    {
+        for(int i = texture.Length - 1; i >= 0; i--)
+        {
+            if(texture[i].a > 0f)
+                return (i / width) + 1;
+        }
+        return texture.Length / width;
+    }
 
+    public int GetLeftBorder()
+    {
+        int minX = width;
+        for (int i = 0; i < texture.Length; i++)
+        {
+            if (texture[i].a > 0f)
+            {
+                int x = i % width;
+                if (x < minX)
+                    minX = x;
+            }
+        }
+        return minX;
+    }
+
+
+    public int GetRightBorder()
+    {
+        int maxX = 0;
+        for (int i = 0; i < texture.Length; i++)
+        {
+            if (texture[i].a > 0f)
+            {
+                int x = i % width;
+                if (x > maxX)
+                    maxX = x;
+            }
+        }
+        return maxX + 1;
+    }
 
 
 }

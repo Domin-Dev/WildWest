@@ -19,10 +19,7 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
     
     public List<Sprite> animSprites;
 
-    [Header("Item Tags")]
-    public List<TagSelection> tags;
-
-    [Header("Modules")]
+    [SerializeReference] public List<TagSelection> tags;
 
     [Header("Craft recipe")]
     public Ingredient[] crafingIngredients;
@@ -140,12 +137,22 @@ public class ItemID
 [System.Serializable]
 public class TagSelection
 {
-    [SerializeReference] public Tag tag;
+    public Tag tag;
 
     public TagSelection(Tag tag)
     {
         this.tag = tag;
     }
+    public TagSelection(){}    
+}
+
+[System.Serializable]
+public class TagSelectionMaterial: TagSelection
+{
+    [SerializeField] public Material material;
+    public TagSelectionMaterial(Tag tag) : base(tag){}
+    public TagSelectionMaterial() : base(){}
+
 }
 
 [CreateAssetMenu(fileName = "DestroyableItem", menuName = "GameAsset/Items/DestroyableItem")]

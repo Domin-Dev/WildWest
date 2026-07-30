@@ -17,6 +17,8 @@ MonoBehaviour:
   stackMax: 50
   ID: 136
   icon: {fileID: 685533193, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
   tags: []
   crafingIngredients:
   - itemID: 0
@@ -24,6 +26,7 @@ MonoBehaviour:
   craftTables: 
   numberItem: 1
   durability: 0
+  destructionSound: 0
   texture: {fileID: 0}
   sprites: []
   garmentStats:
@@ -32,3 +35,6 @@ MonoBehaviour:
     insulation: 0
     waterResistance: 0
     aesthetic: 0
+  references:
+    version: 2
+    RefIds: []

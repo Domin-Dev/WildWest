@@ -14,9 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   name: Grass
   description: 
-  ID: 49
   stackMax: 50
-  icon: {fileID: 64514393, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  ID: 49
+  icon: {fileID: -35718348, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags: []
   crafingIngredients:
   - itemID: 48
     number: 2

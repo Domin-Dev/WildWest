@@ -24,12 +24,11 @@ public interface IReadTag
 public class Tag : ScriptableObject, IReadTag
 {
     [Header("Tag info")]
-
     [SerializeField] private Sprite _icon;
     [SerializeField] LocalizedString _localizedString;
     [SerializeField] private string _tagName;
     [SerializeField] int _ID = -1;
-
+    public virtual Type RequiredTagSelection => typeof(TagSelection);
     public string tagName => _tagName; 
     public int ID => _ID; 
     public Sprite icon => _icon; 
@@ -50,5 +49,4 @@ public class Tag : ScriptableObject, IReadTag
     {
         if (_ID == -1) _ID = Resources.Load<IDManager>("IDManager").GetNextTagID();
     }
-
 }

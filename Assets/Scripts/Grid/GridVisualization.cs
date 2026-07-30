@@ -819,7 +819,7 @@ public class GridVisualization : MonoBehaviour
         ObjectVariant objectVariant = ItemsAsset.instance.GetObjectVariant(gridObject.ID, value);
         child.GetComponent<SpriteRenderer>().sprite = objectVariant.variants[0].sprites[0];
      //   child.GetComponent<PolygonCollider2D>().points = objectVariant.variants[0].hitbox;
-        MyTools.ChangePositionPivot(gridObject.objectTransform, child.TransformPoint(0, objectVariant.variants[0].minY, 0));
+        MyTools.ChangePositionPivot(gridObject.objectTransform, child.TransformPoint(objectVariant.variants[0].offset.x, objectVariant.variants[0].offset.y, 0));
     }
     public void SetNewSprite(Vector2 positionXY,int id)
     {

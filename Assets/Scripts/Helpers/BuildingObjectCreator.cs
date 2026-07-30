@@ -21,7 +21,7 @@ public static class BuildingObjectCreator
     {
         var data  = ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id).objectVariants[buildingObject.variantIndex].variants[buildingObject.stateIndex];
     
-        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2(ClientMap.cellSize/2f,data.minY);
+        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + (float2)data.offset;
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, worldPos.y));
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox; 
         Entity entity  = entityCommand.CreateEntity(unfilteredChunkIndex);
@@ -65,9 +65,8 @@ public static class BuildingObjectCreator
         var item  = ItemsAsset.instance.GetItem<VariantItem>(buildingObject.id);
         var data = item.objectVariants[buildingObject.variantIndex].variants[buildingObject.stateIndex];
         
-        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + new float2( ClientMap.cellSize/2f,data.minY);
-       
-       
+        float2 worldPos = new float2(buildingObject.globalTilePos.x * ClientMap.cellSize, buildingObject.globalTilePos.y * ClientMap.cellSize) + (float2)data.offset;
+    
         LocalTransform localTransform = LocalTransform.FromPosition(new float3(worldPos.x, worldPos.y, item.isBackground ? worldPos.y + 0.25f : worldPos.y ));
         RectangleHitbox rectangleHitbox = ItemsAsset.instance.GetVariant(buildingObject.id, buildingObject.variantIndex, buildingObject.stateIndex)?.hitbox;
  
@@ -79,13 +78,16 @@ public static class BuildingObjectCreator
         LocalTransform spriteTransform = LocalTransform.FromPosition(new float3(0,0,0));
         var sprite =  ItemsAsset.instance.GetBuildingObjectSprite(buildingObject.id, buildingObject.variantIndex);
         spriteRenderer.sprite = sprite;
+        if(ItemsAsset.instance.ItemHasTheTag(item,WorldConfig.Instance.windEffectTag.ID,out TagSelection tagSelection))
+            spriteRenderer.material = (tagSelection as TagSelectionMaterial).material;
+
         entityCommand.SetComponent(spriteEntity, spriteTransform);
         entityCommand.SetComponent(entity, localTransform);
 
         if(item.isShadow)
         {
             entityManagern.GetComponentObject<SpriteRenderer>(shadowEntity).size = data.shadowSize;
-            entityCommand.SetComponent(shadowEntity,LocalTransform.FromPosition(new float3(data.shadowPoint.x,data.shadowPoint.y + 0.005f,0)));
+            entityCommand.SetComponent(shadowEntity,LocalTransform.FromPosition(new float3(data.shadowOffset,0)));
         }
         else
             entityManagern.GetComponentObject<SpriteRenderer>(shadowEntity).sprite = null;

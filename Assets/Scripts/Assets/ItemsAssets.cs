@@ -402,12 +402,38 @@ public class ItemsAsset : MonoBehaviour
     }
     public bool ItemHasTheTag(int itemID, int tagID)
     {
-        var tags = GetItem(itemID).tags;
+        return ItemHasTheTag(GetItem(itemID),tagID);
+    }
+    public bool ItemHasTheTag(Item item, int tagID)
+    {
+        return ItemHasTheTag(item,tagID,out TagSelection tagSelection);
+    }
+    public bool ItemHasTheTag(Item item, int tagID,out TagSelection tagSelection)
+    {
+        tagSelection = null;
+        if(item == null) return false;
+        var tags = item.tags;
+
         foreach (var tag in tags)
         {
             if (tag?.tag?.ID == tagID)
+            {
+                tagSelection = tag;
                 return true;
+            }
         }
         return false;
+    }
+    public bool ItemHasTheTag(Item item, Tag tag)
+    {
+        if(tag == null) return false;
+        return ItemHasTheTag(item,tag.ID);
+    }
+
+    public bool ItemHasTheTag(Item item, Tag tag, out TagSelection tagSelection)
+    {
+        tagSelection = null;
+        if(tag == null) return false;
+        return ItemHasTheTag(item,tag.ID,out tagSelection);
     }
 }

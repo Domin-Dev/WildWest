@@ -42,6 +42,7 @@ public abstract class VariantItem : BuildingItem
     public ObjectVariant[] objectVariants;
     public int2 size = new int2(27, 51);
     public Vector2 shadowSize = new Vector2(0.21f,0.07f);
+    public Vector2 shadowOffset;
 
     [Min(1)] public int damageStates = 3;
     public bool isBackground = false;
@@ -92,18 +93,18 @@ public class Variant
     public Vector2[] CoveringPoints;
     public Vector2[] objectPoints;
     public Vector2[] particlePoints;
-    public Vector2 shadowPoint;
-    public float minY;
+    public Vector2 shadowOffset;
+    public Vector2 offset;
     public Vector2 shadowSize = new Vector2(0.21f,0.07f);
     public Sprite[] sprites;
 
-    public Variant(Vector2 shadowSize,RectangleHitbox hitbox, float minY, Vector2[] particlePoints,Vector2? shadowPoint,params Sprite[] sprites)
+    public Variant(Vector2 shadowSize,RectangleHitbox hitbox, Vector2 offset, Vector2[] particlePoints,Vector2? shadowOffset,params Sprite[] sprites)
     {
         this.particlePoints = particlePoints;
         this.hitbox = hitbox;
         this.sprites = sprites;
-        this.minY = minY;
-        this.shadowPoint = shadowPoint.HasValue ? shadowPoint.Value : default;
+        this.offset = offset;
+        this.shadowOffset = shadowOffset.HasValue ? shadowOffset.Value : default;
         this.shadowSize = shadowSize;
     }
 }

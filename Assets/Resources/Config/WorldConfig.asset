@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3c4558f02449b44c8e0828dbf60cfee, type: 3}
-  m_Name: IDManager
-  m_EditorClassIdentifier: 
-  LastID: 144
-  LastTagID: 1545
+  m_Script: {fileID: 11500000, guid: f6c48bccfd68d31b79f5cc3df259b117, type: 3}
+  m_Name: WorldConfig
+  m_EditorClassIdentifier: Assembly-CSharp::WorldConfig
+  windEffectTag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}

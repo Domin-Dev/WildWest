@@ -17,7 +17,7 @@ Sprite:
   m_Border: {x: 0, y: 0, z: 0, w: 0}
   m_PixelsToUnits: 100
   m_Pivot: {x: 0.5, y: 0.033333335}
-  m_Extrude: 0
+  m_Extrude: 1
   m_IsPolygon: 0
   m_PackingTag: 
   m_RenderDataKey:
