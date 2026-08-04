@@ -19,8 +19,7 @@ MonoBehaviour:
   icon: {fileID: -1680953567, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   worldSprite: {fileID: 0}
   animSprites: []
-  tags:
-  - rid: 2706569505754316907
+  tags: []
   crafingIngredients:
   - itemID: 10
     number: 0
@@ -120,8 +119,8 @@ MonoBehaviour:
       particlePoints:
       - {x: -0.01, y: 0.08}
       - {x: 0.01, y: 0.34}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.02
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0, y: 0}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 455fb224b2169c2799bb2360f1af863c, type: 2}
@@ -136,8 +135,8 @@ MonoBehaviour:
       particlePoints:
       - {x: -0.01, y: 0.089999996}
       - {x: 0, y: 0.35}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.01
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0, y: 0}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 3e1ef4de7951b21e494bf79c5d6fe288, type: 2}
@@ -152,8 +151,8 @@ MonoBehaviour:
       particlePoints:
       - {x: -0.01, y: 0.08}
       - {x: -0.01, y: 0.35}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.02
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0, y: 0}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 81bc076fd35e46ffe83fffd2ea54d5b3, type: 2}
@@ -168,8 +167,8 @@ MonoBehaviour:
       particlePoints:
       - {x: -0.01, y: 0.089999996}
       - {x: 0.01, y: 0.35999998}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.01
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0, y: 0}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: a3bdc3daf7569edbf80e0eeeb337ee62, type: 2}
@@ -184,8 +183,8 @@ MonoBehaviour:
       particlePoints:
       - {x: -0.01, y: 0.08}
       - {x: 0, y: 0.34}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.02
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0, y: 0}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 095b37042876485a1ab45465a1ec3cae, type: 2}
@@ -200,8 +199,8 @@ MonoBehaviour:
       particlePoints:
       - {x: -0.01, y: 0.089999996}
       - {x: 0.01, y: 0.35}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.01
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0, y: 0}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: cbca943ab067974c8bd513f48f9c4634, type: 2}
@@ -211,15 +210,11 @@ MonoBehaviour:
     x: 27
     y: 60
   shadowSize: {x: 0.21, y: 0.07}
+  shadowOffset: {x: 0, y: 0}
   damageStates: 3
   isBackground: 0
   isShadow: 1
   shadowHeight: 0
   references:
     version: 2
-    RefIds:
-    - rid: 2706569505754316907
-      type: {class: TagSelectionMaterial, ns: , asm: Assembly-CSharp}
-      data:
-        tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
-        material: {fileID: 2100000, guid: af3a5a1f085f49d59a77c979098a264e, type: 2}
+    RefIds: []

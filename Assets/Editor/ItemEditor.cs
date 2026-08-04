@@ -16,84 +16,78 @@ public class ItemEditor : Editor
     {
         serializedObject.Update();
         IconField(target);
+        DrawDefaultInspector();
         
 
-
-
-        SerializedProperty property = serializedObject.GetIterator();
-        bool enterChildren = true;
-        while (property.NextVisible(enterChildren))
-        {
-            enterChildren = false;
+       //SerializedProperty property = serializedObject.GetIterator();
+        // bool enterChildren = true;
+        // while (property.NextVisible(enterChildren))
+        // {
+        //     enterChildren = false;
       
-            if (property.name == "tags")
-                DrawTags();
-            else
-                EditorGUILayout.PropertyField(property, true);
-        }
+        //     if (property.name == "tags")
+        //         DrawTags();
+        //     else
+        //         EditorGUILayout.PropertyField(property, true);
+        // }
 
         serializedObject.ApplyModifiedProperties();
     }
 
 
-    private void DrawTags()
-    {
-        tags.isExpanded = EditorGUILayout.BeginFoldoutHeaderGroup(
-            tags.isExpanded,
-            $"Tags ({tags.arraySize})"
-        );
+    // private void DrawTags()
+    // {
+    //     tags.isExpanded = EditorGUILayout.BeginFoldoutHeaderGroup(
+    //         tags.isExpanded,
+    //         $"Tags ({tags.arraySize})"
+    //     );
 
-        if (tags.isExpanded)
-        {
-            EditorGUI.indentLevel++;
-            for (int i = 0; i < tags.arraySize; i++)
-            {
-                SerializedProperty element =
-                    tags.GetArrayElementAtIndex(i);
+    //     if (tags.isExpanded)
+    //     {
+    //         EditorGUI.indentLevel++;
+    //         for (int i = 0; i < tags.arraySize; i++)
+    //         {
+    //             SerializedProperty element =
+    //                 tags.GetArrayElementAtIndex(i);
 
-                string label = "Empty";
-                if (element.managedReferenceValue != null)
-                    label = element.managedReferenceValue.GetType().Name;
+    //             string label = "Empty";
+    //             if (element.managedReferenceValue != null)
+    //                 label = element.managedReferenceValue.GetType().Name;
                 
-                EditorGUILayout.PropertyField(element, new GUIContent(label),true);
-            }
+    //             EditorGUILayout.PropertyField(element, new GUIContent(label),true);
+    //         }
 
-            if (GUILayout.Button("Add Tag"))
-                ShowTagMenu();
-            EditorGUI.indentLevel--;
-        }
-        EditorGUILayout.EndFoldoutHeaderGroup();
+    //         if (GUILayout.Button("Add Tag"))
+    //             ShowTagMenu();
+    //         EditorGUI.indentLevel--;
+    //     }
+    //     EditorGUILayout.EndFoldoutHeaderGroup();
 
-    }
+    // }
 
-    private void ShowTagMenu()
-    {
-        GenericMenu menu = new GenericMenu();
-        var types = TypeCache.GetTypesDerivedFrom<TagSelection>() .Where(t => !t.IsAbstract).ToList();
-        types.Insert(0, typeof(TagSelection));
+    // private void ShowTagMenu()
+    // {
+    //     GenericMenu menu = new GenericMenu();
+    //     var types = TypeCache.GetTypesDerivedFrom<TagSelection>() .Where(t => !t.IsAbstract).ToList();
+    //     types.Insert(0, typeof(TagSelection));
 
-
-        foreach (System.Type type in types)
-        {
-            menu.AddItem(
-                new GUIContent(type.Name),
-                false,
-                () =>
-                {
-                    serializedObject.Update();
-                    tags.arraySize++;
-                    SerializedProperty element = tags.GetArrayElementAtIndex(tags.arraySize - 1);
-                    element.managedReferenceValue = System.Activator.CreateInstance(type);
-
-
-                    serializedObject.ApplyModifiedProperties();
-                }
-            );
-        }
-
-
-        menu.ShowAsContext();
-    }
+    //     foreach (System.Type type in types)
+    //     {
+    //         menu.AddItem(
+    //             new GUIContent(type.Name),
+    //             false,
+    //             () =>
+    //             {
+    //                 serializedObject.Update();
+    //                 tags.arraySize++;
+    //                 SerializedProperty element = tags.GetArrayElementAtIndex(tags.arraySize - 1);
+    //                 element.managedReferenceValue = System.Activator.CreateInstance(type);
+    //                 serializedObject.ApplyModifiedProperties();
+    //             }
+    //         );
+    //     }
+    //     menu.ShowAsContext();
+    // }
 
 
     public static void IconField(Object target)

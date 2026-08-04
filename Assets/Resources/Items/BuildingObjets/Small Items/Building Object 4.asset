@@ -24,9 +24,10 @@ MonoBehaviour:
   craftTables: 
   numberItem: 1
   destructionSound: 12
-  hitSound: 11
-  incorrectToolSound: 10
-  hitParticles: 4
+  HitEvents:
+    Events: []
+  IncorrectToolHitEvent:
+    Events: []
   durability: 50
   drop:
   - maxNumber: 2
@@ -48,9 +49,10 @@ MonoBehaviour:
         offset: {x: 0, y: 0.055}
       CoveringPoints: []
       objectPoints: []
-      particlePoint: {x: 0, y: 0.099999994}
-      shadowPoint: {x: 0, y: 0}
-      minY: 0.02
+      particlePoints:
+      - {x: 0, y: 0.099999994}
+      shadowOffset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.02}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 43db941b53089c94182baec02df861c2, type: 2}
@@ -59,7 +61,12 @@ MonoBehaviour:
   size:
     x: 27
     y: 60
+  shadowSize: {x: 0.21, y: 0.07}
+  shadowOffset: {x: 0, y: 0}
   damageStates: 3
   isBackground: 0
   isShadow: 1
   shadowHeight: 0
+  references:
+    version: 2
+    RefIds: []

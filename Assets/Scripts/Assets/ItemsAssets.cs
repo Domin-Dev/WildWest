@@ -31,7 +31,7 @@ public class ItemsAsset : MonoBehaviour
     }
 
     private Dictionary<int, Item> items = new Dictionary<int, Item>();
-    private Dictionary<int, Tag> tags = new Dictionary<int, Tag>();
+    private Dictionary<int, TagBase> tags = new Dictionary<int, TagBase>();
     private List<AmmoInfo> ammoList;
 
     private Dictionary<int, Item[]> itemRecipes;
@@ -125,7 +125,7 @@ public class ItemsAsset : MonoBehaviour
     private void LoadItems()
     {
         Item[] loadedItems = Resources.LoadAll<Item>("Items");
-        Tag[] loadedTags = Resources.LoadAll<Tag>("Tags");
+        TagBase[] loadedTags = Resources.LoadAll<TagBase>("Tags");
 
         Dictionary<int, List<Item>> recipes = new Dictionary<int, List<Item>>();
 
@@ -134,6 +134,7 @@ public class ItemsAsset : MonoBehaviour
         for (int i = 0; i < loadedItems.Length; i++)
         {
             Item item = loadedItems[i];
+            item.SetUp();
             items.Add(item.ID, item);
             if (item as Ammo != null) ammoList.Add(new AmmoInfo(item.ID, (item as Ammo).type));
             if (item.crafingIngredients.Length > 0)
@@ -354,7 +355,7 @@ public class ItemsAsset : MonoBehaviour
     //////// TAG
     ////////
 
-    public T GetTag<T>(int tagID) where T : Tag
+    public T GetTag<T>(int tagID) where T : TagBase
     {
         if(tags.ContainsKey(tagID))
         {
@@ -362,6 +363,12 @@ public class ItemsAsset : MonoBehaviour
             return t;
         }
         return  null;
+    }
+
+    public bool TryGetTag<T>(int tagID,out T tag) where T: TagBase
+    {
+        tag = GetTag<T>(tagID);
+        return tag != null;
     }
     public string[] GetItemTags(int itemId)
     {
@@ -371,19 +378,19 @@ public class ItemsAsset : MonoBehaviour
         {
             foreach(var i in item.tags)
             {
-                if(i != null && i.tag != null) tags.Add(i.tag.getLocalizedString);
+                if(i != null && i.Tag != null) tags.Add(i.Tag.getLocalizedString);
             }
         }
         return tags.ToArray();
     }
 
-    public T GetTagType<T>(int itemId,out Item item) where T : Tag
+    public T GetTagType<T>(int itemId,out Item item) where T : TagBase
     {
         if(TryGetItem(itemId,out item))
         {
             foreach(var tag in item.tags)
             {
-                T tagT = tag.tag as T;
+                T tagT = tag.Tag as T;
                 if(tagT != null)
                     return tagT;
             }
@@ -400,6 +407,10 @@ public class ItemsAsset : MonoBehaviour
             return tags[tagID].icon;
         return null;
     }
+
+
+
+
     public bool ItemHasTheTag(int itemID, int tagID)
     {
         return ItemHasTheTag(GetItem(itemID),tagID);
@@ -416,7 +427,7 @@ public class ItemsAsset : MonoBehaviour
 
         foreach (var tag in tags)
         {
-            if (tag?.tag?.ID == tagID)
+            if (tag?.Tag?.ID == tagID)
             {
                 tagSelection = tag;
                 return true;
@@ -424,16 +435,45 @@ public class ItemsAsset : MonoBehaviour
         }
         return false;
     }
-    public bool ItemHasTheTag(Item item, Tag tag)
+    public bool ItemHasTheTag(Item item, TagBase tag)
     {
         if(tag == null) return false;
         return ItemHasTheTag(item,tag.ID);
     }
-
-    public bool ItemHasTheTag(Item item, Tag tag, out TagSelection tagSelection)
+    public bool ItemHasTheTag<T>(Item item, Tag<T> tag, out T tagSettings) where T : TagSettings
     {
-        tagSelection = null;
-        if(tag == null) return false;
-        return ItemHasTheTag(item,tag.ID,out tagSelection);
+        if(tag != null && ItemHasTheTag(item,tag.ID,out TagSelection tagSelection))
+        {
+            tagSettings = tagSelection.TagSettings as T;
+            return true;
+        }
+        tagSettings = null;
+        return false;
     }
+
+    
+    public bool ItemHasTheTagType<T>(Item item, out (T,TagSettings)[] tags) where T : TagBase 
+    {
+        List<(T,TagSettings)> tagsList = new();
+        if(item == null)
+        {
+            tags = null;
+            return false;
+        } 
+
+        foreach (var tagSelection in item.tags)
+        {
+            var tag = tagSelection?.Tag;
+            if (tag != null)
+            {
+                T t = tag as T;
+                if(t != null)
+                    tagsList.Add((t,tagSelection.TagSettings));            
+            }
+        }
+
+        tags = tagsList.ToArray();
+        return tagsList.Count > 0;
+    }
+
 }

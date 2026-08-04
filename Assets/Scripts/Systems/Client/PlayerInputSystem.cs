@@ -208,7 +208,6 @@ partial struct PlayerInputSystem : ISystem
                 pointer.ValueRW.LastGamePointerPosition = pointerPos;
                 pointer.ValueRW.updateTileInfo = false;
                 int chunkIndex = mapSettings.GetChunkIndexFromTilePosition(pointerPos);
-                Debug.Log("dizl " + chunkIndex + " " + pointer);
                 if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk) &&
                 EntityHelper.TryFindBuildingObject(chunk,pointerPos,buildingLookup,out var buildingObj,out int index))
                     GamePointer.SetTileInfo(buildingObj);

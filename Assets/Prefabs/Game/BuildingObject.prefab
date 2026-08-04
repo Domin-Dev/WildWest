@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1769848149592110743}
   - component: {fileID: 2395136796837377434}
   m_Layer: 10
-  m_Name: GameObject
+  m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -137,6 +137,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea825c0e7b9be99c6bc9ed84c2b223f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildingObjectAuthoring
+  sprite: {fileID: 7907944523850468417}
+  shadow: {fileID: 9199208986896408652}
 --- !u!114 &8677591747613589709
 MonoBehaviour:
   m_ObjectHideFlags: 0

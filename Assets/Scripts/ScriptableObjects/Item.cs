@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System;
+using NaughtyAttributes;
+using Unity.VisualScripting;
 
 [CreateAssetMenu(fileName = "Item", menuName = "GameAsset/Items/Item")]
 public class Item : ScriptableObject,ISerializationCallbackReceiver
@@ -15,11 +17,10 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
 
     [Header("Item graphic")]
     public Sprite icon;
-    public Sprite worldSprite;
-    
-    public List<Sprite> animSprites;
 
-    [SerializeReference] public List<TagSelection> tags;
+    public Sprite worldSprite;
+    public List<Sprite> animSprites;
+    public TagSelection[] tags;
 
     [Header("Craft recipe")]
     public Ingredient[] crafingIngredients;
@@ -47,12 +48,10 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
     {
         return new ItemStats(ID);
     }
-
     private void OnValidate()
     {
        if(ID == -1) ID = Resources.Load<IDManager>("IDManager").GetNextID();
     }
-
     public virtual TooltipInfo GetTooltip(ItemStats itemStats)
     {
         StringBuilder content = new StringBuilder();
@@ -83,14 +82,13 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
       
         if (itemStats.color.HasValue)
         {
-            string colorHex = ColorUtility.ToHtmlStringRGB(itemStats.color.Value);
+            string colorHex = UnityEngine.ColorUtility.ToHtmlStringRGB(itemStats.color.Value);
             UIStringsHelper.Append(content,UIManager.instance.GetProperty("Color"), UIStringsHelper.GetColorfulString( "#" + colorHex,colorHex));
         }
 
  
         return new TooltipInfo(content.ToString(), header.ToString(),hColor);
     }
-
     protected float CalculateTime(List<KeyFrame> keyframes)
     {
         float maxDur = 0;
@@ -107,10 +105,14 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
         }
         return maxDur;
     }
-
-    public virtual void OnBeforeSerialize(){}
-
-    public virtual void OnAfterDeserialize(){}
+    
+    public virtual void SetUp(){}
+    public virtual void OnBeforeSerialize()
+    {      
+    }
+    public virtual void OnAfterDeserialize()
+    {
+    }
 }
 
 [System.Serializable]
@@ -134,26 +136,7 @@ public class ItemID
     }
 }
 
-[System.Serializable]
-public class TagSelection
-{
-    public Tag tag;
 
-    public TagSelection(Tag tag)
-    {
-        this.tag = tag;
-    }
-    public TagSelection(){}    
-}
-
-[System.Serializable]
-public class TagSelectionMaterial: TagSelection
-{
-    [SerializeField] public Material material;
-    public TagSelectionMaterial(Tag tag) : base(tag){}
-    public TagSelectionMaterial() : base(){}
-
-}
 
 [CreateAssetMenu(fileName = "DestroyableItem", menuName = "GameAsset/Items/DestroyableItem")]
 public class Destroyable : Item, IItemBar

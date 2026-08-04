@@ -19,16 +19,21 @@ public interface IReadTag
 }
 
 
+public class Tag<T> : TagBase where T : TagSettings
+{
+    public override Type TagSettings => typeof(T);
+    public virtual T GetTagSettings(TagSettings tag) => tag as T;
+}
 
 [CreateAssetMenu(fileName = "NewTag", menuName = "GameAsset/Tags/Tag")]
-public class Tag : ScriptableObject, IReadTag
+public class TagBase : ScriptableObject, IReadTag
 {
     [Header("Tag info")]
     [SerializeField] private Sprite _icon;
     [SerializeField] LocalizedString _localizedString;
     [SerializeField] private string _tagName;
     [SerializeField] int _ID = -1;
-    public virtual Type RequiredTagSelection => typeof(TagSelection);
+    public virtual Type TagSettings => typeof(TagSettings);
     public string tagName => _tagName; 
     public int ID => _ID; 
     public Sprite icon => _icon; 

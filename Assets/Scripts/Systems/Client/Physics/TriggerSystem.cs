@@ -5,16 +5,23 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
+using Unity.Rendering;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
+
+public struct EntityPairEvent
+{
+    public Entity entityA;
+    public Entity entityB;
+}
+
 
 [UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateAfter(typeof(PhysicsSimulationGroup))]
 [UpdateBefore(typeof(AfterPhysicsSystemGroup))]
 public partial struct TriggerSystem : ISystem
 {
-
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<SimulationSingleton>();
@@ -47,6 +54,7 @@ public partial struct TriggerSystem : ISystem
     }
 
 }
+
 public struct TriggerJob : ITriggerEventsJob
 {
 
@@ -70,8 +78,6 @@ public struct TriggerJob : ITriggerEventsJob
     {   
         if(Bullet(triggerEvent)) return;
     }
-
-
     public bool Bullet(TriggerEvent triggerEvent)
     {
         Entity bullet; 
@@ -98,9 +104,6 @@ public struct TriggerJob : ITriggerEventsJob
         if(BulletEnviroment(bullet,collider)) return true;
         return true;
     }
-
-
-
     public bool BulletHitbox(Entity bullet,Entity player, ColliderKey colliderKey)
     {
         if(!playerLookup.HasComponent(player)) return false;

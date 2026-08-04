@@ -9,16 +9,16 @@ using UnityEngine;
 
 public class TagList : MonoBehaviour
 {
-    public static Dictionary<int, Tag> tags
+    public static Dictionary<int, TagBase> tags
     {
         get
         {
-            Tag[]
-            loadedTags = Resources.LoadAll<Tag>("Tags");
-            var tag = new Dictionary<int, Tag>();
+            TagBase[]
+            loadedTags = Resources.LoadAll<TagBase>("Tags");
+            var tag = new Dictionary<int, TagBase>();
             for (int i = 0; i < loadedTags.Length; i++)
             {
-                Tag item = loadedTags[i];
+                TagBase item = loadedTags[i];
                 if (!tag.ContainsKey(item.ID))
                 {
                     tag.Add(item.ID, item);
@@ -46,7 +46,7 @@ public class TagList : MonoBehaviour
     }
 
 
-    public static Texture2D GetIcon(Tag item)
+    public static Texture2D GetIcon(TagBase item)
     {
         if (item.icon == null) return null;
         Rect rect = item.icon.rect;
@@ -58,7 +58,7 @@ public class TagList : MonoBehaviour
     }
     public static Texture2D GetIcon(int itemID)
     {
-        Tag item;
+        TagBase item;
         if (tags.ContainsKey(itemID))
             item = tags[itemID];     
         else

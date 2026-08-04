@@ -11,7 +11,7 @@ using UnityEngine.Localization;
 
 
 [CreateAssetMenu(fileName = "NewAmmoTag", menuName = "GameAsset/Tags/AmmoTag")]
-public class AmmoTag : Tag
+public class AmmoTag : TagBase
 {
     [Header("Ammo Tag info")]
     [SerializeField] private Sprite noAmmoIconUI;

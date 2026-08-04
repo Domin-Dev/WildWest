@@ -17,5 +17,6 @@ public class WorldConfig : ScriptableObject
             return _instance;
         }
     }
-    public TagWithMaterial windEffectTag;
+    public TagWithMaterial WindEffectTag;
+    public TagWithTrigger TouchTriggerTag;
 }

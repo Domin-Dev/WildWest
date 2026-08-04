@@ -13,4 +13,5 @@ MonoBehaviour:
   m_Name: IDManager
   m_EditorClassIdentifier: 
   LastID: 144
-  LastTagID: 1545
+  LastTagID: 1547
+  LastTagActionID: 1

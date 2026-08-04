@@ -20,7 +20,9 @@ MonoBehaviour:
   worldSprite: {fileID: -5621275025976656576, guid: bce69d945da3e189d9c826fdfdcf8d6a, type: 3}
   animSprites: []
   tags:
-  - tag: {fileID: 11400000, guid: 405132f4de430882f95470bf5519a96f, type: 2}
+  - Tag: {fileID: 11400000, guid: 405132f4de430882f95470bf5519a96f, type: 2}
+    TagSettings:
+      rid: -2
   crafingIngredients:
   - itemID: 0
     number: 0
@@ -28,6 +30,13 @@ MonoBehaviour:
   numberItem: 1
   bullet: {fileID: 907356828559875784, guid: 39d35432007d90f40b15bf375f8b9449, type: 3}
   UIBulletIcon: {fileID: 950248845, guid: 6f6089b46f69a5d4d99bc7c3bcd304d1, type: 3}
-  inHandSprite: {fileID: 21300000, guid: 96ed2977599248c4e87cbb7ba33b850b, type: 3}
   damage: 10
+  bulletCount: 1
+  bulletsSpread: 0
+  bulletSprite: {fileID: 0}
   type: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

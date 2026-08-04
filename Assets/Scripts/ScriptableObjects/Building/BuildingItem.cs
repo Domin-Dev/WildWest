@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -31,9 +33,9 @@ public abstract class BuildingItem : Item
         return $"{name} [{buildingObjects.hitPoints}/{buildingObjects.maxHitPoints}]";
     }
 
-    public override void OnAfterDeserialize()
+    public override void SetUp()
     {
-        base.OnAfterDeserialize();
+        base.SetUp();
     }
 }
 public abstract class VariantItem : BuildingItem
@@ -48,6 +50,14 @@ public abstract class VariantItem : BuildingItem
     public bool isBackground = false;
     public bool isShadow = true;
     public float shadowHeight;
+
+    public override void SetUp()
+    {
+        foreach(var i in objectVariants)
+            i.SetUp();
+    
+        base.SetUp();
+    }
 
     public BuildingObjects GetBuildingObject(short variantIndex, short stateIndex)
     {
@@ -84,6 +94,12 @@ public class ObjectVariant
     {
         return new ObjectVariant(variants);
     }
+
+    public void SetUp()
+    {
+        foreach(var i in variants)
+            i.SetUp();
+    }
 }
 
 [System.Serializable]
@@ -97,6 +113,19 @@ public class Variant
     public Vector2 offset;
     public Vector2 shadowSize = new Vector2(0.21f,0.07f);
     public Sprite[] sprites;
+    private (Rect rect,float2 pivot)[] spritesData;
+
+
+    public void SetUp()
+    {
+        Debug.Log("set up!!");
+        spritesData = new  (Rect rect,float2 pivot)[sprites.Length];
+        for(int i = 0; i < sprites.Length;i++)
+        {
+            var sprite = sprites[i];
+            spritesData[i] = (sprite.rect,sprite.pivot);
+        }
+    }
 
     public Variant(Vector2 shadowSize,RectangleHitbox hitbox, Vector2 offset, Vector2[] particlePoints,Vector2? shadowOffset,params Sprite[] sprites)
     {
@@ -106,6 +135,27 @@ public class Variant
         this.offset = offset;
         this.shadowOffset = shadowOffset.HasValue ? shadowOffset.Value : default;
         this.shadowSize = shadowSize;
+    }
+
+    public void GetSpriteShape(out float2 offset,out float2 size,float margin = 0,int spriteIndex = 0)
+    {
+        if(spriteIndex >= sprites.Length)
+        {
+            offset = float2.zero;
+            size = float2.zero;
+            return;
+        }
+        
+        var data = spritesData[spriteIndex];
+        float convertToUnit = 1f / 100f;
+        size = ((float2)data.rect.size + new float2(margin,margin) * 2f) * convertToUnit;
+        offset = ((float2)data.rect.size * 0.5f - (float2)data.pivot) * convertToUnit;
+    }
+
+    public void GetHitboxShape(out float2 offset,out float2 size,float margin = 0)
+    {
+        offset = hitbox.offset;
+        size = (float2)hitbox.size + new float2(margin,margin) * 2;
     }
 }
 

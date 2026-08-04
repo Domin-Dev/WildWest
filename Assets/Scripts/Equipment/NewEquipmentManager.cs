@@ -53,7 +53,7 @@ public class Container : IHaveTooltip
     {
         if (mandatoryProperties == MandatoryProperties.tag)
         {
-            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<Tag>(mandatoryData).getLocalizedString);
+            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<TagBase>(mandatoryData).getLocalizedString);
             UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)

@@ -53,6 +53,7 @@ partial struct GoInGameServerSystem : ISystem
             });
 
 
+
             entityCommandBuffer.AddComponent(character, new ServerChunkEventCounter() { index = uint.MaxValue });
 
             if (SystemAPI.HasComponent<Host>(rpcCommandRequest.ValueRO.SourceConnection) ||

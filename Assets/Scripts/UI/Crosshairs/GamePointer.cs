@@ -27,7 +27,6 @@ public class GamePointer : MonoBehaviour
 
     public static void SetTileInfo(BuildingObjects? buildingObjects)
     {
-        Debug.Log("new  " + buildingObjects.HasValue);
         if(buildingObjects.HasValue && ItemsAsset.instance.TryGetItem<BuildingItem>(buildingObjects.Value.id,out var item))
             i.tileInfo.text = item.GetBuildingObjectInfo(buildingObjects.Value);  
         else

@@ -11,7 +11,7 @@ using UnityEngine.Localization;
 
 
 [CreateAssetMenu(fileName = "NewGarmentTag", menuName = "GameAsset/Tags/GarmentTag")]
-public class GarmentTag : Tag
+public class GarmentTag : TagBase
 {
     [Header("Garment Tag info")]
 

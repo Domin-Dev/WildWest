@@ -6,6 +6,7 @@ public class IDManager : ScriptableObject
 {
     public int LastID  = 0;
     public int LastTagID = 0;
+    public int LastTagActionID = 0;
 
 
     public int GetNextID()
@@ -21,6 +22,14 @@ public class IDManager : ScriptableObject
         this.SetDirty();
         return LastTagID;
     }
+
+    public int GetNextTagActionID()
+    {
+        LastTagActionID++;
+        this.SetDirty();
+        return LastTagActionID;
+    }
 }
+
 
 

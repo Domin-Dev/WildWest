@@ -140,7 +140,6 @@ public partial class MapLoadingClientSystem : SystemBase
        })
        .WithoutBurst().Run();
 
-
         if(mapIsUpdated)
         {
             foreach (RefRW<PlayerPointer> pointer in SystemAPI.Query<RefRW<PlayerPointer>>().WithAll<Player,GhostOwnerIsLocal>())
