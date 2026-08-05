@@ -4,21 +4,27 @@ using Unity.Mathematics;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "TouchVegetationUpdate", menuName = "GameAsset/TagAction/TouchVegetationUpdateTagAction")]
+[CreateAssetMenu(fileName = "TouchVegetationUpdate", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationUpdate")]
 public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext,float>
 {
+
+    public float influenceStrength;
+    public float minVelocity;
+    public float startInfluenceValue;
+
+    [Header("Durations")]
     [Min(0.01f)]public float effectDuration;
     [Min(0.01f)] public float backEffectDuration;
-    public float startInfluenceValue;
+
     private int influenceID = Shader.PropertyToID("_Influence");
     protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data,float deltaTime, TagSettingsMaterial tagSettings, TagActionArgsInt args)
     {
         (int index,TagActionState state)[] states = GetActionState(data.states);
-       // Debug.Log(" argumenty " +  states.Length);
-        if(states.Length == 2)
+        if(states.Length == 3)
         {
             float elapsedTime = states[0].state.Value.Float;
             bool isStart = states[1].state.Value.Bool;
+            float influence = states[2].state.Value.Float;
 
             elapsedTime += deltaTime;
             
@@ -29,7 +35,7 @@ public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, Tag
             if(isStart)
             {
                 progress = elapsedTime/effectDuration;
-                lerpValue = math.lerp(startInfluenceValue,0.6f,progress);
+                lerpValue = math.lerp(startInfluenceValue,influence,progress);
             }
             else    
             { 

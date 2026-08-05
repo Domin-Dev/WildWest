@@ -10,11 +10,11 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Physics.Systems;
 using Unity.Transforms;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
@@ -38,10 +38,9 @@ public partial struct GhostChangesPositionSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (localTransform, ghostChunk, entity)
-        in SystemAPI.Query<RefRW<LocalTransform>, RefRW<GhostChunk>>().WithAll<GhostInstance,PhysicsVelocity,Simulate>().WithEntityAccess())
+        in SystemAPI.Query<RefRW<LocalTransform>, RefRW<GhostChunk>>().WithAll<GhostInstance,Simulate>().WithEntityAccess())
         {
             float3 delta = localTransform.ValueRO.Position - ghostChunk.ValueRO.lastPosition;
-
             if (math.lengthsq(delta) > 0.0001f)
             {
                 if(state.World.IsServer())

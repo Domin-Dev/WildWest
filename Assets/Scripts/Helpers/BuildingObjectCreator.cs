@@ -25,10 +25,9 @@ public static class BuildingObjectCreator
         RectangleHitbox rectangleHitbox = variant?.hitbox; 
         Entity entity  = ecb.CreateEntity(unfilteredChunkIndex);
         ecb.AddComponent(unfilteredChunkIndex,entity, localTransform);
+        ecb.AddComponent<LocalToWorld>(unfilteredChunkIndex,entity);
         ecb.AddComponent(unfilteredChunkIndex,entity, new EnvironmentObject());
         ecb.AddBuffer<LinkedEntityGroup>(unfilteredChunkIndex,entity);
-        ecb.AddBuffer<Child>(unfilteredChunkIndex,entity);
-
 
         if (rectangleHitbox != null && rectangleHitbox.offset.sqrMagnitude != 0)
         {
@@ -97,10 +96,7 @@ public static class BuildingObjectCreator
 
                 var entity = ecb.CreateEntity(unfilteredChunkIndex);
 
-                ecb.AddComponent(unfilteredChunkIndex,entity, new Parent
-                {
-                    Value = gridObject
-                });
+
                 ecb.AddComponent(unfilteredChunkIndex,entity,LocalTransform.FromPosition(float3.zero));
                 ecb.AddComponent<LocalToWorld>(unfilteredChunkIndex,entity);
                 ecb.AddComponent(unfilteredChunkIndex,entity, new PhysicsCollider
@@ -116,6 +112,10 @@ public static class BuildingObjectCreator
                 ecb.AddComponent<HasEvents>(unfilteredChunkIndex,entity);
                 ecb.AddBuffer<StatefulTriggerEvent>(unfilteredChunkIndex,entity);
                 ecb.AddBuffer<TagActionState>(unfilteredChunkIndex,entity);
+                ecb.AddComponent(unfilteredChunkIndex,entity, new Parent
+                {
+                    Value = gridObject
+                });
                 ecb.AppendToBuffer<LinkedEntityGroup>(unfilteredChunkIndex,gridObject,new LinkedEntityGroup()
                 {
                     Value = entity

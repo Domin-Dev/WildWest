@@ -24,7 +24,7 @@ MonoBehaviour:
     m_LocalVariables: []
   _tagName: TouchTrigger
   _ID: 1547
-  worldType: 1
+  worldType: 0
   BelongsTo:
     serializedVersion: 2
     m_Bits: 4096
@@ -32,13 +32,37 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   onEnter:
-    Actions: []
+    Actions:
+    - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+      tagActionBase: {fileID: 11400000, guid: de7cf33b7b3be5dc3ab2e104a9b59f7f, type: 2}
+      tagActionArgs:
+        rid: 8123484497991434337
   onStay:
     Actions: []
   onExit:
-    Actions: []
+    Actions:
+    - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+      tagActionBase: {fileID: 11400000, guid: 6f1ad6a4714f6077ba3e79773d773df6, type: 2}
+      tagActionArgs:
+        rid: 8123484497991434341
   onUpdate:
-    Actions: []
+    Actions:
+    - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+      tagActionBase: {fileID: 11400000, guid: 8b593aea00f82c5aab9eb20c285fb4f7, type: 2}
+      tagActionArgs:
+        rid: 8123484497991434338
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8123484497991434337
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0
+    - rid: 8123484497991434338
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0
+    - rid: 8123484497991434341
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0

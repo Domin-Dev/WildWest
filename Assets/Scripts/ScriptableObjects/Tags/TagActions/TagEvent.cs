@@ -236,7 +236,7 @@ public class ReadyAction<T1,T2,T3>
 
 
 
-[StructLayout(LayoutKind.Explicit)]
+[StructLayout(LayoutKind.Explicit, Size = 8)]
 public struct TagValue
 {
     [FieldOffset(0)]
@@ -248,8 +248,6 @@ public struct TagValue
     [FieldOffset(0)]
     public bool Bool;
 
-    [FieldOffset(0)]
-    public Entity Entity;
 
 }
 public enum TagValueType : byte

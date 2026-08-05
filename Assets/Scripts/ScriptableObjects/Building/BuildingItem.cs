@@ -119,6 +119,9 @@ public class Variant
     public void SetUp()
     {
         Debug.Log("set up!!");
+        if(sprites == null)
+            return;
+            
         spritesData = new  (Rect rect,float2 pivot)[sprites.Length];
         for(int i = 0; i < sprites.Length;i++)
         {

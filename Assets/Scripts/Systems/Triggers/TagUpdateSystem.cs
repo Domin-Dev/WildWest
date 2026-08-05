@@ -3,12 +3,12 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-
-[UpdateInGroup(typeof(AfterPhysicsSystemGroup))]
-[UpdateAfter(typeof(TagUpdateSystem))]
+[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateBefore(typeof(MapSystemGroup))]
 public partial struct TagUpdateSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -25,7 +25,7 @@ public partial struct TagUpdateSystem : ISystem
         float deltaTime = SystemAPI.Time.DeltaTime;
 
         foreach ((RefRO<TriggerTagComponent> tagComponent,DynamicBuffer<TagActionState> states,RefRO<TagWithTriggerEventContext> tagUpdate, Entity trigger)
-         in SystemAPI.Query<RefRO<TriggerTagComponent>,DynamicBuffer<TagActionState>,RefRO<TagWithTriggerEventContext>>().WithEntityAccess())
+         in SystemAPI.Query<RefRO<TriggerTagComponent>,DynamicBuffer<TagActionState>,RefRO<TagWithTriggerEventContext>>().WithAll<Simulate>().WithEntityAccess())
         {
             var context = tagUpdate.ValueRO;
             context.states = states;

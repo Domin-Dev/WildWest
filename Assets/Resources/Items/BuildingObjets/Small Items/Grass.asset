@@ -174,4 +174,4 @@ MonoBehaviour:
       type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}
       data:
         triggerShape: 0
-        margin: 4
+        margin: 1

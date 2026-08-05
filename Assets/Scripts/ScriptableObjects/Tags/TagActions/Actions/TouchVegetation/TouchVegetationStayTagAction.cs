@@ -3,8 +3,8 @@ using Unity.Entities;
 using UnityEngine;
 
 
-[CreateAssetMenu(fileName = "TouchVegetation", menuName = "GameAsset/TagAction/TouchVegetation")]
-public class TouchVegetationTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext>
+[CreateAssetMenu(fileName = "TouchVegetationStay", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationStay")]
+public class TouchVegetationStayTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext>
 {
     public TagActionBase updateAction;
     private int influenceID = Shader.PropertyToID("_Influence");
@@ -20,7 +20,7 @@ public class TouchVegetationTagAction : TagAction<TagSettingsMaterial, TagAction
         {
             TagActionID = updateAction.TagActionID,
             Type = TagValueType.Bool,
-            Value = new TagValue(){ Bool = true} 
+            //Value = new TagValue(){ Bool = true} 
         });
         ecb.AddComponent(data.trigger,data);
         Sounds.instance.PlayerSound(tagSettings.effectSound);

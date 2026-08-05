@@ -77,7 +77,6 @@ partial struct NewItemInHandSystem : ISystem
             bool found = false;
             var tick = rpcCommand.ValueRO.tick;
 
-            Debug.Log("new item!! input");
             foreach ((RefRO<GhostOwner> owner, RefRW<Hands> hands, RefRW<PlayerInputSync> input,Entity player) in SystemAPI.Query<RefRO<GhostOwner>,RefRW<Hands>,RefRW<PlayerInputSync>>().WithAll<Player,Simulate,ContainersLoaded>().WithNone<NewPlayerTag>().WithEntityAccess())
             {
                 if(rpcCommand.ValueRO.networkID == owner.ValueRO.NetworkId)

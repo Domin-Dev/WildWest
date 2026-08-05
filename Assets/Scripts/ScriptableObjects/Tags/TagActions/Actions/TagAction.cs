@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using NaughtyAttributes;
 using Unity.Entities;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 
 
@@ -17,13 +14,17 @@ public abstract class TagActionBase : ScriptableObject
     {
         if (TagActionID == -1) TagActionID = Resources.Load<IDManager>("IDManager").GetNextTagActionID();
     }
-    protected (int,TagActionState)[] GetActionState(DynamicBuffer<TagActionState> states)
+    protected (int index,TagActionState state)[] GetActionState(DynamicBuffer<TagActionState> states)
+    {
+        return GetActionState(states,TagActionID);
+    }
+    protected (int index,TagActionState state)[] GetActionState(DynamicBuffer<TagActionState> states,int tagActionID)
     {
         List<(int,TagActionState)> tagActions = new ();
         for(int i = 0; i < states.Length;i++)
         {
             var state = states[i];
-            if(state.TagActionID == TagActionID)
+            if(state.TagActionID == tagActionID)
                 tagActions.Add((i,state));
         }
         return tagActions.ToArray();
@@ -34,7 +35,19 @@ public abstract class TagActionBase : ScriptableObject
         for(int i = states.Length - 1; i >= 0; i--)
             buffer.RemoveAt(states[i].index);
     }
-
+    protected void RemoveState(DynamicBuffer<TagActionState> buffer,int tagActionID)
+    {
+        for(int i = buffer.Length - 1; i >= 0 ;i--)
+        {
+            if( buffer[i].TagActionID == tagActionID)
+                buffer.RemoveAt(i);
+        }
+    }
+    protected void RemoveState(DynamicBuffer<TagActionState> buffer)
+    {
+        RemoveState(buffer,TagActionID);
+    }
+   
     protected void UpdateState((int,TagActionState)[] states, DynamicBuffer<TagActionState> buffer)
     {
         foreach((int index,var newValue) in states)

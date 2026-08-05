@@ -189,36 +189,37 @@ public class MapGenerator
                 variant = 1
             };
 
-            if(value > 0.67f)
-            {   
-                int x = rand.Next() % 3;
-                if(x == 0)
-                {
-                    buildingObjects.Add(GetBuildingObject(globalTilePos,45,rand));
-                }
-                else if(x == 1)
-                {
-                    buildingObjects.Add(GetBuildingObject(globalTilePos,44,rand));
-                }
-                else if(x == 2)
-                {
-                    buildingObjects.Add(GetBuildingObject(globalTilePos,5,rand));
-                }
+            // if(value > 0.67f)
+            // {   
+            //     int x = rand.Next() % 3;
+            //     if(x == 0)
+            //     {
+            //         buildingObjects.Add(GetBuildingObject(globalTilePos,45,rand));
+            //     }
+            //     else if(x == 1)
+            //     {
+            //         buildingObjects.Add(GetBuildingObject(globalTilePos,44,rand));
+            //     }
+            //     else if(x == 2)
+            //     {
+            //         buildingObjects.Add(GetBuildingObject(globalTilePos,5,rand));
+            //     }
                 
-            }
-            else if(value > 0.1f && value < 0.2f)
-            {
-                buildingObjects.Add(GetBuildingObject(globalTilePos,57,rand));
-            }
-            else if (value > 0.5f)
-            {
-                buildingObjects.Add(GetBuildingObject(globalTilePos,71,rand));             
-            }
-            else if ( value > 0.4f)
-            {
-                buildingObjects.Add(GetBuildingObject(globalTilePos,70,rand));             
-            } 
-            else if ( value > 0.3f)
+            // }
+            // else if(value > 0.1f && value < 0.2f)
+            // {
+            //     buildingObjects.Add(GetBuildingObject(globalTilePos,57,rand));
+            // }
+            // else if (value > 0.5f)
+            // {
+            //     buildingObjects.Add(GetBuildingObject(globalTilePos,71,rand));             
+            // }
+            // else if ( value > 0.4f)
+            // {
+            //     buildingObjects.Add(GetBuildingObject(globalTilePos,70,rand));             
+            // } 
+            // else 
+            if ( value > 0.4f)
             {
                 buildingObjects.Add(GetBuildingObject(globalTilePos,46,rand));             
             }
