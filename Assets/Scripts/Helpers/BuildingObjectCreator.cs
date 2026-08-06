@@ -110,6 +110,7 @@ public static class BuildingObjectCreator
                      itemID = item.ID
                 });
                 ecb.AddComponent<HasEvents>(unfilteredChunkIndex,entity);
+                ecb.AddComponent<NeedSetUp>(unfilteredChunkIndex,entity);
                 ecb.AddBuffer<StatefulTriggerEvent>(unfilteredChunkIndex,entity);
                 ecb.AddBuffer<TagActionState>(unfilteredChunkIndex,entity);
                 ecb.AddComponent(unfilteredChunkIndex,entity, new Parent
@@ -247,6 +248,7 @@ public static class BuildingObjectCreator
                      itemID = item.ID
                 });
                 ecb.AddComponent<HasEvents>(entity);
+                ecb.AddComponent<NeedSetUp>(entity);
                 ecb.AddBuffer<StatefulTriggerEvent>(entity);
                 ecb.AddBuffer<TagActionState>(entity);
                 ecb.AppendToBuffer<LinkedEntityGroup>(gridObject,new LinkedEntityGroup()

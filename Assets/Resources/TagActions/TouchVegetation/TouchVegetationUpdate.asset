@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TouchVegetationUpdate
   m_EditorClassIdentifier: Assembly-CSharp::TouchVegetationUpdateTagAction
   TagActionID: 1
-  influenceStrength: 2
+  influenceStrength: 0.9
   minVelocity: 0
   startInfluenceValue: 0
-  effectDuration: 0.3
-  backEffectDuration: 4
+  effectDuration: 0.15
+  backEffectDuration: 5

@@ -11,34 +11,45 @@ public class TouchVegetationExitTagAction : TagAction<TagSettingsMaterial, TagAc
     private int influenceID = Shader.PropertyToID("_Influence");
     protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettingsMaterial tagSettings, TagActionArgsInt args)
     {
-        if(data.entityManager.HasComponent<TagWithTriggerEventContext>(data.trigger))
+        var state = GetActionState(data.states,updateAction.TagActionID);
+        state[0].state.Value.Int--;
+        UpdateState(state[0],data.states);
+
+        if(state[0].state.Value.Int <= 0)
         {
-            var states = GetActionState(data.states,updateAction.TagActionID);
-            states[0].state.Value.Float = 0f;
-            states[1].state.Value.Bool = false;
-            UpdateState(states,data.states);
-        }
-        else
-        {
-            ecb.AddComponent(data.trigger,data);  
-            ecb.AppendToBuffer(data.trigger,new TagActionState()
+            if(data.entityManager.HasComponent<TagWithTriggerEventContext>(data.trigger))
             {
-                TagActionID = updateAction.TagActionID,
-                Type = TagValueType.Float,
-                Value = new TagValue(){ Float = 0f} 
-            });
-            ecb.AppendToBuffer(data.trigger,new TagActionState()
+                var states = GetActionState(data.states,updateAction.TagActionID);
+                states[1].state.Value.Float = 0f;
+                states[2].state.Value.Bool = false;
+                UpdateState(states,data.states);
+            }
+            else
             {
-                TagActionID = updateAction.TagActionID,
-                Type = TagValueType.Bool,
-                Value = new TagValue(){ Bool = false} 
-            });
-            ecb.AppendToBuffer(data.trigger,new TagActionState()
-            {
-                TagActionID = updateAction.TagActionID,
-                Type = TagValueType.Float,
-                Value = new TagValue(){ Float = 0} 
-            });
+                ecb.AddComponent(data.trigger,data);  
+                ecb.AppendToBuffer(data.trigger,new TagActionState()
+                {
+                    TagActionID = updateAction.TagActionID,
+                    Type = TagValueType.Float,
+                    Value = new TagValue(){ Float = 0f},
+                    Temp = true
+                });
+                ecb.AppendToBuffer(data.trigger,new TagActionState()
+                {
+                    TagActionID = updateAction.TagActionID,
+                    Type = TagValueType.Bool,
+                    Value = new TagValue(){ Bool = false},
+                    Temp = true 
+                });
+                ecb.AppendToBuffer(data.trigger,new TagActionState()
+                {
+                    TagActionID = updateAction.TagActionID,
+                    Type = TagValueType.Float,
+                    Value = new TagValue(){ Float = 0}, 
+                    Temp = true
+                });
+
+            }
         }
     }
 }

@@ -1,0 +1,171 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a927e0bf2ca2c49ac3e3e2db9416bc, type: 3}
+  m_Name: Grass 1
+  m_EditorClassIdentifier: 
+  name: High Grass
+  description: 
+  stackMax: 50
+  ID: 145
+  icon: {fileID: 139923309, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  worldSprite: {fileID: 0}
+  animSprites: []
+  tags:
+  - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+    TagSettings:
+      rid: 8123484407628038251
+  - Tag: {fileID: 11400000, guid: 88951f1e6715c0ebe861b844a3ce6929, type: 2}
+    TagSettings:
+      rid: 8123484450674966626
+  crafingIngredients:
+  - itemID: 0
+    number: 0
+  craftTables: 
+  numberItem: 1
+  destructionSound: 0
+  HitEvents:
+    Events: []
+  IncorrectToolHitEvent:
+    Events: []
+  durability: 8
+  drop:
+  - maxNumber: 2
+    probability: 1
+    ingredient:
+      itemID: 49
+      number: 1
+  - maxNumber: 1
+    probability: 0.5
+    ingredient:
+      itemID: 68
+      number: 1
+  toolRequired: 0
+  texture: {fileID: 2800000, guid: 6c1d32a2cad4aa0e4a22de6f2acc4046, type: 3}
+  objectVariants:
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.099999994, y: 0.13}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: e0d07ff77e48958ab9cb0d9cd7e253fb, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.175, y: 0.04}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 8998133494c4d20af99e967785e8d7a5, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.12, y: 0.089999996}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: c8c34822afc1bf97c9829c4d619460e5, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.17, y: 0.06}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 420dc622d2f3a1b4795e11e83fedce05, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.114999995, y: 0.01}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 907a2fa15f8726cbfa81916e23ff6cb5, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.17, y: 0.14}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 24749ce35e07c82189c918ccaa9352a3, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.175, y: 0.07}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 218376ec3a726744a9e34c07855677c1, type: 2}
+  - variants:
+    - hitbox:
+        size: {x: 0, y: 0}
+        offset: {x: 0, y: 0}
+      CoveringPoints: []
+      objectPoints: []
+      particlePoints: []
+      shadowOffset: {x: 0, y: 0.01}
+      offset: {x: 0.105, y: 0.14}
+      shadowSize: {x: 0.19, y: 0.06}
+      sprites:
+      - {fileID: 21300000, guid: 8995ab0992a83c4cebc0e19965367d60, type: 2}
+  size:
+    x: 27
+    y: 25
+  shadowSize: {x: 0.19, y: 0.06}
+  shadowOffset: {x: 0, y: 0.01}
+  damageStates: 1
+  isBackground: 0
+  isShadow: 1
+  shadowHeight: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 8123484407628038251
+      type: {class: TagSettingsMaterial, ns: , asm: Assembly-CSharp}
+      data:
+        material: {fileID: 2100000, guid: f61a574786271390da3ac61a83a89e0c, type: 2}
+        effectSound: {fileID: 8300000, guid: 856180e0a27ca7872aeb5932ca62233d, type: 3}
+    - rid: 8123484450674966626
+      type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}
+      data:
+        triggerShape: 0
+        margin: 1

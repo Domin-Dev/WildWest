@@ -10,6 +10,7 @@ public class TagWithTrigger : Tag<TagSettingsTrigger>
     public WorldType worldType;
     public LayerMask BelongsTo;
     public LayerMask CollidesWith;
+    public TagEvent<EntityCommandBuffer,Entity> onSetUp;
     public TagEvent<EntityCommandBuffer,TagWithTriggerEventContext> onEnter;
     public TagEvent<EntityCommandBuffer,TagWithTriggerEventContext> onStay;
     public TagEvent<EntityCommandBuffer,TagWithTriggerEventContext> onExit;
@@ -20,7 +21,6 @@ public class TagWithTrigger : Tag<TagSettingsTrigger>
         var tagEvent = GetEvent(eventState);
         return tagEvent.GetActions(item);
     }
-
     private TagEvent<EntityCommandBuffer,TagWithTriggerEventContext> GetEvent(StatefulEventState eventState)
     {
         switch(eventState)

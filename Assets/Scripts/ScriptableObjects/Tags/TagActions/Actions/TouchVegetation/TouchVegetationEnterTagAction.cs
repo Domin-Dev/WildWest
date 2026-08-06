@@ -4,6 +4,7 @@ using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.GraphicsIntegration;
+using Unity.Transforms;
 using UnityEngine;
 
 
@@ -15,44 +16,50 @@ public class TouchVegetationEnterTagAction : TagAction<TagSettingsMaterial, TagA
 
     protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettingsMaterial tagSettings, TagActionArgsInt args)
     {        
-        float3 velocity = data.entityManager.GetComponentData<PhysicsGraphicalInterpolationBuffer>(data.Entity).PreviousVelocity.Linear;
-        float length = math.length(velocity) + 1f;
-        float influence = (velocity.x < 0 ? 1 : -1) * length * updateAction.influenceStrength + 1f;
+        float3 currentPositon = data.entityManager.GetComponentData<LocalTransform>(data.Entity).Position;
+        float3 postion = data.entityManager.GetComponentData<LocalToWorld>(data.trigger).Position;
+        float influence = (currentPositon.x - postion.x > 0 ? 1 : -1) * updateAction.influenceStrength;
         
-        if(length > 0)
+        var state = GetActionState(data.states,updateAction.TagActionID);
+        state[0].state.Value.Int++;
+        UpdateState(state[0],data.states);
+
+        if(data.entityManager.HasComponent<TagWithTriggerEventContext>(data.trigger))
         {
-            if(data.entityManager.HasComponent<TagWithTriggerEventContext>(data.trigger))
+            if(!state[2].state.Value.Bool)
             {
-                var state = GetActionState(data.states,updateAction.TagActionID);
-                state[0].state.Value.Float = 0f;
-                state[1].state.Value.Bool = true;
-                state[2].state.Value.Float = influence;
-                UpdateState(state,data.states);
+                state[1].state.Value.Float = 0f;
+                state[2].state.Value.Bool = true;
+                state[3].state.Value.Float = influence;
             }
-            else
-            {
-                ecb.AppendToBuffer(data.trigger,new TagActionState()
-                {
-                    TagActionID = updateAction.TagActionID,
-                    Type = TagValueType.Float,
-                    Value = new TagValue(){ Float = 0f} 
-                });
-                ecb.AppendToBuffer(data.trigger,new TagActionState()
-                {
-                    TagActionID = updateAction.TagActionID,
-                    Type = TagValueType.Bool,
-                    Value = new TagValue(){ Bool = true} 
-                });
-                ecb.AppendToBuffer(data.trigger,new TagActionState()
-                {
-                    TagActionID = updateAction.TagActionID,
-                    Type = TagValueType.Float,
-                    Value = new TagValue(){ Float = influence} 
-                });
-                ecb.AddComponent(data.trigger,data);
-            }
-            Sounds.instance.PlayerSound(tagSettings.effectSound);
+            UpdateState(state,data.states);
         }
+        else
+        {
+            ecb.AppendToBuffer(data.trigger,new TagActionState()
+            {
+                TagActionID = updateAction.TagActionID,
+                Type = TagValueType.Float,
+                Value = new TagValue(){ Float = 0f},
+                Temp = true
+            });
+            ecb.AppendToBuffer(data.trigger,new TagActionState()
+            {
+                TagActionID = updateAction.TagActionID,
+                Type = TagValueType.Bool,
+                Value = new TagValue(){ Bool = true}, 
+                Temp = true
+            });
+            ecb.AppendToBuffer(data.trigger,new TagActionState()
+            {
+                TagActionID = updateAction.TagActionID,
+                Type = TagValueType.Float,
+                Value = new TagValue(){ Float = influence},
+                Temp = true
+            });         
+            ecb.AddComponent(data.trigger,data);
+        }
+        Sounds.instance.PlayerSound(tagSettings.effectSound);
     }
 }
 

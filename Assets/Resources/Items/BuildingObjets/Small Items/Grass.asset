@@ -168,7 +168,7 @@ MonoBehaviour:
     - rid: 8123484407628038251
       type: {class: TagSettingsMaterial, ns: , asm: Assembly-CSharp}
       data:
-        material: {fileID: 2100000, guid: 1e8fe2635e854f1aa95e032c6da07abb, type: 2}
+        material: {fileID: 2100000, guid: f61a574786271390da3ac61a83a89e0c, type: 2}
         effectSound: {fileID: 8300000, guid: 856180e0a27ca7872aeb5932ca62233d, type: 3}
     - rid: 8123484450674966626
       type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}

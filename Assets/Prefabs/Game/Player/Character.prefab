@@ -800,7 +800,7 @@ MonoBehaviour:
   prefabId: eaa2acfd5439f23489d47f713a799302
   HasOwner: 1
   SupportAutoCommandTarget: 1
-  TrackInterpolationDelay: 0
+  TrackInterpolationDelay: 1
   GhostGroup: 0
   UsePreSerialization: 0
   UseSingleBaseline: 0

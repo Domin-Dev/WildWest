@@ -33,13 +33,18 @@ public abstract class TagActionBase : ScriptableObject
     protected void RemoveState((int index,TagActionState state)[] states, DynamicBuffer<TagActionState> buffer)
     {
         for(int i = states.Length - 1; i >= 0; i--)
-            buffer.RemoveAt(states[i].index);
+        {
+            var s = states[i];
+            if(s.state.Temp)
+                buffer.RemoveAt(s.index);
+        }
     }
     protected void RemoveState(DynamicBuffer<TagActionState> buffer,int tagActionID)
     {
         for(int i = buffer.Length - 1; i >= 0 ;i--)
         {
-            if( buffer[i].TagActionID == tagActionID)
+            var s = buffer[i];
+            if(s.TagActionID == tagActionID && s.Temp)
                 buffer.RemoveAt(i);
         }
     }
@@ -48,10 +53,14 @@ public abstract class TagActionBase : ScriptableObject
         RemoveState(buffer,TagActionID);
     }
    
-    protected void UpdateState((int,TagActionState)[] states, DynamicBuffer<TagActionState> buffer)
+    protected void UpdateState((int index,TagActionState)[] states, DynamicBuffer<TagActionState> buffer)
     {
         foreach((int index,var newValue) in states)
             buffer[index] = newValue;
+    }
+    protected void UpdateState((int index,TagActionState newValue) state, DynamicBuffer<TagActionState> buffer)
+    {
+        buffer[state.index] = state.newValue;
     }
 }
 

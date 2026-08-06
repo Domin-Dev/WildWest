@@ -33,7 +33,6 @@ public struct StatefulSimulationEventBuffers<T> where T : unmanaged, IStatefulSi
             int c = 0;
             int p = 0;
 
-           // UnityEngine.Debug.Log(currentEvents.Length + " " + previousEvents.Length);
             while (c < currentEvents.Length && p < previousEvents.Length)
             {
                 int r = previousEvents[p].CompareTo(currentEvents[c]);
@@ -60,6 +59,7 @@ public struct StatefulSimulationEventBuffers<T> where T : unmanaged, IStatefulSi
                     c++;
                 }
             }
+
             if (c == currentEvents.Length)
             {
                 while (p < previousEvents.Length)

@@ -4,11 +4,10 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 using Unity.NetCode;
-using Unity.Physics;
-using Unity.Physics.Systems;
+using Unity.NetCode.LowLevel;
 using Unity.Transforms;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(TriggerSystemGroup))]
 [UpdateBefore(typeof(TagUpdateSystem))]
 public partial struct TagTriggerSystem : ISystem
 {
@@ -23,8 +22,9 @@ public partial struct TagTriggerSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
-      //  if(!networkTime.IsFirstTimeFullyPredictingTick) return;
+    //     var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+    //   //  if(!networkTime.IsFirstTimeFullyPredictingTick) return;
+
 
         foreach ((DynamicBuffer<StatefulTriggerEvent> triggerEvents,DynamicBuffer<TagActionState> states,RefRO<Parent> parent,RefRO<TriggerTagComponent> tagComponent,EnabledRefRW<HasEvents> hasEvents, Entity trigger) in 
         SystemAPI.Query<DynamicBuffer<StatefulTriggerEvent>,DynamicBuffer<TagActionState>,RefRO<Parent>,RefRO<TriggerTagComponent>,EnabledRefRW<HasEvents>>().WithEntityAccess())
@@ -33,10 +33,9 @@ public partial struct TagTriggerSystem : ISystem
              && ItemsAsset.instance.TryGetItem(tagComponent.ValueRO.itemID,out var item))
             {
                 foreach(var tEvent in triggerEvents)   
-                {
-                    
-                    if(tEvent.State != StatefulEventState.Stay)
-                        UnityEngine.Debug.Log(" event!! "+ tEvent.GetOtherEntity(trigger) + " " + tEvent.State); 
+                {    
+                   // if(tEvent.State != StatefulEventState.Stay)
+                   //UnityEngine.Debug.Log(" event!! "+ tEvent.GetOtherEntity(trigger) + " " + tEvent.State); 
                     var actions = tag.GetActions(tEvent.State,item);
                     foreach(var action in actions)
                     {
@@ -50,6 +49,7 @@ public partial struct TagTriggerSystem : ISystem
                         });
                     }
                 }
+                triggerEvents.Clear();
             }
             hasEvents.ValueRW = false;
         }   

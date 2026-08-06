@@ -129,7 +129,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: HighGrass
     originalName: 
-    pivot: {x: 0.50476193, y: -0.099999994}
+    pivot: {x: 0.50476193, y: -0.22222221}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -138,7 +138,7 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 105
-      height: 20
+      height: 18
     spriteID: 5846079fe8e4e0bbab7fbdebcb574385
     spriteBone: []
     spriteOutline: []
@@ -168,9 +168,9 @@ ScriptedImporter:
       additiveSortOrder: 0
       cellRect:
         x: 1
-        y: 2
+        y: 4
         width: 105
-        height: 20
+        height: 18
       spriteId: 5846079fe8e4e0bbab7fbdebcb574385
     linkedCells: []
     tileCells: []

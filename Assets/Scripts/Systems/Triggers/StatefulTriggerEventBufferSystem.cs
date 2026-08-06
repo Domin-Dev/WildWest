@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
@@ -58,9 +59,12 @@ public partial struct StatefulTriggerEventBufferSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        if(!networkTime.IsFirstTimeFullyPredictingTick) return;
+        
         componentHandles.Update(ref state);
-        state.Dependency = new ClearTriggerEventDynamicBufferJob()
-            .ScheduleParallel(triggerEventQuery, state.Dependency);
+      //  state.Dependency = new ClearTriggerEventDynamicBufferJob()
+       //     .ScheduleParallel(triggerEventQuery, state.Dependency);
 
 
         stateFulEventBuffers.SwapBuffers();

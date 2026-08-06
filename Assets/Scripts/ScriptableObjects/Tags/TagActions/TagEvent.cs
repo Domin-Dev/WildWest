@@ -262,4 +262,5 @@ public struct TagActionState : IBufferElementData
     public int TagActionID;
     public TagValueType Type;
     public TagValue Value;
+    public bool Temp;
 }

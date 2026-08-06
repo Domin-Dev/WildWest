@@ -7,8 +7,11 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-[UpdateInGroup(typeof(SimulationSystemGroup))]
-[UpdateBefore(typeof(MapSystemGroup))]
+
+
+
+
+[UpdateInGroup(typeof(TriggerSystemGroup))]
 public partial struct TagUpdateSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

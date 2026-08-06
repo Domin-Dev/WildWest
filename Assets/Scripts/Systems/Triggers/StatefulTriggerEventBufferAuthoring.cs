@@ -43,3 +43,4 @@ public struct StatefulTriggerEvent : IStatefulSimulationEvent<StatefulTriggerEve
 }
 public struct StatefulTriggerEventExclude : IComponentData {}
 public struct HasEvents : IComponentData, IEnableableComponent {}
+public struct NeedSetUp : IComponentData, IEnableableComponent {}

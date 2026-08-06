@@ -31,6 +31,12 @@ MonoBehaviour:
   CollidesWith:
     serializedVersion: 2
     m_Bits: 512
+  onSetUp:
+    Actions:
+    - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+      tagActionBase: {fileID: 11400000, guid: d56958e821667556db3942b3bc63bfad, type: 2}
+      tagActionArgs:
+        rid: 8123484521142943842
   onEnter:
     Actions:
     - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
@@ -63,6 +69,10 @@ MonoBehaviour:
       data:
         A: 0
     - rid: 8123484497991434341
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0
+    - rid: 8123484521142943842
       type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
       data:
         A: 0

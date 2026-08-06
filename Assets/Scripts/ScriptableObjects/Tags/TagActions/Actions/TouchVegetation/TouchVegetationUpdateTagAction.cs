@@ -20,11 +20,12 @@ public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, Tag
     protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data,float deltaTime, TagSettingsMaterial tagSettings, TagActionArgsInt args)
     {
         (int index,TagActionState state)[] states = GetActionState(data.states);
-        if(states.Length == 3)
+        if(states.Length == 4)
         {
-            float elapsedTime = states[0].state.Value.Float;
-            bool isStart = states[1].state.Value.Bool;
-            float influence = states[2].state.Value.Float;
+            int entityCounter = states[0].state.Value.Int;
+            float elapsedTime = states[1].state.Value.Float;
+            bool isStart = states[2].state.Value.Bool;
+            float influence = states[3].state.Value.Float;
 
             elapsedTime += deltaTime;
             
@@ -44,7 +45,6 @@ public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, Tag
                 lerpValue = math.lerp(currentInfluence,startInfluenceValue,progress);
             }
 
-           //Debug.Log(lerpValue + " " + deltaTime + " " + elapsedTime + " " + progress);
             spriteRenderer.material.SetFloat(influenceID,lerpValue);
 
             if(progress >= 1f)
@@ -54,14 +54,12 @@ public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, Tag
             }
             else
             {
-                states[0].state.Value.Float = elapsedTime;
+                states[1].state.Value.Float = elapsedTime;
                 UpdateState(states,data.states);
             }
-          //  Debug.Log("dziala git !!");
         }
         else
         {
-           //Debug.Log("brak argumentow");
             ecb.RemoveComponent<TagWithTriggerEventContext>(data.trigger);
             RemoveState(states,data.states);
         }
