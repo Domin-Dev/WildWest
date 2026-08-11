@@ -17,6 +17,10 @@ public class WorldConfig : ScriptableObject
             return _instance;
         }
     }
+
+    public static WorldTimeConfig TimeConfig => Instance.worldTimeConfig;
+
+    [SerializeField] private WorldTimeConfig worldTimeConfig;
     public TagWithMaterial WindEffectTag;
     public TagWithTrigger TouchTriggerTag;
 }

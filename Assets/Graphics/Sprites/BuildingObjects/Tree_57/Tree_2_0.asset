@@ -9,14 +9,14 @@ Sprite:
   m_Name: Tree_2_0
   m_Rect:
     serializedVersion: 2
-    x: 54
-    y: 120
-    width: 27
-    height: 60
-  m_Offset: {x: 0, y: -26}
+    x: 56
+    y: 124
+    width: 24
+    height: 44
+  m_Offset: {x: 0, y: -22}
   m_Border: {x: 0, y: 0, z: 0, w: 0}
   m_PixelsToUnits: 100
-  m_Pivot: {x: 0.5, y: 0.06666667}
+  m_Pivot: {x: 0.5, y: 0}
   m_Extrude: 1
   m_IsPolygon: 0
   m_PackingTag: 
@@ -102,18 +102,18 @@ Sprite:
         format: 0
         dimension: 0
       m_DataSize: 80
-      _typelessdata: 713d0abe295c0f3f00000000713d0a3e295c0f3f00000000713d0abe0ad723bd00000000713d0a3e0ad723bd000000000000000000000000000000000000000000000000000000000000000000000000
+      _typelessdata: 8fc2f5bdae47e13e000000008fc2f53dae47e13e000000008fc2f5bd00000000000000008fc2f53d00000000000000000000000000000000000000000000000000000000000000000000000000000000
     m_Bindpose: []
     textureRect:
       serializedVersion: 2
-      x: 54
-      y: 120
-      width: 27
-      height: 60
+      x: 56
+      y: 124
+      width: 24
+      height: 44
     textureRectOffset: {x: 0, y: 0}
     atlasRectOffset: {x: -1, y: -1}
     settingsRaw: 64
-    uvTransform: {x: 100, y: 67.5, z: 100, w: 124}
+    uvTransform: {x: 100, y: 68, z: 100, w: 124}
     downscaleMultiplier: 1
   m_AtlasRD:
     serializedVersion: 3
@@ -193,18 +193,18 @@ Sprite:
         format: 0
         dimension: 0
       m_DataSize: 80
-      _typelessdata: 713d0abe295c0f3f00000000713d0a3e295c0f3f00000000713d0abe0ad723bd00000000713d0a3e0ad723bd000000000000000000000000000000000000000000000000000000000000000000000000
+      _typelessdata: 8fc2f5bdae47e13e000000008fc2f53dae47e13e000000008fc2f5bd00000000000000008fc2f53d00000000000000000000000000000000000000000000000000000000000000000000000000000000
     m_Bindpose: []
     textureRect:
       serializedVersion: 2
-      x: 54
-      y: 120
-      width: 27
-      height: 60
+      x: 56
+      y: 124
+      width: 24
+      height: 44
     textureRectOffset: {x: 0, y: 0}
     atlasRectOffset: {x: -1, y: -1}
     settingsRaw: 64
-    uvTransform: {x: 100, y: 67.5, z: 100, w: 124}
+    uvTransform: {x: 100, y: 68, z: 100, w: 124}
     downscaleMultiplier: 1
   m_PhysicsShape: []
   m_Bones: []

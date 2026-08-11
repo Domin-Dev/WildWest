@@ -18,7 +18,7 @@ public class TouchVegetationEnterTagAction : TagAction<TagSettingsMaterial, TagA
     {        
         float3 currentPositon = data.entityManager.GetComponentData<LocalTransform>(data.Entity).Position;
         float3 postion = data.entityManager.GetComponentData<LocalToWorld>(data.trigger).Position;
-        float influence = (currentPositon.x - postion.x > 0 ? 1 : -1) * updateAction.influenceStrength;
+        float influence = (currentPositon.x - postion.x > 0 ? 1 : -1) * tagSettings.influence;
         
         var state = GetActionState(data.states,updateAction.TagActionID);
         state[0].state.Value.Int++;

@@ -67,7 +67,7 @@ Material:
     - _BUILTIN_ZWrite: 1
     - _BUILTIN_ZWriteControl: 0
     - _ColorMask: 15
-    - _DarkValue: 1.043
+    - _DarkValue: 0.824
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0

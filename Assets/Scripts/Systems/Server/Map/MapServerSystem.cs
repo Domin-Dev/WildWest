@@ -17,6 +17,7 @@ partial struct MapServerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<MapSettings>();
+        state.RequireForUpdate<CurrentTime>();
     }
     
     [BurstCompile]
@@ -29,9 +30,10 @@ partial struct MapServerSystem : ISystem
         SystemAPI.Query<RefRO<SendMap>>().WithEntityAccess())
         {
             Entity loaded = ecb.CreateEntity();
-            ecb.AddComponent(loaded, new MapIsLoaded() 
+            ecb.AddComponent(loaded, new StartDataRPC() 
             {
-                mapSetUp = map.GetSetUp()   
+                mapSetUp = map.GetSetUp(),
+                currentTime = SystemAPI.GetSingleton<CurrentTime>()   
             });
             ecb.AddComponent(loaded, new SendRpcCommandRequest()
             {

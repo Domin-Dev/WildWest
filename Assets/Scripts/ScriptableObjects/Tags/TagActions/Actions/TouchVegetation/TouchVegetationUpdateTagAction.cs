@@ -7,8 +7,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "TouchVegetationUpdate", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationUpdate")]
 public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext,float>
 {
-
-    public float influenceStrength;
     public float minVelocity;
     public float startInfluenceValue;
 

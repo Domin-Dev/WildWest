@@ -1,18 +1,18 @@
 using Cinemachine;
+using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class HybridManager : MonoBehaviour
 {
     [SerializeField] GameObject trailBullet;
     [SerializeField] GameObject playerFollower;
-
     [SerializeField] CinemachineVirtualCamera virtualCamera;
-
 
     public static HybridManager instance;
     private Dictionary<Entity,GameObject> connectedObjects = new Dictionary<Entity,GameObject>();    
@@ -25,6 +25,8 @@ public class HybridManager : MonoBehaviour
             instance = this;
             IsConnetedCilientSystem.youAreInGame += IsPlayer;
         }
+        else
+            Destroy(gameObject);
     }
 
     private void OnDestroy()
@@ -55,14 +57,12 @@ public class HybridManager : MonoBehaviour
         entityQueryBuilder.Dispose();
         array.Dispose();
     }
-
     public void SetEntity(Entity entity,Vector3 position)
     {
         GameObject obj = Instantiate(trailBullet, position, Quaternion.identity);
         obj.GetComponent<EntityFollower>().SetEntity(entity,true);
         connectedObjects.Add(entity, obj);
     }
-
     public void EntityDeleted(Entity entity)
     {
         if (connectedObjects.ContainsKey(entity))
@@ -72,4 +72,16 @@ public class HybridManager : MonoBehaviour
             connectedObjects.Remove(entity);
         }
     }
+
+    public Transform GetLight(LinkedLight linkedLight)
+    {
+        var obj = new GameObject("Light",typeof(Light2D)).GetComponent<Light2D>();
+        obj.intensity = linkedLight.Intensity;
+        obj.pointLightInnerRadius = linkedLight.InnerRadius;
+        obj.pointLightOuterRadius = linkedLight.OuterRadius;
+        obj.falloffIntensity = linkedLight.FalloffIntensity;
+        return obj.transform;
+    }
+
 }
+    

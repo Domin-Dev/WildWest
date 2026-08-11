@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b928c4ee399e52890703d7536e4a72, type: 3}
+  m_Name: CharacterBehindTriggerTag
+  m_EditorClassIdentifier: Assembly-CSharp::TagWithTrigger
+  _icon: {fileID: 0}
+  _localizedString:
+    m_TableReference:
+      m_TableCollectionName: 
+    m_TableEntryReference:
+      m_KeyId: 0
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  _tagName: Character Behind Trigger
+  _ID: 1547
+  worldType: 0
+  BelongsTo:
+    serializedVersion: 2
+    m_Bits: 4096
+  CollidesWith:
+    serializedVersion: 2
+    m_Bits: 512
+  onSetUp:
+    Actions:
+    - Tag: {fileID: 11400000}
+      tagActionBase: {fileID: 11400000, guid: 907bce3c6af44e4b990c8afb6f6bd3c3, type: 2}
+      tagActionArgs:
+        rid: 8123484634613022858
+  onEnter:
+    Actions:
+    - Tag: {fileID: 11400000}
+      tagActionBase: {fileID: 11400000, guid: 9b69cec2199e4d97bb5cfc68b6e5a414, type: 2}
+      tagActionArgs:
+        rid: 8123484634613022831
+  onStay:
+    Actions:
+    - Tag: {fileID: 11400000}
+      tagActionBase: {fileID: 11400000, guid: afb1b37228ddbca2db331d49f797b7fd, type: 2}
+      tagActionArgs:
+        rid: 8123484634613022856
+  onExit:
+    Actions:
+    - Tag: {fileID: 11400000}
+      tagActionBase: {fileID: 11400000, guid: 9758f058868cce4fc85d0b40fc272500, type: 2}
+      tagActionArgs:
+        rid: 8123484634613022847
+  onUpdate:
+    Actions: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 8123484634613022831
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0
+    - rid: 8123484634613022847
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0
+    - rid: 8123484634613022856
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0
+    - rid: 8123484634613022858
+      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
+      data:
+        A: 0

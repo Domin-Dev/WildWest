@@ -9,14 +9,14 @@ Sprite:
   m_Name: Tree_2_1
   m_Rect:
     serializedVersion: 2
-    x: 54
-    y: 60
-    width: 27
-    height: 60
-  m_Offset: {x: 0, y: -28}
+    x: 55
+    y: 62
+    width: 25
+    height: 46
+  m_Offset: {x: 0, y: -23}
   m_Border: {x: 0, y: 0, z: 0, w: 0}
   m_PixelsToUnits: 100
-  m_Pivot: {x: 0.5, y: 0.033333335}
+  m_Pivot: {x: 0.5, y: 0}
   m_Extrude: 1
   m_IsPolygon: 0
   m_PackingTag: 
@@ -102,14 +102,14 @@ Sprite:
         format: 0
         dimension: 0
       m_DataSize: 80
-      _typelessdata: 713d0abee17a143f00000000713d0a3ee17a143f00000000713d0abe0ad7a3bc00000000713d0a3e0ad7a3bc000000000000000000000000000000000000000000000000000000000000000000000000
+      _typelessdata: 000000be1f85eb3e000000000000003e1f85eb3e00000000000000be00000000000000000000003e00000000000000000000000000000000000000000000000000000000000000000000000000000000
     m_Bindpose: []
     textureRect:
       serializedVersion: 2
-      x: 54
-      y: 60
-      width: 27
-      height: 60
+      x: 55
+      y: 62
+      width: 25
+      height: 46
     textureRectOffset: {x: 0, y: 0}
     atlasRectOffset: {x: -1, y: -1}
     settingsRaw: 64
@@ -193,14 +193,14 @@ Sprite:
         format: 0
         dimension: 0
       m_DataSize: 80
-      _typelessdata: 713d0abee17a143f00000000713d0a3ee17a143f00000000713d0abe0ad7a3bc00000000713d0a3e0ad7a3bc000000000000000000000000000000000000000000000000000000000000000000000000
+      _typelessdata: 000000be1f85eb3e000000000000003e1f85eb3e00000000000000be00000000000000000000003e00000000000000000000000000000000000000000000000000000000000000000000000000000000
     m_Bindpose: []
     textureRect:
       serializedVersion: 2
-      x: 54
-      y: 60
-      width: 27
-      height: 60
+      x: 55
+      y: 62
+      width: 25
+      height: 46
     textureRectOffset: {x: 0, y: 0}
     atlasRectOffset: {x: -1, y: -1}
     settingsRaw: 64

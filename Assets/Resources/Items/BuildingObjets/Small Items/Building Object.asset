@@ -19,7 +19,16 @@ MonoBehaviour:
   icon: {fileID: -1680953567, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   worldSprite: {fileID: 0}
   animSprites: []
-  tags: []
+  tags:
+  - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+    TagSettings:
+      rid: 8123484634613022821
+  - Tag: {fileID: 11400000, guid: 88951f1e6715c0ebe861b844a3ce6929, type: 2}
+    TagSettings:
+      rid: 8123484634613022823
+  - Tag: {fileID: 11400000, guid: 8aa612bbba1d5d9e5a08e73dcc11101c, type: 2}
+    TagSettings:
+      rid: 8123484634613022834
   crafingIngredients:
   - itemID: 10
     number: 0
@@ -120,7 +129,7 @@ MonoBehaviour:
       - {x: -0.01, y: 0.08}
       - {x: 0.01, y: 0.34}
       shadowOffset: {x: 0, y: 0}
-      offset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.02}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 455fb224b2169c2799bb2360f1af863c, type: 2}
@@ -136,7 +145,7 @@ MonoBehaviour:
       - {x: -0.01, y: 0.089999996}
       - {x: 0, y: 0.35}
       shadowOffset: {x: 0, y: 0}
-      offset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.01}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 3e1ef4de7951b21e494bf79c5d6fe288, type: 2}
@@ -152,7 +161,7 @@ MonoBehaviour:
       - {x: -0.01, y: 0.08}
       - {x: -0.01, y: 0.35}
       shadowOffset: {x: 0, y: 0}
-      offset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.02}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 81bc076fd35e46ffe83fffd2ea54d5b3, type: 2}
@@ -168,7 +177,7 @@ MonoBehaviour:
       - {x: -0.01, y: 0.089999996}
       - {x: 0.01, y: 0.35999998}
       shadowOffset: {x: 0, y: 0}
-      offset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.01}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: a3bdc3daf7569edbf80e0eeeb337ee62, type: 2}
@@ -184,7 +193,7 @@ MonoBehaviour:
       - {x: -0.01, y: 0.08}
       - {x: 0, y: 0.34}
       shadowOffset: {x: 0, y: 0}
-      offset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.02}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: 095b37042876485a1ab45465a1ec3cae, type: 2}
@@ -200,7 +209,7 @@ MonoBehaviour:
       - {x: -0.01, y: 0.089999996}
       - {x: 0.01, y: 0.35}
       shadowOffset: {x: 0, y: 0}
-      offset: {x: 0, y: 0}
+      offset: {x: 0.13499999, y: 0.01}
       shadowSize: {x: 0.21, y: 0.07}
       sprites:
       - {fileID: 21300000, guid: cbca943ab067974c8bd513f48f9c4634, type: 2}
@@ -217,4 +226,20 @@ MonoBehaviour:
   shadowHeight: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8123484634613022821
+      type: {class: TagSettingsMaterial, ns: , asm: Assembly-CSharp}
+      data:
+        material: {fileID: 2100000, guid: af3a5a1f085f49d59a77c979098a264e, type: 2}
+        effectSound: {fileID: 8300000, guid: 856180e0a27ca7872aeb5932ca62233d, type: 3}
+        influence: 0.3
+    - rid: 8123484634613022823
+      type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}
+      data:
+        triggerShape: 0
+        margin: 0
+    - rid: 8123484634613022834
+      type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}
+      data:
+        triggerShape: 0
+        margin: 0

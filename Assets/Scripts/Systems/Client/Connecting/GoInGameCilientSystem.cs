@@ -3,31 +3,34 @@ using Unity.Entities;
 using UnityEngine;
 using Unity.NetCode;
 using Unity.Collections;
+using System;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct GoInGameCilientSystem : ISystem
 {
+    public static Action<CurrentTime> OnStartTimer;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<EntitiesReferences>();
-        state.RequireForUpdate<MapIsLoaded>();
+        state.RequireForUpdate<StartDataRPC>();
         state.RequireForUpdate<PlayerName>();
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<NetworkId>().WithNone<NetworkStreamInGame>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
-
-
     }
 
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
 
-        foreach ((RefRO<ReceiveRpcCommandRequest> request, RefRO<MapIsLoaded> map, Entity rpc) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<MapIsLoaded>>().WithEntityAccess())
+        foreach ((RefRO<ReceiveRpcCommandRequest> request, RefRO<StartDataRPC> startData, Entity rpc) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<StartDataRPC>>().WithEntityAccess())
         {
             entityCommandBuffer.DestroyEntity(rpc);
-            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new MapSettings().LoadSetUp(map.ValueRO.mapSetUp));
+            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new MapSettings().LoadSetUp(startData.ValueRO.mapSetUp));
+            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,startData.ValueRO.currentTime);
+            OnStartTimer?.Invoke(startData.ValueRO.currentTime);
+
 
             foreach ((RefRO<NetworkId> networkId, Entity entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<NetworkStreamInGame>().WithEntityAccess())
             {

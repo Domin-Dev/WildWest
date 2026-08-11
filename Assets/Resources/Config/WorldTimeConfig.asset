@@ -1,0 +1,84 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c568faa839ee21bcba9e894be9708be2, type: 3}
+  m_Name: WorldTimeConfig
+  m_EditorClassIdentifier: Assembly-CSharp::WorldTimeConfig
+  startHour: 8
+  startDay: 1
+  startSeason: 0
+  HourDuration: 0.5
+  SeasonDuration: 4
+  Spring:
+    iconSprite: {fileID: -1301959960, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: 1777326124, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    dayTime:
+      dayStart: 6
+      eveningStart: 18
+      nightStart: 21
+    dayColor: {r: 1, g: 1, b: 1, a: 1}
+    dayLerpTime: 1.5
+    eveningColor: {r: 0.5515937, g: 0.5515937, b: 0.5515937, a: 1}
+    eveningLerpTime: 1
+    nightColor: {r: 0.02, g: 0.02, b: 0.02, a: 1}
+    nightLerpTime: 1
+  Summer:
+    iconSprite: {fileID: -1385579639, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: -2068532676, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    dayTime:
+      dayStart: 4
+      eveningStart: 19
+      nightStart: 22
+    dayColor: {r: 1, g: 1, b: 1, a: 1}
+    dayLerpTime: 1
+    eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
+    eveningLerpTime: 1
+    nightColor: {r: 0.03, g: 0.03, b: 0.03, a: 1}
+    nightLerpTime: 1
+  Autumn:
+    iconSprite: {fileID: -851605624, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: -749013264, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    dayTime:
+      dayStart: 7
+      eveningStart: 17
+      nightStart: 20
+    dayColor: {r: 1, g: 1, b: 1, a: 1}
+    dayLerpTime: 2
+    eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
+    eveningLerpTime: 0.5
+    nightColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
+    nightLerpTime: 1
+  Winter:
+    iconSprite: {fileID: 1140630064, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: 1051364945, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    dayTime:
+      dayStart: 8
+      eveningStart: 16
+      nightStart: 19
+    dayColor: {r: 1, g: 1, b: 1, a: 1}
+    dayLerpTime: 2.5
+    eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
+    eveningLerpTime: 0.5
+    nightColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
+    nightLerpTime: 1
+  rangesUI:
+  - iconSprite: {fileID: 1696318910, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: 454127794, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    TimeOfDay: 2
+  - iconSprite: {fileID: -1385579639, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: -2068532676, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    TimeOfDay: 0
+  - iconSprite: {fileID: 2043931798, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: -749013264, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    TimeOfDay: 1
+  - iconSprite: {fileID: 1696318910, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
+    barSprite: {fileID: 454127794, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    TimeOfDay: 2

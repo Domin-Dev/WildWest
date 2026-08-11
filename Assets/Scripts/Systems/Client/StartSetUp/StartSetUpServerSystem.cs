@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -104,6 +105,26 @@ partial struct StartSetUpServerSystem : ISystem
 
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);
             EntityHelper.CreateEntityWithBuffer<PlayersList>(ecb);
+
+
+    
+            #region Time         
+            EntityHelper.CreateEntityWithComponent(ecb, new CurrentTime()
+            {
+                Day = WorldConfig.TimeConfig.startDay,
+                Hour = WorldConfig.TimeConfig.startHour,
+                season = WorldConfig.TimeConfig.startSeason,
+                startTick = NetworkTick.Invalid,
+                startHour = WorldConfig.TimeConfig.startHour,
+                NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(
+                    WorldConfig.TimeConfig.startSeason,
+                    WorldConfig.TimeConfig.startHour,
+                    WorldConfig.TimeConfig.startDay,
+                    out TimeOfDay currentTimeOfDay),
+                TimeOfDay = currentTimeOfDay
+            });
+            #endregion
+
             
             ecb.Playback(state.EntityManager);
             ecb.Dispose();

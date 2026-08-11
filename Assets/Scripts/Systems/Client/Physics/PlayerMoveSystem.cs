@@ -57,7 +57,6 @@ public partial struct PlayerMoveSystem : ISystem
                 velocity.ValueRW.Linear = new float3(dir.x,dir.y,0) * player.ValueRO.speed;
                 if(networkTime.IsFirstTimeFullyPredictingTick) 
                     spread.ValueRW.Spread = Mathf.Clamp(spread.ValueRO.Spread + math.lengthsq(velocity.ValueRW.Linear) *  networkTime.SimulationStepBatchSize * 0.1f * shootingConfig.sensitivityPlayerMove,0,shootingConfig.maxSpread);
-
             }
         }
     }

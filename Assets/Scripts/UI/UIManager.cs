@@ -724,6 +724,7 @@ public class UIManager : MonoBehaviour
 
     public void OpenEquipment(bool value)
     {
+        Debug.Log("open eq");
         background.gameObject.SetActive(value);
         tabUI.SetActive(value);
         tabUI.equipmentTab.TurnTab(value);

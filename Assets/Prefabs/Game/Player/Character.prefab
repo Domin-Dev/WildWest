@@ -661,6 +661,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7504337897155031083}
+  - component: {fileID: 7955420892808182021}
   - component: {fileID: 8106486671510003875}
   - component: {fileID: 6310104120586983719}
   - component: {fileID: 6485162410144971119}
@@ -696,6 +697,26 @@ Transform:
   - {fileID: 1305483028961384398}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7955420892808182021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3773562619657541914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64caf2377d0fde39d95f9476282415b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FollowAuthoring
+  Intensity: 0.9
+  OuterRadius: 0.4
+  FalloffIntensity: 0.9
+  InnerRadius: 0
+  Offset:
+    x: 0
+    y: 0.1
+    z: 0
 --- !u!114 &8106486671510003875
 MonoBehaviour:
   m_ObjectHideFlags: 0

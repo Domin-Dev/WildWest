@@ -17,9 +17,10 @@ public struct AnswerPlayerVerificationRPC : IRpcCommand
     public CharacterLook characterLook;
     public bool playerDataIsOnServer;
 }
-public struct MapIsLoaded : IRpcCommand
+public struct StartDataRPC : IRpcCommand
 {
     public MapSetUp mapSetUp;
+    public CurrentTime currentTime;
 }
 
 public struct MapSetUp

@@ -24,7 +24,7 @@ public partial class MapLoadingClientSystem : SystemBase
         MapVisualization.instance.clientMap = clientMap;
     }
 
-    public void SetMapSettings(MapIsLoaded map)
+    public void SetMapSettings(StartDataRPC map)
     { 
     //    clientMap.widthInChunks = map.widthInChunks;
     }

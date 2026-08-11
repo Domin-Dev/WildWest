@@ -23,7 +23,7 @@ MonoBehaviour:
     m_WaitForCompletion: 0
     m_LocalVariables: []
   _tagName: TouchTrigger
-  _ID: 1547
+  _ID: 1548
   worldType: 0
   BelongsTo:
     serializedVersion: 2
