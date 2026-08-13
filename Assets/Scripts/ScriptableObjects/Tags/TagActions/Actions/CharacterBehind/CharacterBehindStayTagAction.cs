@@ -5,10 +5,10 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "CharacterBehindStay", menuName = "GameAsset/TagAction/CharacterBehind/CharacterBehindStay")]
-public class CharacterBehindStayTagAction : TagAction<TagSettings, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext>
+public class CharacterBehindStayTagAction : TagAction<TagSettings, TagActionArgsBase,EntityCommandBuffer,TagWithTriggerEventContext>
 {
     public CharacterBehindSetUpTagAction setUpTag;
-    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettings tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettings tagSettings, TagActionArgsBase args)
     {
         var state = GetActionState(data.states,setUpTag.TagActionID);
         float3 currentPositon = data.entityManager.GetComponentData<LocalTransform>(data.Entity).Position;

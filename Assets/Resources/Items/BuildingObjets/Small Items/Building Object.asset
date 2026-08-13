@@ -232,7 +232,7 @@ MonoBehaviour:
       data:
         material: {fileID: 2100000, guid: af3a5a1f085f49d59a77c979098a264e, type: 2}
         effectSound: {fileID: 8300000, guid: 856180e0a27ca7872aeb5932ca62233d, type: 3}
-        influence: 0.3
+        influence: 0.25
     - rid: 8123484634613022823
       type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}
       data:

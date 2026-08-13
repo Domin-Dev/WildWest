@@ -9,12 +9,12 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "TouchVegetationEnter", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationEnter")]
-public class TouchVegetationEnterTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext>
+public class TouchVegetationEnterTagAction : TagAction<TagSettingsMaterial, TagActionArgsBase,EntityCommandBuffer,TagWithTriggerEventContext>
 {
     public TouchVegetationUpdateTagAction updateAction;
     private int influenceID = Shader.PropertyToID("_Influence");
 
-    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettingsMaterial tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettingsMaterial tagSettings, TagActionArgsBase args)
     {        
         float3 currentPositon = data.entityManager.GetComponentData<LocalTransform>(data.Entity).Position;
         float3 postion = data.entityManager.GetComponentData<LocalToWorld>(data.trigger).Position;

@@ -5,11 +5,11 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "TouchVegetationExit", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationExit")]
-public class TouchVegetationExitTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext>
+public class TouchVegetationExitTagAction : TagAction<TagSettingsMaterial, TagActionArgsBase,EntityCommandBuffer,TagWithTriggerEventContext>
 {
     public TagActionBase updateAction;
     private int influenceID = Shader.PropertyToID("_Influence");
-    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettingsMaterial tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettingsMaterial tagSettings, TagActionArgsBase args)
     {
         var state = GetActionState(data.states,updateAction.TagActionID);
         state[0].state.Value.Int--;

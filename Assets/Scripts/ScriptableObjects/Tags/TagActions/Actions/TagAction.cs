@@ -86,8 +86,7 @@ public abstract class TagAction<T,A,P1> : TagActionBase<P1> where T : TagSetting
         T t = tagSettings as T;
         A a = args as A;
 
-        if(t != null && a != null)
-            Func(data,t,a);
+        Func(data,t,a);
     }
     protected abstract void Func(P1 data,T tagSettings,A args);
 }
@@ -100,8 +99,7 @@ public abstract class TagAction<T,A,P1,P2> : TagActionBase<P1,P2> where T : TagS
         T t = tagSettings as T;
         A a = args as A;
 
-        if(t != null && a != null)
-            Func(data1,data2,t,a);
+        Func(data1,data2,t,a);
     }
     protected abstract void Func(P1 data1,P2 data2,T tagSettings,A args);
 }
@@ -114,8 +112,7 @@ public abstract class TagAction<T,A,P1,P2,P3> : TagActionBase<P1,P2,P3> where T 
         T t = tagSettings as T;
         A a = args as A;
 
-        if(t != null && a != null)
-            Func(data1,data2,data3,t,a);
+        Func(data1,data2,data3,t,a);
     }
     protected abstract void Func(P1 data1,P2 data2,P3 data3,T tagSettings,A args);
 }

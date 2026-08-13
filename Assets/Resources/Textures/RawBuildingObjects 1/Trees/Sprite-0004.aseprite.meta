@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f30b64f0932d9f97fa8b1f7d44df16af
+guid: be88d3ff51ccd643a8bbf23121f3825e
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -127,9 +127,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Bush
+  - name: Sprite-0004
     originalName: 
-    pivot: {x: 0.50476193, y: -0.04761905}
+    pivot: {x: 0.49689442, y: -0.004608295}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
@@ -137,9 +137,9 @@ ScriptedImporter:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 105
-      height: 21
-    spriteID: bc71763f02a13e2af8312f7f55cadb32
+      width: 161
+      height: 217
+    spriteID: 1c532350b67258e5eb0e338ce5fa489f
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -153,25 +153,25 @@ ScriptedImporter:
   asepriteLayers:
   - layerIndex: 0
     uuid:
-      value0: 4069224012
+      value0: 4228612822
       value1: 0
       value2: 0
       value3: 0
     guid: 0
-    name: Bush
+    name: Sprite-0004
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Bush
+    - name: Sprite-0004
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 1
         y: 1
-        width: 105
-        height: 21
-      spriteId: bc71763f02a13e2af8312f7f55cadb32
+        width: 161
+        height: 217
+      spriteId: 1c532350b67258e5eb0e338ce5fa489f
     linkedCells: []
     tileCells: []
     tileSetIndex: 0
@@ -181,5 +181,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 108, y: 80}
-  previousTextureSize: {x: 128, y: 32}
+  canvasSize: {x: 162, y: 240}
+  previousTextureSize: {x: 256, y: 256}

@@ -31,6 +31,7 @@ public struct UV
 
 public class MapVisualization : MonoBehaviour
 {
+    [SerializeField] private GameObject cloudsGameObject;
     [SerializeField] private Material mapMaterial;
     [SerializeField] private Texture2D linesTexture;
     public Dictionary<int, TileUV> tilesUV { get; private set; }
@@ -71,7 +72,8 @@ public class MapVisualization : MonoBehaviour
 
     public ClientMap clientMap;
     public static MapVisualization instance { private set; get; }
-
+    private int ChunkWroldPositionID = Shader.PropertyToID("_ChunkWroldPosition");
+    
     public void Awake()
     {
         if (instance == null)
@@ -103,17 +105,25 @@ public class MapVisualization : MonoBehaviour
     public Transform CreateMesh(Entity chunk)
     {
         ChunkComponent chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
+        MapSettings mapSettings = entityManager.CreateEntityQuery(typeof(MapSettings)).GetSingleton<MapSettings>();
         DynamicBuffer<ChunkTiles> chunkTiles = entityManager.GetBuffer<ChunkTiles>(chunk);
 
         Transform partOfMap = new GameObject("part of map").transform;
         Transform borders = new GameObject("Lines").transform;
         borders.SetParent(partOfMap);
+        
+        Transform clouds = Instantiate(cloudsGameObject,new Vector3(chunkSize*cellSize,chunkSize*cellSize,0) * 0.5f,Quaternion.identity,partOfMap).transform;
+        clouds.localScale = new Vector3(chunkSize*cellSize,chunkSize*cellSize,1);
+        int2 coords = mapSettings.GetChunkCoordinates(chunkComponent.chunkIndex);
+        clouds.GetComponent<Renderer>().material.SetVector(ChunkWroldPositionID,new Vector4(coords.x,coords.y));
 
         MeshFilter meshFilter = partOfMap.AddComponent<MeshFilter>();
         MeshFilter bordersMeshFilter = borders.AddComponent<MeshFilter>();
 
         meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
         bordersMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;
+        clouds.AddComponent<SortingGroup>().sortingOrder = 10;
+        
 
         Mesh mesh = new Mesh();
         Mesh bordersMesh = new Mesh();

@@ -30,4 +30,5 @@ public struct MapSetUp
     public int chunkSizeInTiles;
     public float tileSize;
     public float2 mapOffset;
+    public int seed;
 }

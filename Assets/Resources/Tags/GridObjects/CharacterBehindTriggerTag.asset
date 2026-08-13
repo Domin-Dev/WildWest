@@ -36,43 +36,29 @@ MonoBehaviour:
     - Tag: {fileID: 11400000}
       tagActionBase: {fileID: 11400000, guid: 907bce3c6af44e4b990c8afb6f6bd3c3, type: 2}
       tagActionArgs:
-        rid: 8123484634613022858
+        rid: -2
   onEnter:
     Actions:
     - Tag: {fileID: 11400000}
       tagActionBase: {fileID: 11400000, guid: 9b69cec2199e4d97bb5cfc68b6e5a414, type: 2}
       tagActionArgs:
-        rid: 8123484634613022831
+        rid: -2
   onStay:
     Actions:
     - Tag: {fileID: 11400000}
       tagActionBase: {fileID: 11400000, guid: afb1b37228ddbca2db331d49f797b7fd, type: 2}
       tagActionArgs:
-        rid: 8123484634613022856
+        rid: -2
   onExit:
     Actions:
     - Tag: {fileID: 11400000}
       tagActionBase: {fileID: 11400000, guid: 9758f058868cce4fc85d0b40fc272500, type: 2}
       tagActionArgs:
-        rid: 8123484634613022847
+        rid: -2
   onUpdate:
     Actions: []
   references:
     version: 2
     RefIds:
-    - rid: 8123484634613022831
-      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
-      data:
-        A: 0
-    - rid: 8123484634613022847
-      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
-      data:
-        A: 0
-    - rid: 8123484634613022856
-      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
-      data:
-        A: 0
-    - rid: 8123484634613022858
-      type: {class: TagActionArgsInt, ns: , asm: Assembly-CSharp}
-      data:
-        A: 0
+    - rid: -2
+      type: {class: , ns: , asm: }

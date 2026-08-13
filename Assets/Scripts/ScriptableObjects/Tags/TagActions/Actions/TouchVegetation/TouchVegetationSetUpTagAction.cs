@@ -5,10 +5,10 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "TouchVegetationSetUp", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationSetUp")]
-public class TouchVegetationSetUpTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,Entity>
+public class TouchVegetationSetUpTagAction : TagAction<TagSettingsMaterial, TagActionArgsBase,EntityCommandBuffer,Entity>
 {
     public TouchVegetationUpdateTagAction updateAction;
-    protected override void Func(EntityCommandBuffer ecb,Entity trigger, TagSettingsMaterial tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,Entity trigger, TagSettingsMaterial tagSettings, TagActionArgsBase args)
     {
         ecb.AppendToBuffer(trigger,new TagActionState()
         {

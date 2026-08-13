@@ -219,7 +219,11 @@ public class MapGenerator
             //     buildingObjects.Add(GetBuildingObject(globalTilePos,70,rand));             
             // } 
             // else 
-            if ( value > 0.7f)
+            if ( value > 0.8f)
+            {
+                buildingObjects.Add(GetBuildingObject(globalTilePos,129,rand));             
+            }
+            else if ( value > 0.7f)
             {
                 buildingObjects.Add(GetBuildingObject(globalTilePos,57,rand));             
             }

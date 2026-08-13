@@ -52,7 +52,8 @@ public struct MapSettings: IComponentData
             mapOffset = mapOffset,
             mapSizeInRegions = mapSizeInRegions,
             regionSizeInChunks = regionSizeInChunks,
-            tileSize = tileSize
+            tileSize = tileSize,
+            seed = seed
         };
     }
     
@@ -64,6 +65,7 @@ public struct MapSettings: IComponentData
         this.mapSizeInRegions = mapSetUp.mapSizeInRegions;
         this.regionSizeInChunks = mapSetUp.regionSizeInChunks;
         this.tileSize = mapSetUp.tileSize;
+        this.seed = mapSetUp.seed;
         return this;
     }
 

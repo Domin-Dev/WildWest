@@ -5,7 +5,7 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "TouchVegetationUpdate", menuName = "GameAsset/TagAction/TouchVegetation/TouchVegetationUpdate")]
-public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext,float>
+public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, TagActionArgsBase,EntityCommandBuffer,TagWithTriggerEventContext,float>
 {
     public float minVelocity;
     public float startInfluenceValue;
@@ -15,7 +15,7 @@ public class TouchVegetationUpdateTagAction : TagAction<TagSettingsMaterial, Tag
     [Min(0.01f)] public float backEffectDuration;
 
     private int influenceID = Shader.PropertyToID("_Influence");
-    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data,float deltaTime, TagSettingsMaterial tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data,float deltaTime, TagSettingsMaterial tagSettings, TagActionArgsBase args)
     {
         (int index,TagActionState state)[] states = GetActionState(data.states);
         if(states.Length == 4)

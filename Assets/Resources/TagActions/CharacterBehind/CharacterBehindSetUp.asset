@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CharacterBehindSetUp
   m_EditorClassIdentifier: Assembly-CSharp::CharacterBehindSetUpTagAction
   TagActionID: 6
-  behindAlpha: 0.4
+  behindAlpha: 0.35

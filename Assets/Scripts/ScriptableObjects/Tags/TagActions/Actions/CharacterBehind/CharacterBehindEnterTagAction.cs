@@ -9,10 +9,10 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "CharacterBehindEnter", menuName = "GameAsset/TagAction/CharacterBehind/CharacterBehindEnter")]
-public class CharacterBehindEnterTagAction : TagAction<TagSettings, TagActionArgsInt,EntityCommandBuffer,TagWithTriggerEventContext>
+public class CharacterBehindEnterTagAction : TagAction<TagSettings, TagActionArgsBase,EntityCommandBuffer,TagWithTriggerEventContext>
 {
     public CharacterBehindSetUpTagAction setUpTag;
-    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettings tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,TagWithTriggerEventContext data, TagSettings tagSettings, TagActionArgsBase args)
     {        
         var state = GetActionState(data.states,setUpTag.TagActionID);
         state[0].state.Value.Int++;

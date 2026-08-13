@@ -151,7 +151,6 @@ public class DailyCycleUI : MonoBehaviour
         {
             float duration = currentHour < startHour ? 24f + currentHour - startHour : currentHour - startHour;
             float progress = duration/lerpTime;
-            Debug.Log("progress "+ progress);
             globalLight.color = Color.Lerp(startColor,targetColor,progress);
             if(progress >= 1f)
                 lerpColor = false;

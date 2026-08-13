@@ -5,11 +5,11 @@ using UnityEngine;
 
 
 [CreateAssetMenu(fileName = "CharacterBehindSetUp", menuName = "GameAsset/TagAction/CharacterBehind/CharacterBehindSetUp")]
-public class CharacterBehindSetUpTagAction : TagAction<TagSettings, TagActionArgsInt,EntityCommandBuffer,Entity>
+public class CharacterBehindSetUpTagAction : TagAction<TagSettings, TagActionArgsBase,EntityCommandBuffer,Entity>
 {
     [Range(0,1)]
     public float behindAlpha;
-    protected override void Func(EntityCommandBuffer ecb,Entity trigger, TagSettings tagSettings, TagActionArgsInt args)
+    protected override void Func(EntityCommandBuffer ecb,Entity trigger, TagSettings tagSettings, TagActionArgsBase args)
     {
         ecb.AppendToBuffer(trigger,new TagActionState()
         {
