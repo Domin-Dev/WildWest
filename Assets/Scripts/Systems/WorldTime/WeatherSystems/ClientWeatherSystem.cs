@@ -1,32 +1,55 @@
 using System;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
+
+
+public struct LocalWeather : IComponentData
+{
+    public float Temperature;
+    public float Humidity;
+    public float Cloudiness;
+    public float Precipitation;
+    public float2 Wind;
+}
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateAfter(typeof(ClientTimeSystem))]
 public partial struct ClientWeatherSystem : ISystem
 {
-    public static Action<CurrentTime> OnTimeUpdate;
-    public static Action<CurrentTime> OnNextDay;
-    public static Action<CurrentTime> OnNextSeason;
-    public static Action<CurrentTime> OnNextTimeOfDay;
-    private int tickRate;
+    public static Action<LocalWeather,LocalWeather,CurrentTime> OnWeatherUpdate;
+    private int period;
     private NetworkTick lastTick;
-    
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<CurrentTime>();
         state.RequireForUpdate<TimeConfig>();
         state.RequireForUpdate<NetworkTime>();
-        tickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
+        state.RequireForUpdate<LocalWeather>();
+        state.RequireForUpdate<MapSettings>();
+        period = (int)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * 60 * WorldConfig.TimeConfig.HourDuration * WorldConfig.WeatherConfig.WeatherUpdatePeriod);
     }
     public void OnUpdate(ref SystemState state)
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.ServerTick;
-        if(currentTick.IsValid && (!lastTick.IsValid || currentTick.TicksSince(lastTick) >= tickRate))
+        if(currentTick.IsValid && (!lastTick.IsValid || currentTick.TicksSince(lastTick) >= period))
         {
-            
+            var localWeather = SystemAPI.GetSingletonRW<LocalWeather>();
+            var mapSettings = SystemAPI.GetSingleton<MapSettings>();
+            var currentTime = SystemAPI.GetSingleton<CurrentTime>();
+            float2 playerPosition = float2.zero;    
+
+            foreach (RefRO<LocalToWorld> position in  SystemAPI.Query<RefRO<LocalToWorld>>().WithAll<GhostOwnerIsLocal,Player>().WithNone<NewPlayerTag>())
+            {
+                playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
+            }
+            LocalWeather previousValue = localWeather.ValueRO;
+            localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
+            UnityEngine.Debug.Log(" ppp " + period);
+            OnWeatherUpdate?.Invoke(previousValue,localWeather.ValueRO,currentTime);
+            lastTick = currentTick;
         }
     }
 }

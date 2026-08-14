@@ -1,51 +1,44 @@
-using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 
-public static class TimeService
-{
-    public static void UpdateCurrentTime(NetworkTick serverTick,RefRW<CurrentTime> currentTime,in TimeConfig timeConfig,out int ticksSince,out bool nextDay,out bool newSeason,out bool nextTimeOfDay)
+public static class WeatherService
+{ 
+    private static float Noise(float2 position, int seed, float scale)
     {
-        ticksSince = serverTick.TicksSince(currentTime.ValueRO.startTick);
-        float rawHour = currentTime.ValueRO.startHour + ticksSince / (float)timeConfig.HourDurationInTicks;
-        float hour = rawHour;
-        newSeason = false;
-        nextTimeOfDay = false;
-        
-             
-        if(hour >= 24)
-        {
-            hour -= 24;
-            currentTime.ValueRW.Day++;    
-            currentTime.ValueRW.startTick.Add((uint)timeConfig.DayDurationInTicks - (uint)(currentTime.ValueRW.startHour * timeConfig.HourDurationInTicks));
-            currentTime.ValueRW.startHour = 0;
+        float offsetX = (seed * 0.12345f) % 100000f;
+        float offsetY = (seed * 0.54321f) % 100000f;
+        return math.clamp(Mathf.PerlinNoise(position.x * scale + offsetX, position.y * scale + offsetY),0f,1f);
+    }
+    public static LocalWeather GetWeather(int worldSeed,in CurrentTime currentTime, float2 position)
+    {
+        float2 windDir = GetWindDirection(position,currentTime.WorldTime,worldSeed);
+        Vector2 weatherPosition = position - windDir * currentTime.WorldTime * 0.1f;
 
-            if(currentTime.ValueRO.Day % timeConfig.SeasonDuration == 1)
-            {
-                currentTime.ValueRW.season = WorldTimeConfig.GetNextSeason(currentTime.ValueRO.season);
-                newSeason = true;
-            }
-            nextDay = true;
-        }
-        else
+        return new LocalWeather()
         {
-            nextDay = false;
-        }
-        
-        if(rawHour >= currentTime.ValueRO.NextTimeOfDay)
-        {
-            currentTime.ValueRW.NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(
-                currentTime.ValueRO.season,
-                hour,
-                currentTime.ValueRO.Day,
-                out TimeOfDay currentTimeOfDay);
-            if(currentTimeOfDay != currentTime.ValueRO.TimeOfDay)
-            {
-                nextTimeOfDay = true;
-                currentTime.ValueRW.TimeOfDay = currentTimeOfDay;
-            }
-        }
-        currentTime.ValueRW.Hour = hour;
+            Wind = windDir,
+        };
+    }
+    private static float2 GetWindDirection(float2 position,float worldTime,int worldSeed)
+    {
+        float2 windNoisePos = position * 0.1f + worldTime * 0.3f;
+        float2 windDir = ValueToDirection(Noise(windNoisePos, worldSeed + 1, 0.03f));
+        float windSpeed = Noise(windNoisePos, worldSeed + 2, 0.03f) * WorldConfig.WeatherConfig.MaxWindSpeed;
+    
+        if (math.lengthsq(windDir) < 0.0001f)
+            windDir = new float2(1f, 0f);
+            
+        windDir = math.normalize(windDir) * windSpeed;
+        return windDir; 
+    } 
+
+    private static float2 ValueToDirection(float value)
+    {
+        float angle = value * math.PI * 2f;
+        return new float2(
+            math.cos(angle),
+            math.sin(angle)
+        );
     }
 }

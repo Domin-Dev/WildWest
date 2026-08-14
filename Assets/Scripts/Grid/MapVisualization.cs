@@ -118,7 +118,7 @@ public class MapVisualization : MonoBehaviour
         clouds.GetComponent<Renderer>().material.SetVector(ChunkWroldPositionID,new Vector4(coords.x,coords.y));
 
         MeshFilter meshFilter = partOfMap.AddComponent<MeshFilter>();
-        MeshFilter bordersMeshFilter = borders.AddComponent<MeshFilter>();
+        MeshFilter bordersMeshFilter = borders.AddComponent<MeshFilter>(); 
 
         meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
         bordersMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;

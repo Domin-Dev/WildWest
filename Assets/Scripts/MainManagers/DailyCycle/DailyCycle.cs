@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TMPro;
-using Unity.Scenes;
-using Unity.VisualScripting;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
-using UnityEngine.UI;
+
 
 
 
@@ -47,8 +41,10 @@ using UnityEngine.UI;
 //         this.bar.sizeDelta = new Vector2(bar.sizeDelta.x, posY + pointZero);
 //     }
 // }
+
 public class DailyCycleUI : MonoBehaviour
 {
+
     [SerializeField] private UIBar timeOfDayBar;
     [SerializeField] private UIBar seasonBar;
     [SerializeField] private TextMeshProUGUI dayCounter;
@@ -56,12 +52,8 @@ public class DailyCycleUI : MonoBehaviour
     [SerializeField] private Light2D globalLight;
     
     public static DailyCycleUI instance { private set; get; }
-
-    private Color startColor;
-    private Color targetColor;
-    private float startHour;
-    private float lerpTime;
-    private bool lerpColor;
+    private LerpLight lerpLight;
+    private LerpWeather lerpWeather;
 
 
     private void Awake()
@@ -79,6 +71,8 @@ public class DailyCycleUI : MonoBehaviour
         timeOfDayBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.rangesUI);
         seasonBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.Seasons);
         seasonBar.UpdateBar();
+        lerpLight = new LerpLight(globalLight);
+        lerpWeather = new LerpWeather();
     }
     public void OnEnable()
     {
@@ -90,6 +84,8 @@ public class DailyCycleUI : MonoBehaviour
         GoInGameCilientSystem.OnStartTimer += UpdateDayCounter;
         GoInGameCilientSystem.OnStartTimer += UpdateTimeOfDay;
         GoInGameCilientSystem.OnStartTimer += SetSunColor;
+
+        ClientWeatherSystem.OnWeatherUpdate += UpdateWind;
     }
     public void OnDisable()
     {
@@ -101,11 +97,16 @@ public class DailyCycleUI : MonoBehaviour
         GoInGameCilientSystem.OnStartTimer -= UpdateDayCounter;
         GoInGameCilientSystem.OnStartTimer -= UpdateTimeOfDay;
         GoInGameCilientSystem.OnStartTimer -= SetSunColor;
+
+        ClientWeatherSystem.OnWeatherUpdate -= UpdateWind;
     }
+
+    #region Time
     private void UpdateTime(CurrentTime time)
     {
         timeOfDayBar.SetValue(time.Hour/24f);
-        UpdateGlobalLight(time.Hour);
+        lerpLight.Update(time.Hour);
+        lerpWeather.Update(time.Hour);
     }
     private void UpdateDayCounter(CurrentTime time)
     {
@@ -119,7 +120,7 @@ public class DailyCycleUI : MonoBehaviour
         (Color color, float lerpTime) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
         var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day);
         float start = schedule.GetStartTimeOfDay(time.TimeOfDay);
-        StartLerpColor(globalLight.color,color,start,lerpTime);
+        lerpLight.Start(globalLight.color,color,start,lerpTime);
     }
     private void SetSunColor(CurrentTime time)
     {
@@ -132,30 +133,20 @@ public class DailyCycleUI : MonoBehaviour
         else
         {
             (Color preColor, float _) = WorldConfig.TimeConfig.GetPreviousTimeOfDayColor(time);        
-            StartLerpColor(preColor,color,start,lerpT);
-            UpdateGlobalLight(time.Hour);
+            lerpLight.Start(preColor,color,start,lerpT);
+            lerpLight.Update(time.Hour);
         }
     }
-    private void StartLerpColor(Color startColor,Color targetColor,float startHour,float lerptime)
+
+    #endregion
+   
+    #region Weather
+    private void UpdateWind(LocalWeather previousLocalWeather,LocalWeather localWeather, CurrentTime currentTime)
     {
-        Debug.Log("start!!");
-        this.startColor = startColor;
-        this.targetColor = targetColor;
-        this.startHour = startHour;
-        this.lerpTime = lerptime;
-        lerpColor = true;
+        Debug.Log(previousLocalWeather.Wind + " " + localWeather.Wind);
+        lerpWeather.Start(previousLocalWeather,localWeather,currentTime.Hour,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
     }
-    private void UpdateGlobalLight(float currentHour)
-    { 
-        if(lerpColor)
-        {
-            float duration = currentHour < startHour ? 24f + currentHour - startHour : currentHour - startHour;
-            float progress = duration/lerpTime;
-            globalLight.color = Color.Lerp(startColor,targetColor,progress);
-            if(progress >= 1f)
-                lerpColor = false;
-        }
-    }
+    #endregion
 }
 //     [SerializeField] List<DayTime> seasons = new List<DayTime>();
 //     [SerializeField] private RectTransform timeOfDayTransform;

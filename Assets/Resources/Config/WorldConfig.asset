@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: WorldConfig
   m_EditorClassIdentifier: Assembly-CSharp::WorldConfig
   worldTimeConfig: {fileID: 11400000, guid: 927bb67385d980016a9df7d511277244, type: 2}
+  weatherConfig: {fileID: 11400000, guid: f99156afb42521fe39d9c771384772d5, type: 2}
   WindEffectTag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
   TouchTriggerTag: {fileID: 11400000, guid: 88951f1e6715c0ebe861b844a3ce6929, type: 2}

@@ -156,26 +156,32 @@ public class SeasonConfig : RangeUI
     public DailySchedule dayTime;
 
     [Header("Times of day")]
+    
     public Color dayColor;
     [Min(0.1f)]
-    public float dayLerpTime;
+    [Label("Day lerp duration (game hour)")]
+    public float dayLerpDuration;
+   
     public Color eveningColor;
     [Min(0.1f)]
-    public float eveningLerpTime;
+    [Label("Evening lerp duration (game hour)")]
+    public float eveningLerpDuration;
+    
     public Color nightColor;
     [Min(0.1f)]
-    public float nightLerpTime;
+    [Label("Night lerp duration (game hour)")]
+    public float nightLerpDuration;
 
     public (Color color,float lerpTIme) GetColor(TimeOfDay timeOfDay)
     {
         switch(timeOfDay)
         {
             case TimeOfDay.Day:
-                return (dayColor,dayLerpTime);
+                return (dayColor,dayLerpDuration);
             case TimeOfDay.Evening:
-                return (eveningColor,eveningLerpTime);
+                return (eveningColor,eveningLerpDuration);
             case TimeOfDay.Night:
-                return (nightColor,nightLerpTime);
+                return (nightColor,nightLerpDuration);
         }
         return default;
     }

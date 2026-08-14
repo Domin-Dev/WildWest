@@ -15,7 +15,7 @@ MonoBehaviour:
   startHour: 8
   startDay: 1
   startSeason: 0
-  HourDuration: 0.5
+  HourDuration: 0.01
   SeasonDuration: 4
   Spring:
     iconSprite: {fileID: -1301959960, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
@@ -25,11 +25,11 @@ MonoBehaviour:
       eveningStart: 18
       nightStart: 21
     dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpTime: 1.5
+    dayLerpDuration: 1
     eveningColor: {r: 0.5515937, g: 0.5515937, b: 0.5515937, a: 1}
-    eveningLerpTime: 1
+    eveningLerpDuration: 1
     nightColor: {r: 0.02, g: 0.02, b: 0.02, a: 1}
-    nightLerpTime: 1
+    nightLerpDuration: 1
   Summer:
     iconSprite: {fileID: -1385579639, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -2068532676, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -38,11 +38,11 @@ MonoBehaviour:
       eveningStart: 19
       nightStart: 22
     dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpTime: 1
+    dayLerpDuration: 1
     eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
-    eveningLerpTime: 1
+    eveningLerpDuration: 1
     nightColor: {r: 0.03, g: 0.03, b: 0.03, a: 1}
-    nightLerpTime: 1
+    nightLerpDuration: 1
   Autumn:
     iconSprite: {fileID: -851605624, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -749013264, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -51,11 +51,11 @@ MonoBehaviour:
       eveningStart: 17
       nightStart: 20
     dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpTime: 2
+    dayLerpDuration: 1
     eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
-    eveningLerpTime: 0.5
+    eveningLerpDuration: 1
     nightColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
-    nightLerpTime: 1
+    nightLerpDuration: 1
   Winter:
     iconSprite: {fileID: 1140630064, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 1051364945, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -64,11 +64,11 @@ MonoBehaviour:
       eveningStart: 16
       nightStart: 19
     dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpTime: 2.5
+    dayLerpDuration: 1
     eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
-    eveningLerpTime: 0.5
+    eveningLerpDuration: 1
     nightColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
-    nightLerpTime: 1
+    nightLerpDuration: 1
   rangesUI:
   - iconSprite: {fileID: 1696318910, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 454127794, guid: c182df5009004d04a988c5293dda1a5a, type: 3}

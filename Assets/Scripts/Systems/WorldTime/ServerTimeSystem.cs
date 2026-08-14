@@ -14,13 +14,13 @@ using UnityEngine.Rendering.Universal;
 
 public struct CurrentTime : IComponentData
 {
+    public float WorldTime => Hour + Day * 24f;
+
     public float Hour;
     public TimeOfDay TimeOfDay;
     public float NextTimeOfDay;
     public int Day;
     public Season season;
-
-
     public NetworkTick startTick;
     public float startHour;
 }

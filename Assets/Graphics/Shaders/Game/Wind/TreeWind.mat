@@ -55,9 +55,10 @@ Material:
     m_Ints: []
     m_Floats:
     - _Influence: 0.1
-    - _Scale: 0.39
-    - _Speed: 0.91
-    - _WindIntensity: 0.19
+    - _InfluenceResistance: 0.5
+    - _Scale: 0.87
+    - _Speed: 0.45
+    - _WindIntensity: 0.909
     - _YCutOff: 0
     - _YMask: 3.68
     m_Colors: []

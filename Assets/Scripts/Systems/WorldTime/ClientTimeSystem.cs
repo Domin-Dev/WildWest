@@ -9,15 +9,12 @@ public partial struct ClientTimeSystem : ISystem
     public static Action<CurrentTime> OnNextDay;
     public static Action<CurrentTime> OnNextSeason;
     public static Action<CurrentTime> OnNextTimeOfDay;
-    private int period;
-    private NetworkTick lastInvoke;
 
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<CurrentTime>();
         state.RequireForUpdate<TimeConfig>();
         state.RequireForUpdate<NetworkTime>();
-        period = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate / 10;
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -29,14 +26,8 @@ public partial struct ClientTimeSystem : ISystem
         if(currentTick.IsValid)
         {
             TimeService.UpdateCurrentTime(currentTick,worldTime,config,out int ticksSince,out bool nextDay,out bool nextSeason,out bool nextTimeOfDay);   
-            if(!lastInvoke.IsValid)
-                lastInvoke = currentTick;
+            OnTimeUpdate?.Invoke(worldTime.ValueRO);
             
-            if(currentTick.TicksSince(lastInvoke) >= period)
-            {
-                lastInvoke.Add((uint)period);
-                OnTimeUpdate?.Invoke(worldTime.ValueRO);
-            }
             if(nextDay)
             {
                 OnNextDay?.Invoke(worldTime.ValueRO);

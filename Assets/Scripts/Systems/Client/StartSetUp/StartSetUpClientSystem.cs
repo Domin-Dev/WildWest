@@ -29,6 +29,7 @@ partial struct StartSetUpClientSystem : ISystem
                 sensitivityPlayerMove = 1f,
                 spreadRecovery = 0.06f,
             });
+            EntityHelper.CreateEntityWithComponent(ecb,new LocalWeather());
       
       
             ecb.Playback(state.EntityManager);

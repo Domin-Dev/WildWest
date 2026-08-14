@@ -19,7 +19,13 @@ MonoBehaviour:
   icon: {fileID: -2102112228, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   worldSprite: {fileID: 0}
   animSprites: []
-  tags: []
+  tags:
+  - Tag: {fileID: 11400000, guid: b14337bf76eb4537bbef6683b83fc211, type: 2}
+    TagSettings:
+      rid: 8123484703018975330
+  - Tag: {fileID: 11400000, guid: 88951f1e6715c0ebe861b844a3ce6929, type: 2}
+    TagSettings:
+      rid: 8123484703018975331
   crafingIngredients:
   - itemID: 10
     number: 0
@@ -94,4 +100,15 @@ MonoBehaviour:
   shadowHeight: 0
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 8123484703018975330
+      type: {class: TagSettingsMaterial, ns: , asm: Assembly-CSharp}
+      data:
+        material: {fileID: 2100000, guid: f61a574786271390da3ac61a83a89e0c, type: 2}
+        effectSound: {fileID: 8300000, guid: 856180e0a27ca7872aeb5932ca62233d, type: 3}
+        influence: 0.5
+    - rid: 8123484703018975331
+      type: {class: TagSettingsTrigger, ns: , asm: Assembly-CSharp}
+      data:
+        triggerShape: 0
+        margin: 0
