@@ -21,7 +21,6 @@ public class WorldConfig : ScriptableObject
     public static WorldTimeConfig TimeConfig => Instance.worldTimeConfig;
     public static WeatherConfig WeatherConfig => Instance.weatherConfig;
 
-
     [SerializeField] private WorldTimeConfig worldTimeConfig;
     [SerializeField] private WeatherConfig weatherConfig;
     [Space]

@@ -8,13 +8,14 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 
 public struct CurrentTime : IComponentData
 {
-    public float WorldTime => Hour + Day * 24f;
+    public double WorldTime => GetWorldTime(Hour,Day);
 
     public float Hour;
     public TimeOfDay TimeOfDay;
@@ -23,6 +24,15 @@ public struct CurrentTime : IComponentData
     public Season season;
     public NetworkTick startTick;
     public float startHour;
+
+    public double GetWorldTime(float hour)
+    {
+        return GetWorldTime(hour,Day);
+    }
+    public double GetWorldTime(float hour,int day)
+    {
+        return hour +  (day-1) * 24f;
+    }
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]

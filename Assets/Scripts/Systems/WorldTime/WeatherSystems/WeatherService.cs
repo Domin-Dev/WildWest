@@ -13,16 +13,16 @@ public static class WeatherService
     public static LocalWeather GetWeather(int worldSeed,in CurrentTime currentTime, float2 position)
     {
         float2 windDir = GetWindDirection(position,currentTime.WorldTime,worldSeed);
-        Vector2 weatherPosition = position - windDir * currentTime.WorldTime * 0.1f;
+        Vector2 weatherPosition = position - windDir * (float)currentTime.WorldTime * 0.1f;
 
         return new LocalWeather()
         {
             Wind = windDir,
-        };
+        }; 
     }
-    private static float2 GetWindDirection(float2 position,float worldTime,int worldSeed)
+    private static float2 GetWindDirection(float2 position,double worldTime,int worldSeed)
     {
-        float2 windNoisePos = position * 0.1f + worldTime * 0.3f;
+        float2 windNoisePos = position * 0.1f + (float)worldTime * 0.3f;
         float2 windDir = ValueToDirection(Noise(windNoisePos, worldSeed + 1, 0.03f));
         float windSpeed = Noise(windNoisePos, worldSeed + 2, 0.03f) * WorldConfig.WeatherConfig.MaxWindSpeed;
     

@@ -47,7 +47,6 @@ public partial struct ClientWeatherSystem : ISystem
             }
             LocalWeather previousValue = localWeather.ValueRO;
             localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
-            UnityEngine.Debug.Log(" ppp " + period);
             OnWeatherUpdate?.Invoke(previousValue,localWeather.ValueRO,currentTime);
             lastTick = currentTick;
         }

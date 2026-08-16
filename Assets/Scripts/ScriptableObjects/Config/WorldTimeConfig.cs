@@ -3,6 +3,7 @@ using NaughtyAttributes;
 using Unity.VisualScripting;
 using UnityEngine.Experimental.GlobalIllumination;
 using Unity.Entities.UniversalDelegates;
+using JetBrains.Annotations;
 
 [CreateAssetMenu(fileName = "WorldTimeConfig", menuName = "GameAsset/ConfigFiles/WorldTimeConfig")]
 public class WorldTimeConfig : ScriptableObject
@@ -67,6 +68,11 @@ public class WorldTimeConfig : ScriptableObject
                 return Winter;
         }
         return null;
+    }
+    public double GetWorldTimeStartCurrentSeason(in CurrentTime currentTime)
+    {
+        int x = (currentTime.Day -1) % SeasonDuration; 
+        return currentTime.GetWorldTime(0,currentTime.Day - x);
     }
     public static Season GetNextSeason(Season current)
     {
@@ -154,6 +160,7 @@ public class RangeUI
 public class SeasonConfig : RangeUI
 {
     public DailySchedule dayTime;
+    public WhiteBalance whiteBalance;
 
     [Header("Times of day")]
     
@@ -199,6 +206,19 @@ public enum  TimeOfDay : byte
     Evening = 1,
     Night = 2
 }
+
+[System.Serializable]
+public struct WhiteBalance
+{
+    [Range(-100f, 100f)]
+    public float Temperature;
+    [Range(-100f, 100f)]
+    public float Tint;
+    [Min(0.1f)]
+    [Label("Lerp duration (game hour)")]
+    public float LerpDuration;
+}
+
 [System.Serializable]
 public struct DailySchedule
 {    

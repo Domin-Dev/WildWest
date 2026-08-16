@@ -122,8 +122,9 @@ public class MapVisualization : MonoBehaviour
 
         meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
         bordersMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;
-        clouds.AddComponent<SortingGroup>().sortingOrder = 10;
-        
+        var sortingGroup = clouds.AddComponent<SortingGroup>();
+        sortingGroup.sortingOrder = 10;
+        sortingGroup.sortAtRoot = true;
 
         Mesh mesh = new Mesh();
         Mesh bordersMesh = new Mesh();

@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c568faa839ee21bcba9e894be9708be2, type: 3}
   m_Name: WorldTimeConfig
   m_EditorClassIdentifier: Assembly-CSharp::WorldTimeConfig
-  startHour: 8
+  startHour: 5
   startDay: 1
-  startSeason: 0
-  HourDuration: 0.01
-  SeasonDuration: 4
+  startSeason: 2
+  HourDuration: 0.1
+  SeasonDuration: 2
   Spring:
     iconSprite: {fileID: -1301959960, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 1777326124, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -24,6 +24,10 @@ MonoBehaviour:
       dayStart: 6
       eveningStart: 18
       nightStart: 21
+    whiteBalance:
+      Temperature: 14
+      Tint: -10
+      LerpDuration: 36
     dayColor: {r: 1, g: 1, b: 1, a: 1}
     dayLerpDuration: 1
     eveningColor: {r: 0.5515937, g: 0.5515937, b: 0.5515937, a: 1}
@@ -37,6 +41,10 @@ MonoBehaviour:
       dayStart: 4
       eveningStart: 19
       nightStart: 22
+    whiteBalance:
+      Temperature: 60
+      Tint: 50
+      LerpDuration: 36
     dayColor: {r: 1, g: 1, b: 1, a: 1}
     dayLerpDuration: 1
     eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
@@ -50,6 +58,10 @@ MonoBehaviour:
       dayStart: 7
       eveningStart: 17
       nightStart: 20
+    whiteBalance:
+      Temperature: 20
+      Tint: 90
+      LerpDuration: 36
     dayColor: {r: 1, g: 1, b: 1, a: 1}
     dayLerpDuration: 1
     eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
@@ -63,6 +75,10 @@ MonoBehaviour:
       dayStart: 8
       eveningStart: 16
       nightStart: 19
+    whiteBalance:
+      Temperature: -70
+      Tint: 10
+      LerpDuration: 36
     dayColor: {r: 1, g: 1, b: 1, a: 1}
     dayLerpDuration: 1
     eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}

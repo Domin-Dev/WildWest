@@ -1,5 +1,7 @@
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 
@@ -50,10 +52,12 @@ public class DailyCycleUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI dayCounter;
     [SerializeField] private GameObject rangePrefab;
     [SerializeField] private Light2D globalLight;
+    [SerializeField] private Volume volume;
     
     public static DailyCycleUI instance { private set; get; }
     private LerpLight lerpLight;
     private LerpWeather lerpWeather;
+    private LerpGlobalVolume lerpGlobalVolume;
 
 
     private void Awake()
@@ -73,17 +77,20 @@ public class DailyCycleUI : MonoBehaviour
         seasonBar.UpdateBar();
         lerpLight = new LerpLight(globalLight);
         lerpWeather = new LerpWeather();
+        lerpGlobalVolume = new LerpGlobalVolume(volume);
     }
     public void OnEnable()
     {
         ClientTimeSystem.OnTimeUpdate += UpdateTime;
         ClientTimeSystem.OnNextDay += UpdateDayCounter;
         ClientTimeSystem.OnNextTimeOfDay += UpdateTimeOfDay;
+        ClientTimeSystem.OnNextSeason += SeasonStart;
 
         GoInGameCilientSystem.OnStartTimer += UpdateTime;
         GoInGameCilientSystem.OnStartTimer += UpdateDayCounter;
         GoInGameCilientSystem.OnStartTimer += UpdateTimeOfDay;
         GoInGameCilientSystem.OnStartTimer += SetSunColor;
+        GoInGameCilientSystem.OnStartTimer += SetGlobalVolume;
 
         ClientWeatherSystem.OnWeatherUpdate += UpdateWind;
     }
@@ -92,11 +99,13 @@ public class DailyCycleUI : MonoBehaviour
         ClientTimeSystem.OnTimeUpdate -= UpdateTime;
         ClientTimeSystem.OnNextDay -= UpdateDayCounter;
         ClientTimeSystem.OnNextTimeOfDay -= UpdateTimeOfDay;
+        ClientTimeSystem.OnNextSeason -= SeasonStart;
 
         GoInGameCilientSystem.OnStartTimer -= UpdateTime;
         GoInGameCilientSystem.OnStartTimer -= UpdateDayCounter;
         GoInGameCilientSystem.OnStartTimer -= UpdateTimeOfDay;
         GoInGameCilientSystem.OnStartTimer -= SetSunColor;
+        GoInGameCilientSystem.OnStartTimer -= SetGlobalVolume;
 
         ClientWeatherSystem.OnWeatherUpdate -= UpdateWind;
     }
@@ -105,46 +114,68 @@ public class DailyCycleUI : MonoBehaviour
     private void UpdateTime(CurrentTime time)
     {
         timeOfDayBar.SetValue(time.Hour/24f);
-        lerpLight.Update(time.Hour);
-        lerpWeather.Update(time.Hour);
+        
+        lerpLight.Update(time.WorldTime);
+        lerpWeather.Update(time.WorldTime);
+        lerpGlobalVolume.Update(time.WorldTime);
     }
     private void UpdateDayCounter(CurrentTime time)
     {
         dayCounter.text = "Day " + time.Day;
         timeOfDayBar.UpdateBar(WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day).GetTimes());
-        float season = ((time.Day - 1) % WorldConfig.TimeConfig.SeasonDuration) / (float)(WorldConfig.TimeConfig.SeasonDuration - 1);
+        float season = ((time.Day - 1) % WorldConfig.TimeConfig.SeasonDuration) / (float)(WorldConfig.TimeConfig.SeasonDuration);
         seasonBar.SetValue(((int)time.season + season) * 0.25f);
     }
     private void UpdateTimeOfDay(CurrentTime time)
     {
         (Color color, float lerpTime) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
         var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day);
-        float start = schedule.GetStartTimeOfDay(time.TimeOfDay);
-        lerpLight.Start(globalLight.color,color,start,lerpTime);
+        float startHour = schedule.GetStartTimeOfDay(time.TimeOfDay);
+
+        lerpLight.Start(globalLight.color,color,time.GetWorldTime(startHour),lerpTime);
     }
     private void SetSunColor(CurrentTime time)
     {
         (Color color, float lerpT) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
         var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day);
-        float start = schedule.GetStartTimeOfDay(time.TimeOfDay);
+        double start = time.GetWorldTime(schedule.GetStartTimeOfDay(time.TimeOfDay));
         
-        if(time.Hour - start >= lerpT || (time.Hour < start && 24 + time.Hour - start >= lerpT))
-            globalLight.color = color;
+        if(time.WorldTime - start >= lerpT)
+            lerpLight.Set(color);
         else
         {
             (Color preColor, float _) = WorldConfig.TimeConfig.GetPreviousTimeOfDayColor(time);        
             lerpLight.Start(preColor,color,start,lerpT);
-            lerpLight.Update(time.Hour);
+            lerpLight.Update(time.WorldTime);
         }
     }
+    private void SetGlobalVolume(CurrentTime time)
+    {
+        double worldTimeStart = WorldConfig.TimeConfig.GetWorldTimeStartCurrentSeason(time); 
+        var current = WorldConfig.TimeConfig.GetSeason(time.season);
 
+        if(worldTimeStart - worldTimeStart > current.whiteBalance.LerpDuration)
+        {
+            lerpGlobalVolume.Set(current.whiteBalance);
+        }
+        else
+        {
+            var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.season));
+            lerpGlobalVolume.Start(previous.whiteBalance,current.whiteBalance,worldTimeStart,current.whiteBalance.LerpDuration);
+        }
+    }
+    private void SeasonStart(CurrentTime time)
+    {
+        var current = WorldConfig.TimeConfig.GetSeason(time.season);
+        var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.season));
+        lerpGlobalVolume.Start(previous.whiteBalance,current.whiteBalance,time.WorldTime,current.whiteBalance.LerpDuration);
+    }
     #endregion
    
     #region Weather
     private void UpdateWind(LocalWeather previousLocalWeather,LocalWeather localWeather, CurrentTime currentTime)
     {
-        Debug.Log(previousLocalWeather.Wind + " " + localWeather.Wind);
-        lerpWeather.Start(previousLocalWeather,localWeather,currentTime.Hour,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
+        lerpWeather.Start(previousLocalWeather,localWeather,currentTime.WorldTime,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
     }
     #endregion
 }

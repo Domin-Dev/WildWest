@@ -12,8 +12,7 @@ public static class TimeService
         float hour = rawHour;
         newSeason = false;
         nextTimeOfDay = false;
-        
-             
+               
         if(hour >= 24)
         {
             hour -= 24;
