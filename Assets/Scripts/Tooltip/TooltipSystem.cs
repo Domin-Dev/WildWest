@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
@@ -10,9 +11,10 @@ public class TooltipSystem : MonoBehaviour
 {
     [SerializeField] private Tooltip tooltip;
 
+    public static float defaultDelay = 0.45f;
+    private static Timer updater;
     private static TooltipSystem current;
     private static Timer timer;
-
     private object displayingObj;
 
     private void Awake()
@@ -25,7 +27,19 @@ public class TooltipSystem : MonoBehaviour
         else
             Destroy(gameObject);
     }
-
+    public static void AddTriggerToUpdate(DynamicTooltipTrigger trigger)
+    {
+        updater?.Cancel();
+        updater = Timer.Create(defaultDelay,() =>
+        {
+            trigger.UpdateTooltip();
+            return false;
+        });
+    }
+    public static void RemoveTriggerToUpdate(DynamicTooltipTrigger trigger)
+    {
+        updater?.Cancel();
+    }
     public static void Show(IHaveTooltip tooltip)
     {
         Show(tooltip.GetTooltip());
@@ -52,8 +66,7 @@ public class TooltipSystem : MonoBehaviour
             ShowInstant(tooltipInfo);
         else
             Show(tooltipInfo);
-    }
-    
+    }   
     public static void Show(Func<TooltipInfo> func)
     {
         ShowBase(() =>
@@ -68,7 +81,6 @@ public class TooltipSystem : MonoBehaviour
         });
     }
     
-
     private static void ShowBase(Func<bool> func, float time = 0.45f)
     {
         if (timer != null) timer.Cancel();
@@ -84,12 +96,6 @@ public class TooltipSystem : MonoBehaviour
         ShowInstant(tooltip.content, tooltip.header,tooltip.displayingObj, tooltip.headerColor);
     }
 
-
-
-
-
-
-
     public static bool IsDisplaying(object obj)
     {
         return obj.Equals(current.displayingObj);
@@ -98,7 +104,6 @@ public class TooltipSystem : MonoBehaviour
     {
         return current.displayingObj is T;
     }
-
     public static bool IsSlotPostion(out SlotPosition? slotPosition)
     {
         if(current.displayingObj is SlotPosition)
@@ -109,7 +114,6 @@ public class TooltipSystem : MonoBehaviour
         slotPosition = null;
         return false;
     }
-
     public static bool IsSelected(SlotPosition slotPosition)
     {
         if(IsSlotPostion(out SlotPosition? s))
@@ -118,7 +122,6 @@ public class TooltipSystem : MonoBehaviour
         }
         return false;
     }
-
     public static void Hide()
     {
         current.displayingObj = null;

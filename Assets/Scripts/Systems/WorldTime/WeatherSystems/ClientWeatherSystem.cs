@@ -10,8 +10,11 @@ public struct LocalWeather : IComponentData
     public float Temperature;
     public float Humidity;
     public float Cloudiness;
-    public float Precipitation;
+    public float Precipitation; 
     public float2 Wind;
+    public float WindSpeed => math.length(Wind);
+    public NetworkTick nextUpdate;
+    public bool IsRaining;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -19,8 +22,7 @@ public struct LocalWeather : IComponentData
 public partial struct ClientWeatherSystem : ISystem
 {
     public static Action<LocalWeather,LocalWeather,CurrentTime> OnWeatherUpdate;
-    private int period;
-    private NetworkTick lastTick;
+    private uint period;
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<CurrentTime>();
@@ -28,15 +30,18 @@ public partial struct ClientWeatherSystem : ISystem
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<LocalWeather>();
         state.RequireForUpdate<MapSettings>();
-        period = (int)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * 60 * WorldConfig.TimeConfig.HourDuration * WorldConfig.WeatherConfig.WeatherUpdatePeriod);
+        period = (uint)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * 60 * WorldConfig.TimeConfig.HourDuration * WorldConfig.WeatherConfig.WeatherUpdatePeriod);
     }
     public void OnUpdate(ref SystemState state)
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var localWeather = SystemAPI.GetSingletonRW<LocalWeather>();
+
         NetworkTick currentTick = networkTime.ServerTick;
-        if(currentTick.IsValid && (!lastTick.IsValid || currentTick.TicksSince(lastTick) >= period))
+        NetworkTick nextUpdate = localWeather.ValueRO.nextUpdate;
+
+        if(currentTick.IsValid && nextUpdate.TicksSince(currentTick) <= 0)
         {
-            var localWeather = SystemAPI.GetSingletonRW<LocalWeather>();
             var mapSettings = SystemAPI.GetSingleton<MapSettings>();
             var currentTime = SystemAPI.GetSingleton<CurrentTime>();
             float2 playerPosition = float2.zero;    
@@ -45,10 +50,18 @@ public partial struct ClientWeatherSystem : ISystem
             {
                 playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
             }
+
             LocalWeather previousValue = localWeather.ValueRO;
             localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
+
+            UnityEngine.Debug.Log(" Temperature = " + localWeather.ValueRO.Temperature +
+             " Wind = " + localWeather.ValueRO.WindSpeed + $" ({localWeather.ValueRO.Wind}) " + 
+            " Clouds = " + localWeather.ValueRO.Cloudiness + 
+            " Precipitation = " + localWeather.ValueRO.Precipitation);
+            nextUpdate.Add(period);
+            localWeather.ValueRW.nextUpdate = nextUpdate;
+            
             OnWeatherUpdate?.Invoke(previousValue,localWeather.ValueRO,currentTime);
-            lastTick = currentTick;
         }
     }
 }

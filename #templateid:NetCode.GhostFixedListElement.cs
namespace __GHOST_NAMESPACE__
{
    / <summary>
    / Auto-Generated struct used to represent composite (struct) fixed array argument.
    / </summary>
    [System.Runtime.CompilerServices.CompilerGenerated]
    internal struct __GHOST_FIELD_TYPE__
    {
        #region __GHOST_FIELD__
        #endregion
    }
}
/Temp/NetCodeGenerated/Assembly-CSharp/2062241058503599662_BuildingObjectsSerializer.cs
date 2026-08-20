@@ -48,8 +48,8 @@ namespace Assembly_CSharp_Generated
             public int id;
             public int variantIndex;
             public int stateIndex;
-            public float hitPoints;
-            public float maxHitPoints;
+            public int hitPoints;
+            public int maxHitPoints;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
         private const int ChangeMaskBits = 7;
@@ -76,8 +76,8 @@ namespace Assembly_CSharp_Generated
                 snapshot.id = (int) component.id;
                 snapshot.variantIndex = (int) component.variantIndex;
                 snapshot.stateIndex = (int) component.stateIndex;
-                snapshot.hitPoints = component.hitPoints;
-                snapshot.maxHitPoints = component.maxHitPoints;
+                snapshot.hitPoints = (int) component.hitPoints;
+                snapshot.maxHitPoints = (int) component.maxHitPoints;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.CopyFromSnapshotGenerated"/>
@@ -90,8 +90,8 @@ namespace Assembly_CSharp_Generated
                 component.id = (int) snapshotBefore.id;
                 component.variantIndex = (short) snapshotBefore.variantIndex;
                 component.stateIndex = (short) snapshotBefore.stateIndex;
-                component.hitPoints = snapshotBefore.hitPoints;
-                component.maxHitPoints = snapshotBefore.maxHitPoints;
+                component.hitPoints = (int) snapshotBefore.hitPoints;
+                component.maxHitPoints = (int) snapshotBefore.maxHitPoints;
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.RestoreFromBackupGenerated"/>
@@ -117,6 +117,8 @@ namespace Assembly_CSharp_Generated
             snapshot.id = predictor.PredictInt(snapshot.id, baseline1.id, baseline2.id);
             snapshot.variantIndex = predictor.PredictInt(snapshot.variantIndex, baseline1.variantIndex, baseline2.variantIndex);
             snapshot.stateIndex = predictor.PredictInt(snapshot.stateIndex, baseline1.stateIndex, baseline2.stateIndex);
+            snapshot.hitPoints = predictor.PredictInt(snapshot.hitPoints, baseline1.hitPoints, baseline2.hitPoints);
+            snapshot.maxHitPoints = predictor.PredictInt(snapshot.maxHitPoints, baseline1.maxHitPoints, baseline2.maxHitPoints);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.CalculateChangeMaskGenerated"/>
@@ -153,9 +155,9 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedIntDelta(snapshot.stateIndex, baseline.stateIndex, compressionModel);
             if ((changeMask & (1 << 5)) != 0)
-                writer.WritePackedFloatDelta(snapshot.hitPoints, baseline.hitPoints, compressionModel);
+                writer.WritePackedIntDelta(snapshot.hitPoints, baseline.hitPoints, compressionModel);
             if ((changeMask & (1 << 6)) != 0)
-                writer.WritePackedFloatDelta(snapshot.maxHitPoints, baseline.maxHitPoints, compressionModel);
+                writer.WritePackedIntDelta(snapshot.maxHitPoints, baseline.maxHitPoints, compressionModel);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -181,10 +183,10 @@ namespace Assembly_CSharp_Generated
                 writer.WritePackedIntDelta(snapshot.stateIndex, baseline.stateIndex, compressionModel);
             changeMask |= (snapshot.hitPoints != baseline.hitPoints) ? (1u<<5) : 0;
             if ((changeMask & (1 << 5)) != 0)
-                writer.WritePackedFloatDelta(snapshot.hitPoints, baseline.hitPoints, compressionModel);
+                writer.WritePackedIntDelta(snapshot.hitPoints, baseline.hitPoints, compressionModel);
             changeMask |= (snapshot.maxHitPoints != baseline.maxHitPoints) ? (1u<<6) : 0;
             if ((changeMask & (1 << 6)) != 0)
-                writer.WritePackedFloatDelta(snapshot.maxHitPoints, baseline.maxHitPoints, compressionModel);
+                writer.WritePackedIntDelta(snapshot.maxHitPoints, baseline.maxHitPoints, compressionModel);
             GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 7);
         }
 
@@ -216,11 +218,11 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.stateIndex = baseline.stateIndex;
             if ((changeMask & (1 << 5)) != 0)
-                snapshot.hitPoints = reader.ReadPackedFloatDelta(baseline.hitPoints, compressionModel);
+                snapshot.hitPoints = reader.ReadPackedIntDelta(baseline.hitPoints, compressionModel);
             else
                 snapshot.hitPoints = baseline.hitPoints;
             if ((changeMask & (1 << 6)) != 0)
-                snapshot.maxHitPoints = reader.ReadPackedFloatDelta(baseline.maxHitPoints, compressionModel);
+                snapshot.maxHitPoints = reader.ReadPackedIntDelta(baseline.maxHitPoints, compressionModel);
             else
                 snapshot.maxHitPoints = baseline.maxHitPoints;
         }

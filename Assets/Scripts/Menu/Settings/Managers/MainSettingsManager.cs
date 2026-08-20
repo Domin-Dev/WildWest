@@ -36,6 +36,9 @@ public class MainSettingsManager : MonoBehaviour
             
             return;
         }
+    }
+    private void Start()
+    {
         SetSettings();
     }
 

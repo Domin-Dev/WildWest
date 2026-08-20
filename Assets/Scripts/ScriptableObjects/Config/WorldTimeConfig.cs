@@ -4,6 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine.Experimental.GlobalIllumination;
 using Unity.Entities.UniversalDelegates;
 using JetBrains.Annotations;
+using UnityEngine.Localization;
 
 [CreateAssetMenu(fileName = "WorldTimeConfig", menuName = "GameAsset/ConfigFiles/WorldTimeConfig")]
 public class WorldTimeConfig : ScriptableObject
@@ -34,12 +35,12 @@ public class WorldTimeConfig : ScriptableObject
 
     public (Color color,float dayLerpTime) GetTimeOfDayColor(in CurrentTime currentTime)
     {
-        var season = GetSeason(currentTime.season);
-        return season.GetColor(currentTime.TimeOfDay);
+        var season = GetSeason(currentTime.Season);
+        return season.timesOfDay.GetColor(currentTime.TimeOfDay);
     }
     public (Color color,float dayLerpTime) GetPreviousTimeOfDayColor(in CurrentTime currentTime)
     {
-        Season season = currentTime.season;
+        Season season = currentTime.Season;
         if(currentTime.TimeOfDay == TimeOfDay.Day)
         {
             int seasonDay = (currentTime.Day - 1) % SeasonDuration;
@@ -48,7 +49,7 @@ public class WorldTimeConfig : ScriptableObject
         }
 
         var config = GetSeason(season);
-        return config.GetColor(GetPreviousTimeOfDay(currentTime.TimeOfDay));
+        return config.timesOfDay.GetColor(GetPreviousTimeOfDay(currentTime.TimeOfDay));
     }
     public SeasonConfig[] Seasons => new SeasonConfig[]
     {
@@ -139,6 +140,15 @@ public class WorldTimeConfig : ScriptableObject
             return 24;
         } 
     }
+    public TimeOfDayUI GetTimeOfDayUI(TimeOfDay timeOfDay)
+    {
+        foreach(var i in rangesUI)
+        {
+            if(i.TimeOfDay == timeOfDay)
+                return i;
+        }
+        return null;
+    }
 }
 
 
@@ -147,51 +157,23 @@ public class WorldTimeConfig : ScriptableObject
 public class TimeOfDayUI : RangeUI
 {
     public TimeOfDay TimeOfDay;
+    public LocalizedString LocalizedString;
+    public Color Color;
 } 
 public class RangeUI
 {
     public Sprite iconSprite;
     public Sprite barSprite;
 } 
-
-
-
 [System.Serializable]
 public class SeasonConfig : RangeUI
 {
+    public LocalizedString seasonName;
+    public Color seasonColor;
     public DailySchedule dayTime;
+    public TimesOfDay timesOfDay;
     public WhiteBalance whiteBalance;
-
-    [Header("Times of day")]
-    
-    public Color dayColor;
-    [Min(0.1f)]
-    [Label("Day lerp duration (game hour)")]
-    public float dayLerpDuration;
-   
-    public Color eveningColor;
-    [Min(0.1f)]
-    [Label("Evening lerp duration (game hour)")]
-    public float eveningLerpDuration;
-    
-    public Color nightColor;
-    [Min(0.1f)]
-    [Label("Night lerp duration (game hour)")]
-    public float nightLerpDuration;
-
-    public (Color color,float lerpTIme) GetColor(TimeOfDay timeOfDay)
-    {
-        switch(timeOfDay)
-        {
-            case TimeOfDay.Day:
-                return (dayColor,dayLerpDuration);
-            case TimeOfDay.Evening:
-                return (eveningColor,eveningLerpDuration);
-            case TimeOfDay.Night:
-                return (nightColor,nightLerpDuration);
-        }
-        return default;
-    }
+    public SeasonWeather seasonWeather;
 }
 public enum Season : byte
 {
@@ -252,3 +234,60 @@ public struct DailySchedule
         return default;
     }
 }
+[System.Serializable]
+public struct SeasonWeather
+{
+    [Header("Temperature")]
+    [Label("Base Temperature (°C)")]
+    [Range(-60,60)]
+    public float BaseTemperature;
+    [Label("Daily Variation (°C)")]
+    [Range(-60,60)]
+    public float DailyVariation;
+    [Label("Daily Amplitude (°C)")]
+    [Range(-60,60)]
+    public float DailyAmplitude;
+
+    [Header("Precipitation")]
+    [Range(-1f,1f)]
+    public float BasePrecipitation;
+    [Header("Cloudiness")]
+    [Range(-1f,1f)]
+    public float BaseCloudiness;
+    [Header("Wind")]
+    [Range(-1f,1f)]
+    public float BaseWindSpeed;
+}
+[System.Serializable]
+public struct TimesOfDay
+{
+    public Color dayColor;
+    [Min(0.1f)]
+    [Label("Day lerp duration (game hour)")]
+    public float dayLerpDuration;
+   
+    public Color eveningColor;
+    [Min(0.1f)]
+    [Label("Evening lerp duration (game hour)")]
+    public float eveningLerpDuration;
+    
+    public Color nightColor;
+    [Min(0.1f)]
+    [Label("Night lerp duration (game hour)")]
+    public float nightLerpDuration;
+
+    public (Color color,float lerpTIme) GetColor(TimeOfDay timeOfDay)
+    {
+        switch(timeOfDay)
+        {
+            case TimeOfDay.Day:
+                return (dayColor,dayLerpDuration);
+            case TimeOfDay.Evening:
+                return (eveningColor,eveningLerpDuration);
+            case TimeOfDay.Night:
+                return (nightColor,nightLerpDuration);
+        }
+        return default;
+    }
+}
+    

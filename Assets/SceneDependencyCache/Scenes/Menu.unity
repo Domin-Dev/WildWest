@@ -5847,7 +5847,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2994b0fd24102d9429caf02d569952b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sounds
-  soundsConfig: {fileID: 0}
+  soundsConfig: {fileID: 11400000, guid: f994122c091c692a3907aa569ee48c38, type: 2}
   swordSounds: []
   hitSounds: []
   ShieldSounds: []

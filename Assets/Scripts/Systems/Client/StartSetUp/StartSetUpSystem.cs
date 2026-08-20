@@ -27,7 +27,6 @@ partial struct StartSetUpSystem : ISystem
                 SeasonDuration = WorldConfig.TimeConfig.SeasonDuration
             });
             
-
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
         }

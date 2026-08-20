@@ -1,63 +1,43 @@
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-
-
-
-// public class Thermometer
-// {
-//     public RectTransform bar;
-//     public Image image;
-//     public float pointZero;
-//     public float range;
-//     Color low,high;
-//     bool isLow;
-//     public Thermometer(RectTransform rect, float pointMax, float pointZero, Color low,Color high)
-//     {
-//         this.bar = rect;
-//         this.pointZero = pointZero;
-//         range = pointMax - pointZero;
-//         this.low = low;
-//         this.high = high;
-//         image = bar.GetComponent<Image>();
-//         isLow = false; 
-//         image.color = high;
-//     }
-//     public void SetValue(float value)
-//     {
-//         if (bar == null) return;
-//         float posY = range * value;
-//         if (value >= 0.5f  && isLow)
-//         {
-//           //  image.color = high;
-//             isLow = false;
-//         }
-//         else if (value < 0.5f && !isLow)
-//         {
-//           //  image.color = low;
-//             isLow = true;
-//         }
-//         this.bar.sizeDelta = new Vector2(bar.sizeDelta.x, posY + pointZero);
-//     }
-// }
-
 public class DailyCycleUI : MonoBehaviour
 {
-
     [SerializeField] private UIBar timeOfDayBar;
     [SerializeField] private UIBar seasonBar;
+    [SerializeField] private UIThermometer thermometer;
+    [SerializeField] private DynamicTooltipTrigger thermometerTrigger;
+
     [SerializeField] private TextMeshProUGUI dayCounter;
     [SerializeField] private GameObject rangePrefab;
     [SerializeField] private Light2D globalLight;
     [SerializeField] private Volume volume;
     
+    [Space]
+
+    [SerializeField] private LocalizedString currentTimeString;
+    [SerializeField] private LocalizedString currentSeasonString;
+    [SerializeField] private LocalizedString currentTimeOfDayString;
+    [SerializeField] private LocalizedString BeginsInDaysString;
+    [SerializeField] private LocalizedString temperatureString;
+
+    [Header("Rain")]
+
+    [SerializeField] private ParticleSystem rainParticleSystem;
+    [SerializeField] private ParticleSystem snowParticleSystem;
+ 
     public static DailyCycleUI instance { private set; get; }
     private LerpLight lerpLight;
     private LerpWeather lerpWeather;
     private LerpGlobalVolume lerpGlobalVolume;
+    private CurrentTime time;
+    private LocalWeather weather;
+
+
 
 
     private void Awake()
@@ -75,24 +55,64 @@ public class DailyCycleUI : MonoBehaviour
         timeOfDayBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.rangesUI);
         seasonBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.Seasons);
         seasonBar.UpdateBar();
+        thermometer.SetUpBar(WorldConfig.UIConfig.ThermometerConfig);
+
         lerpLight = new LerpLight(globalLight);
-        lerpWeather = new LerpWeather();
+        lerpWeather = new LerpWeather(rainParticleSystem,snowParticleSystem);
         lerpGlobalVolume = new LerpGlobalVolume(volume);
+
+        timeOfDayBar.GetComponent<DynamicTooltipTrigger>().SetUp(() =>
+        {
+            int hour = (int) time.Hour;
+            int minute = (int)((time.Hour - hour) * 60f);
+            var timeOfDay =  WorldConfig.TimeConfig.GetTimeOfDayUI(time.TimeOfDay);
+
+            return new TooltipInfo
+            (
+                currentTimeString.GetLocalizedString() + " " +(int)hour + ":" + minute.ToString("00") + "\n" +
+                currentTimeOfDayString.GetLocalizedString() + " : " + UIStringsHelper.GetColorfulString(timeOfDay.LocalizedString.GetLocalizedString(),timeOfDay.Color)
+            );        
+        });
+        seasonBar.GetComponent<DynamicTooltipTrigger>().SetUp(() =>
+        {
+            var nextSeason = WorldTimeConfig.GetNextSeason(time.Season);
+            int daysUntil =  WorldConfig.TimeConfig.SeasonDuration - (time.Day - 1) % WorldConfig.TimeConfig.SeasonDuration;
+            
+            var currentSeasonConfig = WorldConfig.TimeConfig.GetSeason(time.Season);
+            var nextSeasonConfig = WorldConfig.TimeConfig.GetSeason(nextSeason);
+
+            return new TooltipInfo
+            (
+                currentSeasonString.GetLocalizedString() + " : " + UIStringsHelper.GetColorfulString(currentSeasonConfig.seasonName.GetLocalizedString(),currentSeasonConfig.seasonColor) + "\n" +
+                BeginsInDaysString.GetLocalizedString(UIStringsHelper.GetColorfulString(nextSeasonConfig.seasonName.GetLocalizedString(),nextSeasonConfig.seasonColor),daysUntil)
+            ); 
+        });
+        thermometerTrigger.SetUp(() =>
+        {
+            return new TooltipInfo
+            (
+                temperatureString.GetLocalizedString() + " " + weather.Temperature.ToString("F1") +  " °C"
+            );
+        });
+        
+        rainParticleSystem.Stop(); 
     }
     public void OnEnable()
     {
         ClientTimeSystem.OnTimeUpdate += UpdateTime;
         ClientTimeSystem.OnNextDay += UpdateDayCounter;
         ClientTimeSystem.OnNextTimeOfDay += UpdateTimeOfDay;
-        ClientTimeSystem.OnNextSeason += SeasonStart;
+        ClientTimeSystem.OnNextSeason += SeasonStart;   
 
         GoInGameCilientSystem.OnStartTimer += UpdateTime;
         GoInGameCilientSystem.OnStartTimer += UpdateDayCounter;
         GoInGameCilientSystem.OnStartTimer += UpdateTimeOfDay;
         GoInGameCilientSystem.OnStartTimer += SetSunColor;
         GoInGameCilientSystem.OnStartTimer += SetGlobalVolume;
+        GoInGameCilientSystem.OnStartTimer += SetUpWeather;
 
-        ClientWeatherSystem.OnWeatherUpdate += UpdateWind;
+
+        ClientWeatherSystem.OnWeatherUpdate += UpdateWeather;
     }
     public void OnDisable()
     {
@@ -106,13 +126,15 @@ public class DailyCycleUI : MonoBehaviour
         GoInGameCilientSystem.OnStartTimer -= UpdateTimeOfDay;
         GoInGameCilientSystem.OnStartTimer -= SetSunColor;
         GoInGameCilientSystem.OnStartTimer -= SetGlobalVolume;
+        GoInGameCilientSystem.OnStartTimer -= SetUpWeather;
 
-        ClientWeatherSystem.OnWeatherUpdate -= UpdateWind;
+        ClientWeatherSystem.OnWeatherUpdate -= UpdateWeather;
     }
 
     #region Time
     private void UpdateTime(CurrentTime time)
     {
+        this.time = time;
         timeOfDayBar.SetValue(time.Hour/24f);
         
         lerpLight.Update(time.WorldTime);
@@ -122,14 +144,14 @@ public class DailyCycleUI : MonoBehaviour
     private void UpdateDayCounter(CurrentTime time)
     {
         dayCounter.text = "Day " + time.Day;
-        timeOfDayBar.UpdateBar(WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day).GetTimes());
+        timeOfDayBar.UpdateBar(WorldConfig.TimeConfig.GetDailySchedule(time.Season,time.Day).GetTimes());
         float season = ((time.Day - 1) % WorldConfig.TimeConfig.SeasonDuration) / (float)(WorldConfig.TimeConfig.SeasonDuration);
-        seasonBar.SetValue(((int)time.season + season) * 0.25f);
+        seasonBar.SetValue(((int)time.Season + season) * 0.25f);
     }
     private void UpdateTimeOfDay(CurrentTime time)
     {
         (Color color, float lerpTime) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
-        var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day);
+        var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.Season,time.Day);
         float startHour = schedule.GetStartTimeOfDay(time.TimeOfDay);
 
         lerpLight.Start(globalLight.color,color,time.GetWorldTime(startHour),lerpTime);
@@ -137,7 +159,7 @@ public class DailyCycleUI : MonoBehaviour
     private void SetSunColor(CurrentTime time)
     {
         (Color color, float lerpT) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
-        var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.season,time.Day);
+        var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.Season,time.Day);
         double start = time.GetWorldTime(schedule.GetStartTimeOfDay(time.TimeOfDay));
         
         if(time.WorldTime - start >= lerpT)
@@ -152,7 +174,7 @@ public class DailyCycleUI : MonoBehaviour
     private void SetGlobalVolume(CurrentTime time)
     {
         double worldTimeStart = WorldConfig.TimeConfig.GetWorldTimeStartCurrentSeason(time); 
-        var current = WorldConfig.TimeConfig.GetSeason(time.season);
+        var current = WorldConfig.TimeConfig.GetSeason(time.Season);
 
         if(worldTimeStart - worldTimeStart > current.whiteBalance.LerpDuration)
         {
@@ -160,23 +182,52 @@ public class DailyCycleUI : MonoBehaviour
         }
         else
         {
-            var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.season));
+            var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.Season));
             lerpGlobalVolume.Start(previous.whiteBalance,current.whiteBalance,worldTimeStart,current.whiteBalance.LerpDuration);
         }
     }
     private void SeasonStart(CurrentTime time)
     {
-        var current = WorldConfig.TimeConfig.GetSeason(time.season);
-        var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.season));
+        var current = WorldConfig.TimeConfig.GetSeason(time.Season);
+        var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.Season));
         lerpGlobalVolume.Start(previous.whiteBalance,current.whiteBalance,time.WorldTime,current.whiteBalance.LerpDuration);
     }
     #endregion
    
     #region Weather
-    private void UpdateWind(LocalWeather previousLocalWeather,LocalWeather localWeather, CurrentTime currentTime)
+    private void UpdateWeather(LocalWeather previousLocalWeather,LocalWeather localWeather, CurrentTime currentTime)
     {
         lerpWeather.Start(previousLocalWeather,localWeather,currentTime.WorldTime,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
+        thermometer.SetValue(localWeather.Temperature);
+        weather = localWeather;
+
+        Sounds.UpdateAmbient("Wind",localWeather.WindSpeed);
+        Sounds.UpdateAmbient("Rain",localWeather.Precipitation);
+        
+        Debug.Log(localWeather.IsRaining + " " + previousLocalWeather.IsRaining);
+
+        if(localWeather.IsRaining)
+            UpdatePrecipitation(localWeather);   
+        else if(previousLocalWeather.IsRaining)
+            StopPrecipitation(localWeather); 
+    } 
+    private void SetUpWeather(CurrentTime time)
+    {
+        Sounds.CreateAmbient(WorldConfig.SoundsConfig.WindAmbient);
+        Sounds.CreateAmbient(WorldConfig.SoundsConfig.RainAmbient);
     }
+    private void UpdatePrecipitation(LocalWeather localWeather)
+    {
+        if(!rainParticleSystem.isPlaying)
+            rainParticleSystem.Play();
+    }
+    private void StopPrecipitation(LocalWeather localWeather)
+    {
+
+        if(rainParticleSystem.isPlaying)
+            rainParticleSystem.Stop();
+    }
+
     #endregion
 }
 //     [SerializeField] List<DayTime> seasons = new List<DayTime>();
@@ -212,56 +263,7 @@ public class DailyCycleUI : MonoBehaviour
 
 
 
-//     public void Start()
-//     {
-//         SetUp();
-//        //LoadSeason(0);
-//         UpdateDayCounter();
-//         TimeTickSystem.OnTick += IncreaseTime; 
-//     }
-//     private void IncreaseTime(object sender, TimeTickSystem.OnTickArgs e)
-//     {
-//         dayTimeInTicks += 10;
-//         if (dayTimeInTicks > ticksPerDay)
-//         {
-//             dayTimeInTicks = 0;
-//             dayCounter++;
-//             UpdateDayCounter();
-//             float value = GetSeasonValue();
 
-//             timeOfSesonsBar.SetValue(value);
-//             int index = (int)(value / 0.25f);
-//             if (index < 4 && index != currentSeson)
-//             {
-//                 //LoadSeason(index);
-//             }
-//         }
-//         timeOfDayBar.SetValue(dayTimeInTicks / (float)ticksPerDay);
-//         thermometer.SetValue(dayTimeInTicks / (float)ticksPerDay);
-
-//      //   CheckColorChanging();
-//     }
-//     //private void CheckColorChanging()
-//     //{
-//     //    if (isColorChanging)
-//     //    {
-//     //        light.color = Color.Lerp(light.color, targetColor, 0.05f);
-//     //        if (light.color == targetColor) isColorChanging = false;
-//     //    }
-//     //    else
-//     //    {
-//     //        for (int i = 0; i < 3; i++)
-//     //        { 
-//     //            int result = seasonTimeArray[i] - dayTimeInTicks;
-//     //            if (result < 0 &&  Math.Abs(result) < ticksPerGameHour)
-//     //            {
-//     //                isColorChanging = true;
-//     //                targetColor = currentDayTime.GetColors()[i];
-//     //                break;
-//     //            }
-//     //        }
-//     //    }
-//     //}
 
 //     private void SetUp()
 //     {

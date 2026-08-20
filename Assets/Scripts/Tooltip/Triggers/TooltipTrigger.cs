@@ -14,6 +14,6 @@ public class TooltipTrigger : TooltipTriggerBase
 
     public override void Tooltip(PointerEventData eventData)
     {
-        TooltipSystem.Show(header, content);
+        TooltipSystem.Show(content,header);
     }
 }

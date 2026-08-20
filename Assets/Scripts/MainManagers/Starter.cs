@@ -17,7 +17,6 @@ public static class Starter
     }
     public static void LoadSingleplayerWorld(HeaderSave headerData)
     {
-        Debug.Log("loading!!!");
         GameInfo.instance.playerName = "Player";
         RunServer(headerData,false);
     }
@@ -39,7 +38,6 @@ public static class Starter
                 World.All[i].Dispose();
             }
         }
-
 
         GameInfo.instance.startGame = true;
         World clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWildWorld");

@@ -106,16 +106,16 @@ partial struct StartSetUpServerSystem : ISystem
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);
             EntityHelper.CreateEntityWithBuffer<PlayersList>(ecb);
 
-
-    
+            EntityHelper.CreateEntityWithComponent(ecb,new LocalWeather());
+            
             #region Time         
             EntityHelper.CreateEntityWithComponent(ecb, new CurrentTime()
             {
                 Day = WorldConfig.TimeConfig.startDay,
                 Hour = WorldConfig.TimeConfig.startHour,
-                season = WorldConfig.TimeConfig.startSeason,
-                startTick = NetworkTick.Invalid,
-                startHour = WorldConfig.TimeConfig.startHour,
+                Season = WorldConfig.TimeConfig.startSeason,
+                StartTick = NetworkTick.Invalid,
+                StartHour = WorldConfig.TimeConfig.startHour,
                 NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(
                     WorldConfig.TimeConfig.startSeason,
                     WorldConfig.TimeConfig.startHour,

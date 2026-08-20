@@ -19,16 +19,21 @@ public class AudioSettings : Settings
     {
         SetSoundsVolume(settingsData.soundsVolume);
         SetMusicVolume(settingsData.musicVolume);
+        SetAmbientVolume(settingsData.ambientVolume);
+        Debug.Log("update !!!");
     }
     public override void SetDefaultSettings()
     {
         SetSoundsVolume(0.75f);
         SetMusicVolume(0.75f);
+        SetAmbientVolume(0.75f);
+        Debug.Log("assssss");
     }
 
     #region Set Value
     public void SetSoundsVolume(float value)
     {
+        Debug.Log("soudns" + value);
         audioMixer.SetFloat("SoundsVolume", Mathf.Log10(value <= 0 ? 0.0001f : value) * 20f);
         settingsData.soundsVolume = value;
     }
@@ -37,7 +42,11 @@ public class AudioSettings : Settings
         audioMixer.SetFloat("MusicVolume", Mathf.Log10(value <= 0 ? 0.0001f : value) * 20f);
         settingsData.musicVolume = value;
     }
-
+    public void SetAmbientVolume(float value)
+    {
+        audioMixer.SetFloat("AmbientVolume", Mathf.Log10(value <= 0 ? 0.0001f : value) * 20f);
+        settingsData.ambientVolume = value;
+    }
     #endregion
 }
 

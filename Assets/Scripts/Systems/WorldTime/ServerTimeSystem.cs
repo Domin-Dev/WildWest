@@ -1,18 +1,5 @@
-using System.Diagnostics;
-using NUnit.Framework.Internal.Execution;
-using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.NetCode;
-using Unity.Physics;
-using Unity.Physics.Systems;
-using Unity.Transforms;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
-using UnityEngine;
-using UnityEngine.Rendering.Universal;
-
-
 public struct CurrentTime : IComponentData
 {
     public double WorldTime => GetWorldTime(Hour,Day);
@@ -21,9 +8,9 @@ public struct CurrentTime : IComponentData
     public TimeOfDay TimeOfDay;
     public float NextTimeOfDay;
     public int Day;
-    public Season season;
-    public NetworkTick startTick;
-    public float startHour;
+    public Season Season;
+    public NetworkTick StartTick;
+    public float StartHour;
 
     public double GetWorldTime(float hour)
     {
@@ -47,7 +34,7 @@ public partial struct ServerTimeSystem : ISystem
         if(SystemAPI.HasSingleton<CurrentTime>())
         {
             var time = SystemAPI.GetSingleton<NetworkTime>();
-            SystemAPI.GetSingletonRW<CurrentTime>().ValueRW.startTick = time.ServerTick;
+            SystemAPI.GetSingletonRW<CurrentTime>().ValueRW.StartTick = time.ServerTick;
         }
     }
     public void OnUpdate(ref SystemState state)

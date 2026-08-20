@@ -52,6 +52,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UI
+    uniqueID: 3491963845
+    locked: 0
+  - name: Effects
+    uniqueID: 1235427553
+    locked: 0
   m_RenderingLayers:
   - Default
   - PlayerLayer

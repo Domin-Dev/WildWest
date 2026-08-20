@@ -15,86 +15,201 @@ MonoBehaviour:
   startHour: 5
   startDay: 1
   startSeason: 2
-  HourDuration: 0.1
+  HourDuration: 0.01
   SeasonDuration: 2
   Spring:
     iconSprite: {fileID: -1301959960, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 1777326124, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    seasonName:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 38512487989424128
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    seasonColor: {r: 0.078431375, g: 0.627451, b: 0.18039216, a: 1}
     dayTime:
       dayStart: 6
       eveningStart: 18
       nightStart: 21
+    timesOfDay:
+      dayColor: {r: 1, g: 1, b: 1, a: 1}
+      dayLerpDuration: 1
+      eveningColor: {r: 0.43107402, g: 0.43107402, b: 0.43107402, a: 1}
+      eveningLerpDuration: 1
+      nightColor: {r: 0, g: 0, b: 0, a: 1}
+      nightLerpDuration: 1
     whiteBalance:
       Temperature: 14
       Tint: -10
       LerpDuration: 36
-    dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpDuration: 1
-    eveningColor: {r: 0.5515937, g: 0.5515937, b: 0.5515937, a: 1}
-    eveningLerpDuration: 1
-    nightColor: {r: 0.02, g: 0.02, b: 0.02, a: 1}
-    nightLerpDuration: 1
+    seasonWeather:
+      BaseTemperature: 0
+      DailyVariation: 0
+      DailyAmplitude: 0
+      BasePrecipitation: 0
+      BaseCloudiness: -0.2
+      BaseWindSpeed: 0
   Summer:
     iconSprite: {fileID: -1385579639, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -2068532676, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    seasonName:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122932203742474240
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    seasonColor: {r: 1, g: 0.8352941, b: 0.25490198, a: 1}
     dayTime:
       dayStart: 4
       eveningStart: 19
       nightStart: 22
+    timesOfDay:
+      dayColor: {r: 1, g: 1, b: 1, a: 1}
+      dayLerpDuration: 1
+      eveningColor: {r: 0.25258595, g: 0.25258595, b: 0.25258595, a: 1}
+      eveningLerpDuration: 1
+      nightColor: {r: 0, g: 0, b: 0, a: 1}
+      nightLerpDuration: 1
     whiteBalance:
       Temperature: 60
       Tint: 50
       LerpDuration: 36
-    dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpDuration: 1
-    eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
-    eveningLerpDuration: 1
-    nightColor: {r: 0.03, g: 0.03, b: 0.03, a: 1}
-    nightLerpDuration: 1
+    seasonWeather:
+      BaseTemperature: 0
+      DailyVariation: 0
+      DailyAmplitude: 0
+      BasePrecipitation: 0
+      BaseCloudiness: 0
+      BaseWindSpeed: 0
   Autumn:
     iconSprite: {fileID: -851605624, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -749013264, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    seasonName:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122932327415721984
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    seasonColor: {r: 0.75203145, g: 0.19844285, b: 0.2346249, a: 1}
     dayTime:
       dayStart: 7
       eveningStart: 17
       nightStart: 20
+    timesOfDay:
+      dayColor: {r: 1, g: 1, b: 1, a: 1}
+      dayLerpDuration: 1
+      eveningColor: {r: 0.42401183, g: 0.42401183, b: 0.42401183, a: 1}
+      eveningLerpDuration: 1
+      nightColor: {r: 0, g: 0, b: 0, a: 1}
+      nightLerpDuration: 1
     whiteBalance:
       Temperature: 20
       Tint: 90
       LerpDuration: 36
-    dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpDuration: 1
-    eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
-    eveningLerpDuration: 1
-    nightColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
-    nightLerpDuration: 1
+    seasonWeather:
+      BaseTemperature: 0
+      DailyVariation: 0
+      DailyAmplitude: 0
+      BasePrecipitation: 0
+      BaseCloudiness: -0.101
+      BaseWindSpeed: 0
   Winter:
     iconSprite: {fileID: 1140630064, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 1051364945, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
+    seasonName:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122932528750702592
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    seasonColor: {r: 0.14117648, g: 0.62352943, b: 0.87058824, a: 1}
     dayTime:
       dayStart: 8
       eveningStart: 16
       nightStart: 19
+    timesOfDay:
+      dayColor: {r: 1, g: 1, b: 1, a: 1}
+      dayLerpDuration: 1
+      eveningColor: {r: 0.18021035, g: 0.18021035, b: 0.18021035, a: 1}
+      eveningLerpDuration: 1
+      nightColor: {r: 0.30949605, g: 0.30949605, b: 0.30949605, a: 1}
+      nightLerpDuration: 1
     whiteBalance:
       Temperature: -70
       Tint: 10
       LerpDuration: 36
-    dayColor: {r: 1, g: 1, b: 1, a: 1}
-    dayLerpDuration: 1
-    eveningColor: {r: 0.5529412, g: 0.5529412, b: 0.5529412, a: 1}
-    eveningLerpDuration: 1
-    nightColor: {r: 0.01, g: 0.01, b: 0.01, a: 1}
-    nightLerpDuration: 1
+    seasonWeather:
+      BaseTemperature: 0
+      DailyVariation: 0
+      DailyAmplitude: 0
+      BasePrecipitation: 0
+      BaseCloudiness: 0.4
+      BaseWindSpeed: 0
   rangesUI:
   - iconSprite: {fileID: 1696318910, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 454127794, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
     TimeOfDay: 2
+    LocalizedString:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122949266443776000
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    Color: {r: 0.7095918, g: 0.352437, b: 0.7492756, a: 1}
   - iconSprite: {fileID: -1385579639, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -2068532676, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
     TimeOfDay: 0
+    LocalizedString:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122949125510967296
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    Color: {r: 1, g: 0.8352941, b: 0.25490198, a: 1}
   - iconSprite: {fileID: 2043931798, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -749013264, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
     TimeOfDay: 1
+    LocalizedString:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122949265273565184
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    Color: {r: 0.7529412, g: 0.2, b: 0.23529412, a: 1}
   - iconSprite: {fileID: 1696318910, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 454127794, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
     TimeOfDay: 2
+    LocalizedString:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 122949266443776000
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    Color: {r: 0.70980394, g: 0.3529412, b: 0.7529412, a: 1}
+  references:
+    version: 2
+    RefIds: []

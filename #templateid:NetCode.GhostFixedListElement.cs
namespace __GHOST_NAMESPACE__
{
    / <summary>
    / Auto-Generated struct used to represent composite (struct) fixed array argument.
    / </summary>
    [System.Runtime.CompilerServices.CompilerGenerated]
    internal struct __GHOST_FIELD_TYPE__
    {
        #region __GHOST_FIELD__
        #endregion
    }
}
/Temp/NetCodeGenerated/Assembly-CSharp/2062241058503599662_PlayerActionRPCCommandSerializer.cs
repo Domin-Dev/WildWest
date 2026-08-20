@@ -36,16 +36,20 @@ namespace Assembly_CSharp_Generated
         {
             writer.WriteInt((int) data.networkID);
             writer.WriteUInt((uint)data.tick.SerializedData);
-            if (state.GhostFromEntity.TryGetComponent(data.player, out var ghostComponent))
             {
-                writer.WriteInt(ghostComponent.ghostId);
-                writer.WriteUInt(ghostComponent.spawnTick.SerializedData);
+                if (state.GhostFromEntity.TryGetComponent(data.player, out var ghostComponent))
+                {
+                    writer.WriteInt(ghostComponent.ghostId);
+                    writer.WriteUInt(ghostComponent.spawnTick.SerializedData);
+                }
+                else
+                {
+                    writer.WriteInt(0);
+                    writer.WriteUInt(Unity.NetCode.NetworkTick.Invalid.SerializedData);
+                }
             }
-            else
-            {
-                writer.WriteInt(0);
-                writer.WriteUInt(Unity.NetCode.NetworkTick.Invalid.SerializedData);
-            }
+            writer.WriteFloat(data.pointerPosition.x);
+            writer.WriteFloat(data.pointerPosition.y);
             writer.WriteInt((int) data.itemID);
         }
 
@@ -63,6 +67,8 @@ namespace Assembly_CSharp_Generated
                         data.player = ghostEnt;
                 }
             }
+            data.pointerPosition.x = reader.ReadFloat();
+            data.pointerPosition.y = reader.ReadFloat();
             data.itemID = (int) reader.ReadInt();
         }
         [BurstCompile(DisableDirectCall = true)]

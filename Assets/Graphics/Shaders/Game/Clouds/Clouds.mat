@@ -50,20 +50,26 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorCount: 5
-    - _DistortScale: 2.01
+    - _Cloudiness: 0
+    - _ColorCount: 3
+    - _Contract: 1
+    - _Contrast: 4
+    - _DistortScale: 4
+    - _Float: 1.1
     - _Limit: 0.47
     - _Pixelate: 250
-    - _Scale: 27.1
+    - _Scale: 2
     - _Speed: 0.22
-    - _SpeedMultiplier: 0.5
+    - _SpeedMultiplier: 0.1
     m_Colors:
     - _ChunkWroldPosition: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0, g: 0, b: 0, a: 0.34509805}
+    - _Color: {r: 0, g: 0, b: 0, a: 0.47058824}
     - _DistortSpeedVector: {r: 0.9, g: 0, b: 0, a: 0}
     - _DistortTiling: {r: 1, g: 1, b: 0, a: 0}
     - _DistortWindDirection: {r: 0.2, g: 0, b: 0, a: 0}
-    - _SmoothStep: {r: 0, g: 0.28, b: 0, a: 0}
+    - _SmoothStep: {r: 0, g: 0.2, b: 0, a: 0}
+    - _SmoothStepMax: {r: 0, g: 0.3, b: 0, a: 0}
+    - _SmoothStepMin: {r: 0, g: 0.9, b: 0, a: 0}
     - _SpeedVector: {r: 0.01, g: 0, b: 0, a: 0}
     - _Tiling: {r: 1, g: 1, b: 0, a: 0}
     - _WindDirection: {r: 0, g: 0, b: 0, a: 0}

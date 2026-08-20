@@ -36,12 +36,14 @@ namespace Assembly_CSharp_Generated
         {
             writer.WriteInt((int) data.position.containerIndex);
             writer.WriteInt((int) data.position.slotIndex);
+            writer.WriteInt((int) data.count);
         }
 
         public void Deserialize(ref DataStreamReader reader, in RpcDeserializerState state, ref EQDropItem data)
         {
             data.position.containerIndex = (int) reader.ReadInt();
             data.position.slotIndex = (int) reader.ReadInt();
+            data.count = (int) reader.ReadInt();
         }
         [BurstCompile(DisableDirectCall = true)]
         [AOT.MonoPInvokeCallback(typeof(RpcExecutor.ExecuteDelegate))]

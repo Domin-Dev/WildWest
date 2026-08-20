@@ -203,6 +203,59 @@ MonoBehaviour:
     m_Localized: Game Menu
     m_Metadata:
       m_Items: []
+  - m_Id: 38512484499763200
+    m_Localized: Current time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 38512487989424128
+    m_Localized: Spring
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932203742474240
+    m_Localized: Summer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932327415721984
+    m_Localized: Autumn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932528750702592
+    m_Localized: Winter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932539848830976
+    m_Localized: Current season
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122936840944005120
+    m_Localized: '{0} begins in {1} days.'
+    m_Metadata:
+      m_Items:
+      - rid: 6681689925784961141
+  - m_Id: 122948536907509760
+    m_Localized: Time of day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122949125510967296
+    m_Localized: Day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122949265273565184
+    m_Localized: Evening
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122949266443776000
+    m_Localized: Night
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123008842660753408
+    m_Localized: Temperature
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123597950806306816
+    m_Localized: 'Ambient Volume:'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -213,3 +266,4 @@ MonoBehaviour:
         m_SharedEntries:
         - id: 5411543521341440
         - id: 7978207676903424
+        - id: 122936840944005120

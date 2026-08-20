@@ -42,6 +42,7 @@ public class Property
 [CreateAssetMenu(fileName = "UISettings", menuName = "GameAsset/Settings/UISettings")]
 public class  UIConfig : ScriptableObject
 {
+    public UIThermometerConfig ThermometerConfig;
     public Color durabilityBarColor;
     public Color liquidCapacityBarColor;
     public Color dirtyWaterBarColor;
@@ -49,7 +50,6 @@ public class  UIConfig : ScriptableObject
 
     [SerializeField] private List<BarColor> barColors;
     [SerializeField] private List<Property> properties;
-
 
     public List<(Color,Type)> GetColors()
     {
@@ -65,7 +65,16 @@ public class  UIConfig : ScriptableObject
             properties.Add(p.name,p);
         return properties;
     }
+}
 
-
+[System.Serializable]
+public class UIThermometerConfig
+{
+    public Color BelowZeroThermometerColor;
+    public Color AboveZeroThermometerColor;
+    [Range(-60,60)]
+    public float minTemperature;
+    [Range(-60,60)]
+    public float maxTemperature;
 }
 

@@ -1,23 +1,12 @@
-﻿
-using System.Collections.Generic;
-using TMPro;
-using Unity.Entities;
-using Unity.NetCode;
-using UnityEngine;
-using UnityEngine.Localization;
-using UnityEngine.Localization.Components;
-using UnityEngine.Localization.Settings;
-using UnityEngine.LowLevel;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 using UnityEngine.UI;
-
-
 
 public class AudioTab : SettingsTab
 {
 
     [SerializeField] private Slider musicVolume;
     [SerializeField] private Slider soundsVolume;
+    [SerializeField] private Slider ambientVolume;
 
     private void OnEnable()
     {
@@ -41,6 +30,7 @@ public class AudioTab : SettingsTab
     {
         SetMusicVolume(settings);
         SetSoundsVolume(settings);
+        SetAmbientVolume(settings);
     }
 
     private void SetSoundsVolume(SettingsData settingsData)
@@ -54,6 +44,12 @@ public class AudioTab : SettingsTab
         musicVolume.value = settingsData.musicVolume;
         musicVolume.onValueChanged.RemoveAllListeners();
         musicVolume.onValueChanged.AddListener(MainSettingsManager.instance.audioSettings.SetMusicVolume);
+    }
+    private void SetAmbientVolume(SettingsData settingsData)
+    {
+        ambientVolume.value = settingsData.ambientVolume;
+        ambientVolume.onValueChanged.RemoveAllListeners();
+        ambientVolume.onValueChanged.AddListener(MainSettingsManager.instance.audioSettings.SetAmbientVolume);
     }
 
 }

@@ -20,9 +20,13 @@ public class WorldConfig : ScriptableObject
 
     public static WorldTimeConfig TimeConfig => Instance.worldTimeConfig;
     public static WeatherConfig WeatherConfig => Instance.weatherConfig;
+    public static UIConfig UIConfig => Instance.uIConfig;
+    public static SoundsConfig SoundsConfig => Instance.soundsConfig;
 
     [SerializeField] private WorldTimeConfig worldTimeConfig;
     [SerializeField] private WeatherConfig weatherConfig;
+    [SerializeField] private UIConfig uIConfig;
+    [SerializeField] private SoundsConfig soundsConfig;
     [Space]
 
     public TagWithMaterial WindEffectTag;

@@ -14,4 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeatherConfig
   WeatherUpdatePeriod: 1
   WeatherUpdateLerpDuration: 0.9
-  MaxWindSpeed: 0.4
+  CloudinessInfluenceOnPrecipitation: 0.15
+  PrecipitationConfig:
+    PrecipitationThreshold: 0.5
+    MaxParticleRotation: 40
+    ParticleSimulationSpeedMin: 0.8
+    ParticleSimulationSpeedMax: 2
+    ParticleCountMin: 20
+    ParticleCountMax: 250

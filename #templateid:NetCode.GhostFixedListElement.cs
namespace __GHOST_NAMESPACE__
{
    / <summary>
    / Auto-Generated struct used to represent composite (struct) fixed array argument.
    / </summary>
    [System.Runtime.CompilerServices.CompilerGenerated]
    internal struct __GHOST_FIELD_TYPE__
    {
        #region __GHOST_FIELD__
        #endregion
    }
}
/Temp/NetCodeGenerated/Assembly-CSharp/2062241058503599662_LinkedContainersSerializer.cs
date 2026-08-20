@@ -70,12 +70,14 @@ namespace Assembly_CSharp_Generated
         {
                 snapshot.slot = (int) component.slot;
                 snapshot.containerIndex = (int) component.containerIndex;
-                snapshot.containerEntity = 0;
-                snapshot.containerEntitySpawnTick = Unity.NetCode.NetworkTick.Invalid.SerializedData;
-                if (serializerState.GhostFromEntity.TryGetComponent(component.containerEntity, out var ghostComponent))
                 {
-                    snapshot.containerEntity = ghostComponent.ghostId;
-                    snapshot.containerEntitySpawnTick = ghostComponent.spawnTick.SerializedData;
+                    snapshot.containerEntity = 0;
+                    snapshot.containerEntitySpawnTick = Unity.NetCode.NetworkTick.Invalid.SerializedData;
+                    if (serializerState.GhostFromEntity.TryGetComponent(component.containerEntity, out var ghostComponent))
+                    {
+                        snapshot.containerEntity = ghostComponent.ghostId;
+                        snapshot.containerEntitySpawnTick = ghostComponent.spawnTick.SerializedData;
+                    }
                 }
         }
 

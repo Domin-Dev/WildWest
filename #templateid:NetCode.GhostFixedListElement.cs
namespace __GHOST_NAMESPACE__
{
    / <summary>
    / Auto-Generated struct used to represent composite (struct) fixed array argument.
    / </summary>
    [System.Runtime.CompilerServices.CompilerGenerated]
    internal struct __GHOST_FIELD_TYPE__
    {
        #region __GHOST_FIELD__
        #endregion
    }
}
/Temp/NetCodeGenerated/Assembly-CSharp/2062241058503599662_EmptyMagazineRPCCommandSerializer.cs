@@ -36,15 +36,17 @@ namespace Assembly_CSharp_Generated
         {
             writer.WriteInt((int) data.networkID);
             writer.WriteUInt((uint)data.tick.SerializedData);
-            if (state.GhostFromEntity.TryGetComponent(data.player, out var ghostComponent))
             {
-                writer.WriteInt(ghostComponent.ghostId);
-                writer.WriteUInt(ghostComponent.spawnTick.SerializedData);
-            }
-            else
-            {
-                writer.WriteInt(0);
-                writer.WriteUInt(Unity.NetCode.NetworkTick.Invalid.SerializedData);
+                if (state.GhostFromEntity.TryGetComponent(data.player, out var ghostComponent))
+                {
+                    writer.WriteInt(ghostComponent.ghostId);
+                    writer.WriteUInt(ghostComponent.spawnTick.SerializedData);
+                }
+                else
+                {
+                    writer.WriteInt(0);
+                    writer.WriteUInt(Unity.NetCode.NetworkTick.Invalid.SerializedData);
+                }
             }
             writer.WriteInt((int) data.itemID);
         }

@@ -30,3 +30,23 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 9cad48e927f1e3a4fa98ab46f038fabe, type: 3}
   - {fileID: 8300000, guid: aa481ab664ba7964e9594a962e8dcd62, type: 3}
   - {fileID: 8300000, guid: ebe5c1219d5ba2a4381639fff1e2b03b, type: 3}
+  WindAmbient:
+    AmbientName: Wind
+    AudioMixer: {fileID: 7894568965139306670, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
+    AmbientClips:
+    - AudioClip: {fileID: 8300000, guid: 43a3b9dc97a2de232a00dece7a55b09e, type: 3}
+      ActivationRangeMin: 0.5
+      ActivationRangeMax: 1
+      PitchMode: 1
+      PitchMin: 0.8
+      PitchMax: 2.5
+  RainAmbient:
+    AmbientName: Rain
+    AudioMixer: {fileID: 7894568965139306670, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
+    AmbientClips:
+    - AudioClip: {fileID: 8300000, guid: 0b469cb5fbce5461ab333bab05858e46, type: 3}
+      ActivationRangeMin: 0.5
+      ActivationRangeMax: 1
+      PitchMode: 1
+      PitchMin: 0.8
+      PitchMax: 2

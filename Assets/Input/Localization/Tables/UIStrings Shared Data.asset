@@ -206,11 +206,55 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 38512484499763200
-    m_Key: New Entry
+    m_Key: CurrentTime
     m_Metadata:
       m_Items: []
   - m_Id: 38512487989424128
-    m_Key: New Entry 1
+    m_Key: Spring
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932203742474240
+    m_Key: Summer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932327415721984
+    m_Key: Autumn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932528750702592
+    m_Key: Winter
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122932539848830976
+    m_Key: CurrentSeason
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122936840944005120
+    m_Key: BeginsInDays
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122948536907509760
+    m_Key: CurrentTimeOfDay
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122949125510967296
+    m_Key: Day
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122949265273565184
+    m_Key: Evening
+    m_Metadata:
+      m_Items: []
+  - m_Id: 122949266443776000
+    m_Key: Night
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123008842660753408
+    m_Key: Temperature
+    m_Metadata:
+      m_Items: []
+  - m_Id: 123597950806306816
+    m_Key: AmbientVolume
     m_Metadata:
       m_Items: []
   m_Metadata:

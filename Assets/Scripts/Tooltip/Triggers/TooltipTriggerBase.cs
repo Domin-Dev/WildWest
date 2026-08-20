@@ -8,15 +8,15 @@ using UnityEngine.Localization;
 [DisallowMultipleComponent]
 public abstract class TooltipTriggerBase : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {   
-    public void OnPointerEnter(PointerEventData eventData)
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
         Tooltip(eventData);
     }
-    public void OnPointerExit(PointerEventData eventData)
+    public virtual void OnPointerExit(PointerEventData eventData)
     {
         TooltipSystem.Hide();
     }
-    public void OnPointerClick(PointerEventData eventData)
+    public virtual void OnPointerClick(PointerEventData eventData)
     {
         TooltipSystem.Hide();
     }

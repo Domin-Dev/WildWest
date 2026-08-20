@@ -12,6 +12,7 @@ public class SettingsData
 
     public float soundsVolume;
     public float musicVolume;
+    public float ambientVolume;
 
     public string language;
 

@@ -43,13 +43,14 @@ namespace Assembly_CSharp_Generated
         /// </summary>
         internal struct Snapshot
         {
-            public int value_x;
-            public int value_y;
+            public int chunk;
+            public int tilePosition_x;
+            public int tilePosition_y;
             public uint flags;
             public uint index;
         }
         /// <summary>The total number of bits used for the change mask.</summary>
-        private const int ChangeMaskBits = 4;
+        private const int ChangeMaskBits = 5;
         /// <summary>The number of bits used for the change mask.</summary>
         public int ChangeMaskSizeInBits => ChangeMaskBits;
         #if COMPONENT_HAS_GHOST_FIELDS
@@ -68,8 +69,9 @@ namespace Assembly_CSharp_Generated
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void CopyToSnapshotGenerated(in GhostSerializerState serializerState, ref Snapshot snapshot, ref ChunkEvents component)
         {
-                snapshot.value_x = (int) component.value.x;
-                snapshot.value_y = (int) component.value.y;
+                snapshot.chunk = (int) component.chunk;
+                snapshot.tilePosition_x = (int) component.tilePosition.x;
+                snapshot.tilePosition_y = (int) component.tilePosition.y;
                 snapshot.flags = (uint)component.flags;
                 snapshot.index = (uint)component.index;
         }
@@ -79,9 +81,10 @@ namespace Assembly_CSharp_Generated
         static void CopyFromSnapshotGenerated(in GhostDeserializerState deserializerState, ref ChunkEvents component,
             float snapshotInterpolationFactor, float snapshotInterpolationFactorRaw, ref Snapshot snapshotBefore, ref Snapshot snapshotAfter)
         {
-                component.value.x = (int) snapshotBefore.value_x;
-                component.value.y = (int) snapshotBefore.value_y;
-                component.flags = (byte) snapshotBefore.flags;
+                component.chunk = (int) snapshotBefore.chunk;
+                component.tilePosition.x = (int) snapshotBefore.tilePosition_x;
+                component.tilePosition.y = (int) snapshotBefore.tilePosition_y;
+                component.flags = (ChunkEventType) snapshotBefore.flags;
                 component.index = (uint) snapshotBefore.index;
         }
 
@@ -89,8 +92,9 @@ namespace Assembly_CSharp_Generated
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static void RestoreFromBackupGenerated(ref ChunkEvents component, ref ChunkEvents backup)
         {
-            component.value.x = backup.value.x;
-            component.value.y = backup.value.y;
+            component.chunk = backup.chunk;
+            component.tilePosition.x = backup.tilePosition.x;
+            component.tilePosition.y = backup.tilePosition.y;
             component.flags = backup.flags;
             component.index = backup.index;
         }
@@ -100,8 +104,9 @@ namespace Assembly_CSharp_Generated
         static void PredictDeltaGenerated(ref Snapshot snapshot, ref Snapshot baseline1, ref Snapshot baseline2,
             ref GhostDeltaPredictor predictor)
         {
-            snapshot.value_x = predictor.PredictInt(snapshot.value_x, baseline1.value_x, baseline2.value_x);
-            snapshot.value_y = predictor.PredictInt(snapshot.value_y, baseline1.value_y, baseline2.value_y);
+            snapshot.chunk = predictor.PredictInt(snapshot.chunk, baseline1.chunk, baseline2.chunk);
+            snapshot.tilePosition_x = predictor.PredictInt(snapshot.tilePosition_x, baseline1.tilePosition_x, baseline2.tilePosition_x);
+            snapshot.tilePosition_y = predictor.PredictInt(snapshot.tilePosition_y, baseline1.tilePosition_y, baseline2.tilePosition_y);
             snapshot.flags = (uint)predictor.PredictInt((int)snapshot.flags, (int)baseline1.flags, (int)baseline2.flags);
             snapshot.index = (uint)predictor.PredictInt((int)snapshot.index, (int)baseline1.index, (int)baseline2.index);
         }
@@ -112,11 +117,12 @@ namespace Assembly_CSharp_Generated
             [NoAlias]IntPtr changeMaskData, int startOffset)
         {
             uint changeMask = 0;
-            changeMask = (snapshot.value_x != baseline.value_x) ? 1u : 0;
-            changeMask |= (snapshot.value_y != baseline.value_y) ? (1u<<1) : 0;
-            changeMask |= (snapshot.flags != baseline.flags) ? (1u<<2) : 0;
-            changeMask |= (snapshot.index != baseline.index) ? (1u<<3) : 0;
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 4);
+            changeMask = (snapshot.chunk != baseline.chunk) ? 1u : 0;
+            changeMask |= (snapshot.tilePosition_x != baseline.tilePosition_x) ? (1u<<1) : 0;
+            changeMask |= (snapshot.tilePosition_y != baseline.tilePosition_y) ? (1u<<2) : 0;
+            changeMask |= (snapshot.flags != baseline.flags) ? (1u<<3) : 0;
+            changeMask |= (snapshot.index != baseline.index) ? (1u<<4) : 0;
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 5);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.SerializeGenerated"/>
@@ -127,12 +133,14 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = GhostComponentSerializer.CopyFromChangeMask(changeMaskData, startOffset, ChangeMaskBits);
             if ((changeMask & (1 << 0)) != 0)
-                writer.WritePackedIntDelta(snapshot.value_x, baseline.value_x, compressionModel);
+                writer.WritePackedIntDelta(snapshot.chunk, baseline.chunk, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedIntDelta(snapshot.value_y, baseline.value_y, compressionModel);
+                writer.WritePackedIntDelta(snapshot.tilePosition_x, baseline.tilePosition_x, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
-                writer.WritePackedUIntDelta(snapshot.flags, baseline.flags, compressionModel);
+                writer.WritePackedIntDelta(snapshot.tilePosition_y, baseline.tilePosition_y, compressionModel);
             if ((changeMask & (1 << 3)) != 0)
+                writer.WritePackedUIntDelta(snapshot.flags, baseline.flags, compressionModel);
+            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedUIntDelta(snapshot.index, baseline.index, compressionModel);
         }
 
@@ -142,19 +150,22 @@ namespace Assembly_CSharp_Generated
             ref DataStreamWriter writer, in StreamCompressionModel compressionModel)
         {
             uint changeMask = 0;
-            changeMask = (snapshot.value_x != baseline.value_x) ? 1u : 0;
+            changeMask = (snapshot.chunk != baseline.chunk) ? 1u : 0;
             if ((changeMask & (1 << 0)) != 0)
-                writer.WritePackedIntDelta(snapshot.value_x, baseline.value_x, compressionModel);
-            changeMask |= (snapshot.value_y != baseline.value_y) ? (1u<<1) : 0;
+                writer.WritePackedIntDelta(snapshot.chunk, baseline.chunk, compressionModel);
+            changeMask |= (snapshot.tilePosition_x != baseline.tilePosition_x) ? (1u<<1) : 0;
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedIntDelta(snapshot.value_y, baseline.value_y, compressionModel);
-            changeMask |= (snapshot.flags != baseline.flags) ? (1u<<2) : 0;
+                writer.WritePackedIntDelta(snapshot.tilePosition_x, baseline.tilePosition_x, compressionModel);
+            changeMask |= (snapshot.tilePosition_y != baseline.tilePosition_y) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
-                writer.WritePackedUIntDelta(snapshot.flags, baseline.flags, compressionModel);
-            changeMask |= (snapshot.index != baseline.index) ? (1u<<3) : 0;
+                writer.WritePackedIntDelta(snapshot.tilePosition_y, baseline.tilePosition_y, compressionModel);
+            changeMask |= (snapshot.flags != baseline.flags) ? (1u<<3) : 0;
             if ((changeMask & (1 << 3)) != 0)
+                writer.WritePackedUIntDelta(snapshot.flags, baseline.flags, compressionModel);
+            changeMask |= (snapshot.index != baseline.index) ? (1u<<4) : 0;
+            if ((changeMask & (1 << 4)) != 0)
                 writer.WritePackedUIntDelta(snapshot.index, baseline.index, compressionModel);
-            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 4);
+            GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 5);
         }
 
         /// <inheritdoc cref="IGhostSerializer{TComponent,TSnapshot}.DeserializeGenerated"/>
@@ -165,18 +176,22 @@ namespace Assembly_CSharp_Generated
         {
             uint changeMask = GhostComponentSerializer.CopyFromChangeMask(changeMaskData, startOffset, ChangeMaskBits);
             if ((changeMask & (1 << 0)) != 0)
-                snapshot.value_x = reader.ReadPackedIntDelta(baseline.value_x, compressionModel);
+                snapshot.chunk = reader.ReadPackedIntDelta(baseline.chunk, compressionModel);
             else
-                snapshot.value_x = baseline.value_x;
+                snapshot.chunk = baseline.chunk;
             if ((changeMask & (1 << 1)) != 0)
-                snapshot.value_y = reader.ReadPackedIntDelta(baseline.value_y, compressionModel);
+                snapshot.tilePosition_x = reader.ReadPackedIntDelta(baseline.tilePosition_x, compressionModel);
             else
-                snapshot.value_y = baseline.value_y;
+                snapshot.tilePosition_x = baseline.tilePosition_x;
             if ((changeMask & (1 << 2)) != 0)
+                snapshot.tilePosition_y = reader.ReadPackedIntDelta(baseline.tilePosition_y, compressionModel);
+            else
+                snapshot.tilePosition_y = baseline.tilePosition_y;
+            if ((changeMask & (1 << 3)) != 0)
                 snapshot.flags = reader.ReadPackedUIntDelta(baseline.flags, compressionModel);
             else
                 snapshot.flags = baseline.flags;
-            if ((changeMask & (1 << 3)) != 0)
+            if ((changeMask & (1 << 4)) != 0)
                 snapshot.index = reader.ReadPackedUIntDelta(baseline.index, compressionModel);
             else
                 snapshot.index = baseline.index;
@@ -189,9 +204,11 @@ namespace Assembly_CSharp_Generated
         {
             var errors = GhostComponentSerializer.ConvertToUnsafeList(errorsList, errorsCount);
             int errorIndex = 0;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.value.x - backup.value.x));
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.chunk - backup.chunk));
             ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.value.y - backup.value.y));
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.tilePosition.x - backup.tilePosition.x));
+            ++errorIndex;
+            errors[errorIndex] = math.max(errors[errorIndex], math.abs(component.tilePosition.y - backup.tilePosition.y));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex],
                 (component.flags > backup.flags) ?
@@ -210,11 +227,15 @@ namespace Assembly_CSharp_Generated
             var nameCount = 0;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".value.x");
+            names.Append((FixedString512Bytes)".chunk");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".value.y");
+            names.Append((FixedString512Bytes)".tilePosition.x");
+            ++nameCount;
+            if (nameCount != 0)
+                names.Append(new FixedString32Bytes(","));
+            names.Append((FixedString512Bytes)".tilePosition.y");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
@@ -366,7 +387,7 @@ namespace Assembly_CSharp_Generated
             {
                 s_State = new GhostComponentSerializer.State
                 {
-                    GhostFieldsHash = 4321598702592082872,
+                    GhostFieldsHash = 12532388930504974478,
                     ComponentType = ComponentType.ReadWrite<ChunkEvents>(),
                     ComponentSize = UnsafeUtility.SizeOf<ChunkEvents>(),
 #if COMPONENT_HAS_GHOST_FIELDS
@@ -374,7 +395,7 @@ namespace Assembly_CSharp_Generated
 #else
                     SnapshotSize = 0,
 #endif
-                    ChangeMaskBits = 4,
+                    ChangeMaskBits = 5,
                     PrefabType = GhostPrefabType.All,
                     SendMask = GhostSendType.AllClients,
                     SendToOwner = SendToOwnerType.SendToOwner,

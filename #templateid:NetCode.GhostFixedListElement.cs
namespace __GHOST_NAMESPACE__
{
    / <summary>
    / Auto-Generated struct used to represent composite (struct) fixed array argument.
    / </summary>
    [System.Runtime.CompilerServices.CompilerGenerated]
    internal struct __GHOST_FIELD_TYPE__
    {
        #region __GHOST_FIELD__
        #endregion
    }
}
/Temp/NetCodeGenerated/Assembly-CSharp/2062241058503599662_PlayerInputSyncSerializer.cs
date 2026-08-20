@@ -44,8 +44,8 @@ namespace Assembly_CSharp_Generated
         {
             public float movementDir_x;
             public float movementDir_y;
-            public float sightDirection_x;
-            public float sightDirection_y;
+            public float sightPosition_x;
+            public float sightPosition_y;
             public uint rightButton_Count;
             public uint leftButton_Count;
         }
@@ -71,8 +71,8 @@ namespace Assembly_CSharp_Generated
         {
                 snapshot.movementDir_x = component.movementDir.x;
                 snapshot.movementDir_y = component.movementDir.y;
-                snapshot.sightDirection_x = component.sightDirection.x;
-                snapshot.sightDirection_y = component.sightDirection.y;
+                snapshot.sightPosition_x = component.sightPosition.x;
+                snapshot.sightPosition_y = component.sightPosition.y;
                 snapshot.rightButton_Count = (uint)component.rightButton.Count;
                 snapshot.leftButton_Count = (uint)component.leftButton.Count;
         }
@@ -83,7 +83,7 @@ namespace Assembly_CSharp_Generated
             float snapshotInterpolationFactor, float snapshotInterpolationFactorRaw, ref Snapshot snapshotBefore, ref Snapshot snapshotAfter)
         {
                 component.movementDir = new float2(snapshotBefore.movementDir_x, snapshotBefore.movementDir_y);
-                component.sightDirection = new float2(snapshotBefore.sightDirection_x, snapshotBefore.sightDirection_y);
+                component.sightPosition = new float2(snapshotBefore.sightPosition_x, snapshotBefore.sightPosition_y);
                 component.rightButton.Count = (uint) snapshotBefore.rightButton_Count;
                 component.leftButton.Count = (uint) snapshotBefore.leftButton_Count;
         }
@@ -94,8 +94,8 @@ namespace Assembly_CSharp_Generated
         {
             component.movementDir.x = backup.movementDir.x;
             component.movementDir.y = backup.movementDir.y;
-            component.sightDirection.x = backup.sightDirection.x;
-            component.sightDirection.y = backup.sightDirection.y;
+            component.sightPosition.x = backup.sightPosition.x;
+            component.sightPosition.y = backup.sightPosition.y;
             component.rightButton.Count = backup.rightButton.Count;
             component.leftButton.Count = backup.leftButton.Count;
         }
@@ -117,8 +117,8 @@ namespace Assembly_CSharp_Generated
             uint changeMask = 0;
             changeMask = (snapshot.movementDir_x != baseline.movementDir_x) ? 1u : 0;
             changeMask |= (snapshot.movementDir_y != baseline.movementDir_y) ? (1u<<0) : 0;
-            changeMask |= (snapshot.sightDirection_x != baseline.sightDirection_x) ? (1u<<1) : 0;
-            changeMask |= (snapshot.sightDirection_y != baseline.sightDirection_y) ? (1u<<1) : 0;
+            changeMask |= (snapshot.sightPosition_x != baseline.sightPosition_x) ? (1u<<1) : 0;
+            changeMask |= (snapshot.sightPosition_y != baseline.sightPosition_y) ? (1u<<1) : 0;
             changeMask |= (snapshot.rightButton_Count != baseline.rightButton_Count) ? (1u<<2) : 0;
             changeMask |= (snapshot.leftButton_Count != baseline.leftButton_Count) ? (1u<<3) : 0;
             GhostComponentSerializer.CopyToChangeMask(changeMaskData, changeMask, startOffset + 0, 4);
@@ -136,9 +136,9 @@ namespace Assembly_CSharp_Generated
             if ((changeMask & (1 << 0)) != 0)
                 writer.WritePackedFloatDelta(snapshot.movementDir_y, baseline.movementDir_y, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedFloatDelta(snapshot.sightDirection_x, baseline.sightDirection_x, compressionModel);
+                writer.WritePackedFloatDelta(snapshot.sightPosition_x, baseline.sightPosition_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedFloatDelta(snapshot.sightDirection_y, baseline.sightDirection_y, compressionModel);
+                writer.WritePackedFloatDelta(snapshot.sightPosition_y, baseline.sightPosition_y, compressionModel);
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedUIntDelta(snapshot.rightButton_Count, baseline.rightButton_Count, compressionModel);
             if ((changeMask & (1 << 3)) != 0)
@@ -157,12 +157,12 @@ namespace Assembly_CSharp_Generated
                 writer.WritePackedFloatDelta(snapshot.movementDir_x, baseline.movementDir_x, compressionModel);
             if ((changeMask & (1 << 0)) != 0)
                 writer.WritePackedFloatDelta(snapshot.movementDir_y, baseline.movementDir_y, compressionModel);
-            changeMask |= (snapshot.sightDirection_x != baseline.sightDirection_x) ? (1u<<1) : 0;
-            changeMask |= (snapshot.sightDirection_y != baseline.sightDirection_y) ? (1u<<1) : 0;
+            changeMask |= (snapshot.sightPosition_x != baseline.sightPosition_x) ? (1u<<1) : 0;
+            changeMask |= (snapshot.sightPosition_y != baseline.sightPosition_y) ? (1u<<1) : 0;
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedFloatDelta(snapshot.sightDirection_x, baseline.sightDirection_x, compressionModel);
+                writer.WritePackedFloatDelta(snapshot.sightPosition_x, baseline.sightPosition_x, compressionModel);
             if ((changeMask & (1 << 1)) != 0)
-                writer.WritePackedFloatDelta(snapshot.sightDirection_y, baseline.sightDirection_y, compressionModel);
+                writer.WritePackedFloatDelta(snapshot.sightPosition_y, baseline.sightPosition_y, compressionModel);
             changeMask |= (snapshot.rightButton_Count != baseline.rightButton_Count) ? (1u<<2) : 0;
             if ((changeMask & (1 << 2)) != 0)
                 writer.WritePackedUIntDelta(snapshot.rightButton_Count, baseline.rightButton_Count, compressionModel);
@@ -188,13 +188,13 @@ namespace Assembly_CSharp_Generated
             else
                 snapshot.movementDir_y = baseline.movementDir_y;
             if ((changeMask & (1 << 1)) != 0)
-                snapshot.sightDirection_x = reader.ReadPackedFloatDelta(baseline.sightDirection_x, compressionModel);
+                snapshot.sightPosition_x = reader.ReadPackedFloatDelta(baseline.sightPosition_x, compressionModel);
             else
-                snapshot.sightDirection_x = baseline.sightDirection_x;
+                snapshot.sightPosition_x = baseline.sightPosition_x;
             if ((changeMask & (1 << 1)) != 0)
-                snapshot.sightDirection_y = reader.ReadPackedFloatDelta(baseline.sightDirection_y, compressionModel);
+                snapshot.sightPosition_y = reader.ReadPackedFloatDelta(baseline.sightPosition_y, compressionModel);
             else
-                snapshot.sightDirection_y = baseline.sightDirection_y;
+                snapshot.sightPosition_y = baseline.sightPosition_y;
             if ((changeMask & (1 << 2)) != 0)
                 snapshot.rightButton_Count = reader.ReadPackedUIntDelta(baseline.rightButton_Count, compressionModel);
             else
@@ -214,7 +214,7 @@ namespace Assembly_CSharp_Generated
             int errorIndex = 0;
             errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.movementDir, backup.movementDir));
             ++errorIndex;
-            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.sightDirection, backup.sightDirection));
+            errors[errorIndex] = math.max(errors[errorIndex], math.distance(component.sightPosition, backup.sightPosition));
             ++errorIndex;
             errors[errorIndex] = math.max(errors[errorIndex],
                 (component.rightButton.Count > backup.rightButton.Count) ?
@@ -237,7 +237,7 @@ namespace Assembly_CSharp_Generated
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));
-            names.Append((FixedString512Bytes)".sightDirection");
+            names.Append((FixedString512Bytes)".sightPosition");
             ++nameCount;
             if (nameCount != 0)
                 names.Append(new FixedString32Bytes(","));

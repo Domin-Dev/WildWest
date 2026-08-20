@@ -18,6 +18,7 @@ partial struct MapServerSystem : ISystem
     {
         state.RequireForUpdate<MapSettings>();
         state.RequireForUpdate<CurrentTime>();
+        state.RequireForUpdate<LocalWeather>();
     }
     
     [BurstCompile]
@@ -33,7 +34,7 @@ partial struct MapServerSystem : ISystem
             ecb.AddComponent(loaded, new StartDataRPC() 
             {
                 mapSetUp = map.GetSetUp(),
-                currentTime = SystemAPI.GetSingleton<CurrentTime>()   
+                currentTime = SystemAPI.GetSingleton<CurrentTime>(),     
             });
             ecb.AddComponent(loaded, new SendRpcCommandRequest()
             {
