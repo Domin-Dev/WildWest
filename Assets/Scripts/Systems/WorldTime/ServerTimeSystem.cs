@@ -31,10 +31,11 @@ public partial struct ServerTimeSystem : ISystem
         state.RequireForUpdate<TimeConfig>();
         state.RequireForUpdate<NetworkTime>();
 
-        if(SystemAPI.HasSingleton<CurrentTime>())
+        if(SystemAPI.HasSingleton<NetworkTime>() && SystemAPI.HasSingleton<CurrentTime>())
         {
             var time = SystemAPI.GetSingleton<NetworkTime>();
             SystemAPI.GetSingletonRW<CurrentTime>().ValueRW.StartTick = time.ServerTick;
+            EntityHelper.CreateEntityWithComponent(state.EntityManager,new NextWeatherUpdate(){ tick = time.ServerTick});
         }
     }
     public void OnUpdate(ref SystemState state)

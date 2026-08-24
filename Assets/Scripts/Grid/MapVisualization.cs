@@ -32,6 +32,7 @@ public struct UV
 public class MapVisualization : MonoBehaviour
 {
     [SerializeField] private GameObject cloudsGameObject;
+    [SerializeField] private GameObject fogGameObject;
     [SerializeField] private Material mapMaterial;
     [SerializeField] private Texture2D linesTexture;
     public Dictionary<int, TileUV> tilesUV { get; private set; }
@@ -72,7 +73,7 @@ public class MapVisualization : MonoBehaviour
 
     public ClientMap clientMap;
     public static MapVisualization instance { private set; get; }
-    private int ChunkWroldPositionID = Shader.PropertyToID("_ChunkWroldPosition");
+    private int ChunkWroldPositionID = Shader.PropertyToID("_ChunkWorldPosition");
     
     public void Awake()
     {
@@ -102,6 +103,18 @@ public class MapVisualization : MonoBehaviour
         }
     }
     //
+
+    private void CreateWeatherMesh(int2 coords,Transform parent,GameObject weatherPrefab,int sortingOrder)
+    {
+        Transform mesh = Instantiate(weatherPrefab,new Vector3(chunkSize*cellSize,chunkSize*cellSize,0) * 0.5f,Quaternion.identity,parent).transform;
+
+        mesh.localScale = new Vector3(chunkSize*cellSize,chunkSize*cellSize,1);
+        mesh.GetComponent<Renderer>().material.SetVector(ChunkWroldPositionID,new Vector4(coords.x,coords.y));
+
+        var sortingGroup = mesh.AddComponent<SortingGroup>();
+        sortingGroup.sortingOrder = sortingOrder;
+        sortingGroup.sortAtRoot = true;
+    }
     public Transform CreateMesh(Entity chunk)
     {
         ChunkComponent chunkComponent = entityManager.GetComponentData<ChunkComponent>(chunk);
@@ -112,19 +125,17 @@ public class MapVisualization : MonoBehaviour
         Transform borders = new GameObject("Lines").transform;
         borders.SetParent(partOfMap);
         
-        Transform clouds = Instantiate(cloudsGameObject,new Vector3(chunkSize*cellSize,chunkSize*cellSize,0) * 0.5f,Quaternion.identity,partOfMap).transform;
-        clouds.localScale = new Vector3(chunkSize*cellSize,chunkSize*cellSize,1);
         int2 coords = mapSettings.GetChunkCoordinates(chunkComponent.chunkIndex);
-        clouds.GetComponent<Renderer>().material.SetVector(ChunkWroldPositionID,new Vector4(coords.x,coords.y));
 
         MeshFilter meshFilter = partOfMap.AddComponent<MeshFilter>();
         MeshFilter bordersMeshFilter = borders.AddComponent<MeshFilter>(); 
 
         meshFilter.AddComponent<SortingGroup>().sortingOrder = -10;
         bordersMeshFilter.AddComponent<SortingGroup>().sortingOrder = 0;
-        var sortingGroup = clouds.AddComponent<SortingGroup>();
-        sortingGroup.sortingOrder = 10;
-        sortingGroup.sortAtRoot = true;
+
+        CreateWeatherMesh(coords,partOfMap,cloudsGameObject,20);
+        CreateWeatherMesh(coords,partOfMap,fogGameObject,10);
+
 
         Mesh mesh = new Mesh();
         Mesh bordersMesh = new Mesh();

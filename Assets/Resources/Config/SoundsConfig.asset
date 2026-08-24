@@ -35,7 +35,8 @@ MonoBehaviour:
     AudioMixer: {fileID: 7894568965139306670, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
     AmbientClips:
     - AudioClip: {fileID: 8300000, guid: 43a3b9dc97a2de232a00dece7a55b09e, type: 3}
-      ActivationRangeMin: 0.5
+      ActivationRangeMin: 0.45
+      FullVolumeThreshold: 0.55
       ActivationRangeMax: 1
       PitchMode: 1
       PitchMin: 0.8
@@ -44,9 +45,10 @@ MonoBehaviour:
     AmbientName: Rain
     AudioMixer: {fileID: 7894568965139306670, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
     AmbientClips:
-    - AudioClip: {fileID: 8300000, guid: 0b469cb5fbce5461ab333bab05858e46, type: 3}
+    - AudioClip: {fileID: 8300000, guid: 790222d1f7b4d9804ac0501ce17be6e7, type: 3}
       ActivationRangeMin: 0.5
+      FullVolumeThreshold: 0.6
       ActivationRangeMax: 1
       PitchMode: 1
-      PitchMin: 0.8
+      PitchMin: 1
       PitchMax: 2

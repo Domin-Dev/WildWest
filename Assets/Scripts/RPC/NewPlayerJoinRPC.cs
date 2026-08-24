@@ -21,6 +21,7 @@ public struct StartDataRPC : IRpcCommand
 {
     public MapSetUp mapSetUp;
     public CurrentTime currentTime;
+    public NextWeatherUpdate nextWeatherUpdate;
 }
 
 public struct MapSetUp

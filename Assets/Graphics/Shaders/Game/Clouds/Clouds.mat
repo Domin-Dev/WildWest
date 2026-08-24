@@ -51,7 +51,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Cloudiness: 0
-    - _ColorCount: 3
+    - _ColorCount: 5
     - _Contract: 1
     - _Contrast: 4
     - _DistortScale: 4
@@ -60,8 +60,9 @@ Material:
     - _Pixelate: 250
     - _Scale: 2
     - _Speed: 0.22
-    - _SpeedMultiplier: 0.1
+    - _SpeedMultiplier: 0.08
     m_Colors:
+    - _ChunkWorldPosition: {r: 0, g: 0, b: 0, a: 0}
     - _ChunkWroldPosition: {r: 0, g: 0, b: 0, a: 0}
     - _Color: {r: 0, g: 0, b: 0, a: 0.47058824}
     - _DistortSpeedVector: {r: 0.9, g: 0, b: 0, a: 0}

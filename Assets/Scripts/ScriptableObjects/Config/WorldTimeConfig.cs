@@ -257,6 +257,13 @@ public struct SeasonWeather
     [Header("Wind")]
     [Range(-1f,1f)]
     public float BaseWindSpeed;
+
+    [Header("Fog")]
+    [Range(-1f,1f)]
+    public float BaseFogIntensity;
+    [Header("Storm")]
+    [Range(-1f,1f)]
+    public float BaseStorm;
 }
 [System.Serializable]
 public struct TimesOfDay

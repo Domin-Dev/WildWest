@@ -133,6 +133,7 @@ public class Sounds : MonoBehaviour
     {
         audioSource.clip = ambientClip.AudioClip;
         float clampedValue = Mathf.InverseLerp(ambientClip.ActivationRangeMin,ambientClip.ActivationRangeMax,value);
+        audioSource.volume = Mathf.InverseLerp(ambientClip.ActivationRangeMin,ambientClip.FullVolumeThreshold,value);
 
         switch(ambientClip.PitchMode)
         {
@@ -143,6 +144,7 @@ public class Sounds : MonoBehaviour
                 audioSource.pitch = math.lerp(ambientClip.PitchMin,ambientClip.PitchMax,clampedValue);
                 break;
         }
+        
         if(!audioSource.isPlaying)
             audioSource.Play();
     }  

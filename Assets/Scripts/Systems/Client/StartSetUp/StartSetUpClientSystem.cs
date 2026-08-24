@@ -18,9 +18,9 @@ partial struct StartSetUpClientSystem : ISystem
             GameInfo data = GameInfo.instance;
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-            EntityHelper.CreateEntityWithComponent(ref ecb, new PlayerName() { name = data.playerName });
+            EntityHelper.CreateEntityWithComponent(ecb, new PlayerName() { name = data.playerName });
             EntityHelper.CreateEntityWithComponent<EnableConnectionTimeoutCheck>(ref ecb);   
-            EntityHelper.CreateEntityWithComponent(ref ecb,new ShootingConfig()
+            EntityHelper.CreateEntityWithComponent(ecb,new ShootingConfig()
             {
                 maxSpread = 7f,
                 shootSpread = 4f,
@@ -29,7 +29,6 @@ partial struct StartSetUpClientSystem : ISystem
                 sensitivityPlayerMove = 1f,
                 spreadRecovery = 0.06f,
             });
-
       
             ecb.Playback(state.EntityManager);
             ecb.Dispose();

@@ -35,7 +35,7 @@ public class DailyCycleUI : MonoBehaviour
     private LerpWeather lerpWeather;
     private LerpGlobalVolume lerpGlobalVolume;
     private CurrentTime time;
-    private LocalWeather weather;
+    private LocalWeather? weather = null;
 
 
 
@@ -58,7 +58,7 @@ public class DailyCycleUI : MonoBehaviour
         thermometer.SetUpBar(WorldConfig.UIConfig.ThermometerConfig);
 
         lerpLight = new LerpLight(globalLight);
-        lerpWeather = new LerpWeather(rainParticleSystem,snowParticleSystem);
+        lerpWeather = new LerpWeather(rainParticleSystem,snowParticleSystem,thermometer);
         lerpGlobalVolume = new LerpGlobalVolume(volume);
 
         timeOfDayBar.GetComponent<DynamicTooltipTrigger>().SetUp(() =>
@@ -91,11 +91,12 @@ public class DailyCycleUI : MonoBehaviour
         {
             return new TooltipInfo
             (
-                temperatureString.GetLocalizedString() + " " + weather.Temperature.ToString("F1") +  " °C"
+                temperatureString.GetLocalizedString() + " " + lerpWeather.Temperature.ToString("F1") +  " °C"
             );
         });
         
         rainParticleSystem.Stop(); 
+        snowParticleSystem.Stop(); 
     }
     public void OnEnable()
     {
@@ -111,8 +112,8 @@ public class DailyCycleUI : MonoBehaviour
         GoInGameCilientSystem.OnStartTimer += SetGlobalVolume;
         GoInGameCilientSystem.OnStartTimer += SetUpWeather;
 
-
         ClientWeatherSystem.OnWeatherUpdate += UpdateWeather;
+        ClientWeatherSetUpSystem.OnWeatherSetUp += UpdateWeather;
     }
     public void OnDisable()
     {
@@ -129,6 +130,7 @@ public class DailyCycleUI : MonoBehaviour
         GoInGameCilientSystem.OnStartTimer -= SetUpWeather;
 
         ClientWeatherSystem.OnWeatherUpdate -= UpdateWeather;
+        ClientWeatherSetUpSystem.OnWeatherSetUp -= UpdateWeather;
     }
 
     #region Time
@@ -195,37 +197,19 @@ public class DailyCycleUI : MonoBehaviour
     #endregion
    
     #region Weather
-    private void UpdateWeather(LocalWeather previousLocalWeather,LocalWeather localWeather, CurrentTime currentTime)
+    private void UpdateWeather(LocalWeather localWeather, CurrentTime currentTime)
     {
-        lerpWeather.Start(previousLocalWeather,localWeather,currentTime.WorldTime,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
-        thermometer.SetValue(localWeather.Temperature);
-        weather = localWeather;
-
-        Sounds.UpdateAmbient("Wind",localWeather.WindSpeed);
-        Sounds.UpdateAmbient("Rain",localWeather.Precipitation);
+        if(weather == null)
+            lerpWeather.Set(localWeather);
+        else
+            lerpWeather.Start(weather.Value,localWeather,currentTime.WorldTime,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
         
-        Debug.Log(localWeather.IsRaining + " " + previousLocalWeather.IsRaining);
-
-        if(localWeather.IsRaining)
-            UpdatePrecipitation(localWeather);   
-        else if(previousLocalWeather.IsRaining)
-            StopPrecipitation(localWeather); 
+        weather = localWeather;
     } 
     private void SetUpWeather(CurrentTime time)
     {
         Sounds.CreateAmbient(WorldConfig.SoundsConfig.WindAmbient);
         Sounds.CreateAmbient(WorldConfig.SoundsConfig.RainAmbient);
-    }
-    private void UpdatePrecipitation(LocalWeather localWeather)
-    {
-        if(!rainParticleSystem.isPlaying)
-            rainParticleSystem.Play();
-    }
-    private void StopPrecipitation(LocalWeather localWeather)
-    {
-
-        if(rainParticleSystem.isPlaying)
-            rainParticleSystem.Stop();
     }
 
     #endregion

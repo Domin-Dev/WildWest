@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c568faa839ee21bcba9e894be9708be2, type: 3}
   m_Name: WorldTimeConfig
   m_EditorClassIdentifier: Assembly-CSharp::WorldTimeConfig
-  startHour: 5
-  startDay: 1
+  startHour: 11
+  startDay: 2
   startSeason: 2
-  HourDuration: 0.01
+  HourDuration: 0.1
   SeasonDuration: 2
   Spring:
     iconSprite: {fileID: -1301959960, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
@@ -46,12 +46,14 @@ MonoBehaviour:
       Tint: -10
       LerpDuration: 36
     seasonWeather:
-      BaseTemperature: 0
-      DailyVariation: 0
-      DailyAmplitude: 0
-      BasePrecipitation: 0
+      BaseTemperature: 12
+      DailyVariation: 6
+      DailyAmplitude: 8
+      BasePrecipitation: -0.1
       BaseCloudiness: -0.2
-      BaseWindSpeed: 0
+      BaseWindSpeed: -0.1
+      BaseFogIntensity: 0.075
+      BaseStorm: 0.2
   Summer:
     iconSprite: {fileID: -1385579639, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -2068532676, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -81,12 +83,14 @@ MonoBehaviour:
       Tint: 50
       LerpDuration: 36
     seasonWeather:
-      BaseTemperature: 0
-      DailyVariation: 0
-      DailyAmplitude: 0
+      BaseTemperature: 20
+      DailyVariation: 8
+      DailyAmplitude: 10
       BasePrecipitation: 0
-      BaseCloudiness: 0
-      BaseWindSpeed: 0
+      BaseCloudiness: -0.2
+      BaseWindSpeed: -0.1
+      BaseFogIntensity: 0
+      BaseStorm: 0.3
   Autumn:
     iconSprite: {fileID: -851605624, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: -749013264, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -116,12 +120,14 @@ MonoBehaviour:
       Tint: 90
       LerpDuration: 36
     seasonWeather:
-      BaseTemperature: 0
-      DailyVariation: 0
-      DailyAmplitude: 0
-      BasePrecipitation: 0
-      BaseCloudiness: -0.101
-      BaseWindSpeed: 0
+      BaseTemperature: 12
+      DailyVariation: 7
+      DailyAmplitude: 8
+      BasePrecipitation: 0.2
+      BaseCloudiness: 0.1
+      BaseWindSpeed: 0.2
+      BaseFogIntensity: 0.15
+      BaseStorm: 0.1
   Winter:
     iconSprite: {fileID: 1140630064, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 1051364945, guid: c182df5009004d04a988c5293dda1a5a, type: 3}
@@ -152,11 +158,13 @@ MonoBehaviour:
       LerpDuration: 36
     seasonWeather:
       BaseTemperature: 0
-      DailyVariation: 0
-      DailyAmplitude: 0
-      BasePrecipitation: 0
-      BaseCloudiness: 0.4
-      BaseWindSpeed: 0
+      DailyVariation: 6
+      DailyAmplitude: 8
+      BasePrecipitation: 0.1
+      BaseCloudiness: 0.2
+      BaseWindSpeed: 0.2
+      BaseFogIntensity: 0.5
+      BaseStorm: 0.05
   rangesUI:
   - iconSprite: {fileID: 1696318910, guid: 2749b9cd80779224e9033c144c09f5b5, type: 3}
     barSprite: {fileID: 454127794, guid: c182df5009004d04a988c5293dda1a5a, type: 3}

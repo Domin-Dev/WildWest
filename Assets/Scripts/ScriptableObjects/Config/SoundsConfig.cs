@@ -42,6 +42,7 @@ public class AmbientClip
 {
     public AudioClip AudioClip;
     public float ActivationRangeMin;
+    public float FullVolumeThreshold;
     public float ActivationRangeMax;
 
     [Space]

@@ -4399,10 +4399,10 @@
     "m_Guid": {
         "m_GuidSerialized": "9790adca-9366-439d-a623-7e28f6d7bcb6"
     },
-    "m_Name": "ChunkWroldPosition",
+    "m_Name": "ChunkWorldPosition",
     "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "ChunkWroldPosition",
-    "m_DefaultReferenceName": "_ChunkWroldPosition",
+    "m_RefNameGeneratedByDisplayName": "ChunkWorldPosition",
+    "m_DefaultReferenceName": "_ChunkWorldPosition",
     "m_OverrideReferenceName": "",
     "m_GeneratePropertyBlock": true,
     "m_UseCustomSlotLabel": false,
@@ -4770,7 +4770,7 @@
     "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
     "m_ObjectId": "a1900509b51c49a0be35922fb043e294",
     "m_Id": 0,
-    "m_DisplayName": "ChunkWroldPosition",
+    "m_DisplayName": "ChunkWorldPosition",
     "m_SlotType": 1,
     "m_Hidden": false,
     "m_ShaderOutputName": "Out",

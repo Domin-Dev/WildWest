@@ -106,7 +106,6 @@ partial struct StartSetUpServerSystem : ISystem
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);
             EntityHelper.CreateEntityWithBuffer<PlayersList>(ecb);
 
-            EntityHelper.CreateEntityWithComponent(ecb,new LocalWeather());
             
             #region Time         
             EntityHelper.CreateEntityWithComponent(ecb, new CurrentTime()
@@ -123,6 +122,7 @@ partial struct StartSetUpServerSystem : ISystem
                     out TimeOfDay currentTimeOfDay),
                 TimeOfDay = currentTimeOfDay
             });
+
             #endregion
 
             

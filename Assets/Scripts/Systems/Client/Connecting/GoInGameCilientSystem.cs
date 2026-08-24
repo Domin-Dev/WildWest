@@ -29,7 +29,11 @@ partial struct GoInGameCilientSystem : ISystem
             entityCommandBuffer.DestroyEntity(rpc);
             EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new MapSettings().LoadSetUp(startData.ValueRO.mapSetUp));
             EntityHelper.CreateEntityWithComponent(entityCommandBuffer,startData.ValueRO.currentTime);
-            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new LocalWeather() { nextUpdate = startData.ValueRO.currentTime.StartTick});
+            EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new NextWeatherUpdate() 
+            { 
+                tick = startData.ValueRO.nextWeatherUpdate.tick,
+                previousUpdate = startData.ValueRO.nextWeatherUpdate.previousUpdate
+            });
             OnStartTimer?.Invoke(startData.ValueRO.currentTime);
 
 

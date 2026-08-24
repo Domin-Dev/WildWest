@@ -14,11 +14,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeatherConfig
   WeatherUpdatePeriod: 1
   WeatherUpdateLerpDuration: 0.9
-  CloudinessInfluenceOnPrecipitation: 0.15
   PrecipitationConfig:
     PrecipitationThreshold: 0.5
-    MaxParticleRotation: 40
-    ParticleSimulationSpeedMin: 0.8
-    ParticleSimulationSpeedMax: 2
-    ParticleCountMin: 20
-    ParticleCountMax: 250
+    rainTemperatureThreshold: -1.5
+    snowTemperatureThreshold: 0
+    CloudinessInfluenceOnPrecipitation: 0.15
+    RainMaxRotation: 40
+    RainSimulationSpeedMin: 0.8
+    RainSimulationSpeedMax: 2
+    RainParticleCountMin: 30
+    RainParticleCountMax: 200
+    SnowSimulationSpeedMin: 0.8
+    SnowSimulationSpeedMax: 2
+    SnowParticleCountMin: 40
+    SnowParticleCountMax: 250
+    SnowMaxVelocityX: 2
+  fogConfig:
+    FogThreshold: 0.6
+    fogByTime:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 12.094328
+        value: -0.3122363
+        inSlope: -0.0018912477
+        outSlope: -0.0018912477
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0.3032174
+      - serializedVersion: 3
+        time: 24
+        value: 0.13220267
+        inSlope: -0.00558575
+        outSlope: -0.00558575
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.07251057
+        outWeight: 0
+      m_PreInfinity: 0
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    WindSpeedInfluenceOnFog: -0.1
+    PrecipitationInfluenceOnFog: 0.15
+  stormConfig:
+    StormThreshold: 0.75
+    WindSpeedInfluenceOnStorm: 0.2
+    PrecipitationInfluenceOnStorm: 0.3
+    CloudinessInfluenceOnStorm: 0.3
