@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -27,6 +28,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
     private BufferLookup<ChunkObjects> chunkObjects;
     private BufferLookup<PlayersNeedChunk> playersNeedChunk;
     private BufferLookup<GhostChildren> childrenRO;
+    private ComponentLookup<ContainsPlayers> containsPlayersLookup;
 
     [BurstCompile] 
     protected override void OnCreate()
@@ -40,6 +42,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         chunkObjects = SystemAPI.GetBufferLookup<ChunkObjects>();
         playersNeedChunk = SystemAPI.GetBufferLookup<PlayersNeedChunk>();
         childrenRO = SystemAPI.GetBufferLookup<GhostChildren>(true);
+        containsPlayersLookup = SystemAPI.GetComponentLookup<ContainsPlayers>();
+        
 
         RequireForUpdate<MapSettings>();
         RequireForUpdate(query);
@@ -57,13 +61,12 @@ public partial class GhostChangeChunkServerSystem : SystemBase
     protected override void OnUpdate()
     {
         if (query.IsEmpty) return;
-
         chunkObjects.Update(this);
         playersNeedChunk.Update(this);
         childrenRO.Update(this);
+        containsPlayersLookup.Update(this);
 
         var ghostRelevancy  = SystemAPI.GetSingletonRW<GhostRelevancy>();
-
 
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
@@ -103,6 +106,13 @@ public partial class GhostChangeChunkServerSystem : SystemBase
 
             if(removed)
             {
+                if(SystemAPI.HasComponent<Player>(pair.entity))
+                {
+                    var counter = containsPlayersLookup.GetRefRW(pair.chunk);
+                    counter.ValueRW.Counter--;
+                    if(counter.ValueRO.Counter <= 0)
+                        containsPlayersLookup.SetComponentEnabled(pair.chunk,false);
+                }
                 var players = playersNeedChunk[pair.chunk];
                 foreach (var player in players)
                 {
@@ -138,6 +148,16 @@ public partial class GhostChangeChunkServerSystem : SystemBase
     
         while(sendGhostsToPlayers.TryDequeue(out var pair))
         {
+            GhostOwner owner = default;
+            bool isPlayer = false;
+            if(SystemAPI.HasComponent<Player>(pair.entity))
+            {
+                containsPlayersLookup.GetRefRW(pair.chunk).ValueRW.Counter++;
+                containsPlayersLookup.SetComponentEnabled(pair.chunk,true);
+                owner = SystemAPI.GetComponent<GhostOwner>(pair.entity);
+                isPlayer = true;
+            }
+
             var players = playersNeedChunk[pair.chunk];
             foreach (var player in players)
             {
@@ -147,9 +167,8 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                     Ghost = pair.ghostID
                 };
 
-                if(SystemAPI.HasComponent<Player>(pair.entity) && !ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
+                if(isPlayer && !ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
                 {
-                    var owner = SystemAPI.GetComponent<GhostOwner>(pair.entity);
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player.playerEntity);
                     RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);    
                 }
@@ -185,8 +204,6 @@ public partial class GhostChangeChunkServerSystem : SystemBase
         public EntityCommandBuffer.ParallelWriter ecb;
         public MapSettings map;
         [ReadOnly] public NativeParallelHashMap<int,LoadedChunks>.ReadOnly loadedChunks;
-        
-
         
 
         public NativeQueue<(Entity chunk, int ghostID, Entity entity)>.ParallelWriter sendGhostsToPlayers;

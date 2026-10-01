@@ -37,7 +37,7 @@ public partial struct TriggerSystem : ISystem
         {
             destroyEntityLookup = SystemAPI.GetComponentLookup<DestroyEntityTag>(true),
             bulletLookup = SystemAPI.GetComponentLookup<Bullet>(true),
-            environmentLookup = SystemAPI.GetComponentLookup<EnvironmentObject>(true),
+            environmentLookup = SystemAPI.GetComponentLookup<GridObject>(true),
             positionLookup = SystemAPI.GetComponentLookup<LocalTransform>(true),
             entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>(),
             hitboxLookup = SystemAPI.GetComponentLookup<HitBoxSettings>(true),
@@ -60,7 +60,7 @@ public struct TriggerJob : ITriggerEventsJob
 
     [ReadOnly] public ComponentLookup<DestroyEntityTag> destroyEntityLookup;
     [ReadOnly] public ComponentLookup<Bullet> bulletLookup;
-    [ReadOnly] public ComponentLookup<EnvironmentObject> environmentLookup; 
+    [ReadOnly] public ComponentLookup<GridObject> environmentLookup; 
     [ReadOnly] public ComponentLookup<LocalTransform> positionLookup;
     [ReadOnly] public ComponentLookup<HitBoxSettings> hitboxLookup;
     [ReadOnly] public ComponentLookup<GhostOwner> ghostOwnerLookup;

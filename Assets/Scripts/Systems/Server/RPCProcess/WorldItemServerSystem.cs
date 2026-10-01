@@ -235,7 +235,6 @@ partial struct WorldItemServerSystem : ISystem
         }
 
 
-
         ecb.Playback(state.EntityManager);  
         ecb.Dispose();
     }

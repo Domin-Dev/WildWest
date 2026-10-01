@@ -12,6 +12,8 @@ public class WeatherConfig : ScriptableObject
     public float WeatherUpdatePeriod = 0.5f;
     [Label("Weather Update Lerp Duration (game hour)")]
     public float WeatherUpdateLerpDuration = 0.3f;
+    [Label("Processing Weather Update Period (seconds)")]
+    public float ProcessingWeatherUpdatePeriod = 0.5f;
     public PrecipitationConfig PrecipitationConfig;
     public FogConfig fogConfig;
     public StormConfig stormConfig;
@@ -70,10 +72,22 @@ public class StormConfig
 {
     [Range(0f,1f)]
     public float StormThreshold;
+    [Range(0f,1f)]
+    public float MinLightningProbability;    
+    [Range(0f,1f)]
+    public float MaxLightningProbability;
+    
+    [Header("Influence")]
     [Range(-1f,1f)]
     public float WindSpeedInfluenceOnStorm;    
     [Range(-1f,1f)]
     public float PrecipitationInfluenceOnStorm;    
     [Range(-1f,1f)]
     public float CloudinessInfluenceOnStorm;
+    [Header("Lightning")]
+    public Color LightningGlobalLightColor;
+    [AllowNesting]
+    [Label("Lightning Color Lerp Duration (game hour)")]
+    public float LightningColorLerpDuration = 0.1f;
+
 }

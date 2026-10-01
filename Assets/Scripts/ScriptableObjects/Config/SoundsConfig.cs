@@ -12,15 +12,38 @@ public class SoundsConfig : ScriptableObject
     [SerializeField] private List<AudioClip> sounds;
     [SerializeField] public Ambient WindAmbient;
     [SerializeField] public Ambient RainAmbient;
+
+    [Header("Sounds")]
+    [SerializeField] public Sound Thunder;
     public List<AudioClip> Sounds => sounds;
 }
+
+
+[System.Serializable]
+public class Sound
+{
+    public string SoundName;
+    public AudioMixerGroup AudioMixer;
+    public SoundClip[] Clips;
+    public float MinDistance;
+    public float MaxDistance;
+}
+
+[System.Serializable]
+public class SoundClip
+{
+    public AudioClip AudioClip;
+    [Space]
+    public float PitchMin;
+    public float PitchMax;
+}
+
 [System.Serializable]
 public class Ambient
 {
     public string AmbientName;
     public AudioMixerGroup AudioMixer;
     public AmbientClip[] AmbientClips;
-
     public bool TryGetAmbientClip(float value,out AmbientClip ambientClip)
     {
         ambientClip = null;

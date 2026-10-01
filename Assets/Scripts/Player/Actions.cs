@@ -92,7 +92,7 @@ public class Actions : MonoBehaviour
         else return;
         if (gridTile == null ) return;
 
-        GridObject gridObject;
+        gridobejtOld gridObject;
         if (gridTile.IsGridObjectClass(out gridObject) && !(gridObject is GridHole) && item is Tool)
         {
             var type = ItemsAsset.instance.GetToolRequired(gridObject.ID);
@@ -237,7 +237,7 @@ public class Actions : MonoBehaviour
         gridTile.GridObjectIsType(out GridFarmland farmland);
         farmland.Water();
         Vector2 pos = GridVisualization.instance.GetWorldPosition(gridTile.x, gridTile.y);
-        Instantiate(ParticleAssets.instance.water, pos + new Vector2(0,0.14f), Quaternion.identity);
+        //Instantiate(ParticleAssets.instance.water, pos + new Vector2(0,0.14f), Quaternion.identity);
        // GridVisualization.instance.UpdateMesh(gridTile.x, gridTile.y, false,true);
         item.Decrease(50);
     }

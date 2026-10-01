@@ -151,6 +151,91 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
+                DisplayName = "Bullet",
+                Component = ComponentType.ReadWrite<Bullet>(),
+                Hash = 10237261704927524668,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.OnlyPredictedClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
+                DisplayName = "CurrentHitPoints",
+                Component = ComponentType.ReadWrite<CurrentHitPoints>(),
+                Hash = 13772156756796214154,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.AllClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
+                DisplayName = "DamageThisTick",
+                Component = ComponentType.ReadWrite<DamageThisTick>(),
+                Hash = 14384030980968956764,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.AllPredicted,
+                SendTypeOptimization = GhostSendType.OnlyPredictedClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 1,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
+                DisplayName = "DestroyAtTick",
+                Component = ComponentType.ReadWrite<DestroyAtTick>(),
+                Hash = 17468429233636012820,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.AllClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
+                DisplayName = "ContainerComponent",
+                Component = ComponentType.ReadWrite<ContainerComponent>(),
+                Hash = 686507675498549308,
+                SelfIndex = -1,
+                SerializerIndex = -1,
+                PrefabType = GhostPrefabType.All,
+                SendTypeOptimization = GhostSendType.AllClients,
+                SendForChildEntities = 0,
+                IsDefaultSerializer = 1,
+                IsInputComponent = 0,
+                IsInputBuffer = 0,
+                IsTestVariant = 0,
+                HasDontSupportPrefabOverridesAttribute = 0,
+            };
+            data.AddSerializationStrategy(ref ss);
+            ss = new ComponentTypeSerializationStrategy
+            {
                 DisplayName = "EquipmentEventBuffer",
                 Component = ComponentType.ReadWrite<EquipmentEventBuffer>(),
                 Hash = 8390267636598729308,
@@ -185,9 +270,9 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
-                DisplayName = "WorldItemPosition",
-                Component = ComponentType.ReadWrite<WorldItemPosition>(),
-                Hash = 5162996242955595004,
+                DisplayName = "ItemBarData",
+                Component = ComponentType.ReadWrite<ItemBarData>(),
+                Hash = 16658401302825848676,
                 SelfIndex = -1,
                 SerializerIndex = -1,
                 PrefabType = GhostPrefabType.All,
@@ -202,9 +287,9 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
-                DisplayName = "InventorySlot",
-                Component = ComponentType.ReadWrite<InventorySlot>(),
-                Hash = 1979490110839945148,
+                DisplayName = "LinkedContainers",
+                Component = ComponentType.ReadWrite<LinkedContainers>(),
+                Hash = 18134272274485239454,
                 SelfIndex = -1,
                 SerializerIndex = -1,
                 PrefabType = GhostPrefabType.All,
@@ -270,13 +355,13 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
-                DisplayName = "Bullet",
-                Component = ComponentType.ReadWrite<Bullet>(),
-                Hash = 10237261704927524668,
+                DisplayName = "WorldItemPosition",
+                Component = ComponentType.ReadWrite<WorldItemPosition>(),
+                Hash = 5162996242955595004,
                 SelfIndex = -1,
                 SerializerIndex = -1,
                 PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.OnlyPredictedClients,
+                SendTypeOptimization = GhostSendType.AllClients,
                 SendForChildEntities = 0,
                 IsDefaultSerializer = 1,
                 IsInputComponent = 0,
@@ -440,94 +525,9 @@ namespace Assembly_CSharp.Generated
             data.AddSerializationStrategy(ref ss);
             ss = new ComponentTypeSerializationStrategy
             {
-                DisplayName = "ContainerComponent",
-                Component = ComponentType.ReadWrite<ContainerComponent>(),
-                Hash = 686507675498549308,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.AllClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
-                DisplayName = "LinkedContainers",
-                Component = ComponentType.ReadWrite<LinkedContainers>(),
-                Hash = 18134272274485239454,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.AllClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
-                DisplayName = "CurrentHitPoints",
-                Component = ComponentType.ReadWrite<CurrentHitPoints>(),
-                Hash = 13772156756796214154,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.AllClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
-                DisplayName = "DamageThisTick",
-                Component = ComponentType.ReadWrite<DamageThisTick>(),
-                Hash = 14384030980968956764,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.AllPredicted,
-                SendTypeOptimization = GhostSendType.OnlyPredictedClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 1,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
-                DisplayName = "DestroyAtTick",
-                Component = ComponentType.ReadWrite<DestroyAtTick>(),
-                Hash = 17468429233636012820,
-                SelfIndex = -1,
-                SerializerIndex = -1,
-                PrefabType = GhostPrefabType.All,
-                SendTypeOptimization = GhostSendType.AllClients,
-                SendForChildEntities = 0,
-                IsDefaultSerializer = 1,
-                IsInputComponent = 0,
-                IsInputBuffer = 0,
-                IsTestVariant = 0,
-                HasDontSupportPrefabOverridesAttribute = 0,
-            };
-            data.AddSerializationStrategy(ref ss);
-            ss = new ComponentTypeSerializationStrategy
-            {
-                DisplayName = "ItemBarData",
-                Component = ComponentType.ReadWrite<ItemBarData>(),
-                Hash = 16658401302825848676,
+                DisplayName = "InventorySlot",
+                Component = ComponentType.ReadWrite<InventorySlot>(),
+                Hash = 1979490110839945148,
                 SelfIndex = -1,
                 SerializerIndex = -1,
                 PrefabType = GhostPrefabType.All,
@@ -544,14 +544,18 @@ namespace Assembly_CSharp.Generated
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_EquipmentEventCounterEquipmentEventCounterInputBufferDataGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkEventCounterChunkEventCounterInputBufferDataGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_PlayerInputPlayerInputInputBufferDataGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_BulletGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_CurrentHitPointsGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_DestroyAtTickGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ContainerComponentGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_EquipmentEventBufferGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_EntityContainersGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_WorldItemPositionGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_InventorySlotGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ItemBarDataGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_LinkedContainersGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkComponentGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkTilesGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_BuildingObjectsGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_BulletGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_WorldItemPositionGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ChunkEventsGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_PlayerInputSyncGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_PlayerLookGhostComponentSerializer.GetState(ref state));
@@ -560,11 +564,7 @@ namespace Assembly_CSharp.Generated
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_HungerGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ThirstGhostComponentSerializer.GetState(ref state));
             data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_AimRotationGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ContainerComponentGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_LinkedContainersGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_CurrentHitPointsGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_DestroyAtTickGhostComponentSerializer.GetState(ref state));
-            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_ItemBarDataGhostComponentSerializer.GetState(ref state));
+            data.AddSerializer(global::Assembly_CSharp_Generated.Assembly_CSharp_Generated_InventorySlotGhostComponentSerializer.GetState(ref state));
 
             data.AddInputComponent(ComponentType.ReadWrite<EquipmentEventCounter>(), ComponentType.ReadWrite<Unity.NetCode.InputBufferData<EquipmentEventCounter>>());
             data.AddInputComponent(ComponentType.ReadWrite<ChunkEventCounter>(), ComponentType.ReadWrite<Unity.NetCode.InputBufferData<ChunkEventCounter>>());

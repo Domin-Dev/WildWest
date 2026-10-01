@@ -7,6 +7,13 @@ public class LerpLight : LerpValue
     private Color target;
     private double startTime;
     private float duration;
+
+
+    private bool lightning;
+    private double lightningStart;
+    private float lightningDuration;
+    private Color lightningColor;
+
     private Light2D light2D;
 
     public LerpLight(Light2D light2D)
@@ -21,7 +28,6 @@ public class LerpLight : LerpValue
         this.duration = duration;
         isActive = true;
     }
-
     public void Set(Color value)
     {
         light2D.color = value;
@@ -30,9 +36,32 @@ public class LerpLight : LerpValue
     {
         double t =  currentTime - startTime;
         float progress = (float)t/duration;
-        light2D.color = Color.Lerp(start,target,progress);
-
-        if(progress >= 1f)
-            isActive = false;    
+        Color current = Color.Lerp(start,target,progress);
+        
+        if(lightning)
+        {
+            t =  currentTime - lightningStart;
+            progress = (float)t/lightningDuration;
+            light2D.color = Color.Lerp(lightningColor,current,progress);
+            if(progress >= 1f)
+                lightning = false;    
+        }
+        else
+        {
+            light2D.color = current;
+            if(progress >= 1f)
+                isActive = false;    
+        }
     }
+
+    public void SetLightningColor(Color color,double worldTime,float duration)
+    {
+        isActive = true;
+        this.lightning = true;
+        this.lightningColor = color;
+        this.lightningDuration = duration;
+        this.lightningStart = worldTime;
+        light2D.color = color;
+    }
+
 }

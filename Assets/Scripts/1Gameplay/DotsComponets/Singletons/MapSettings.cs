@@ -1,0 +1,252 @@
+
+using System;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.VisualScripting;
+using UnityEngine;
+
+[BurstCompile]
+public struct MapSettings: IComponentData
+{
+    public bool newMap;
+    public int seed;
+
+
+    /// Map Size
+    public int mapSizeInRegions;
+    public int regionSizeInChunks;
+    public int chunkSizeInTiles;
+    public float tileSize;
+    public float2 mapOffset;
+
+
+    public float mapSizeInEngine => mapSizeInChunks * chunkSizeInEnginePos;
+    public float mapSizeInTiles => mapSizeInChunks * chunkSizeInTiles;
+    public int mapSizeInChunks => mapSizeInRegions*regionSizeInChunks;    
+
+
+    public int chunksCountInRegion => regionSizeInChunks * regionSizeInChunks;
+    public int chunksCount => mapSizeInChunks*mapSizeInChunks;
+    public int regionsCount => mapSizeInRegions*mapSizeInRegions;
+    public int tilesCount => chunkSizeInTiles*chunkSizeInTiles;
+    public float chunkSizeInEnginePos => chunkSizeInTiles * tileSize;
+
+   
+    #region Chunks limits
+    public int playerRenderCount => (2 * playerRenderSize + 1)*(2 * playerRenderSize + 1);
+    public float playerRenderSizeInEnginePos => chunkSizeInEnginePos * (playerRenderSize * 2 + 1);
+    public int playerRenderSize; 
+    public int maxChunksPerClient;
+
+    #endregion
+
+
+
+    [BurstCompile]
+    public MapSetUp GetSetUp()
+    {
+        return new MapSetUp()
+        {
+            chunkSizeInTiles = chunkSizeInTiles,
+            mapOffset = mapOffset,
+            mapSizeInRegions = mapSizeInRegions,
+            regionSizeInChunks = regionSizeInChunks,
+            tileSize = tileSize,
+            seed = seed
+        };
+    }
+    
+    [BurstCompile]
+    public MapSettings LoadSetUp(MapSetUp mapSetUp)
+    {
+        this.chunkSizeInTiles = mapSetUp.chunkSizeInTiles;
+        this.mapOffset = mapSetUp.mapOffset;
+        this.mapSizeInRegions = mapSetUp.mapSizeInRegions;
+        this.regionSizeInChunks = mapSetUp.regionSizeInChunks;
+        this.tileSize = mapSetUp.tileSize;
+        this.seed = mapSetUp.seed;
+        return this;
+    }
+
+
+
+
+    [BurstCompile]
+    public bool CheckChunkIndex(int chunkIndex)
+    {
+        return chunkIndex >= 0 && chunkIndex < chunksCount;
+    }
+
+    [BurstCompile]
+    public bool CheckChunkCoordinates(int2 chunkCoordinates)
+    {
+        return chunkCoordinates.x >= 0 && chunkCoordinates.y >= 0  && chunkCoordinates.x < mapSizeInChunks && chunkCoordinates.y < mapSizeInChunks;
+    }
+    [BurstCompile]
+    public void GetNeighboringChunkIndexes(int chunkIndex,NativeHashMap<int,int> indexes)
+    {
+        int2 pos = GetChunkCoordinates(chunkIndex);
+        for (int y = -playerRenderSize; y <= playerRenderSize; y++)
+        {
+            for (int x = -playerRenderSize; x <= playerRenderSize; x++)
+            {
+                int newX = pos.x + x;
+                int newY = pos.y + y;
+
+                if (newX >= 0 && newY >= 0 && newX < mapSizeInChunks && newY < mapSizeInChunks)
+                {
+                    int index = chunkIndex + x + y * mapSizeInChunks;
+                    int prio = math.abs(y) + math.abs(x);
+                    indexes.Add(index,prio);
+                }
+            }
+        }
+    }
+    [BurstCompile]
+    public int2 GetChunkCoordinates(int chunkIndex)
+    {
+        return new int2(chunkIndex % mapSizeInChunks, chunkIndex / mapSizeInChunks);
+    }
+    [BurstCompile]
+    public int GetRegion(int2 chunkCoordinates)
+    {
+        return (int)(chunkCoordinates.x / regionSizeInChunks) + (int)(chunkCoordinates.y / regionSizeInChunks) * mapSizeInRegions;
+    }
+
+    [BurstCompile]
+    public int GetRegionChunkIndex(int2 chunkCoordinates)
+    {
+        return (int)(chunkCoordinates.x % regionSizeInChunks) + (int)(chunkCoordinates.y % regionSizeInChunks) * regionSizeInChunks;
+    }
+   
+    [BurstCompile]
+    public int GetRegionChunkIndex(int chunkIndex)
+    {
+        return GetRegionChunkIndex(GetChunkCoordinates(chunkIndex));
+    }
+   
+   
+    [BurstCompile]
+    public int GetChunkIndexFromCoordinates(int2 coordinates)
+    {
+        return coordinates.x + coordinates.y * mapSizeInChunks;
+    }
+    [BurstCompile]
+    public int GetChunkIndexFromEnginePosition(float2 enginePosition)
+    {
+        if(enginePosition.x >= 0 && enginePosition.y >= 0 && enginePosition.x < mapSizeInEngine &&  enginePosition.y < mapSizeInEngine)
+            return (int)(enginePosition.x / tileSize / chunkSizeInTiles) 
+                + (int)(enginePosition.y / tileSize / chunkSizeInTiles) * mapSizeInChunks;
+        else
+            return -1;
+    }
+    [BurstCompile]
+    public int GetChunkIndexFromTilePosition(int2 tilePosition)
+    {
+        if(tilePosition.x >= 0 && tilePosition.y >= 0 && tilePosition.x < mapSizeInTiles &&  tilePosition.y < mapSizeInTiles)
+            return (int)(tilePosition.x / chunkSizeInTiles) + (int)(tilePosition.y / chunkSizeInTiles) * mapSizeInChunks;
+        else
+            return -1;
+    }
+
+    [BurstCompile]
+    public float2 GetCorrectPosition(float2 enginePosition)
+    {
+        return new float2(math.clamp(enginePosition.x,0,mapSizeInEngine),math.clamp(enginePosition.y,0,mapSizeInEngine));
+    }
+
+
+    [BurstCompile]
+    public void GetCorrectChunkAndPosition(float2 enginePosition,out int chunkIndex,out float2 correctPosition)
+    {
+        chunkIndex = GetChunkIndexFromEnginePosition(enginePosition);
+        if(chunkIndex == -1)
+        {
+            correctPosition = GetCorrectPosition(enginePosition);
+            chunkIndex = GetChunkIndexFromEnginePosition(correctPosition);
+        }
+        else
+            correctPosition = enginePosition;
+    }
+
+
+
+    [BurstCompile]
+    public int GetChunkIndexFromEnginePosition(float3 enginePosition)
+    {
+        return GetChunkIndexFromEnginePosition(MyTools.ConvertFloat(enginePosition));
+    }
+    [BurstCompile]
+    public int2 GetTilePostionFromEnginePosition(float2 enginePosition)
+    {
+        return new int2((int)((enginePosition.x - mapOffset.x) / tileSize), (int)((enginePosition.y - mapOffset.y) / tileSize));
+    }
+
+
+    [BurstCompile] 
+    public int2 GetPointerPosition(float2 mousePosition,float3 playerPosition)
+    {
+        int2 pointer = GetTilePostionFromEnginePosition(mousePosition);
+        int2 player = GetTilePostionFromEnginePosition(MyTools.ConvertFloat(playerPosition + new float3(0,0.05f,0)));
+        int2 direction = pointer - player;
+        int2 dir8 = new int2(
+            math.clamp(direction.x, -1, 1),
+            math.clamp(direction.y, -1, 1)
+        );
+        return dir8 + player;
+    }
+
+
+    [BurstCompile]
+    public float3 GetEnginePositionFromTilePosition(int2 xy)
+    {
+        float y = mapOffset.y + (xy.y + 0.5f) * tileSize;
+        return new float3(mapOffset.x + (xy.x + 0.5f) * tileSize,y,y); 
+    }
+
+    
+
+    [BurstCompile]
+    public float3 GetTilePositionToEnginePosition(int x, int y)
+    {
+        return new float3(mapOffset.x + (x + 0.5f) * tileSize, mapOffset.y + (y + 0.5f) * tileSize, mapOffset.y + (y + 0.5f) * tileSize); 
+    }
+    [BurstCompile]
+    public float2 GetChunkEnginePos(int2 chunkCoordinates)
+    {
+        return mapOffset + new float2(chunkCoordinates.x * chunkSizeInTiles * tileSize, chunkCoordinates.y * chunkSizeInTiles * tileSize);
+    }
+    [BurstCompile]
+    public float2 GetChunkEnginePos(int chunkIndex)
+    {
+        return GetChunkEnginePos(GetChunkCoordinates(chunkIndex));
+    }
+    [BurstCompile]
+    public int2 GetChunkMapPosition(int2 chunkCoordinates)
+    {
+        return chunkCoordinates * chunkSizeInTiles;
+    }
+    [BurstCompile]
+    public int2 GetChunkMapPosition(int chunkIndex)
+    {
+        return GetChunkMapPosition(GetChunkCoordinates(chunkIndex));
+    }
+    
+    
+    
+    [BurstCompile]
+    public int2 GetLocalTilePos(int tileID)
+    {
+        return new int2(tileID % chunkSizeInTiles, tileID / chunkSizeInTiles);
+    }
+    [BurstCompile]
+    public int2 GetGlobalTilePos(int2 tileLocalPos,int2 chunkCoordinates)
+    {
+        return chunkCoordinates * chunkSizeInTiles + tileLocalPos;
+    }
+
+
+
+}

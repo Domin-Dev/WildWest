@@ -6,10 +6,10 @@ using UnityEngine.Rendering.Universal;
 public abstract class LerpValue
 {
     protected bool isActive;
-    public void Update(double currentHour)
+    public void Update(double worldTime)
     {
         if(isActive)
-            Lerp(currentHour);
+            Lerp(worldTime);
     }
     protected abstract void Lerp(double currentTime);
 }

@@ -118,6 +118,7 @@ partial struct GoInGameServerSystem : ISystem
         };
     }
 
+
     private void AddEquipmentEntities(ref SystemState state, ref EntityCommandBuffer ecb, Entity character,Entity connection, int networkID, ContainerSave[] containerSaves)
     {
         var entities = SystemAPI.GetSingleton<EntitiesReferences>();

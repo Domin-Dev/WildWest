@@ -100,7 +100,7 @@ Assets/
    Player/
     CharacterAuthoring.cs
     GhostChildren.cs
-    PlayerOutfitStats.cs
+    OutfitStats.cs
     SendToPlayers.cs
    RPCSendQueue.cs
    SelfDestructionAuthoring.cs

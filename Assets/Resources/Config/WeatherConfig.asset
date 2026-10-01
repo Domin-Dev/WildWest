@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeatherConfig
   WeatherUpdatePeriod: 1
   WeatherUpdateLerpDuration: 0.9
+  ProcessingWeatherUpdatePeriod: 5
   PrecipitationConfig:
     PrecipitationThreshold: 0.5
     rainTemperatureThreshold: -1.5
@@ -58,7 +59,11 @@ MonoBehaviour:
     WindSpeedInfluenceOnFog: -0.1
     PrecipitationInfluenceOnFog: 0.15
   stormConfig:
-    StormThreshold: 0.75
+    StormThreshold: 0
+    MinLightningProbability: 1
+    MaxLightningProbability: 1
     WindSpeedInfluenceOnStorm: 0.2
     PrecipitationInfluenceOnStorm: 0.3
     CloudinessInfluenceOnStorm: 0.3
+    LightningGlobalLightColor: {r: 1, g: 1, b: 1, a: 1}
+    LightningColorLerpDuration: 0.1

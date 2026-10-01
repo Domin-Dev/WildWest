@@ -130,7 +130,7 @@ public static class RPCHelper
     {
        return SendEventsToClients(new T(),ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,playerEntity,chunkIndex,tick);
     }
-    public static bool SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick, bool instantProcess = true)
+    public static bool SendEventsToClients<T>(T rpc,ref SystemState state,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb,int networkID,Entity playerEntity, int chunkIndex, NetworkTick tick = default, bool instantProcess = true)
     where T : unmanaged, IRpcCommand,ISetPlayer
     {
         Entity chunk = Entity.Null; 
@@ -171,6 +171,25 @@ public static class RPCHelper
             }
         }
         return true;
+    }   
+    public static void SendEventsToClientsImmediately<T>(T rpc,EntityCommandBuffer ecb,ComponentLookup<PlayerSourceConnection> connections,DynamicBuffer<PlayersNeedChunk> players,Entity chunkEntity)
+    where T : unmanaged, IRpcCommand
+    {
+        var rpcEvent = ecb.CreateEntity();
+        ecb.AddComponent(rpcEvent,new SystemEventData(default));
+        ecb.AddComponent<WaitForProcess>(rpcEvent);
+        ecb.SetComponentEnabled<WaitForProcess>(rpcEvent,false);
+        
+        ecb.AddComponent(rpcEvent,rpc);
+        ecb.AddBuffer<SendEventToPlayers>(rpcEvent);
+        
+        foreach(var player in players)
+        {
+            ecb.AppendToBuffer(rpcEvent,new SendEventToPlayers()
+            {
+                connection = connections[player.playerEntity].value
+            });
+        }
     }
     public static bool SendEventsToClients<T>(T rpc,ComponentLookup<PlayerSourceConnection> connections,BufferLookup<PlayersNeedChunk> playerNeedChunkLookup,DynamicBuffer<LoadedChunks> loadedChunks,EntityCommandBuffer ecb, int chunkIndex, NetworkTick tick, bool instantProcess = true)
     where T : unmanaged, IComponentData,ISetPlayer

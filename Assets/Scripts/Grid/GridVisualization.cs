@@ -739,7 +739,7 @@ public class GridVisualization : MonoBehaviour
             Sounds.instance.Hammer();
         }
     }
-    public void DestroyDrop(GridObject gridObject, Vector2 pos)
+    public void DestroyDrop(gridobejtOld gridObject, Vector2 pos)
     {
         BuildingItem item = (BuildingItem)ItemsAsset.instance.GetItem(gridObject.ID);
         if(gridObject is GridContainer)
@@ -793,7 +793,7 @@ public class GridVisualization : MonoBehaviour
     {
         var gridTile = GetTileByGridPosition(positionXY);
         if (gridTile == null) return;
-        GridObject gridObject = gridTile.gridObject;
+        gridobejtOld gridObject = gridTile.gridObject;
         if (gridObject == null) return;
         bool[] neighbors = GetNeighbors(positionXY, gridObject.ID);
         int value = 0;

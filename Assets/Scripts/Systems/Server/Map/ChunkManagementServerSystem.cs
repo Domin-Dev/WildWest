@@ -148,6 +148,9 @@ public partial class ChunkManagementServerSystem : SystemBase
             ecb.SetComponentEnabled<ToSave>(sortKey,chunkEntity,true);
 
             ecb.AddComponent<NewChunkServerAction>(sortKey,chunkEntity);
+            ecb.AddComponent<ContainsPlayers>(sortKey,chunkEntity);
+            ecb.SetComponentEnabled<ContainsPlayers>(sortKey,chunkEntity,false);
+
             ecb.AddBuffer<ChunkServerActions>(sortKey,chunkEntity); 
             ecb.AddBuffer<ChunkObjects>(sortKey,chunkEntity);
             ecb.AddBuffer<PlayersNeedChunk>(sortKey,chunkEntity);

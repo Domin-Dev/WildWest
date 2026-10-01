@@ -16,13 +16,14 @@ public partial class DestroyEntitySystem : SystemBase
 
 
     private BufferLookup<ChunkObjects> chunkObjects;
-
+    private ComponentLookup<ContainsPlayers> containsPlayersLookup;
 
     protected override void OnCreate()
     {
         RequireForUpdate<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
         RequireForUpdate<NetworkTime>();
         chunkObjects = SystemAPI.GetBufferLookup<ChunkObjects>();
+        containsPlayersLookup = SystemAPI.GetComponentLookup<ContainsPlayers>();
 
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
        .WithAll<DestroyEntityTag>();
@@ -35,6 +36,8 @@ public partial class DestroyEntitySystem : SystemBase
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
         chunkObjects.Update(this);
+        containsPlayersLookup.Update(this);
+        
         var current = networkTime.ServerTick;    
         var ecbSingleton = SystemAPI.GetSingleton<EndPredictedSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
@@ -42,7 +45,6 @@ public partial class DestroyEntitySystem : SystemBase
 
         foreach (var(localTransform, entity) in SystemAPI.Query<RefRW<LocalTransform>>().WithAll<DestroyEntityTag>().WithEntityAccess())
         {
-            Debug.Log("niszczenie!!!");
             if(World.IsServer())
             {
                 if (SystemAPI.HasComponent<Bullet>(entity)) HybridManager.instance.EntityDeleted(entity);
@@ -59,6 +61,13 @@ public partial class DestroyEntitySystem : SystemBase
                             if(buffer[i].entity == entity)
                             {
                                 buffer.RemoveAtSwapBack(i);
+                                if(SystemAPI.HasComponent<Player>(entity))
+                                {
+                                    var counter = containsPlayersLookup.GetRefRW(ghostChunk.ValueRO.currentChunkEntity);
+                                    counter.ValueRW.Counter--;
+                                    if(counter.ValueRO.Counter <= 0)
+                                        containsPlayersLookup.SetComponentEnabled(ghostChunk.ValueRO.currentChunkEntity,false);
+                                }
                                 break;
                             }
                         }

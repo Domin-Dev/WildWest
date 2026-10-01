@@ -132,7 +132,7 @@ public class LerpWeather : LerpValue
         else
             UpdatePrecipitationState(PrecipitationState.None);
         
-    
+     
         Shader.SetGlobalVector(_WindDirection,new Vector4(wind.x,wind.y,0,0));
         Shader.SetGlobalVector(_DistortWindDirection,0.8f * new Vector4(wind.x,wind.y,0,0));
         Shader.SetGlobalFloat(_Cloudiness,cloudiness);
@@ -148,7 +148,6 @@ public class LerpWeather : LerpValue
 
         thermometer.SetValue(temperature);
     }
-
     private void UpdatePrecipitationState(PrecipitationState newState)
     {
         if(newState == state) return;

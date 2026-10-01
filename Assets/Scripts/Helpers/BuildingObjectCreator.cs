@@ -26,7 +26,7 @@ public static class BuildingObjectCreator
         Entity entity  = ecb.CreateEntity(unfilteredChunkIndex);
         ecb.AddComponent(unfilteredChunkIndex,entity, localTransform);
         ecb.AddComponent<LocalToWorld>(unfilteredChunkIndex,entity);
-        ecb.AddComponent(unfilteredChunkIndex,entity, new EnvironmentObject());
+        ecb.AddComponent(unfilteredChunkIndex,entity, new GridObject());
         ecb.AddBuffer<LinkedEntityGroup>(unfilteredChunkIndex,entity);
 
         if (rectangleHitbox != null && rectangleHitbox.offset.sqrMagnitude != 0)

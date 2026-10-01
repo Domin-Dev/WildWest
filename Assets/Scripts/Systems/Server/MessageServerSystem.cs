@@ -10,7 +10,6 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class MessageServerSystem : SystemBase
 {
-
     private List<CommandBase> commandList;
     protected override void OnCreate()
     {
@@ -75,7 +74,7 @@ public partial class MessageServerSystem : SystemBase
                         }
                         else
                         {
-                            RPCHelper.SendMessageToClient(ref entityCommandBuffer, "You don�t have permission!", connectionEntity);
+                            RPCHelper.SendMessageToClient(ref entityCommandBuffer, "You don't have permission!", connectionEntity);
                         }
                     }
                 }      

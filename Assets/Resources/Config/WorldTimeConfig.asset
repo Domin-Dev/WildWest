@@ -150,7 +150,7 @@ MonoBehaviour:
       dayLerpDuration: 1
       eveningColor: {r: 0.18021035, g: 0.18021035, b: 0.18021035, a: 1}
       eveningLerpDuration: 1
-      nightColor: {r: 0.30949605, g: 0.30949605, b: 0.30949605, a: 1}
+      nightColor: {r: 0, g: 0, b: 0, a: 1}
       nightLerpDuration: 1
     whiteBalance:
       Temperature: -70

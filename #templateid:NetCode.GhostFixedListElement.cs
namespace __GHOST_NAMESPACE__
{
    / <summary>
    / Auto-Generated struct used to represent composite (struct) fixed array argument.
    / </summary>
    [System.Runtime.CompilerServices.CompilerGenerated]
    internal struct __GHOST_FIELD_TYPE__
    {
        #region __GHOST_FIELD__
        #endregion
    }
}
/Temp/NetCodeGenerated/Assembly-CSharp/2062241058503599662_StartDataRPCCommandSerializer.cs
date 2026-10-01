@@ -48,6 +48,8 @@ namespace Assembly_CSharp_Generated
             writer.WriteByte((byte)data.currentTime.Season);
             writer.WriteUInt((uint)data.currentTime.StartTick.SerializedData);
             writer.WriteFloat(data.currentTime.StartHour);
+            writer.WriteUInt((uint)data.nextWeatherUpdate.tick.SerializedData);
+            writer.WriteUInt((uint)data.nextWeatherUpdate.previousUpdate.SerializedData);
         }
 
         public void Deserialize(ref DataStreamReader reader, in RpcDeserializerState state, ref StartDataRPC data)
@@ -66,6 +68,8 @@ namespace Assembly_CSharp_Generated
             data.currentTime.Season = (Season)reader.ReadByte();
             data.currentTime.StartTick = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadUInt()};
             data.currentTime.StartHour = reader.ReadFloat();
+            data.nextWeatherUpdate.tick = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadUInt()};
+            data.nextWeatherUpdate.previousUpdate = new Unity.NetCode.NetworkTick{SerializedData = reader.ReadUInt()};
         }
         [BurstCompile(DisableDirectCall = true)]
         [AOT.MonoPInvokeCallback(typeof(RpcExecutor.ExecuteDelegate))]

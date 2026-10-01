@@ -94,7 +94,6 @@ public partial struct BulletSpawnClassificationSystem : ISystem
 
                 newGhostSpawn.HasClassifiedPredictedSpawn = true;
 
-
                 for (int j = 0; j < predictedSpawnList.Length; ++j)
                 {
                     if (newGhostSpawn.GhostType == predictedSpawnList[j].ghostType)

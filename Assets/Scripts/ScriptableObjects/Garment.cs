@@ -10,7 +10,7 @@ public class Garment : Destroyable
     public Texture2D texture;
     public Sprite[] sprites;
 
-    public OutfitStats garmentStats;
+    public PlayerOutfitStats garmentStats;
     
     public override TooltipInfo GetTooltip(ItemStats itemStats)
     {

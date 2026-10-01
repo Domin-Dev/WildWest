@@ -12,13 +12,16 @@ public struct CurrentTime : IComponentData
     public NetworkTick StartTick;
     public float StartHour;
 
+    public int HourInt => (int)Hour;
+    public int MinuteInt => (int)((Hour - HourInt) * 60f);
+
     public double GetWorldTime(float hour)
     {
         return GetWorldTime(hour,Day);
     }
     public double GetWorldTime(float hour,int day)
     {
-        return hour +  (day-1) * 24f;
+        return hour + (day-1) * 24f;
     }
 }
 

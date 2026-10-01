@@ -52,3 +52,15 @@ MonoBehaviour:
       PitchMode: 1
       PitchMin: 1
       PitchMax: 2
+  Thunder:
+    SoundName: Thunder
+    AudioMixer: {fileID: 7894568965139306670, guid: 1d3de0979ee254243b636d07ca1f51ce, type: 2}
+    Clips:
+    - AudioClip: {fileID: 8300000, guid: cb180e17cc91b44de9def356e0002753, type: 3}
+      PitchMin: 0.5
+      PitchMax: 1.5
+    - AudioClip: {fileID: 8300000, guid: d7a8ae045de73ecca892a2651712df3f, type: 3}
+      PitchMin: 0.5
+      PitchMax: 1.5
+    MinDistance: 3
+    MaxDistance: 12

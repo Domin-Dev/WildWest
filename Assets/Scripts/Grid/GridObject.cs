@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class GridContainer : GridObject
+public class GridContainer : gridobejtOld
 {
     public ItemStats[] items;
     public GridContainer(int ID, int indexVariant, Transform obj, int size,Vector2 mainPosition) : base(ID, indexVariant, obj, mainPosition)
@@ -14,7 +14,7 @@ public class GridContainer : GridObject
         items = new ItemStats[size];
     }
 }
-public class GridDoor : GridObject
+public class GridDoor : gridobejtOld
 {
     public bool doorIsClosed;
     public GridDoor(int ID, int indexVariant, Transform obj, Vector2 mainPosition, bool doorIsClosed = true) : base(ID, indexVariant, obj,mainPosition)
@@ -22,14 +22,14 @@ public class GridDoor : GridObject
         this.doorIsClosed = doorIsClosed;
     }
 }
-public class GridWall : GridObject
+public class GridWall : gridobejtOld
 {
     public GridWall(int ID, int indexVariant, Transform obj,Vector2 mainPosition, int stateIndex = 0) : base(ID, indexVariant, obj, mainPosition , stateIndex)
     {
 
     }
 }
-public class GridSurface : GridObject
+public class GridSurface : gridobejtOld
 {
     public GridSurface(int ID) : base(ID){}
     public override void Destory(GridTile gridTile)
@@ -37,7 +37,7 @@ public class GridSurface : GridObject
         GridVisualization.instance.DestroySurface(gridTile);
     }
 }
-public class GridHole : GridObject
+public class GridHole : gridobejtOld
 {
     public int waterHoleID;
     public int waterLevel;
@@ -52,7 +52,7 @@ public class GridHole : GridObject
     }
 
 }
-public class GridObject: IHitPoints
+public class gridobejtOld: IHitPoints
 {
     public int ID;
     public short variantIndex;
@@ -64,12 +64,12 @@ public class GridObject: IHitPoints
 
     public Vector2 mainPosition;
 
-    public GridObject(int ID,int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0)
+    public gridobejtOld(int ID,int indexVariant, Transform obj, Vector2 mainPosition, int stateIndex = 0)
     {
         SetObject(ID,(short)indexVariant, obj, mainPosition,(short)stateIndex);
     }
 
-    public GridObject(byte[] bytes)
+    public gridobejtOld(byte[] bytes)
     {
         this.ID =  BitConverter.ToInt32(bytes, 0);
         this.variantIndex =  BitConverter.ToInt16(bytes, 4);
@@ -91,7 +91,7 @@ public class GridObject: IHitPoints
         this.mainPosition = mainPosition;
     }
 
-    public GridObject(int ID)
+    public gridobejtOld(int ID)
     {
         this.ID = ID;
         this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
@@ -103,7 +103,7 @@ public class GridObject: IHitPoints
         this.mainPosition = Vector2.zero;
     }
 
-    public GridObject(int ID, Transform objectTransform)
+    public gridobejtOld(int ID, Transform objectTransform)
     {
         this.ID = ID;
         this.maxHitPoints = (ItemsAsset.instance.GetItem(ID) as BuildingItem).durability;
@@ -178,7 +178,7 @@ public class GridFarmland : GridSurface, IWater
         watered = false;
     }
 }
-public class GridPlant : GridObject,IWater
+public class GridPlant : gridobejtOld,IWater
 {
     private bool watered;
     private float toGrowth;
