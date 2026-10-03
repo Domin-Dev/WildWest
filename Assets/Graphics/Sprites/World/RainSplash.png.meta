@@ -237,7 +237,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      RainSplash_0: -6896517158626309108
+      RainSplash_1: -6712644492537244067
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

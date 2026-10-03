@@ -125,16 +125,7 @@ public class EntitySpawner : MonoBehaviour
     }
 
 
-    public void SpawnEntityPrefab(int index,float3 position, quaternion quaternion)
-    {
-        Entity prefab = GetParticleIndex(index);
-        Entity entity = entityManager.Instantiate(prefab);
-        position.z = position.y;
-        LocalTransform localTransform = LocalTransform.FromPosition(position);
-     //   SelfDestruction selfD = entityManager.GetComponentData<SelfDestruction>(entity);
-      //  selfD.finishParticles += Time.time;
-      //  entityManager.SetComponentData(entity, selfD);
-    }
+
 
 
     private Entity GetParticleIndex(int index)

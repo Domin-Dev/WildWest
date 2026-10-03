@@ -1,0 +1,38 @@
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
+
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+partial struct VerifyingNewPlayersSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<PlayerVerificationRPC>().WithAll<ReceiveRpcCommandRequest>();
+        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+        entityQueryBuilder.Dispose();
+    }
+    public void OnUpdate(ref SystemState state)
+    {
+        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, PlayerVerificationRPC commandRpc, Entity entity) in
+        SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, PlayerVerificationRPC>().WithEntityAccess())
+        {      
+            bool isSave = SaveIOThread.TryLoadPlayer(commandRpc.playerName.ToString(),out PlayerSave playerSave, out var containers);
+            var answer = new AnswerPlayerVerificationRPC();
+            answer.playerDataIsOnServer = isSave;
+            if (isSave)
+            {
+                answer.characterLook = playerSave.characterLook;
+            }
+
+            RPCHelper.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection,answer);
+            entityCommandBuffer.DestroyEntity(entity);           
+        }
+
+        entityCommandBuffer.Playback(state.EntityManager);
+        entityCommandBuffer.Dispose();
+    }
+}

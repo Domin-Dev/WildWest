@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &1684692729
+--- !u!1 &1699247946
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,8 +127,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1684692731}
-  - component: {fileID: 1684692730}
+  - component: {fileID: 1699247948}
+  - component: {fileID: 1699247947}
   m_Layer: 0
   m_Name: Prefabs
   m_TagString: Untagged
@@ -136,18 +136,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1684692730
+--- !u!114 &1699247947
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1684692729}
+  m_GameObject: {fileID: 1699247946}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a6022ea436c5b044b712ca25ed9902d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::EntitiesReferencesAuthoring
   visualEffects: {fileID: 11400000, guid: 6899b0a592683f67686c92bb81618ce7, type: 2}
   characterPrefab: {fileID: 3773562619657541914, guid: eaa2acfd5439f23489d47f713a799302, type: 3}
   chunkPrefab: {fileID: 5235496131011057365, guid: a33d510f62ceb5c43b6329327002f1aa, type: 3}
@@ -159,18 +159,18 @@ MonoBehaviour:
   bulletPrefab: {fileID: 790217896693364317, guid: 6408a1b8f9e1e2789a0b5613cf69f843, type: 3}
   shotSmoke: {fileID: 6328287962746153788, guid: 00deb22ece09d4f4e99ed891dbc09bec, type: 3}
   shotFire: {fileID: 2929994055924591819, guid: 6bc56e8498891144eb3354dd80e7ca31, type: 3}
-  shotLight: {fileID: 8215907354024352320, guid: 7b6d87b4016d6ef4ea1b188d090df24f, type: 3}
+  shotLight: {fileID: 0}
   spark: {fileID: 2841808116765039731, guid: a204a2fa4715d6b4ba984958f90b2657, type: 3}
---- !u!4 &1684692731
+--- !u!4 &1699247948
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1684692729}
+  m_GameObject: {fileID: 1699247946}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.45, y: -0.02, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -180,4 +180,4 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1684692731}
+  - {fileID: 1699247948}

@@ -96,25 +96,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!224 &1305483028961384398
-RectTransform:
+--- !u!4 &1305483028961384398
+Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1422259521571821458}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.32, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7504337897155031083}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.32}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!23 &5691415560790643280
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -962,7 +958,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3253801177697427051}
   - component: {fileID: 582982517171026093}
-  - component: {fileID: 5747898406477770903}
+  - component: {fileID: 5345783963104470526}
   m_Layer: 9
   m_Name: Hand
   m_TagString: Untagged
@@ -1044,7 +1040,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5747898406477770903
+--- !u!114 &5345783963104470526
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1053,7 +1049,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6220902857331202901}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6562689cab4a8c170a25a562b3884b01, type: 3}
+  m_Script: {fileID: 11500000, guid: e44e514fa0005336d85c6163fd115bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationAuthoring
   bodyPartType: 0
@@ -1067,7 +1063,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8916067156873248734}
   - component: {fileID: 7209615216392776098}
-  - component: {fileID: 3726335696495227938}
+  - component: {fileID: 7150172291091084887}
   m_Layer: 9
   m_Name: SecondHand
   m_TagString: Shield
@@ -1149,7 +1145,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3726335696495227938
+--- !u!114 &7150172291091084887
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1158,7 +1154,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6838858311962600729}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6562689cab4a8c170a25a562b3884b01, type: 3}
+  m_Script: {fileID: 11500000, guid: e44e514fa0005336d85c6163fd115bae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimationAuthoring
   bodyPartType: 1

@@ -28,8 +28,8 @@ public class AnimationAuthoring : MonoBehaviour
             AddBuffer<AnimationEvents>(entity);
 
 
-            AddComponent<AnimationIsPaused>(entity);
-            SetComponentEnabled<AnimationIsPaused>(entity,true);
+            AddComponent<AnimationPaused>(entity);
+            SetComponentEnabled<AnimationPaused>(entity,true);
         }
     }
 }

@@ -63,47 +63,47 @@ public class BuildingManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    private void Start()
-    {
-        SetUpBar();
-        SetUpPlanObject();
-        SetUpPointer();
-    }
+    // private void Start()
+    // {
+    //     SetUpBar();
+    //     SetUpPlanObject();
+    //     SetUpPointer();
+    // }
 
 
-    private void Update()
-    {
-        if (buildingMode)
-        {
-            if (selectedObjectID > 0 && UIManager.instance.WindowsAreClosed)
-            {
-                Vector2 pos = Actions.GetMousePosXY();
-                if (lastPos != pos) Plan(pos);
-                if (Input.GetMouseButtonDown(0))
-                {
-                    if (GridVisualization.instance.GetTileByGridPosition(pos) != null)
-                    {
-                        build(pos,selectedObjectID, rotation % rotationStates);
-                        planObject.gameObject.SetActive(false);
-                        UIManager.instance.PrintTileInfo();
-                    }
-                }
-                if (Input.GetKeyDown(KeyCode.R) && rotationStates > 0)
-                {
-                    if(rotation >= 3)
-                    {
-                        rotation = 0;
-                    }
-                    else
-                    {
-                        rotation++;
-                    }
-                    planObject.GetComponent<SpriteRenderer>().sprite = ItemsAsset.instance.GetBuildingObjectSprite(selectedObjectID,rotation%rotationStates);
+    // private void Update()
+    // {
+    //     if (buildingMode)
+    //     {
+    //         if (selectedObjectID > 0 && UIManager.instance.WindowsAreClosed)
+    //         {
+    //             Vector2 pos = Actions.GetMousePosXY();
+    //             if (lastPos != pos) Plan(pos);
+    //             if (Input.GetMouseButtonDown(0))
+    //             {
+    //                 if (GridVisualization.instance.GetTileByGridPosition(pos) != null)
+    //                 {
+    //                     build(pos,selectedObjectID, rotation % rotationStates);
+    //                     planObject.gameObject.SetActive(false);
+    //                     UIManager.instance.PrintTileInfo();
+    //                 }
+    //             }
+    //             if (Input.GetKeyDown(KeyCode.R) && rotationStates > 0)
+    //             {
+    //                 if(rotation >= 3)
+    //                 {
+    //                     rotation = 0;
+    //                 }
+    //                 else
+    //                 {
+    //                     rotation++;
+    //                 }
+    //                 planObject.GetComponent<SpriteRenderer>().sprite = ItemsAsset.instance.GetBuildingObjectSprite(selectedObjectID,rotation%rotationStates);
 
-                }
-            }
-        }
-    }
+    //             }
+    //         }
+    //     }
+    // }
 
     public void StartBuildingMode(int id)
     {
@@ -294,7 +294,7 @@ public class BuildingManager : MonoBehaviour
                 obj.tag = "BuildObject";
                 gridTile.SetGridObject(new GridHole(id,obj));
                 GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
-                LiquidsManager.instance.NewHole(gridTile);
+            //    LiquidsManager.instance.NewHole(gridTile);
                 GridVisualization.instance.MoveWorldItems(posXY);
             }
         }
@@ -327,29 +327,29 @@ public class BuildingManager : MonoBehaviour
     }
     private void BuildFloor(Vector2 posXY, int itemID, int variant)
     {
-        GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
-        if (gridTile.tileID != selectedObjectID || (gridTile.secondLayerID == -1))
-        {
-            if (gridTile.GridObjectIsType<GridHole>())
-            {
-                GridVisualization.instance.DestroyObject(gridTile,false);
-                LiquidsManager.instance.RemoveHole(gridTile);
-                gridTile.SetGridObject(new GridSurface(selectedObjectID), true);
-            }
-            else if(gridTile.tileID != -1)
-            {
-                if (gridTile.secondLayerID != -1)
-                    GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
-                else
-                    gridTile.SetSecondLayerID(gridTile.tileID); 
-            }
+        // GridTile gridTile = GridVisualization.instance.GetTileByGridPosition(posXY);
+        // if (gridTile.tileID != selectedObjectID || (gridTile.secondLayerID == -1))
+        // {
+        //     if (gridTile.GridObjectIsType<GridHole>())
+        //     {
+        //         GridVisualization.instance.DestroyObject(gridTile,false);
+        //         LiquidsManager.instance.RemoveHole(gridTile);
+        //         gridTile.SetGridObject(new GridSurface(selectedObjectID), true);
+        //     }
+        //     else if(gridTile.tileID != -1)
+        //     {
+        //         if (gridTile.secondLayerID != -1)
+        //             GridVisualization.instance.CreateWorldItem(new ItemStats(gridTile.tileID), posXY);
+        //         else
+        //             gridTile.SetSecondLayerID(gridTile.tileID); 
+        //     }
 
-            gridTile.SetTileID(selectedObjectID);
-            gridTile.variant = CalculateVariant(selectedObjectID);
-            GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
-            Sounds.instance.Hammer();
-            builtObject(this, null);
-        }
+        //     gridTile.SetTileID(selectedObjectID);
+        //     gridTile.variant = CalculateVariant(selectedObjectID);
+        //     GridVisualization.instance.UpdateMesh((int)posXY.x, (int)posXY.y, true);
+        //     Sounds.instance.Hammer();
+        //     builtObject(this, null);
+        // }
     }
     private int CalculateVariant(int floorID)
     {
@@ -425,8 +425,8 @@ public class BuildingManager : MonoBehaviour
                 gridTile.SetGridObject(new GridContainer(itemID, indexVariant, buildingObj,(item as ContainerItem).capacity,posXY),true);
                 return;
             case Plant:
-                IWater water = gridTile.gridObject as IWater;
-                gridTile.SetGridObject(new GridPlant(water.IsWatered(), itemID, indexVariant, buildingObj,posXY), true);
+               // IWater water = gridTile.gridObject as IWater;
+               // gridTile.SetGridObject(new GridPlant(water.IsWatered(), itemID, indexVariant, buildingObj,posXY), true);
                 return;
         }
 

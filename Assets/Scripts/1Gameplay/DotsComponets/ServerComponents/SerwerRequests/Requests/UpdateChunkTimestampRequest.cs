@@ -1,5 +1,4 @@
 
-
 using Unity.Entities;
 
 public struct UpdateChunkTimestampRequest : IComponentData
