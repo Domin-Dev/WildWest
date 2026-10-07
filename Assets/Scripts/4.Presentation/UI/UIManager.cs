@@ -1186,7 +1186,7 @@ public class UIManager : MonoBehaviour
     {
         Item item = ItemsAsset.instance.GetItem(itemID);
         obj.GetChild(0).GetComponent<Image>().sprite = item.icon;
-        obj.GetChild(1).GetComponent<TextMeshProUGUI>().text = UIStringsHelper.GetColorfulString(itemCount == 1 ? "" : itemCount.ToString(),GamePreferences.instance.highlightColorStr)  + " " +item.name;
+        obj.GetChild(1).GetComponent<TextMeshProUGUI>().text = StringsHelper.GetColorfulString(itemCount == 1 ? "" : itemCount.ToString(),GamePreferences.instance.highlightColorStr)  + " " +item.name;
     }
 
     #region  Containers Funcs

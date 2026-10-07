@@ -67,7 +67,7 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
         var tags = ItemsAsset.instance.GetItemTags(itemStats.itemID);
         if (tags.Length > 0)
         {   
-            UIStringsHelper.Append(content,UIManager.instance.GetProperty("Tags"), tags);
+            StringsHelper.Append(content,UIManager.instance.GetProperty("Tags"), tags);
         }
         // if (itemStats is ItemWithBar)
         // {
@@ -77,13 +77,13 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
         // }
         
         if (itemStats.wetness >= 0.01)
-             UIStringsHelper.Append(content, UIManager.instance.GetProperty("Wetness"), itemStats.wetness.ToString("F2") + " %");
-         UIStringsHelper.Append(content, UIManager.instance.GetProperty("MaxStack") , stackMax.ToString());
+             StringsHelper.Append(content, UIManager.instance.GetProperty("Wetness"), itemStats.wetness.ToString("F2") + " %");
+         StringsHelper.Append(content, UIManager.instance.GetProperty("MaxStack") , stackMax.ToString());
       
         if (itemStats.color.HasValue)
         {
             string colorHex = UnityEngine.ColorUtility.ToHtmlStringRGB(itemStats.color.Value);
-            UIStringsHelper.Append(content,UIManager.instance.GetProperty("Color"), UIStringsHelper.GetColorfulString( "#" + colorHex,colorHex));
+            StringsHelper.Append(content,UIManager.instance.GetProperty("Color"), StringsHelper.GetColorfulString( "#" + colorHex,colorHex));
         }
 
  

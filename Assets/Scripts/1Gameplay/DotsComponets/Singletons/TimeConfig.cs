@@ -11,7 +11,7 @@ public struct TimeConfig: IComponentData
 {
     public float DayDuration;
     public float HourDuration;
-    public int DayDurationInTicks;
+    public uint DayDurationInTicks;
     public int HourDurationInTicks;
     public int SeasonDuration;
 }

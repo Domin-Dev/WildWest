@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5abe2fbe58b6b1242af9ec4e87e7442d, type: 3}
   m_Name: WeatherConfig
   m_EditorClassIdentifier: Assembly-CSharp::WeatherConfig
-  WeatherUpdatePeriod: 1
-  WeatherUpdateLerpDuration: 0.9
+  WeatherUpdatePeriod: 0.5
+  WeatherUpdateLerpDuration: 0.4
   ProcessingWeatherUpdatePeriod: 5
   PrecipitationConfig:
     PrecipitationThreshold: 0.5

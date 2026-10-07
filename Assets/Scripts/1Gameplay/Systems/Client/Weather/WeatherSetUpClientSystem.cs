@@ -27,16 +27,13 @@ public partial struct WeatherSetUpClientSystem   : ISystem
 
         float2 playerPosition = float2.zero;    
         foreach (RefRO<LocalToWorld> position in  SystemAPI.Query<RefRO<LocalToWorld>>().WithAll<GhostOwnerIsLocal,Player>().WithNone<NewPlayerTag>())
-        {
             playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
-        }
 
         var weather = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
         EntityHelper.CreateEntityWithComponent(ecb,weather);
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
-        OnWeatherSetUp?.Invoke(weather,currentTime);
-        
+        OnWeatherSetUp?.Invoke(weather,currentTime);    
         state.Enabled = false;
     }
 }

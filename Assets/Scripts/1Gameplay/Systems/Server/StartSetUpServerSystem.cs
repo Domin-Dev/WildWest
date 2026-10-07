@@ -110,7 +110,7 @@ partial struct StartSetUpServerSystem : ISystem
             #region Time         
             EntityHelper.CreateEntityWithComponent(ecb, new CurrentTime()
             {
-                Day = WorldConfig.TimeConfig.startDay,
+                Day = 1,
                 Hour = WorldConfig.TimeConfig.startHour,
                 Season = WorldConfig.TimeConfig.startSeason,
                 StartTick = NetworkTick.Invalid,
@@ -118,7 +118,7 @@ partial struct StartSetUpServerSystem : ISystem
                 NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(
                     WorldConfig.TimeConfig.startSeason,
                     WorldConfig.TimeConfig.startHour,
-                    WorldConfig.TimeConfig.startDay,
+                    1,
                     out TimeOfDay currentTimeOfDay),
                 TimeOfDay = currentTimeOfDay
             });

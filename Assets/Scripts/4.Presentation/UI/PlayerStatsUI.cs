@@ -58,7 +58,7 @@ public class PlayerStatsUI : MonoBehaviour
             }
         } 
 
-        statUI.SetUp(UIStringsHelper.GetPropertyString(property,Color.white,values),property.color);
+        statUI.SetUp(StringsHelper.GetPropertyString(property,Color.white,values),property.color);
         return true;
     }
     private void LoadStat(string nameStat)

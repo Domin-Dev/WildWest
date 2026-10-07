@@ -8,7 +8,6 @@ using Unity.Transforms;
 public struct NextWeatherUpdate : IComponentData
 {
     public NetworkTick tick;
-    public NetworkTick previousUpdate;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -43,7 +42,6 @@ public partial struct WeatherServerSystem : ISystem
                 localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
             }
             
-            nextUpdate.ValueRW.previousUpdate = nextUpdate.ValueRO.tick;
             if(!nextUpdate.ValueRO.tick.IsValid)
                 nextUpdate.ValueRW.tick = currentTick;
 

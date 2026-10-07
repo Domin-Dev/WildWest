@@ -72,7 +72,7 @@ public class DailyCycle : MonoBehaviour
             return new TooltipInfo
             (
                 currentTimeString.GetLocalizedString() + " " +time.HourInt + ":" + time.MinuteInt.ToString("00") + "\n" +
-                currentTimeOfDayString.GetLocalizedString() + " : " + UIStringsHelper.GetColorfulString(timeOfDay.LocalizedString.GetLocalizedString(),timeOfDay.Color)
+                currentTimeOfDayString.GetLocalizedString() + " : " + StringsHelper.GetColorfulString(timeOfDay.LocalizedString.GetLocalizedString(),timeOfDay.Color)
             );        
         });
         seasonBar.GetComponent<DynamicTooltipTrigger>().SetUp(() =>
@@ -85,8 +85,8 @@ public class DailyCycle : MonoBehaviour
 
             return new TooltipInfo
             (
-                currentSeasonString.GetLocalizedString() + " : " + UIStringsHelper.GetColorfulString(currentSeasonConfig.seasonName.GetLocalizedString(),currentSeasonConfig.seasonColor) + "\n" +
-                BeginsInDaysString.GetLocalizedString(UIStringsHelper.GetColorfulString(nextSeasonConfig.seasonName.GetLocalizedString(),nextSeasonConfig.seasonColor),daysUntil)
+                currentSeasonString.GetLocalizedString() + " : " + StringsHelper.GetColorfulString(currentSeasonConfig.seasonName.GetLocalizedString(),currentSeasonConfig.seasonColor) + "\n" +
+                BeginsInDaysString.GetLocalizedString(StringsHelper.GetColorfulString(nextSeasonConfig.seasonName.GetLocalizedString(),nextSeasonConfig.seasonColor),daysUntil)
             ); 
         });
         thermometerTrigger.SetUp(() =>
@@ -107,12 +107,9 @@ public class DailyCycle : MonoBehaviour
         ClientTimeSystem.OnNextTimeOfDay += UpdateTimeOfDay;
         ClientTimeSystem.OnNextSeason += SeasonStart;   
 
-        GoInGameCilientSystem.OnStartTimer += UpdateTime;
-        GoInGameCilientSystem.OnStartTimer += UpdateDayCounter;
-        GoInGameCilientSystem.OnStartTimer += UpdateTimeOfDay;
-        GoInGameCilientSystem.OnStartTimer += SetSunColor;
-        GoInGameCilientSystem.OnStartTimer += SetGlobalVolume;
+        GoInGameCilientSystem.OnStartTimer += OnTimeSet;
         GoInGameCilientSystem.OnStartTimer += SetUpWeather;
+        ClientOnTimeSetSystem.OnTimeSet += OnTimeSet;
 
         WeatherClientSystem.OnWeatherUpdate += UpdateWeather;
         WeatherSetUpClientSystem.OnWeatherSetUp += UpdateWeather;
@@ -126,12 +123,9 @@ public class DailyCycle : MonoBehaviour
         ClientTimeSystem.OnNextTimeOfDay -= UpdateTimeOfDay;
         ClientTimeSystem.OnNextSeason -= SeasonStart;
 
-        GoInGameCilientSystem.OnStartTimer -= UpdateTime;
-        GoInGameCilientSystem.OnStartTimer -= UpdateDayCounter;
-        GoInGameCilientSystem.OnStartTimer -= UpdateTimeOfDay;
-        GoInGameCilientSystem.OnStartTimer -= SetSunColor;
-        GoInGameCilientSystem.OnStartTimer -= SetGlobalVolume;
+        GoInGameCilientSystem.OnStartTimer -= OnTimeSet;
         GoInGameCilientSystem.OnStartTimer -= SetUpWeather;
+        ClientOnTimeSetSystem.OnTimeSet -= OnTimeSet;
 
         WeatherClientSystem.OnWeatherUpdate -= UpdateWeather;
         WeatherSetUpClientSystem.OnWeatherSetUp -= UpdateWeather;
@@ -140,6 +134,15 @@ public class DailyCycle : MonoBehaviour
     }
     #endregion
     #region Time
+    private void OnTimeSet(CurrentTime time)
+    {
+        weather = null;
+        UpdateTime(time);
+        UpdateDayCounter(time);
+        UpdateTimeOfDay(time);
+        SetSunColor(time);
+        SetGlobalVolume(time);
+    }
     private void UpdateTime(CurrentTime time)
     {
         this.time = time;

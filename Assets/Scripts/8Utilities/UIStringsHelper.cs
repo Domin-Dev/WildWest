@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using UnityEngine;
 
-public static class UIStringsHelper
+public static class StringsHelper
 { 
     public static string GetColorfulString(string value,Color color)
     {

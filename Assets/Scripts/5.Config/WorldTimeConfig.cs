@@ -12,8 +12,6 @@ public class WorldTimeConfig : ScriptableObject
     [Header("Start Settings")]
     [Range(0,24)]
     public int startHour;
-    [Min(1)]
-    public int startDay;
     public Season startSeason;
     [Header("Day Settings")]
     [Label("Hour duration (minutes)")]
@@ -73,7 +71,12 @@ public class WorldTimeConfig : ScriptableObject
     public double GetWorldTimeStartCurrentSeason(in CurrentTime currentTime)
     {
         int x = (currentTime.Day -1) % SeasonDuration; 
-        return currentTime.GetWorldTime(0,currentTime.Day - x);
+        return TimeService.GetWorldTime(0,currentTime.Day - x);
+    }
+    public Season GetCurrentSeason(double worldTime)
+    {
+        int x = (int)worldTime / 24 / SeasonDuration; 
+        return (Season)(((int)startSeason + x) % 4);
     }
     public static Season GetNextSeason(Season current)
     {

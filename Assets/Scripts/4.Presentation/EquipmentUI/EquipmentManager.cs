@@ -53,19 +53,19 @@ public class Container : IHaveTooltip
     {
         if (mandatoryProperties == MandatoryProperties.tag)
         {
-            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<TagBase>(mandatoryData).getLocalizedString);
-            UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
+            string arg = StringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<TagBase>(mandatoryData).getLocalizedString);
+            StringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)
         {  
-            string arg = UIStringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetItem(mandatoryData)?.name);
-            UIStringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
+            string arg = StringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetItem(mandatoryData)?.name);
+            StringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
 
 
         ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
-        UIStringsHelper.Append(content, UIManager.instance.GetProperty("ContainerWaterResistance") ,c.waterResistance + " %");
-        UIStringsHelper.Append(content,UIManager.instance.GetProperty("Capacity"),c.capacity.ToString());
+        StringsHelper.Append(content, UIManager.instance.GetProperty("ContainerWaterResistance") ,c.waterResistance + " %");
+        StringsHelper.Append(content,UIManager.instance.GetProperty("Capacity"),c.capacity.ToString());
     }
     
 }

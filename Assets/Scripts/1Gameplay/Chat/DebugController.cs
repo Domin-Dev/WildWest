@@ -283,21 +283,47 @@ public static class DebugController
             query.Dispose();
             return result;
         },false,false));
-        commandList.Add(new DebugCommand<int>("timeset", "Displays information about the time", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
+        commandList.Add(new DebugCommand<int>("timeset", "Set the specified time", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
         {
+            if(value < 0 || value > 24) return "The value must be between 0 and 24.";         
+            if(value == 24) value = 0;
+
             var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
             var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
             var entities = query.ToEntityArray(Allocator.Temp);
-            string result = null;
             if(entities.Length > 0)
             {
                 CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
-                result = $"\nTime : {currentTime.HourInt}:{currentTime.MinuteInt.ToString("00")}\nDay : {currentTime.Day}\nWorldTime : {currentTime.WorldTime.ToString("F2")}";
+                float currentHour = currentTime.Hour;
+                double newWorldTime;
+                if(currentHour > value)
+                    newWorldTime = TimeService.GetWorldTime(value,currentTime.Day + 1);
+                else 
+                    newWorldTime = currentTime.GetWorldTime(value);
+          
+                EntityHelper.CreateEntityWithComponent(ecb,new SetTimeRequest(){ newWorldtime = newWorldTime});
             }
             entities.Dispose();
             query.Dispose();
-            return result;
+            return null;
         },true,true));
+        commandList.Add(new DebugCommand<int>("timeskip", "Skip the specific time period", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
+        {
+            if(value < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
+
+            var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+            var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
+            var entities = query.ToEntityArray(Allocator.Temp);
+            if(entities.Length > 0)
+            {
+                CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
+                EntityHelper.CreateEntityWithComponent(ecb,new SetTimeRequest(){ newWorldtime = currentTime.WorldTime + value});
+            }
+            entities.Dispose();
+            query.Dispose();
+            return null;
+        },true,true));
+
         #endregion
         commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
         {

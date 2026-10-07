@@ -21,7 +21,7 @@ partial struct StartSetUpSystem : ISystem
             {
                 DayDuration = WorldConfig.TimeConfig.HourDuration * 24f,
                 HourDuration = WorldConfig.TimeConfig.HourDuration ,
-                DayDurationInTicks = HourDurationInTicks * 24,
+                DayDurationInTicks = (uint)(HourDurationInTicks * 24),
                 HourDurationInTicks = HourDurationInTicks,
                 SeasonDuration = WorldConfig.TimeConfig.SeasonDuration
             });

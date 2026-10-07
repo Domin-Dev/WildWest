@@ -31,8 +31,7 @@ partial struct GoInGameCilientSystem : ISystem
             EntityHelper.CreateEntityWithComponent(entityCommandBuffer,startData.ValueRO.currentTime);
             EntityHelper.CreateEntityWithComponent(entityCommandBuffer,new NextWeatherUpdate() 
             { 
-                tick = startData.ValueRO.nextWeatherUpdate.tick,
-                previousUpdate = startData.ValueRO.nextWeatherUpdate.previousUpdate
+                tick = startData.ValueRO.nextWeatherUpdate.tick
             });
             OnStartTimer?.Invoke(startData.ValueRO.currentTime);
 

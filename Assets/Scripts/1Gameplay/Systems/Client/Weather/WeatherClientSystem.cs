@@ -52,7 +52,6 @@ public partial struct WeatherClientSystem : ISystem
             " Storm = " + localWeather.ValueRO.Storm);
 
             nextUpdate.Add(period);
-            nextWeatherUpdate.ValueRW.previousUpdate = nextWeatherUpdate.ValueRO.tick;
             nextWeatherUpdate.ValueRW.tick = nextUpdate;
 
             OnWeatherUpdate?.Invoke(localWeather.ValueRO,currentTime);
