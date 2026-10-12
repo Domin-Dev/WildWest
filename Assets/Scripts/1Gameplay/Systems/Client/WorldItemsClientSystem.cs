@@ -69,7 +69,7 @@ partial struct WorldItemsClientSystem : ISystem
                         spriteRenderer.sprite = ItemsAsset.instance.GetIcon(slot.Value.itemId);
                         Color? color = slot.Value.color.ConvertToUnityColor();
                         HeroEditor.SetMaterialColor(spriteRenderer,"_Color",color.HasValue ? color.Value : Color.white);
-                        ecb.SetComponent(worldItem, LocalTransform.FromPosition(MyTools.ConvertFloat(action.ValueRO.position)));
+                        ecb.SetComponent(worldItem, LocalTransform.FromPosition(action.ValueRO.position.XYY()));
                         ecb.SetComponent<WorldItem>(worldItem,new WorldItem()
                         {
                             chunkIndex = action.ValueRO.chunkIndex,
@@ -182,7 +182,7 @@ partial struct WorldItemsClientSystem : ISystem
                             {
                                 SlotPosition slotPosition = new SlotPosition(EquipmentConfig.chunkItems_ContainerIndex,action.ValueRO.slotIndex);
                                 if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,chunkEntity,slotPosition,out var item,out int newbufferIndex))
-                                    RPCHelper.CreateLocalEvent(new PickUpItemCompletedClient() {item = item.Value },ecb,EntityHelper.AddTime(tick,action.ValueRO.duration));         
+                                    RPCService.CreateLocalEvent(new PickUpItemCompletedClient() {item = item.Value },ecb,EntityHelper.AddTime(tick,action.ValueRO.duration));         
                             }
 
 

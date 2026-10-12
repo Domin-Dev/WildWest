@@ -69,7 +69,7 @@ partial struct WorldItemServerSystem : ISystem
                 {
                     if(EQHelper.TryGetBufferIndex(slotsLookup,rpc.ValueRO.slotIndex,container.Value.entity,out InventorySlot? item,out int bufferIndex))
                     {
-                        RPCHelper.CreateLocalEvent(new SpawnWorldItem(){ 
+                        RPCService.CreateLocalEvent(new SpawnWorldItem(){ 
                             chunkIndex = rpc.ValueRO.chunkIndex,
                             slotIndex = rpc.ValueRO.slotIndex,
                             dropPosition = rpc.ValueRO.dropPosition,
@@ -78,7 +78,7 @@ partial struct WorldItemServerSystem : ISystem
                         },ecb,EntityHelper.AddTime(rpc.ValueRO.tick,rpc.ValueRO.duration),false);
 
                         for(int i = 1; i < toPlayers.Length;i++)
-                            RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
+                            RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
                     }
                 }
             }
@@ -89,13 +89,13 @@ partial struct WorldItemServerSystem : ISystem
         SystemAPI.Query<RefRW<PickUpItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             Entity player = toPlayers.ElementAt(0).connection;
-            RPCHelper.CreateLocalEvent(new PickUpItemCompleted(){ 
+            RPCService.CreateLocalEvent(new PickUpItemCompleted(){ 
                 chunkIndex = rpc.ValueRO.chunkIndex,
                 slotIndex = rpc.ValueRO.slotIndex        
              },ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(rpc.ValueRO.tick,rpc.ValueRO.duration),false);
         
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
             ecb.DestroyEntity(e);
         }
         
@@ -142,7 +142,7 @@ partial struct WorldItemServerSystem : ISystem
                             }
                         }
           
-                        RPCHelper.CreateLocalEvent(new SpawnWorldItem(){ 
+                        RPCService.CreateLocalEvent(new SpawnWorldItem(){ 
                             chunkIndex = chunkIndex,
                             slotIndex = newSlot,
                             dropPosition = new float2(position.x,position.y),
@@ -163,7 +163,7 @@ partial struct WorldItemServerSystem : ISystem
         SystemAPI.Query<RefRO<MergeItems>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO.mergeItemsPRC);
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO.mergeItemsPRC);
             
             Entity chunkFrom;
             Entity chunkTo;
@@ -202,7 +202,7 @@ partial struct WorldItemServerSystem : ISystem
                 worldItemPositionLookup[chunkFrom].RemoveAtSwapBack(bufferId);
 
 
-            RPCHelper.CreateLocalEvent<MergeItemsCompleted>(new MergeItemsCompleted()
+            RPCService.CreateLocalEvent<MergeItemsCompleted>(new MergeItemsCompleted()
             {
                 rpc = rpc.ValueRO
             },ecb,EntityHelper.AddTime(rpc.ValueRO.mergeItemsPRC.tick,rpc.ValueRO.mergeItemsPRC.duration),false);
@@ -230,7 +230,7 @@ partial struct WorldItemServerSystem : ISystem
         SystemAPI.Query<RefRO<CreateWorldItemRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
             ecb.DestroyEntity(entity);
         }
 

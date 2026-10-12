@@ -100,7 +100,7 @@ partial struct NewWorldItemServerSystem : ISystem
                 if(worldItem.ValueRO.item.itemId == worldItemHit.ValueRO.item.itemId && worldItemHit.ValueRW.mergeCounter >= 0 && !SystemAPI.HasComponent<DestroyEntityTag>(currentHit))
                 {
                     
-                    RPCHelper.SendEventsToClients(new MergeItems()
+                    RPCService.SendEventsToClients(new MergeItems()
                     {
                         mergeItemsPRC = new MergeItemsPRC()
                         {

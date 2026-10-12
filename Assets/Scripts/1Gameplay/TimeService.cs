@@ -47,7 +47,7 @@ public static class TimeService
         }
         currentTime.ValueRW.Hour = hour;
     }
-    public static void SetCurrentTime(NetworkTick currentTick,RefRW<CurrentTime> currentTime,double newWorldTime,in TimeConfig timeConfig)
+    public static void SetCurrentTime(NetworkTick currentTick,RefRW<CurrentTime> currentTime,double newWorldTime)
     {
         double currentWorldTime = currentTime.ValueRO.WorldTime;
         double offset = newWorldTime - currentWorldTime;

@@ -176,7 +176,7 @@ public struct MapSettings: IComponentData
     [BurstCompile]
     public int GetChunkIndexFromEnginePosition(float3 enginePosition)
     {
-        return GetChunkIndexFromEnginePosition(MyTools.ConvertFloat(enginePosition));
+        return GetChunkIndexFromEnginePosition(enginePosition.XY());
     }
     [BurstCompile]
     public int2 GetTilePostionFromEnginePosition(float2 enginePosition)
@@ -189,7 +189,7 @@ public struct MapSettings: IComponentData
     public int2 GetPointerPosition(float2 mousePosition,float3 playerPosition)
     {
         int2 pointer = GetTilePostionFromEnginePosition(mousePosition);
-        int2 player = GetTilePostionFromEnginePosition(MyTools.ConvertFloat(playerPosition + new float3(0,0.05f,0)));
+        int2 player = GetTilePostionFromEnginePosition((playerPosition + new float3(0,0.05f,0)).XY());
         int2 direction = pointer - player;
         int2 dir8 = new int2(
             math.clamp(direction.x, -1, 1),

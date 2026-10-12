@@ -127,7 +127,7 @@ partial struct CharacterHandsEvents : ISystem
                             if((tool != null && tool.toolType == itemData.toolRequired) || itemData.toolRequired == ToolType.None)
                             {
                                 animationEvents = itemData.HitEvents.GetAnimationEvents(itemData.GetVariant(buildingObj).particlePoints);
-                                RPCHelper.CreateLocalEvent(new HitAnimationEvent()
+                                RPCService.CreateLocalEvent(new HitAnimationEvent()
                                 {
                                     scaleAnim = new HitScaleAnimation
                                     {
@@ -156,7 +156,7 @@ partial struct CharacterHandsEvents : ISystem
                             if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(e))
                             {
                                 float2 randomValue = new float2(UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f),UnityEngine.Random.Range(-mapSettings.tileSize * 0.5f,mapSettings.tileSize * 0.5f));
-                                RPCHelper.CreateLocalEvent(new SpawnDamagePopup(){
+                                RPCService.CreateLocalEvent(new SpawnDamagePopup(){
                                      damageTag = DamageTag.Mining,
                                      position = enginePosition + new float3(randomValue,randomValue.y),
                                      value = efficiency

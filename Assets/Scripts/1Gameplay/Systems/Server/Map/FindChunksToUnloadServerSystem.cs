@@ -63,7 +63,7 @@ public partial class FindChunksToUnloadServerSystem : SystemBase
     }   
 
     [BurstCompile]
-    private  void SetTimer(NetworkTick currentTick,int time)
+    private void SetTimer(NetworkTick currentTick,int time)
     {
         var simulationTickRate = 60;
         if (NetCodeConfig.Global != null) simulationTickRate = NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;

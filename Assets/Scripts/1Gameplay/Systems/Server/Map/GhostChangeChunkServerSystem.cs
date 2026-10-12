@@ -170,7 +170,7 @@ public partial class GhostChangeChunkServerSystem : SystemBase
                 if(isPlayer && !ghostRelevancy.ValueRW.GhostRelevancySet.ContainsKey(element))
                 {
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(player.playerEntity);
-                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);    
+                    RPCService.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);    
                 }
 
                 ghostRelevancy.ValueRW.GhostRelevancySet.TryAdd(element,0);

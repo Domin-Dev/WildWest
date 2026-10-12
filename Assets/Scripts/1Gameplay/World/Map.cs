@@ -53,7 +53,7 @@ public class Map
     }
     public int GetChunkIndex(float3 position)
     {
-        return GetChunkIndex(MyTools.ConvertFloat(position));
+        return GetChunkIndex(position.XY());
     }
     public int2 GetChunkPos(int chunkIndex)
     {

@@ -25,13 +25,6 @@ public partial struct ServerTimeSystem : ISystem
         state.RequireForUpdate<TimeConfig>();
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<NextWeatherUpdate>(); 
-
-        if(SystemAPI.HasSingleton<NetworkTime>() && SystemAPI.HasSingleton<CurrentTime>())
-        {
-            var time = SystemAPI.GetSingleton<NetworkTime>();
-            SystemAPI.GetSingletonRW<CurrentTime>().ValueRW.StartTick = time.ServerTick;
-            EntityHelper.CreateEntityWithComponent(state.EntityManager,new NextWeatherUpdate(){ tick = time.ServerTick});
-        }
     }
     public void OnUpdate(ref SystemState state)
     {
@@ -44,9 +37,9 @@ public partial struct ServerTimeSystem : ISystem
         foreach ((RefRO<SetTimeRequest> request, Entity entity) in SystemAPI.Query<RefRO<SetTimeRequest>>().WithEntityAccess())
         {
             set = true;
-            TimeService.SetCurrentTime(networkTime.ServerTick,worldTime,request.ValueRO.newWorldtime,in config);
+            TimeService.SetCurrentTime(networkTime.ServerTick,worldTime,request.ValueRO.newWorldtime);
             foreach ((RefRO<NetworkId> networkID, Entity connectionEntity) in SystemAPI.Query<RefRO<NetworkId>>().WithEntityAccess())
-                RPCHelper.SendRpc(ecb,connectionEntity,new OnTimeSetRPC() { time = worldTime.ValueRO });
+                RPCService.SendRpc(ecb,connectionEntity,new OnTimeSetRPC() { time = worldTime.ValueRO });
             SystemAPI.GetSingletonRW<NextWeatherUpdate>().ValueRW.tick = networkTime.ServerTick;
             ecb.DestroyEntity(entity);
         }

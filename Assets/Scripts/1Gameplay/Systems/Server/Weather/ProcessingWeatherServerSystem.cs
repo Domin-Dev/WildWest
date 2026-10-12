@@ -67,7 +67,7 @@ public partial struct ProcessingWeatherServerSystem : ISystem
                 if(count > 0 && WeatherService.GetLightning(mapSettings.seed,currentTime.WorldTime,ChunkComponent.ValueRO.worldPos,((float)storm)/count,currentTick,in mapSettings,out float2 lightningPosition))
                 {
                     Debug.Log("ligthing  " + lightningPosition);
-                    RPCHelper.SendEventsToClientsImmediately(new LightningRPC(){ position = lightningPosition },ecb,connectionsLookup,playersNeedChunk,chunkEntity);
+                    RPCService.SendEventsToClientsImmediately(new LightningRPC(){ position = lightningPosition },ecb,connectionsLookup,playersNeedChunk,chunkEntity);
                 }
             }
             processed.Clear();

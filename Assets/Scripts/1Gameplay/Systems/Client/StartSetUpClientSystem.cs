@@ -7,7 +7,7 @@ using UnityEngine;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(SetUpSystemGroup))]
 [BurstCompile]
 partial struct StartSetUpClientSystem : ISystem
 {

@@ -24,14 +24,14 @@ partial struct NewPlayerServerSystem : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> rpcCommandRequest, NewPlayerJoinRPC newPlayer, Entity entity) in
         SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, NewPlayerJoinRPC>().WithEntityAccess())
         {
-            RPCHelper.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new LifeStatsChangedRPC());
-            RPCHelper.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new PlayerStatsChangedRPC());
+            RPCService.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new LifeStatsChangedRPC());
+            RPCService.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new PlayerStatsChangedRPC());
 
             entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection, new PlayerName() { name = newPlayer.playerName });
             entityCommandBuffer.AddComponent(rpcCommandRequest.ValueRO.SourceConnection, new SendMap() { position = new float2(0.5f, 0.5f) });
             entityCommandBuffer.DestroyEntity(entity);
 
-            RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerJoinRPC()
+            RPCService.SendRpc(ref entityCommandBuffer, new PlayerJoinRPC()
             {
                 messageTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
                 playerName = newPlayer.playerName

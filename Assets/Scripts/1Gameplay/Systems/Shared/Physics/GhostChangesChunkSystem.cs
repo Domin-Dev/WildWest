@@ -55,7 +55,7 @@ public partial struct GhostChangesPositionSystem : ISystem
                 }
                 else if(SystemAPI.HasComponent<Player>(entity) && SystemAPI.HasComponent<GhostOwnerIsLocal>(entity))
                 {
-                    onPlayerMove?.Invoke(MyTools.ConvertFloat(localTransform.ValueRO.Position));
+                    onPlayerMove?.Invoke(localTransform.ValueRO.Position.XY());
                 }
                 ghostChunk.ValueRW.lastPosition = localTransform.ValueRO.Position;
                 float3 pos = localTransform.ValueRO.Position;
@@ -92,6 +92,7 @@ public partial struct GhostChangesPositionSystem : ISystem
                 entityCommandBuffer.SetComponent(entity, chunk);
                 entityCommandBuffer.SetComponentEnabled<NewChunk>(entity, true);
             }
+            
             if(entityManager.HasComponent<DestroyAtTick>(entity))
             {
                 if(map.CheckChunkIndex(index))
@@ -101,9 +102,7 @@ public partial struct GhostChangesPositionSystem : ISystem
                     entityCommandBuffer.SetComponent(entity,destoryTimer);
                 }
                 else
-                {
                     entityCommandBuffer.AddComponent<DestroyEntityTag>(entity);
-                }
             }
             chunkIsLoaded = false;
         }

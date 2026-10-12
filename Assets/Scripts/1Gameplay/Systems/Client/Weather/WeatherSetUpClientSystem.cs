@@ -29,7 +29,7 @@ public partial struct WeatherSetUpClientSystem   : ISystem
         foreach (RefRO<LocalToWorld> position in  SystemAPI.Query<RefRO<LocalToWorld>>().WithAll<GhostOwnerIsLocal,Player>().WithNone<NewPlayerTag>())
             playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
 
-        var weather = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
+        var weather = WeatherService.GetWeather(mapSettings.seed,currentTime.WorldTime,playerPosition);
         EntityHelper.CreateEntityWithComponent(ecb,weather);
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

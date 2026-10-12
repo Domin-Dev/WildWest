@@ -48,17 +48,17 @@ public class DragManager : MonoBehaviour
             }
             if (InputManager.input.Eqipment.MoveTheItem.inProgress)
             {
-                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveItemToContainer() { from = dragItemSlot });
+                RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveItemToContainer() { from = dragItemSlot });
                 return false;
             }
             if (InputManager.input.Eqipment.MoveAllTheItems.inProgress)
             {
-                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveAllItemsToContainer() { from = dragItemSlot });
+                RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQMoveAllItemsToContainer() { from = dragItemSlot });
                 return false;
             }
             if (InputManager.input.Eqipment.DropItem.inProgress)
             {
-                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = dragItemSlot });
+                RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = dragItemSlot });
                 return false;
             }
 
@@ -174,7 +174,7 @@ public class DragManager : MonoBehaviour
             {
                 Destroy(dragItem.gameObject);
                 dragItem = null;
-                RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = SlotPosition.NullSlot });
+                RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDropItem() { position = SlotPosition.NullSlot });
             }
         }
     }

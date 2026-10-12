@@ -156,7 +156,7 @@ MonoBehaviour:
       Tint: 10
       LerpDuration: 36
     seasonWeather:
-      BaseTemperature: 0
+      BaseTemperature: -2
       DailyVariation: 6
       DailyAmplitude: 8
       BasePrecipitation: 0.1

@@ -64,7 +64,7 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     }    
 
 
-                    RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerLeftRPC()
+                    RPCService.SendRpc(ref entityCommandBuffer, new PlayerLeftRPC()
                     { 
                         messageTime = DateTimeOffset.Now.ToUnixTimeSeconds(),
                         playerName = playerDisconnected.playerName,
@@ -99,7 +99,7 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     {
                         FixedString128Bytes clientSalt = AuthUtils.GetSalt();
                         entityCommandBuffer.AddComponent(evt.ConnectionEntity, new ClientSalt() { salt = clientSalt });
-                        RPCHelper.SendApprovalRpc(ref entityCommandBuffer, evt.ConnectionEntity, new PlayerSaltRPC()
+                        RPCService.SendApprovalRpc(ref entityCommandBuffer, evt.ConnectionEntity, new PlayerSaltRPC()
                         {
                             salt = clientSalt
                         });
@@ -107,7 +107,7 @@ public partial struct NetCodeConnectionEventListener : ISystem
                     else
                     {
                         entityCommandBuffer.AddComponent<ConnectionApproved>(evt.ConnectionEntity);
-                        RPCHelper.SendApprovalRpc(ref entityCommandBuffer, evt.ConnectionEntity, new AuthResponse() { success = true });
+                        RPCService.SendApprovalRpc(ref entityCommandBuffer, evt.ConnectionEntity, new AuthResponse() { success = true });
                     }
                 break;
             }

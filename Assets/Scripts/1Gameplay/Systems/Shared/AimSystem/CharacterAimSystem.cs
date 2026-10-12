@@ -136,7 +136,7 @@ partial struct CharacterAimSystem : ISystem
                                                 tick = testTick
                                             };   
                                             if(state.World.IsServer())
-                                                RPCHelper.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                                RPCService.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                                             else                                          
                                                 EntityHelper.CreateEntityWithComponent(entityCommandBuffer,emptyMagazine);  
 
@@ -164,7 +164,7 @@ partial struct CharacterAimSystem : ISystem
                                                 tick = testTick
                                             };   
                                             if(state.World.IsServer())
-                                                RPCHelper.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                                RPCService.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                                             else                                          
                                                 EntityHelper.CreateEntityWithComponent(entityCommandBuffer,emptyMagazine);  
 
@@ -196,7 +196,7 @@ partial struct CharacterAimSystem : ISystem
                                     if(!ItemsAsset.instance.TryGetItem<Ammo>(ammoID,out var ammoItem))
                                         break;
 
-                                    var aimPoint = MyTools.ConvertFloat(CalculateAimPoint(rot,rangedWeapon)) + currentPosition;
+                                    var aimPoint = CalculateAimPoint(rot,rangedWeapon).XYY() + currentPosition;
                                    // testTick.Add(1u);
                                     cooldownTick = EntityHelper.AddTime(testTick,rangedWeapon.shootCooldown + reloadCooldown);
 
@@ -266,7 +266,7 @@ partial struct CharacterAimSystem : ISystem
                                        
                                     cooldownTick = EntityHelper.AddTime(testTick,cooldown);
                                     int2 tilePosition = mapSettings.GetPointerPosition(playerAspect.playerInputSync.ValueRO.sightPosition,playerAspect.localToWorld.ValueRO.Position);
-                                    pointerPos = MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(tilePosition));
+                                    pointerPos = mapSettings.GetEnginePositionFromTilePosition(tilePosition).XY();
                                     int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(pointerPos);
                                     
                                     if(chunks.currentChunks.TryGetValue(chunkIndex,out Entity chunk))
@@ -318,7 +318,7 @@ partial struct CharacterAimSystem : ISystem
                                 playerAspect.playerState.ValueRW.state = PlayerState.shooting;
                                 if(state.World.IsServer())
                                 {
-                                    RPCHelper.SendEventsToClients<PlayerActionRPC>(rpc,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                    RPCService.SendEventsToClients<PlayerActionRPC>(rpc,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                                 } 
                                 else   
                                 {                                       
@@ -343,7 +343,7 @@ partial struct CharacterAimSystem : ISystem
                                 playerAspect.playerState.ValueRW.state = PlayerState.none;
 
                                 if(state.World.IsServer())
-                                    RPCHelper.SendEventsToClientsAndOwner<StopReloadRPC>(ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                    RPCService.SendEventsToClientsAndOwner<StopReloadRPC>(ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
                             }
                         }
                     }

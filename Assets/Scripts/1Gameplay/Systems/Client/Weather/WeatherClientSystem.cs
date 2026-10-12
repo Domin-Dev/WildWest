@@ -42,7 +42,7 @@ public partial struct WeatherClientSystem : ISystem
                 playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
             }
 
-            localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
+            localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime.WorldTime,playerPosition);
 
             UnityEngine.Debug.Log(" Temperature = " + localWeather.ValueRO.Temperature +
             " Wind = " + localWeather.ValueRO.WindSpeed + $" ({localWeather.ValueRO.Wind}) " + 

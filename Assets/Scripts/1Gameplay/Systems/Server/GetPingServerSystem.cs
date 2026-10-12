@@ -32,7 +32,7 @@ partial struct GetPingServerSystem : ISystem
             for (int i = 0; i < playerLists.Length; i++)
             {
                 PingList playerList = playerLists[i];
-                RPCHelper.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, playerList);
+                RPCService.SendRpc(entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, playerList);
             }
 
             entityCommandBuffer.DestroyEntity(entity);

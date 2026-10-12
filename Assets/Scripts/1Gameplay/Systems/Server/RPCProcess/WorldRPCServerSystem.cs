@@ -26,7 +26,7 @@ partial struct WorldRPCServerSystem : ISystem
         SystemAPI.Query<RefRO<LightningRPC>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             for(int i = 0; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);
             ecb.DestroyEntity(entity);
         }
 

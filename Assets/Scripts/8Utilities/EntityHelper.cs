@@ -15,6 +15,15 @@ public static class EntityHelper
         entityCommandBuffer.AddComponent(entity, component); 
         return entity;
     }
+    public static Entity CreateEntityWithComponent<T,K>(EntityCommandBuffer entityCommandBuffer,T component = default,K component2 = default) 
+    where T : unmanaged, IComponentData 
+    where K : unmanaged, IComponentData
+    {
+        Entity entity = entityCommandBuffer.CreateEntity();
+        entityCommandBuffer.AddComponent(entity, component); 
+        entityCommandBuffer.AddComponent(entity, component2); 
+        return entity;
+    }
 
     public static Entity CreateEntityWithBuffer<T>(ref EntityCommandBuffer entityCommandBuffer) where T : unmanaged, IBufferElementData
     {
@@ -53,16 +62,24 @@ public static class EntityHelper
         return (float)ticks / NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
 
+    public static uint SecondsToTicks(float seconds)
+    {
+        return (uint)(seconds * NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate);
+    }
+
     public static NetworkTick AddTime(NetworkTick tick, float seconds)
     {
         tick.Add((uint)(1 + (NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * seconds)));
         return tick;
     }
-    
+    public static NetworkTick AddTime(NetworkTick tick, uint ticks)
+    {
+        tick.Add(ticks);
+        return tick;
+    }
     public static NetworkTick AddTime(NetworkTick tick, int ticks)
     {
-        tick.Add((uint)(ticks));
-        return tick;
+        return AddTime(tick,(uint)ticks);
     }
 
 

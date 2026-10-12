@@ -3,5 +3,5 @@ using Unity.NetCode;
 
 public struct DestroyAtTick : IComponentData
 {
-    [GhostField] public NetworkTick tick;
+    public NetworkTick tick;
 }

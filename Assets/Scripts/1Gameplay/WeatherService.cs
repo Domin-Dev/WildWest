@@ -41,19 +41,24 @@ public static class WeatherService
         }
         return false;
     }
-    public static LocalWeather GetWeather(int worldSeed,in CurrentTime currentTime, float2 position)
+    
+    public static LocalWeather GetWeather(int worldSeed,double worldTime,float2 position)
     {
-        float2 windDir = GetWindDirection(position,currentTime.WorldTime,worldSeed,out float windSpeed);
-        Vector2 weatherPosition = position - windDir * (float)currentTime.WorldTime * 0.1f;
-        var seasonConfig = WorldConfig.TimeConfig.GetSeason(currentTime.Season);
+        return GetWeather(worldSeed,worldTime,WorldConfig.TimeConfig.GetCurrentSeason(worldTime),position);
+    }
+    public static LocalWeather GetWeather(int worldSeed,double worldTime,Season season, float2 position)
+    {
+        int hour = (int)(worldTime % 24);
+        float2 windDir = GetWindDirection(position,worldTime,worldSeed,out float windSpeed);
+        Vector2 weatherPosition = position - windDir * (float)worldTime * 0.1f;
+        var seasonConfig = WorldConfig.TimeConfig.GetSeason(season);
 
-        float temperature = GetTemperature(currentTime.Hour,seasonConfig,weatherPosition,worldSeed);
-        float cloudiness = GetCloudiness(currentTime.Hour,seasonConfig,weatherPosition,worldSeed);
-        float precipitation = GetPrecipitation(currentTime.Hour,seasonConfig,weatherPosition,worldSeed,cloudiness);
-        float fogIntensity = GetFogIntensity(currentTime.Hour,seasonConfig,weatherPosition,worldSeed,windSpeed,precipitation);
-        float storm = GetStorm(currentTime.Hour,seasonConfig,weatherPosition,worldSeed,windSpeed,precipitation,cloudiness);
+        float temperature = GetTemperature(hour,seasonConfig,weatherPosition,worldSeed);
+        float cloudiness = GetCloudiness(hour,seasonConfig,weatherPosition,worldSeed);
+        float precipitation = GetPrecipitation(hour,seasonConfig,weatherPosition,worldSeed,cloudiness);
+        float fogIntensity = GetFogIntensity(hour,seasonConfig,weatherPosition,worldSeed,windSpeed,precipitation);
+        float storm = GetStorm(hour,seasonConfig,weatherPosition,worldSeed,windSpeed,precipitation,cloudiness);
         
-
         return new LocalWeather()
         {
             FogIntensity = fogIntensity,
@@ -64,6 +69,17 @@ public static class WeatherService
             Precipitation = precipitation,
         }; 
     }
+    public static LocalWeather[] WeatherPrediction(int worldSeed,double worldTime, float2 position,int hourOffsetPrediction,int countPrediction)
+    {
+        LocalWeather[] tab = new LocalWeather[countPrediction];
+        for(int i = 0; i < countPrediction; i++)
+        {
+            worldTime += hourOffsetPrediction;
+            tab[i] = GetWeather(worldSeed,worldTime,position);
+        }
+        return tab;
+    }
+
     private static float2 GetWindDirection(float2 position,double worldTime,int worldSeed,out float windSpeed)
     {
         float2 windNoisePos = position * 0.1f + (float)worldTime * 0.3f;

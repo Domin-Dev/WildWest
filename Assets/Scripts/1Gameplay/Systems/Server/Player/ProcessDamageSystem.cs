@@ -32,12 +32,12 @@ partial struct ProcessDamageSystem : ISystem
                 health.ValueRW.Value = health.ValueRO.Max;
                 ghostChunk.ValueRW.lastPosition = GhostChunk.incorrectPosition;
                 if(isPlayer)
-                    RPCHelper.SendMessageToClients(ecb,SystemAPI.GetComponent<PlayerName>(connection).name.ToString() + " has died");
+                    ChatService.ServerSendsMessage(ecb,SystemAPI.GetComponent<PlayerName>(connection).name.ToString() + " has died");
             }
 
             if(isPlayer)
             {
-                RPCHelper.SendRpc(ecb,connection, new LifeStatsChangedRPC()); 
+                RPCService.SendRpc(ecb,connection, new LifeStatsChangedRPC()); 
             }
 
             damageBuffer.Clear();       
@@ -45,7 +45,4 @@ partial struct ProcessDamageSystem : ISystem
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }
-
-
-
 }   

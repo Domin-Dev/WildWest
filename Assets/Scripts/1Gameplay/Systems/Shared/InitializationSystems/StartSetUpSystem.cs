@@ -6,7 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 
 
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(SetUpSystemGroup))]
 [BurstCompile]
 partial struct StartSetUpSystem : ISystem
 {

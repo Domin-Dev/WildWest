@@ -56,7 +56,7 @@ partial struct CalculateChunksForBulletsServerSystem : ISystem
         public void Execute(Entity bulletEntity,in LocalTransform localTransform,in Bullet bullet, [EntityIndexInQuery] int sortKey)
         {
             NativeQueue<int2> chunks = new NativeQueue<int2>(Allocator.TempJob);
-            NextChunks(MyTools.ConvertFloat(localTransform.Position),MyTools.ConvertFloat(localTransform.Right()),bullet.range,map.chunkSizeInEnginePos,chunks);
+            NextChunks(MyTools.XY(localTransform.Position),MyTools.XY(localTransform.Right()),bullet.range,map.chunkSizeInEnginePos,chunks);
             int prio = 0;
             while(chunks.TryDequeue(out int2 chunk))
             {

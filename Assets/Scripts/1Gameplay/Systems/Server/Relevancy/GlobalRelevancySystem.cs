@@ -90,7 +90,7 @@ public partial struct GlobalRelevancySystem : ISystem
 
                                 if(ItemsAsset.instance.TryGetItem<BuildingObject>(result.id,out var itemData))
                                 {
-                                    float2 startPos = MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(result.globalTilePos));
+                                    float2 startPos = mapSettings.GetEnginePositionFromTilePosition(result.globalTilePos).XY();
                                     foreach(var drop in itemData.drop)
                                     {
                                         if(drop.probability >= UnityEngine.Random.Range(0f,1f))

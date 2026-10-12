@@ -155,11 +155,12 @@ public static class MyTools
         Debug.Log(signedValue);
         return signedValue;
     }
-    public static float2 ConvertFloat(float3 v)
+
+    public static float2 XY(this float3 v)
     {
         return new float2(v.x, v.y);
     }
-    public static float3 ConvertFloat(float2 v)
+    public static float3 XYY(this float2 v)
     {
         return new float3(v.x, v.y,v.y);
     }

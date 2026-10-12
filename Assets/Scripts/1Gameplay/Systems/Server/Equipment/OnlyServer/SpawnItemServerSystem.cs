@@ -84,7 +84,7 @@ partial struct SpawnItemServerSystem : ISystem
                     //     chunk = chunkEntity    
                     // },entityCommandBuffer,tick,true);
 
-                    RPCHelper.SendEventsToClients(new DropItemRPC()
+                    RPCService.SendEventsToClients(new DropItemRPC()
                     {
                         chunkIndex = command.ValueRO.chunkIndex,
                         dropPosition = command.ValueRO.position,

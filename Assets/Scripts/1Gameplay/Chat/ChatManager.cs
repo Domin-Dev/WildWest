@@ -19,7 +19,6 @@ public class ChatManager : MonoBehaviour
     [SerializeField] private ScrollRect chatScrollRect;
     [SerializeField] private GameObject messagePrefab;
 
-    
     //chat
     private Scrollbar chatScrollbar;
     private RectTransform chathandle;
@@ -50,6 +49,7 @@ public class ChatManager : MonoBehaviour
 
     public static ChatManager instance { private set; get; }
     public bool isChatting { private set; get; }
+    
     private void Awake()
     {
         if(instance == null)
@@ -66,7 +66,7 @@ public class ChatManager : MonoBehaviour
     private void Start()
     {
         ClearIndexes();
-        commandList = DebugController.GetCommandList();
+        commandList = DebugController.CommandList;
 
         // chatInputField.onSelect.AddListener((string k) => { isChatting = true; });
         //  chatInputField.onDeselect.AddListener((string k) => { isChatting = false; SwitchChat();});
@@ -205,13 +205,13 @@ public class ChatManager : MonoBehaviour
             {
                 if(CheckCommands(text))
                 {
-                    SendRPC(chatInputField.text);
+                    ChatService.ClientSendsMessage(chatInputField.text);
                     SaveToHistory();
                 }
             }
             else
             {
-                SendRPC(chatInputField.text);
+                ChatService.ClientSendsMessage(chatInputField.text);
                 SaveToHistory();
             }
         }
@@ -234,16 +234,7 @@ public class ChatManager : MonoBehaviour
             history[LastHistory] = chatInputField.text;
         }
     }
-    private void SendRPC(string value)
-    {
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        Entity messageEntity = entityCommandBuffer.CreateEntity();
-        entityCommandBuffer.AddComponent(messageEntity, new NewMessageRPC() { message = value.Substring(0, Math.Min(511, value.Length)) });
-        entityCommandBuffer.AddComponent(messageEntity, new SendRpcCommandRequest());
 
-        entityCommandBuffer.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
-        entityCommandBuffer.Dispose();
-    }
     public Transform Print(string text)
     {
         Transform message = Instantiate(messagePrefab, content).transform;

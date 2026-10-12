@@ -149,7 +149,7 @@ public class EquipmentManager : MonoBehaviour
 
 
         selectedSlot = slotPosition;
-        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
+        RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQSelectItem() { position = slotPosition, value = n });
         if (SlotIsEmpty(slotPosition))
             UIManager.instance.TurnOnItemPlaceholder(containers[slotPosition.containerIndex], slotPosition.slotIndex);
         return selectedItem;
@@ -177,7 +177,7 @@ public class EquipmentManager : MonoBehaviour
     {
         if (selectedItem != null)
         {
-            RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDeselectItem() { });
+            RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDeselectItem() { });
         }
         ClearSelection();
         DragManager.instance.UpdateSelected(null);
@@ -186,14 +186,14 @@ public class EquipmentManager : MonoBehaviour
     {
         if (selectedItem != null)
         {
-            RPCHelper.SendRpc(ref ecb, new EQDeselectItem() { });
+            RPCService.SendRpc(ref ecb, new EQDeselectItem() { });
         }
         ClearSelection();
         DragManager.instance.UpdateSelected(null);
     }
     public void DoubleClick(SlotPosition slotPosition)
     {
-        RPCHelper.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDoubleClickAction() { position = slotPosition});
+        RPCService.SendRpc(ClientServerBootstrap.ClientWorld.EntityManager, new EQDoubleClickAction() { position = slotPosition});
     }
     private int SelectN(int itemQuantity, SelectionMode selectionMode, int n = 1)
     {
@@ -611,7 +611,7 @@ public class EquipmentManager : MonoBehaviour
     private void SendMoveItem(SlotPosition from,SlotPosition to, int quantity)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        RPCHelper.SendRpc(ref entityCommandBuffer, new EQMoveItem() {
+        RPCService.SendRpc(ref entityCommandBuffer, new EQMoveItem() {
              to = to,
              from = from, 
              value = quantity

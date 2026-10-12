@@ -6,29 +6,28 @@ using Unity.NetCode;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
-partial struct MessageClientSystem : ISystem
+partial struct ClientMessageSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-            .WithAll<ReceiveRpcCommandRequest>().WithAny<NewMessageServerRPC,PlayerJoinRPC,PlayerLeftRPC>();
+            .WithAll<ReceiveRpcCommandRequest>().WithAny<ServerMessageRPC,PlayerJoinRPC,PlayerLeftRPC>();
         state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
         entityQueryBuilder.Dispose();
     }
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        foreach ((NewMessageServerRPC message, Entity entity) in
-        SystemAPI.Query<NewMessageServerRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
+        foreach ((ServerMessageRPC message, Entity entity) in
+        SystemAPI.Query<ServerMessageRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
         {
             if (message.senderIsServer)
             {
-                ChatManager.instance.PrintServerMessage(message.messageTime, message.message.ToString());
+                ChatManager.instance.PrintServerMessage(message.messageTime, message.Message.ToString());
             }
             else
             {
-                ChatManager.instance.PrintPlayerMessage(message.messageTime, message.message.ToString(), message.sender.ToString());
+                ChatManager.instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
             }
                 entityCommandBuffer.DestroyEntity(entity);
         }
@@ -46,7 +45,6 @@ partial struct MessageClientSystem : ISystem
             ChatManager.instance.PrintServerMessage(message.messageTime, $"{message.playerName} has left the game. {((NetworkStreamDisconnectReason)message.ReasonCode).ToString()}");
             entityCommandBuffer.DestroyEntity(entity);
         }
-
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

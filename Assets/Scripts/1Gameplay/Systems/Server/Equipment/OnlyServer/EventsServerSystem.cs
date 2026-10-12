@@ -98,7 +98,7 @@ partial struct EventsServerSystem : ISystem
                     else
                         playerInputSyncLookup.GetRefRW(player).ValueRW.ammoSelectedItemID = ammoID;
 
-                    RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
+                    RPCService.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
                     ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.NetworkId,player,ghostChunk.GetChunk(),tick,true);                    
                 }
 
@@ -137,7 +137,7 @@ partial struct EventsServerSystem : ISystem
                         
                         EQHelper.Clone(equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.owner,out var newSlot,out var newBarData);
                         int itemID = newSlot.HasValue ? newSlot.Value.itemId : -1;
-                        RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){ itemID = itemID},ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerContainer.ValueRO.owner,playerChunk.ValueRO.GetChunk(),tick);
+                        RPCService.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){ itemID = itemID},ref state,playerNeedChunkLookup,loadedChunks,ecb,ghostOwner.ValueRO.NetworkId,playerContainer.ValueRO.owner,playerChunk.ValueRO.GetChunk(),tick);
                     }
                 }
 

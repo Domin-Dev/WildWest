@@ -76,10 +76,10 @@ partial struct DropItemsServerSystem : ISystem
             if(physicsWorldSingleton.CastRay(rayInput, out Unity.Physics.RaycastHit hit))
             {
                 Debug.Log("hit pos " + hit.Position);
-                dropPosition = MyTools.ConvertFloat(hit.Position) - dropDir * 0.05f;
+                dropPosition = hit.Position.XY() - dropDir * 0.05f;
             }
 
-            float distance = math.distance(dropPosition,MyTools.ConvertFloat(localTransform.Position));
+            float distance = math.distance(dropPosition,localTransform.Position.XY());
             Debug.Log("distance " + distance + " " + randomValue);
             if(distance > randomValue)
             {
@@ -109,7 +109,7 @@ partial struct DropItemsServerSystem : ISystem
                     var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
                         containerFrom.Value, containerTo.Value,slotIndex, from.slotIndex,count,moveBetweenObjects:true,serverMove:true);
                                
-                    RPCHelper.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(chunkIndex,slotIndex,dropPosition,distance * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,chunkIndex,currentTick,true);      
+                    RPCService.SendEventsToClientsAndOwner<DropItemRPC>(new DropItemRPC(chunkIndex,slotIndex,dropPosition,distance * 2f) ,ref state,playerNeedChunkLookup,loadedChunks,ecb,networkID,player,chunkIndex,currentTick,true);      
                     if (tab != null) events.AddRange(tab);
                 }
 

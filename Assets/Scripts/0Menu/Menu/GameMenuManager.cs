@@ -28,7 +28,7 @@ public class GameMenuManager : MonoBehaviour
             if (ClientServerBootstrap.HasServerWorld)
             {
                 SaveSystem.Save();
-                RPCHelper.StopServer(ClientServerBootstrap.ServerWorld);
+                RPCService.StopServer(ClientServerBootstrap.ServerWorld);
             }
             else
             {

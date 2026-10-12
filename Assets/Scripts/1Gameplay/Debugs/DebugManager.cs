@@ -128,7 +128,7 @@ public class DebugManager : MonoBehaviour
         if (!query.IsEmpty)
         {
             var array = query.ToComponentDataArray<LocalTransform>(Unity.Collections.Allocator.Temp);
-            UpdatePosition(MyTools.ConvertFloat(array[0].Position));
+            UpdatePosition(array[0].Position.XY());
             array.Dispose();
         }
         query.Dispose();

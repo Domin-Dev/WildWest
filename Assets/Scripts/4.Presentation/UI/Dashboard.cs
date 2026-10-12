@@ -44,7 +44,7 @@ public class Dashboard : MonoBehaviour
     private void Start()
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
-        RPCHelper.SendRpc<GetPlayerDashboardRPC>(ref entityCommandBuffer);
+        RPCService.SendRpc<GetPlayerDashboardRPC>(ref entityCommandBuffer);
         entityCommandBuffer.Playback(world.EntityManager);
         entityCommandBuffer.Dispose();
         StartCoroutine(UpdateStats());
@@ -123,7 +123,7 @@ public class Dashboard : MonoBehaviour
     {
         Entity entity = world.EntityManager.CreateEntity();
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.TempJob);
-        RPCHelper.SendRpc<GetPingRPC>(ref entityCommandBuffer);
+        RPCService.SendRpc<GetPingRPC>(ref entityCommandBuffer);
         entityCommandBuffer.Playback(world.EntityManager);
         entityCommandBuffer.Dispose();
         Debug.Log("zapytanie!");

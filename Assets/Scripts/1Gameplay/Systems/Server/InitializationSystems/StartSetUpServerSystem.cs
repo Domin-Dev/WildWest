@@ -6,12 +6,12 @@ using Unity.NetCode;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-[UpdateInGroup(typeof(InitializationSystemGroup))]
+[UpdateInGroup(typeof(SetUpSystemGroup))]
 [BurstCompile]
 partial struct StartSetUpServerSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
-    {
+    {//TODO Create configs for that componenets
         if(GameInfo.instance != null && GameInfo.instance.startGame)
         {
             GameInfo data = GameInfo.instance;
@@ -125,11 +125,16 @@ partial struct StartSetUpServerSystem : ISystem
 
             #endregion
 
-            
-            ecb.Playback(state.EntityManager);
-            ecb.Dispose();
+            #region Chat
+            EntityHelper.CreateEntityWithComponent(ecb,new ServerMessagesConfig()
+            {
+                CleanupPeriod =  EntityHelper.SecondsToTicks(ServerMessageConfig.Instance.CleanupPeriod),
+                MessageChunkLifetime = EntityHelper.SecondsToTicks(ServerMessageConfig.Instance.MessageChunkLifetime)
+            });
+            #endregion
+
+            ecb.Playback(state.EntityManager);  
         }
         state.Enabled = false;
     }
-
 }

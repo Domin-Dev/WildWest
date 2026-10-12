@@ -10,4 +10,14 @@ public struct LocalWeather : IComponentData
     public float Storm;
     public float2 Wind;
     public float WindSpeed => math.length(Wind);
+
+    public override string ToString()
+    {
+        return $"Temperature = {Temperature}\n" +
+       $"Wind = {WindSpeed} ({Wind})\n" +
+       $"Cloudiness = {Cloudiness}\n" +
+       $"Precipitation = {Precipitation}\n" +
+       $"Fog = {FogIntensity}\n" +
+       $"Storm = {Storm}";
+    }
 }

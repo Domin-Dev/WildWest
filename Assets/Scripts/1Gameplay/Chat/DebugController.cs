@@ -7,361 +7,391 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 public static class DebugController 
 {
     static List<CommandBase> commandList;
-    public static List<CommandBase> GetCommandList()
+    public static List<CommandBase> CommandList
     {
-        if (commandList != null) return commandList;
-        commandList = new List<CommandBase>();
-        commandList.Add(new DebugCommand<string>("mkadmin", "Grants admin privileges to a player.", "[player name]", (ref EntityCommandBuffer ecb,Entity e, string arg) =>
+        get
         {
-            if (ClientServerBootstrap.HasServerWorld)
+            if (commandList != null) return commandList;
+            commandList = new List<CommandBase>();
+            commandList.Add(new DebugCommand<string>("mkadmin", "Grants admin privileges to a player.", "[player name]", (ref EntityCommandBuffer ecb,Entity e, string arg) =>
             {
-                bool found = false;
-                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-                var query = entityManager.CreateEntityQuery(typeof(PlayerName));
-                var entities = query.ToEntityArray(Allocator.Temp);
-
-                foreach (var entity in entities)
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    var playerName = entityManager.GetComponentData<PlayerName>(entity);
-                    if (!entityManager.HasComponent<Admin>(entity) && string.Compare(playerName.name.ToString(), arg) == 0)
+                    bool found = false;
+                    var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                    var query = entityManager.CreateEntityQuery(typeof(PlayerName));
+                    var entities = query.ToEntityArray(Allocator.Temp);
+
+                    foreach (var entity in entities)
                     {
-                        ecb.AddComponent<Admin>(entity);
-                        RPCHelper.SendMessageToClient(ref ecb, "You are now admin!!!", entity);
-                        found = true;
-                        break;
+                        var playerName = entityManager.GetComponentData<PlayerName>(entity);
+                        if (!entityManager.HasComponent<Admin>(entity) && string.Compare(playerName.name.ToString(), arg) == 0)
+                        {
+                            ecb.AddComponent<Admin>(entity);
+                            ChatService.ServerSendsMessage(ecb, "You are now admin!!!", entity);
+                            found = true;
+                            break;
+                        }
                     }
+                    entities.Dispose();
+                    query.Dispose();
+
+                    return found ? "The player is now admin!" : "Player not found!";
                 }
-                entities.Dispose();
-                query.Dispose();
-
-                return found ? "The player is now admin!" : "Player not found!";
-            }
-            return null;
-        }));
-        commandList.Add(new DebugCommand<int,int>("tp", "Teleports to the selected position", "[Position x] [Position y]", (ref EntityCommandBuffer ecb,Entity e, int x, int y) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
+                return null;
+            }));
+            commandList.Add(new DebugCommand<int,int>("tp", "Teleports to the selected position", "[Position x] [Position y]", (ref EntityCommandBuffer ecb,Entity e, int x, int y) =>
             {
-                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-                var query = entityManager.CreateEntityQuery(typeof(PlayerName));
-                var entities = query.ToEntityArray(Allocator.Temp);
-                var mapQuery = entityManager.CreateEntityQuery(typeof(MapSettings));
-                MapSettings map = mapQuery.GetSingleton<MapSettings>();
-
-
-                foreach (var entity in entities)
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    if(entity == e)
+                    var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                    var query = entityManager.CreateEntityQuery(typeof(PlayerName));
+                    var entities = query.ToEntityArray(Allocator.Temp);
+                    var mapQuery = entityManager.CreateEntityQuery(typeof(MapSettings));
+                    MapSettings map = mapQuery.GetSingleton<MapSettings>();
+
+
+                    foreach (var entity in entities)
                     {
-                        var character = entityManager.GetComponentData<LinkedCharacter>(e).entity;
-                        GhostChunk ghostChunk = entityManager.GetComponentData<GhostChunk>(character);
+                        if(entity == e)
+                        {
+                            var character = entityManager.GetComponentData<LinkedCharacter>(e).entity;
+                            GhostChunk ghostChunk = entityManager.GetComponentData<GhostChunk>(character);
 
-                        var position =  LocalTransform.FromPosition(map.GetTilePositionToEnginePosition(x, y));
-                        ecb.SetComponent(character, position);
-                        ghostChunk.SetNewChunk();
-                        ecb.SetComponent(character,ghostChunk);
-                       // CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
+                            var position =  LocalTransform.FromPosition(map.GetTilePositionToEnginePosition(x, y));
+                            ecb.SetComponent(character, position);
+                            ghostChunk.SetNewChunk();
+                            ecb.SetComponent(character,ghostChunk);
+                        // CollisionSystem.GhostChangeChunk(entityManager, ref ecb, position, character);
+                        }
                     }
+
+                    mapQuery.Dispose();
+                    entities.Dispose();
+                    query.Dispose();
                 }
-
-                mapQuery.Dispose();
-                entities.Dispose();
-                query.Dispose();
-            }
-            return null;
-        }));
-        commandList.Add(new DebugCommand("players", "Prints a list of players and their roles", null, (ref EntityCommandBuffer ecb, Entity e) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
+                return null;
+            }));
+            commandList.Add(new DebugCommand("players", "Prints a list of players and their roles", null, (ref EntityCommandBuffer ecb, Entity e) =>
             {
-                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-                var query = entityManager.CreateEntityQuery(typeof(PlayerName));
-                var entities = query.ToEntityArray(Allocator.Temp);
-                StringBuilder stringBuilder = new StringBuilder();
-
-                stringBuilder.AppendLine();
-                stringBuilder.Append(("Name").PadRight(32));
-                stringBuilder.Append("Role");
-                stringBuilder.AppendLine();
-
-                foreach (var entity in entities)
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    var playerName = entityManager.GetComponentData<PlayerName>(entity);
-                    stringBuilder.Append(playerName.name.ToString().PadRight(32));
-                    stringBuilder.Append(entityManager.HasComponent<Admin>(entity) ? "Administrator" : "Player");
+                    var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                    var query = entityManager.CreateEntityQuery(typeof(PlayerName));
+                    var entities = query.ToEntityArray(Allocator.Temp);
+                    StringBuilder stringBuilder = new StringBuilder();
+
                     stringBuilder.AppendLine();
+                    stringBuilder.Append(("Name").PadRight(32));
+                    stringBuilder.Append("Role");
+                    stringBuilder.AppendLine();
+
+                    foreach (var entity in entities)
+                    {
+                        var playerName = entityManager.GetComponentData<PlayerName>(entity);
+                        stringBuilder.Append(playerName.name.ToString().PadRight(32));
+                        stringBuilder.Append(entityManager.HasComponent<Admin>(entity) ? "Administrator" : "Player");
+                        stringBuilder.AppendLine();
+                    }
+                    entities.Dispose();
+                    query.Dispose();
+                    return stringBuilder.ToString();
+                }
+                return null;
+            }));
+
+            #region Map
+            commandList.Add(new DebugCommand("seed", "Displays world seed", "", (ref EntityCommandBuffer ecb, Entity e) =>
+            {
+                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                var query = entityManager.CreateEntityQuery(typeof(MapSettings));
+                var entities = query.ToEntityArray(Allocator.Temp);
+                string result = null;
+                if(entities.Length > 0)
+                {
+                    MapSettings map = entityManager.GetComponentData<MapSettings>(entities[0]);
+                    result = $"Seed : {map.seed}";
                 }
                 entities.Dispose();
                 query.Dispose();
-                return stringBuilder.ToString();
-            }
-            return null;
-        }));
+                return result;
+            },false,false));
+            #endregion
 
-
-        #region Map
-        commandList.Add(new DebugCommand("seed", "Displays world seed", "", (ref EntityCommandBuffer ecb, Entity e) =>
-        {
-            var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-            var query = entityManager.CreateEntityQuery(typeof(MapSettings));
-            var entities = query.ToEntityArray(Allocator.Temp);
-            string result = null;
-            if(entities.Length > 0)
+            #region Give
+            commandList.Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "[Item ID] [Quantity] [player name]", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
             {
-                MapSettings map = entityManager.GetComponentData<MapSettings>(entities[0]);
-                result = $"Seed : {map.seed}";
-            }
-            entities.Dispose();
-            query.Dispose();
-            return result;
-        },false,false));
-        #endregion
-
-        #region Give
-        commandList.Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "[Item ID] [Quantity] [player name]", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
-            {
-                if (ItemsAsset.instance.GetItem(id) == null) return null;
-                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-                var query = entityManager.CreateEntityQuery(typeof(PlayerName),typeof(NetworkId));
-                var names = query.ToComponentDataArray<PlayerName>(Allocator.TempJob);
-                var players = query.ToEntityArray(Allocator.TempJob);
-                Entity networkPlayer = Entity.Null;
-                
-                for (int i = 0; i < names.Length; i++)
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    if (names[i].name == player)
+                    if (ItemsAsset.instance.GetItem(id) == null) return null;
+                    var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                    var query = entityManager.CreateEntityQuery(typeof(PlayerName),typeof(NetworkId));
+                    var names = query.ToComponentDataArray<PlayerName>(Allocator.TempJob);
+                    var players = query.ToEntityArray(Allocator.TempJob);
+                    Entity networkPlayer = Entity.Null;
+                    
+                    for (int i = 0; i < names.Length; i++)
                     {
-                        networkPlayer = players[i];
-                        break;
+                        if (names[i].name == player)
+                        {
+                            networkPlayer = players[i];
+                            break;
+                        }
+                    }
+                    players.Dispose();
+                    names.Dispose();
+                    query.Dispose();
+                    if (networkPlayer == Entity.Null)
+                        return "No player found with that name";
+                    else
+                    {
+                        EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                        {
+                            item = new InventorySlot
+                            {
+                                itemId = id,
+                                quantity = quantity,
+                            },
+                            barValue = 1,
+                            networkEntity = networkPlayer
+                        });
                     }
                 }
-                players.Dispose();
-                names.Dispose();
-                query.Dispose();
-                if (networkPlayer == Entity.Null)
-                    return "No player found with that name";
-                else
+                return null;
+            }));
+            commandList.Add(new DebugCommand<int, int>("give", "Gives you the specified item", "[Item ID] [Quantity] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
+            {
+                if (ClientServerBootstrap.HasServerWorld)
                 {
+                    if (ItemsAsset.instance.GetItem(id) == null) return null;
+
                     EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
                     {
                         item = new InventorySlot
                         {
                             itemId = id,
-                            quantity = quantity,
+                            quantity = quantity
                         },
                         barValue = 1,
-                        networkEntity = networkPlayer
+                        networkEntity = e
                     });
                 }
-            }
-            return null;
-        }));
-        commandList.Add(new DebugCommand<int, int>("give", "Gives you the specified item", "[Item ID] [Quantity] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
+                return null;
+            }));
+            commandList.Add(new DebugCommand<int, int,float,int,float,MyColor>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value] [Color]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue,MyColor color) =>
             {
-                if (ItemsAsset.instance.GetItem(id) == null) return null;
-
-                EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    item = new InventorySlot
-                    {
-                        itemId = id,
-                        quantity = quantity
-                    },
-                    barValue = 1,
-                    networkEntity = e
-                });
-            }
-            return null;
-        }));
-        commandList.Add(new DebugCommand<int, int,float,int,float,MyColor>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value] [Color]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue,MyColor color) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
-            {
-                if (ItemsAsset.instance.GetItem(id) == null) return null;
-                EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
-                {
-                    item = new InventorySlot
-                    {
-                        itemId = id,
-                        wetness = wetness,
-                        quality = (Quality)quality,
-                        quantity = quantity,
-                        color = color,
-                    },
-                    barValue = barValue,
-                    networkEntity = e
-
-                });
-            }
-            return null;
-        }));
-        commandList.Add(new DebugCommand<int>("give", "Gives you the specified item", "[Item ID]", (ref EntityCommandBuffer ecb, Entity e, int id) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
-            {
-                if (ItemsAsset.instance.GetItem(id) == null) return null;
-
-                EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
-                {
-                    item = new InventorySlot
-                    {
-                        itemId = id,
-                        quantity = 1
-                    },
-                    barValue = 1,
-                    networkEntity = e
-                });
-            }
-            return null;
-        }));
-        
-        commandList.Add(new DebugCommand("giveoutfit", "debug outfit kit","", (ref EntityCommandBuffer ecb, Entity e) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
-            {
-                int[] items = {11,12,133,14,15,16,17,18,47};
-
-                foreach (int i in items)
-                {
+                    if (ItemsAsset.instance.GetItem(id) == null) return null;
                     EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
                     {
                         item = new InventorySlot
                         {
-                            itemId = i,
+                            itemId = id,
+                            wetness = wetness,
+                            quality = (Quality)quality,
+                            quantity = quantity,
+                            color = color,
+                        },
+                        barValue = barValue,
+                        networkEntity = e
+
+                    });
+                }
+                return null;
+            }));
+            commandList.Add(new DebugCommand<int>("give", "Gives you the specified item", "[Item ID]", (ref EntityCommandBuffer ecb, Entity e, int id) =>
+            {
+                if (ClientServerBootstrap.HasServerWorld)
+                {
+                    if (ItemsAsset.instance.GetItem(id) == null) return null;
+
+                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                    {
+                        item = new InventorySlot
+                        {
+                            itemId = id,
                             quantity = 1
                         },
                         barValue = 1,
                         networkEntity = e
                     });
                 }
-            }
-            return null;
-        }));
-        
-        #endregion
-
-        #region Weather
-        commandList.Add(new DebugCommand<float,float>("rain", "", "[intensity] [time (s)]", (ref EntityCommandBuffer ecb, Entity e,float intensity,float time) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
+                return null;
+            }));
+            
+            commandList.Add(new DebugCommand("giveoutfit", "debug outfit kit","", (ref EntityCommandBuffer ecb, Entity e) =>
             {
-                EntityHelper.CreateEntityWithComponent(ref ecb, new Rain()
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    intensity = intensity,
-                    time = time,
-                    tick = NetworkTick.Invalid
-                });
-            }
-            return null;
-        }));
+                    int[] items = {11,12,133,14,15,16,17,18,47};
 
-        #endregion
+                    foreach (int i in items)
+                    {
+                        EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+                        {
+                            item = new InventorySlot
+                            {
+                                itemId = i,
+                                quantity = 1
+                            },
+                            barValue = 1,
+                            networkEntity = e
+                        });
+                    }
+                }
+                return null;
+            }));
+            
+            #endregion
 
-        #region Time
-        commandList.Add(new DebugCommand("time", "Displays information about the time", "", (ref EntityCommandBuffer ecb, Entity e) =>
-        {
-            var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-            var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
-            var entities = query.ToEntityArray(Allocator.Temp);
-            string result = null;
-            if(entities.Length > 0)
+            #region Weather
+            commandList.Add(new DebugCommand<float,float>("rain", "", "[intensity] [time (s)]", (ref EntityCommandBuffer ecb, Entity e,float intensity,float time) =>
             {
-                CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
-                result = $"Time : {currentTime.HourInt}:{currentTime.MinuteInt.ToString("00")}\nDay : {currentTime.Day}\nWorldTime : {currentTime.WorldTime.ToString("F2")}";
-            }
-            entities.Dispose();
-            query.Dispose();
-            return result;
-        },false,false));
-        commandList.Add(new DebugCommand<int>("timeset", "Set the specified time", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
-        {
-            if(value < 0 || value > 24) return "The value must be between 0 and 24.";         
-            if(value == 24) value = 0;
-
-            var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-            var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
-            var entities = query.ToEntityArray(Allocator.Temp);
-            if(entities.Length > 0)
-            {
-                CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
-                float currentHour = currentTime.Hour;
-                double newWorldTime;
-                if(currentHour > value)
-                    newWorldTime = TimeService.GetWorldTime(value,currentTime.Day + 1);
-                else 
-                    newWorldTime = currentTime.GetWorldTime(value);
-          
-                EntityHelper.CreateEntityWithComponent(ecb,new SetTimeRequest(){ newWorldtime = newWorldTime});
-            }
-            entities.Dispose();
-            query.Dispose();
-            return null;
-        },true,true));
-        commandList.Add(new DebugCommand<int>("timeskip", "Skip the specific time period", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
-        {
-            if(value < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
-
-            var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-            var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
-            var entities = query.ToEntityArray(Allocator.Temp);
-            if(entities.Length > 0)
-            {
-                CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
-                EntityHelper.CreateEntityWithComponent(ecb,new SetTimeRequest(){ newWorldtime = currentTime.WorldTime + value});
-            }
-            entities.Dispose();
-            query.Dispose();
-            return null;
-        },true,true));
-
-        #endregion
-        commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
-            {
-                EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
+                if (ClientServerBootstrap.HasServerWorld)
                 {
-                    containerIndex = -1,
-                    networkEntity = e
-                });
-            }
-            return null;
-        }));
-        commandList.Add(new DebugCommand<int>("cleareq", "Removes all items from your inventory", "[Container Index]", (ref EntityCommandBuffer ecb, Entity e,int index) =>
-        {
-            if (ClientServerBootstrap.HasServerWorld)
+                    EntityHelper.CreateEntityWithComponent(ref ecb, new Rain()
+                    {
+                        intensity = intensity,
+                        time = time,
+                        tick = NetworkTick.Invalid
+                    });
+                }
+                return null;
+            }));       
+            commandList.Add(new DebugCommand<int,int>("weatherprediction", "", "[offset] [count]", (ref EntityCommandBuffer ecb, Entity e,int offset,int count) =>
             {
-                EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
+                if(count < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
+
+                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
+                var entities = query.ToEntityArray(Allocator.Temp);
+                
+                var query2 = entityManager.CreateEntityQuery(typeof(MapSettings));
+                var entities2 = query2.ToEntityArray(Allocator.Temp);
+                StringBuilder stringBuilder = new StringBuilder();
+
+            
+                if(entities.Length > 0 && entities2.Length > 0)
                 {
-                    containerIndex = index,
-                    networkEntity = e
-                });
-            }
-            return null;
-        }));
+                    CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
+                    MapSettings mapSettings = entityManager.GetComponentData<MapSettings>(entities2[0]);
 
+                    var character = entityManager.GetComponentData<LinkedCharacter>(e).entity;
+                    var position = entityManager.GetComponentData<LocalToWorld>(character).Position;
+                    var tab = WeatherService.WeatherPrediction(mapSettings.seed,currentTime.WorldTime,position.XY(),offset,count);
 
-        commandList.Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
-        {
-            string text = "Command list:\n";
-            for (int i = 0; i < commandList.Count; i++)
+                    foreach(var i in tab)
+                        stringBuilder.AppendLine($" {i.ToString()}");
+                }
+
+                
+                entities.Dispose();
+                query.Dispose();
+                return stringBuilder.ToString();
+            },true,true));
+
+            #endregion
+
+            #region Time
+            commandList.Add(new DebugCommand("time", "Displays information about the time", "", (ref EntityCommandBuffer ecb, Entity e) =>
             {
-                CommandBase commandBase = commandList[i] as CommandBase;
-                text += $"/<Color=#{ChatManager.instance.highlightColor.ToHexString()}>{commandBase.commandId}</Color> {commandBase.commandFormat} - {commandBase.commandDescription}\n";
-            }
-            return text;
-        },false,false));
-        return commandList;
+                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
+                var entities = query.ToEntityArray(Allocator.Temp);
+                string result = null;
+                if(entities.Length > 0)
+                {
+                    CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
+                    result = $"Time : {currentTime.HourInt}:{currentTime.MinuteInt.ToString("00")}\nDay : {currentTime.Day}\nWorldTime : {currentTime.WorldTime.ToString("F2")}";
+                }
+                entities.Dispose();
+                query.Dispose();
+                return result;
+            },false,false));
+            commandList.Add(new DebugCommand<int>("timeset", "Set the specified time", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
+            {
+                if(value < 0 || value > 24) return "The value must be between 0 and 24.";         
+                if(value == 24) value = 0;
+
+                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
+                var entities = query.ToEntityArray(Allocator.Temp);
+                if(entities.Length > 0)
+                {
+                    CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
+                    float currentHour = currentTime.Hour;
+                    double newWorldTime;
+                    if(currentHour > value)
+                        newWorldTime = TimeService.GetWorldTime(value,currentTime.Day + 1);
+                    else 
+                        newWorldTime = currentTime.GetWorldTime(value);
+            
+                    EntityHelper.CreateEntityWithComponent(ecb,new SetTimeRequest(){ newWorldtime = newWorldTime});
+                }
+                entities.Dispose();
+                query.Dispose();
+                return null;
+            },true,true));
+            commandList.Add(new DebugCommand<int>("timeskip", "Skip the specific time period", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
+            {
+                if(value < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
+
+                var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+                var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
+                var entities = query.ToEntityArray(Allocator.Temp);
+                if(entities.Length > 0)
+                {
+                    CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
+                    EntityHelper.CreateEntityWithComponent(ecb,new SetTimeRequest(){ newWorldtime = currentTime.WorldTime + value});
+                }
+                entities.Dispose();
+                query.Dispose();
+                return null;
+            },true,true));
+
+            #endregion
+            commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
+            {
+                if (ClientServerBootstrap.HasServerWorld)
+                {
+                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
+                    {
+                        containerIndex = -1,
+                        networkEntity = e
+                    });
+                }
+                return null;
+            }));
+            commandList.Add(new DebugCommand<int>("cleareq", "Removes all items from your inventory", "[Container Index]", (ref EntityCommandBuffer ecb, Entity e,int index) =>
+            {
+                if (ClientServerBootstrap.HasServerWorld)
+                {
+                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQClear()
+                    {
+                        containerIndex = index,
+                        networkEntity = e
+                    });
+                }
+                return null;
+            }));
+
+            commandList.Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
+            {
+                string text = "Command list:\n";
+                for (int i = 0; i < commandList.Count; i++)
+                {
+                    CommandBase commandBase = commandList[i] as CommandBase;
+                    text += $"/<Color=#{ChatManager.instance.highlightColor.ToHexString()}>{commandBase.commandId}</Color> {commandBase.commandFormat} - {commandBase.commandDescription}\n";
+                }
+                return text;
+            },false,false));
+            return commandList;
+        }
     }
-
 }

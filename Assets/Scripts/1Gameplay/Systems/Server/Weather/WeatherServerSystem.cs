@@ -39,7 +39,7 @@ public partial struct WeatherServerSystem : ISystem
             foreach ((RefRO<LocalToWorld> position,RefRW<LocalWeather> localWeather) in  SystemAPI.Query<RefRO<LocalToWorld>,RefRW<LocalWeather>>().WithAll<Player>().WithNone<NewPlayerTag>())
             {
                 playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
-                localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition);
+                localWeather.ValueRW = WeatherService.GetWeather(mapSettings.seed,currentTime.WorldTime,playerPosition);
             }
             
             if(!nextUpdate.ValueRO.tick.IsValid)
@@ -51,7 +51,7 @@ public partial struct WeatherServerSystem : ISystem
         foreach ((RefRO<LocalToWorld> position,Entity player) in  SystemAPI.Query<RefRO<LocalToWorld>>().WithAll<Player>().WithNone<LocalWeather>().WithEntityAccess())
         {
             playerPosition = new float2(position.ValueRO.Position.x,position.ValueRO.Position.y);
-            ecb.AddComponent(player,WeatherService.GetWeather(mapSettings.seed,currentTime,playerPosition));
+            ecb.AddComponent(player,WeatherService.GetWeather(mapSettings.seed,currentTime.WorldTime,playerPosition));
         }
         ecb.Playback(state.EntityManager);
     }

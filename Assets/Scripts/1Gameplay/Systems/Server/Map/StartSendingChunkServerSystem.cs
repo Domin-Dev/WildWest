@@ -65,7 +65,7 @@ public partial class StartSendingChunkServerSystem : SystemBase
                 {
                     var owner = SystemAPI.GetComponent<GhostOwner>(chunkObj.entity);
                     var connection = SystemAPI.GetComponent<PlayerSourceConnection>(item.playerEntity);
-                    RPCHelper.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       
+                    RPCService.SendEventToClient<NewItemInHandRPC>(ecb,owner.NetworkId,tick,connection.value);       
                 }
     
 

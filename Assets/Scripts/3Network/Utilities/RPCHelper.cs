@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-public static class RPCHelper
+public static class RPCService
 {  
     public static void SendRpc<T>(EntityCommandBuffer ecb, Entity connectionEntity, in T rpcCommand)
         where T : unmanaged, IRpcCommand
@@ -51,28 +51,6 @@ public static class RPCHelper
       where T : unmanaged, IRpcCommand
     {
         SendRpc(ref ecb, new T());
-    }
-    public static void SendMessageToClients(EntityCommandBuffer ecb, string serverMessage)
-    {
-        var rpc = new NewMessageServerRPC()
-        {
-            message = serverMessage,
-            sender = "Server",
-            messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            senderIsServer = true
-        };
-        SendRpc(ref ecb, rpc);
-    }
-    public static void SendMessageToClient(ref EntityCommandBuffer ecb, string serverMessage, Entity client)
-    {
-        var rpc = new NewMessageServerRPC()
-        {
-            message = serverMessage,
-            sender = "Server",
-            messageTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-            senderIsServer = true
-        };
-        SendRpc(ecb, client, rpc);
     }
     private static void DisconnectAllClients(World serverWorld)
     {
@@ -322,6 +300,6 @@ public static class RPCHelper
         var rpc = new T();
         tick.Add(1u);
         rpc.SetPlayer(networkID,tick);
-        RPCHelper.SendRpc(ecb,target,rpc);
+        RPCService.SendRpc(ecb,target,rpc);
     }
 }

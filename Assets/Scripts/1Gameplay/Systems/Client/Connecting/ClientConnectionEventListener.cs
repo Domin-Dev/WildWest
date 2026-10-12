@@ -33,7 +33,7 @@ public partial struct ClientConnectionEventListener : ISystem
                     GameInfo.instance.isInGame = false;
                     break; 
                 case ConnectionState.State.Connected:
-                    RPCHelper.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
+                    RPCService.SendRpc(ref entityCommandBuffer, new PlayerVerificationRPC() { playerName = SystemAPI.GetSingleton<PlayerName>().name });
                     break;
                 case ConnectionState.State.Approval:
                     GameInfo.instance.isInGame = true;

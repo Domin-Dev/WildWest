@@ -32,13 +32,13 @@ partial struct ServerAuthSystem : ISystem
             if(saltHash.CompareTo(commandRpc.ValueRO.hash) == 0)
             {
                 Debug.Log("Witamy!!!");
-                RPCHelper.SendApprovalRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new AuthResponse() { success = true });
+                RPCService.SendApprovalRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new AuthResponse() { success = true });
                 entityCommandBuffer.AddComponent<ConnectionApproved>(rpcCommandRequest.ValueRO.SourceConnection);
             }
             else
             {
                 Debug.Log("Zle Haslo!!!");
-                RPCHelper.SendApprovalRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new AuthResponse() { success = false });
+                RPCService.SendApprovalRpc(ref entityCommandBuffer, rpcCommandRequest.ValueRO.SourceConnection, new AuthResponse() { success = false });
                 entityCommandBuffer.AddComponent<NetworkStreamRequestDisconnect>(rpcCommandRequest.ValueRO.SourceConnection , new NetworkStreamRequestDisconnect() { Reason = NetworkStreamDisconnectReason.AuthenticationFailure});
             }
             entityCommandBuffer.DestroyEntity(entity);           

@@ -65,9 +65,9 @@ partial struct VariableSynchronizationServerSystem : ISystem
                 
                 bool result;                    
                 if(playerInputSync.ValueRO.slotInHand != -1)
-                   result = RPCHelper.SendEventsToClients<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);     
+                   result = RPCService.SendEventsToClients<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);     
                 else
-                   result = RPCHelper.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);     
+                   result = RPCService.SendEventsToClientsAndOwner<NewItemInHandRPC>(new NewItemInHandRPC(){itemID = itemID },ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);     
 
                 if(result)
                 {
@@ -97,7 +97,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
                                     var selectedAmmo = playerInput.ValueRO.ammoSelectedIndex % ammo.Length;
                                     var ammoID = ammo[selectedAmmo].itemId;
                                     playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
-                                    RPCHelper.SendEventsToClientsAndOwner<ReloadRPC>(new ReloadRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
+                                    RPCService.SendEventsToClientsAndOwner<ReloadRPC>(new ReloadRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
                                     cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4);
                                 }
                             }
@@ -106,7 +106,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
                         {
                             if(EQHelper.CountItemsInLinkedContainer(slotsLookup,linkedContainers,containerEntity,NewSlotInHand,out Entity linkedContainerEntity,out int firstItemID) > 0 && EQHelper.FindSlotForItem(ref state,slotsLookup,containersLookup,player,firstItemID).Length > 0)
                             {
-                                RPCHelper.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId, ammoID = firstItemID } ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
+                                RPCService.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId, ammoID = firstItemID } ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
                                 cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4); 
                             }
                         }
@@ -122,7 +122,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
                             {
                                 playerInputSync.ValueRW.ammoSelectedIndex = selectedAmmo;
                                 playerInputSync.ValueRW.ammoSelectedItemID = ammoID;
-                                RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
+                                RPCService.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,owner.ValueRO.NetworkId,player,ghostChunk.ValueRO.GetChunk(),tick);
                                 cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(tick,4);
                             }
                         }

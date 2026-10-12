@@ -65,11 +65,11 @@ partial struct RPCProcessingSystem : ISystem
             if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && !item.hasMagazine)
             {
-                RPCHelper.CreateLocalEvent(new FutureReload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.shootCooldown),false);
+                RPCService.CreateLocalEvent(new FutureReload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.shootCooldown),false);
             }
 
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
             ecb.DestroyEntity(entity);
         }
 
@@ -97,7 +97,7 @@ partial struct RPCProcessingSystem : ISystem
                         playerInputSync.ammoSelectedIndex = selectedAmmo;
                     }
                     
-                    RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
+                    RPCService.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
                     ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),rpc.ValueRO.tick,true);          
                 }
                 else
@@ -144,7 +144,7 @@ partial struct RPCProcessingSystem : ISystem
                         playerInputSync.ammoSelectedIndex = selectedAmmo;
                         playerInputSync.ammoSelectedTagID = item.ammoTagID;
 
-                        RPCHelper.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
+                        RPCService.SendEventsToClientsAndOwner<NewAmmoSelectedRPC>(new NewAmmoSelectedRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,
                         ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),rpc.ValueRO.tick,true);                    
                     }
                     else
@@ -170,7 +170,7 @@ partial struct RPCProcessingSystem : ISystem
             StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
 
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
             ecb.DestroyEntity(entity);
         }
   
@@ -190,12 +190,12 @@ partial struct RPCProcessingSystem : ISystem
             {
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.reloadCooldown)});               
                 state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = item.reloadingState});
-                RPCHelper.CreateLocalEvent(new EndReload(){ammoID = rpc.ValueRO.ammoID},ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.reloadCooldown),false);
+                RPCService.CreateLocalEvent(new EndReload(){ammoID = rpc.ValueRO.ammoID},ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.reloadCooldown),false);
             }
             
             var newRPC = rpc.ValueRO.GetRPC();
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in newRPC);               
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in newRPC);               
             ecb.DestroyEntity(entity);
         }
 
@@ -209,7 +209,7 @@ partial struct RPCProcessingSystem : ISystem
             
             Debug.Log("wysylam!");
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
             ecb.DestroyEntity(entity);
         }
 
@@ -229,11 +229,11 @@ partial struct RPCProcessingSystem : ISystem
             {
                 state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,item.unloadCooldown)});
                 state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.unloading});
-                RPCHelper.CreateLocalEvent(new EndUnload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.unloadCooldown),false);
+                RPCService.CreateLocalEvent(new EndUnload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.unloadCooldown),false);
             }
 
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
             ecb.DestroyEntity(entity);
         }
 
@@ -265,7 +265,7 @@ partial struct RPCProcessingSystem : ISystem
                         if(items.Length > 1 && EQHelper.FindSlotForItem(ref state,slotsLookup,containersLookup,player,items[1].itemId).Length > 0)
                         {
                             var ghostChunk = state.EntityManager.GetComponentData<GhostChunk>(player);
-                            RPCHelper.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId, ammoID = items[1].itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),tick);
+                            RPCService.SendEventsToClientsAndOwner<UnloadRPC>(new UnloadRPC(){ weaponID =  slot.Value.itemId, ammoID = items[1].itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),tick);
                         }     
                     }                     
                 }
@@ -306,7 +306,7 @@ partial struct RPCProcessingSystem : ISystem
                         if(aggregated[input.ammoSelectedIndex].quantity == 1)
                             ammoID = aggregated[(input.ammoSelectedIndex + 1) % (aggregated.Length - 1)].itemId;
                         
-                        RPCHelper.SendEventsToClientsAndOwner<ReloadRPC>(new ReloadRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),tick);
+                        RPCService.SendEventsToClientsAndOwner<ReloadRPC>(new ReloadRPC(){ ammoID = ammoID ,weaponID =  slot.Value.itemId} ,ref state,playerNeedChunkLookup,loadedChunks,ecb,rpc.ValueRO.networkID,player,ghostChunk.GetChunk(),tick);
 
                        // state.EntityManager.SetComponentData(player,input);  
                     }   
@@ -338,7 +338,7 @@ partial struct RPCProcessingSystem : ISystem
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);
             StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);   
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);   
             ecb.DestroyEntity(e);
         }
 
@@ -363,7 +363,7 @@ partial struct RPCProcessingSystem : ISystem
             StopFutureEvents(ref state,ecb,buffer,typeof(FutureReload),typeof(EndReload),typeof(EndUnload));
 
             for(int i = 1; i < toPlayers.Length;i++)
-                RPCHelper.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
+                RPCService.SendRpc(ecb,toPlayers[i].connection,in rpc.ValueRO);               
             ecb.DestroyEntity(entity);
         }
 

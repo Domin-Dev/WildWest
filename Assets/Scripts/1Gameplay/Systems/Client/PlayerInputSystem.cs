@@ -186,7 +186,7 @@ partial struct PlayerInputSystem : ISystem
                 playerInput.ValueRW.unloadButton = default;
 
             if(drop)
-                RPCHelper.SendRpc(ecb,new EQDropItem()
+                RPCService.SendRpc(ecb,new EQDropItem()
                 {
                     count = 1,
                     position = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot)
@@ -194,7 +194,7 @@ partial struct PlayerInputSystem : ISystem
 
             if(InputManager.i.sideAction.WasPerformedThisFrame())
             {
-                RPCHelper.SendRpc(ecb,new EQDoubleClickAction()
+                RPCService.SendRpc(ecb,new EQDoubleClickAction()
                 {
                     action = true,
                     position = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot)
@@ -204,7 +204,7 @@ partial struct PlayerInputSystem : ISystem
             int2 pointerPos = mapSettings.GetPointerPosition(sightDirection,position.ValueRO.Position);
             if(pointer.ValueRO.updateTileInfo || math.any(pointer.ValueRO.LastGamePointerPosition != pointerPos))
             {
-                GamePointer.SetPosition(MyTools.ConvertFloat(mapSettings.GetEnginePositionFromTilePosition(pointerPos)));
+                GamePointer.SetPosition(mapSettings.GetEnginePositionFromTilePosition(pointerPos).XY());
                 pointer.ValueRW.LastGamePointerPosition = pointerPos;
                 pointer.ValueRW.updateTileInfo = false;
                 int chunkIndex = mapSettings.GetChunkIndexFromTilePosition(pointerPos);
