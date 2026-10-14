@@ -30,6 +30,12 @@ public static class ChatService
     public static void ServerSendsClientMessage(EntityCommandBuffer ecb,in FixedString128Bytes senderName,in ClientMessageRPC message)
     {      
         RPCService.SendRpc(ecb,new ServerMessageRPC(message,senderName,nextMessageIndex)); 
+    }    
+    public static void ServerSendsClientMessage(EntityCommandBuffer ecb,in FixedString128Bytes senderName,NativeArray<(ClientMessageRPC message,NetworkTick tick)> messages)
+    {  
+        var index = nextMessageIndex;
+        foreach(var message in messages)  
+            RPCService.SendRpc(ecb,new ServerMessageRPC(message.message,senderName,index)); 
     }
 
 
@@ -103,11 +109,11 @@ public static class ChatService
             result.Add(new FixedString512Bytes(sb.ToString()));
         return result;
     }
-    public static string CombineMessageChunks(NativeArray<(ClientMessageRPC message,NetworkTick tick)> messageRPCs)
+    public static string CombineMessageChunks<T>(NativeArray<(T message,NetworkTick tick)> messageRPCs) where T : unmanaged,IRpcCommand,IMessage
     {
         StringBuilder sb = new StringBuilder();
         foreach(var chunk in messageRPCs.OrderBy(x => x.message.ChunkIndex))
-            sb.Append(chunk.message.ToString());
+            sb.Append(chunk.message.Message.ToString());
         return sb.ToString();
     }
     public static bool IsCommand(string value)
@@ -115,8 +121,8 @@ public static class ChatService
         return value.Trim()[0] == '/';
     }
     #endregion
-    #region Server
-    private static void ProcessCommand(EntityManager entityManager,EntityCommandBuffer ecb, string command,Entity connectionEntity)
+    #region ServerProcess
+    private static void ServerProcessCommand(EntityManager entityManager,EntityCommandBuffer ecb, string command,Entity connectionEntity)
     {
         var commandList = DebugController.CommandList;
         string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -147,24 +153,48 @@ public static class ChatService
                 }      
             }
         }  
-    }    
-    public static void ProcessMessage(EntityManager entityManager,EntityCommandBuffer ecb,in FixedString128Bytes senderName,in ClientMessageRPC message, Entity senderEntity)
+    }       
+    public static void ServerProcessMessage(EntityManager entityManager,EntityCommandBuffer ecb,in FixedString128Bytes senderName,in ClientMessageRPC message, Entity senderEntity)
     {
         string textStr = message.ToString();
-        UnityEngine.Debug.Log("command " + " " + textStr + " " + message.Message);
         if(IsCommand(textStr))
-            ProcessCommand(entityManager,ecb,textStr.Trim(),senderEntity);
+            ServerProcessCommand(entityManager,ecb,textStr.Trim(),senderEntity);
         else
             ServerSendsClientMessage(ecb,senderName,message); 
     }   
-    public static void ProcessMessage(EntityManager entityManager,EntityCommandBuffer ecb,in FixedString128Bytes senderName,NativeArray< (ClientMessageRPC message,NetworkTick tick)> messages, Entity senderEntity)
+    public static void ServerProcessMessage(EntityManager entityManager,EntityCommandBuffer ecb,in FixedString128Bytes senderName,NativeArray< (ClientMessageRPC message,NetworkTick tick)> messages, Entity senderEntity)
     {
-        string textStr = CombineMessageChunks(messages);
-        if(IsCommand(textStr))
-            ProcessCommand(entityManager,ecb,textStr.Trim(),senderEntity);
+        var first = messages.First(x => x.message.ChunkIndex == 0);
+        if(IsCommand(first.message.Message.ToString()))
+        {
+            string textStr = CombineMessageChunks(messages);
+            ServerProcessCommand(entityManager,ecb,textStr.Trim(),senderEntity);
+        }
         else
-            foreach(var message in messages)
-            ServerSendsClientMessage(ecb,senderName,message.message); 
+            ServerSendsClientMessage(ecb,senderName,messages);
     }
+
+    #endregion
+
+    #region ClientProcess
+    public static void ClientProcessMessage(in ServerMessageRPC message)
+    {
+        if (message.senderIsServer)
+            ChatManager.instance.PrintServerMessage(message.messageTime, message.Message.ToString());
+        else
+            ChatManager.instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
+    }   
+    public static void ClientProcessMessage(NativeArray<(ServerMessageRPC message,NetworkTick tick)> messages)
+    {
+        if(messages.Length == 0) return; 
+        ServerMessageRPC message = messages[0].message;
+        string textStr = CombineMessageChunks(messages);
+
+        if (message.senderIsServer)
+            ChatManager.instance.PrintServerMessage(message.messageTime, textStr);
+        else
+            ChatManager.instance.PrintPlayerMessage(message.messageTime, textStr, message.sender.ToString());
+    }
+
     #endregion
 }

@@ -7,46 +7,89 @@ using Unity.NetCode;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation)]
 partial struct ClientMessageSystem : ISystem
-{
+{   
+    private NativeParallelMultiHashMap<uint,(ServerMessageRPC message,NetworkTick tick)> MessageChunks;
+    private EntityQuery cleanUpQuery;
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
             .WithAll<ReceiveRpcCommandRequest>().WithAny<ServerMessageRPC,PlayerJoinRPC,PlayerLeftRPC>();
-        state.RequireForUpdate(state.GetEntityQuery(entityQueryBuilder));
+        EntityQueryBuilder entityQueryBuilder2 = new EntityQueryBuilder(Allocator.Temp)
+        .WithAll<MessageCleanUp,Execute>();
+
+        cleanUpQuery = state.GetEntityQuery(entityQueryBuilder2);
+        state.RequireAnyForUpdate(state.GetEntityQuery(entityQueryBuilder),cleanUpQuery);
+        state.RequireForUpdate<NetworkTime>();
+
+        MessageChunks = new NativeParallelMultiHashMap<uint, (ServerMessageRPC message,NetworkTick tick)>(16,Allocator.Persistent); 
         entityQueryBuilder.Dispose();
+        entityQueryBuilder2.Dispose();
+    }
+    public void OnDestroy(ref SystemState state)
+    {        
+        state.CompleteDependency();
+        MessageChunks.Dispose();        
     }
     public void OnUpdate(ref SystemState state)
     {
-        EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
-        foreach ((ServerMessageRPC message, Entity entity) in
-        SystemAPI.Query<ServerMessageRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
+        var ecb = new EntityCommandBuffer(Unity.Collections.Allocator.Temp);
+        var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+
+        foreach ((ServerMessageRPC message,ReceiveRpcCommandRequest receiveRpc, Entity entity) in
+        SystemAPI.Query<ServerMessageRPC,ReceiveRpcCommandRequest>().WithEntityAccess())
         {
-            if (message.senderIsServer)
+            ecb.DestroyEntity(entity);
+            
+            if(message.ChunkCount > 1)
             {
-                ChatManager.instance.PrintServerMessage(message.messageTime, message.Message.ToString());
+                var key = message.MessageIndex;
+                MessageChunks.Add(key,(message,currentTick));
+                UnityEngine.Debug.Log("nowa wiadomosci + " + message.ChunkCount + " " + message.ChunkIndex+ " ["+ message.MessageIndex + "] " + MessageChunks.CountValuesForKey(key));
+                if(MessageChunks.CountValuesForKey(key) < message.ChunkCount)
+                    continue;
+
+                var tab = MessageChunks.GetValueArray(Allocator.Temp);
+                ChatService.ClientProcessMessage(tab);
+                tab.Dispose();
+                MessageChunks.Remove(key);
             }
             else
-            {
-                ChatManager.instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
-            }
-                entityCommandBuffer.DestroyEntity(entity);
+                ChatService.ClientProcessMessage(message);
         }
-
+        
         foreach ((PlayerJoinRPC message, Entity entity) in
         SystemAPI.Query<PlayerJoinRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
         {
             ChatManager.instance.PrintServerMessage(message.messageTime,$"{message.playerName} has joined the game.");
-            entityCommandBuffer.DestroyEntity(entity);
+            ecb.DestroyEntity(entity);
         }
 
         foreach ((PlayerLeftRPC message, Entity entity) in
         SystemAPI.Query<PlayerLeftRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
         {
             ChatManager.instance.PrintServerMessage(message.messageTime, $"{message.playerName} has left the game. {((NetworkStreamDisconnectReason)message.ReasonCode).ToString()}");
-            entityCommandBuffer.DestroyEntity(entity);
+            ecb.DestroyEntity(entity);
         }
 
-        entityCommandBuffer.Playback(state.EntityManager);
-        entityCommandBuffer.Dispose();
+        if(!cleanUpQuery.IsEmpty)
+        {
+            var cleanUpEntity = SystemAPI.GetSingletonEntity<MessageCleanUp>();
+            var cleanUp = SystemAPI.GetSingleton<MessageCleanUp>();
+            var valuesToRemove = new NativeList<(uint messageIndex,(ServerMessageRPC message,NetworkTick tick) value)>(Allocator.Temp);
+
+            foreach(var message in MessageChunks)
+            {
+                if(currentTick.TicksSince(message.Value.tick) > cleanUp.CleanupPeriod)
+                   valuesToRemove.Add((message.Key,message.Value));   
+            }       
+            foreach(var value in valuesToRemove)
+                MessageChunks.Remove(value.messageIndex,value.value);
+
+            valuesToRemove.Dispose();
+            ecb.RemoveComponent<Execute>(cleanUpEntity);
+        }
+ 
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

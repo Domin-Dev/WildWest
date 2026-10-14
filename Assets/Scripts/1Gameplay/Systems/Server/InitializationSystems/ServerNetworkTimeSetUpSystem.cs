@@ -23,10 +23,6 @@ partial struct ServerNetworkTimeSetUpSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndInitializationEntityCommandBufferSystem.Singleton>();
         var ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        if(SystemAPI.TryGetSingleton<ServerMessagesConfig>(out var config))
-            EntityHelper.CreateEntityWithComponent(ecb,new MessageSystemCleanUp(),new RepeatAction(config.CleanupPeriod));
-
-
         if(SystemAPI.TryGetSingletonRW<CurrentTime>(out var currentTime))
         {
             currentTime.ValueRW.StartTick = time.ServerTick;

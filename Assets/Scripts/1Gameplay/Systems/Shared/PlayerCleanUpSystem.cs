@@ -7,9 +7,6 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-
-
-
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 [UpdateBefore(typeof(NewPlayerSystem))]
 partial struct PlayerCleanUpSystem : ISystem

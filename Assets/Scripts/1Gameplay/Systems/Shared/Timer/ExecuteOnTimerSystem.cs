@@ -1,4 +1,4 @@
-using Unity.Collections;
+ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
@@ -21,9 +21,11 @@ public partial struct ExecuteOnTimerSystem : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+        if(!currentTick.IsValid) return;
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-        var currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+
 
         foreach (var (executeAtTick, entity) in SystemAPI.Query<RefRO<ExecuteAtTick>>().WithNone<Execute>().WithEntityAccess())
         {
@@ -42,7 +44,7 @@ public partial struct ExecuteOnTimerSystem : ISystem
             if(!repeatAction.ValueRW.Tick.IsNewerThan(currentTick))
             {
                 ecb.AddComponent<Execute>(entity);
-                repeatAction.ValueRW.Tick = EntityHelper.AddTime(currentTick,repeatAction.ValueRO.Interval);
+                repeatAction.ValueRW.Tick = EntityHelper.AddTime(repeatAction.ValueRW.Tick,repeatAction.ValueRO.Interval);
             }
         }
     }

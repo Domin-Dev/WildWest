@@ -1138,3 +1138,28 @@ Total: 281218.57098 msec
 [Info]Timing:
 Total: 129306.289133 msec
 
+[Info]Begin Processing assembly Assembly-CSharp-Editor
+[Info]End Processing assembly Assembly-CSharp-Editor.
+[Info]Timing:
+Total: 2346.174168 msec
+
+[Info]Begin Processing assembly Assembly-CSharp-Editor
+[Info]End Processing assembly Assembly-CSharp-Editor.
+[Info]Timing:
+Total: 18.752399 msec
+
+[Info]Begin Processing assembly Assembly-CSharp-Editor
+[Info]End Processing assembly Assembly-CSharp-Editor.
+[Info]Timing:
+Total: 12992.340528 msec
+
+[Info]Begin Processing assembly Assembly-CSharp-Editor
+[Info]End Processing assembly Assembly-CSharp-Editor.
+[Info]Timing:
+Total: 24.460905 msec
+
+[Info]Begin Processing assembly Assembly-CSharp-Editor
+[Info]End Processing assembly Assembly-CSharp-Editor.
+[Info]Timing:
+Total: 53.112047 msec
+

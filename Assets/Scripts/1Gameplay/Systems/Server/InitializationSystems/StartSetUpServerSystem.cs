@@ -106,7 +106,6 @@ partial struct StartSetUpServerSystem : ISystem
             EntityHelper.CreateEntityWithBuffer<LoadedChunks>(ecb);
             EntityHelper.CreateEntityWithBuffer<PlayersList>(ecb);
 
-            
             #region Time         
             EntityHelper.CreateEntityWithComponent(ecb, new CurrentTime()
             {
@@ -123,14 +122,6 @@ partial struct StartSetUpServerSystem : ISystem
                 TimeOfDay = currentTimeOfDay
             });
 
-            #endregion
-
-            #region Chat
-            EntityHelper.CreateEntityWithComponent(ecb,new ServerMessagesConfig()
-            {
-                CleanupPeriod =  EntityHelper.SecondsToTicks(ServerMessageConfig.Instance.CleanupPeriod),
-                MessageChunkLifetime = EntityHelper.SecondsToTicks(ServerMessageConfig.Instance.MessageChunkLifetime)
-            });
             #endregion
 
             ecb.Playback(state.EntityManager);  

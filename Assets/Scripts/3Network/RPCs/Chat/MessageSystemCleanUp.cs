@@ -1,5 +1,7 @@
 using Unity.Entities;
 
-public struct MessageSystemCleanUp : IComponentData
+public struct MessageCleanUp : IComponentData
 {
+    public uint CleanupPeriod;
+    public uint MessageChunkLifetime;
 }
