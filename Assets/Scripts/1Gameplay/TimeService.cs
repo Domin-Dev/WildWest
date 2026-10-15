@@ -74,5 +74,12 @@ public static class TimeService
     public static double GetWorldTime(float hour,int day)
     {
         return hour + (day-1) * 24f;
+    }     
+    public static (int minute,int hour,int day) GetTime(double worldTime)
+    {
+        int hour = (int)(worldTime % 24);
+        int day = 1 + (int)(worldTime / 24);
+        int minute = (int)((worldTime * 60) % 60);  
+        return (minute, hour, day);  
     } 
 }

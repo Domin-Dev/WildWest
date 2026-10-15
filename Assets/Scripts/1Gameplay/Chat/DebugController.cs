@@ -267,16 +267,13 @@ public static class DebugController
             commandList.Add(new DebugCommand<int,int>("weatherprediction", "", "[offset] [count]", (ref EntityCommandBuffer ecb, Entity e,int offset,int count) =>
             {
                 if(count < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
-
                 var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
                 var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
-                var entities = query.ToEntityArray(Allocator.Temp);
-                
+                var entities = query.ToEntityArray(Allocator.Temp);    
                 var query2 = entityManager.CreateEntityQuery(typeof(MapSettings));
                 var entities2 = query2.ToEntityArray(Allocator.Temp);
                 StringBuilder stringBuilder = new StringBuilder();
-
-            
+         
                 if(entities.Length > 0 && entities2.Length > 0)
                 {
                     CurrentTime currentTime = entityManager.GetComponentData<CurrentTime>(entities[0]);
@@ -287,9 +284,12 @@ public static class DebugController
                     var tab = WeatherService.WeatherPrediction(mapSettings.seed,currentTime.WorldTime,position.XY(),offset,count);
 
                     foreach(var i in tab)
-                        stringBuilder.AppendLine($" {i.ToString()}");
+                    {
+                        var time = TimeService.GetTime(i.worldTime);
+                        stringBuilder.AppendLine(StringsHelper.GetColorfulString($"Time : {time.hour}:{time.minute.ToString("00")}, Day : {time.day}",ChatManager.highlightColor));
+                        stringBuilder.Append($"\n{i.localWeather.ToString()}");
+                    }
                 }
-
                 
                 entities.Dispose();
                 query.Dispose();
@@ -387,7 +387,7 @@ public static class DebugController
                 for (int i = 0; i < commandList.Count; i++)
                 {
                     CommandBase commandBase = commandList[i] as CommandBase;
-                    text += $"/<Color=#{ChatManager.instance.highlightColor.ToHexString()}>{commandBase.commandId}</Color> {commandBase.commandFormat} - {commandBase.commandDescription}\n";
+                    text += $"/<Color=#{ChatManager.highlightColor.ToHexString()}>{commandBase.commandId}</Color> {commandBase.commandFormat} - {commandBase.commandDescription}\n";
                 }
                 return text;
             },false,false));

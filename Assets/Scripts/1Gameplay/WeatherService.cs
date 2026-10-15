@@ -6,7 +6,6 @@ using UnityEngine;
 
 public static class WeatherService
 { 
-
     private static WeatherConfig weatherConfig
     {
         get
@@ -69,13 +68,13 @@ public static class WeatherService
             Precipitation = precipitation,
         }; 
     }
-    public static LocalWeather[] WeatherPrediction(int worldSeed,double worldTime, float2 position,int hourOffsetPrediction,int countPrediction)
+    public static (LocalWeather localWeather,double worldTime)[] WeatherPrediction(int worldSeed,double worldTime, float2 position,int hourOffsetPrediction,int countPrediction)
     {
-        LocalWeather[] tab = new LocalWeather[countPrediction];
+        var tab = new (LocalWeather localWeather,double worldTime)[countPrediction];
         for(int i = 0; i < countPrediction; i++)
         {
             worldTime += hourOffsetPrediction;
-            tab[i] = GetWeather(worldSeed,worldTime,position);
+            tab[i] = (GetWeather(worldSeed,worldTime,position),worldTime);
         }
         return tab;
     }

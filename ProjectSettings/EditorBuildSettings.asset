@@ -6,41 +6,47 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Menu.unity
+    path: Assets/Scenes/Menu.unity
     guid: 0d45a2b64cba31a4da34b949a2af98d5
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Game.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/Scenes/Game/BootScene.unity
+    guid: c7c07b9637d18ab29ba68851795b986f
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/PlayerEditor.unity
+    path: Assets/Scenes/PlayerEditor.unity
     guid: 038b727978ba1a54fae1c6a1e1fddd7e
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Loading.unity
+    path: Assets/Scenes/Loading.unity
     guid: b2771527603dcb847bf1e92406d9b100
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/WorldSetup.unity
+    path: Assets/Scenes/WorldSetup.unity
     guid: 7efe076e6c956d643b1236d36d8d25ae
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Debug UI.unity
+    path: Assets/Scenes/UI/Debug UI.unity
     guid: bc9db532229d7a0498a1b24388adc0c6
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Game/GhostRegistrySubScene.unity
+    path: Assets/Scenes/SubScene/GhostRegistrySubScene.unity
     guid: ee12e3cd77c8ffb449817678bd89e580
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Game/EntitiesSubScene.unity
+    path: Assets/Scenes/SubScene/EntitiesSubScene.unity
     guid: fadc1d218d8ba3a48b165c70be944db5
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/SettingsMenu.unity
+    path: Assets/Scenes/SettingsMenu.unity
     guid: 374171fcde1ddaf4db23b4506c565006
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/Dashboard.unity
+    path: Assets/Scenes/Dashboard.unity
     guid: d9dc79b55fdd83048a5760a08c63b1b2
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/ErrorMessage.unity
+    path: Assets/Scenes/ErrorMessage.unity
     guid: 8ab6bef7e046e4448b55a51caa4eed08
   - enabled: 1
-    path: Assets/SceneDependencyCache/Scenes/GameMenu.unity
+    path: Assets/Scenes/GameMenu.unity
     guid: 15735a56bb3414a4fbe21e81714051b5
+  - enabled: 1
+    path: Assets/Scenes/Game/GameScene.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/Scenes/UI/ChatScene.unity
+    guid: 0b2cf914e21b1d37bb74635ad02367c2
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: ad05fad9ae50a1647b1050db9e9fd8d8, type: 2}
     com.unity.input.settings: {fileID: 11400000, guid: a50d73672c04e654ea618393c16e00a8, type: 2}

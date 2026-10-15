@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMPro;
+using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -14,10 +15,14 @@ using UnityEngine.UI;
 
 public class ChatManager : MonoBehaviour
 {
-    [SerializeField] private TMP_InputField chatInputField;
-    [SerializeField] private Image chatBackground;
+    [SerializeField] private TMP_InputField inputField;
+    [SerializeField] private Image background;
     [SerializeField] private ScrollRect chatScrollRect;
+    [SerializeField] private RectTransform hints;    
+
+    [Header("Prefabs")]
     [SerializeField] private GameObject messagePrefab;
+    [SerializeField] private GameObject hintPrefab;
 
     //chat
     private Scrollbar chatScrollbar;
@@ -34,7 +39,7 @@ public class ChatManager : MonoBehaviour
     private const int maxLog = 30;
     private const int maxMessageOnScreen = 8;
     private const int timeToDisappear = 10;
-    public readonly Color highlightColor = new Color(218f / 255f, 165f / 255f, 32f / 255f);
+    public static readonly Color highlightColor = new Color(218f / 255f, 165f / 255f, 32f / 255f);
 
     private static Color invisible = new Color(1, 1, 1, 0);
 
@@ -62,16 +67,22 @@ public class ChatManager : MonoBehaviour
         }
         SetUp();  
     }
-
     private void Start()
     {
         ClearIndexes();
         commandList = DebugController.CommandList;
-
-        // chatInputField.onSelect.AddListener((string k) => { isChatting = true; });
-        //  chatInputField.onDeselect.AddListener((string k) => { isChatting = false; SwitchChat();});
+        hints.gameObject.SetActive(false);
+        inputField.gameObject.SetActive(false);
+        
     }
-
+    private void OnEnable()
+    {
+        inputField.onValueChanged.AddListener(UpdateHints);
+    }
+    private void OnDisable()
+    {
+        inputField.onValueChanged.RemoveListener(UpdateHints);
+    }
 
     float timer = 0;
     private void Update()
@@ -86,7 +97,7 @@ public class ChatManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.T) && !chatInputField.isFocused && !WindowsManager.instance.HasOpenWidnows())
+        if (Input.GetKeyDown(KeyCode.T) && !inputField.isFocused && !WindowsManager.instance.HasOpenWidnows())
         {
             SwitchChat();
         }
@@ -110,7 +121,7 @@ public class ChatManager : MonoBehaviour
 
 
                 if (index < 0) index = history.Count + index;
-                if(index < history.Count) chatInputField.text = history[index];
+                if(index < history.Count) inputField.text = history[index];
             }
             
             if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -119,7 +130,7 @@ public class ChatManager : MonoBehaviour
                 int index = LastHistory - currentLastHistory;
 
                 if (index < 0) index = history.Count + index;
-                if (index < history.Count) chatInputField.text = history[index];
+                if (index < history.Count) inputField.text = history[index];
             }
         }
     }
@@ -197,7 +208,7 @@ public class ChatManager : MonoBehaviour
     }
     private void SendMessage()
     {
-        string text = chatInputField.text.Trim();
+        string text = inputField.text.Trim();
         SwitchChat();
         if (text.Length > 0)
         {
@@ -205,13 +216,13 @@ public class ChatManager : MonoBehaviour
             {
                 if(CheckCommands(text))
                 {
-                    ChatService.ClientSendsMessage(chatInputField.text);
+                    ChatService.ClientSendsMessage(inputField.text);
                     SaveToHistory();
                 }
             }
             else
             {
-                ChatService.ClientSendsMessage(chatInputField.text);
+                ChatService.ClientSendsMessage(inputField.text);
                 SaveToHistory();
             }
         }
@@ -220,7 +231,7 @@ public class ChatManager : MonoBehaviour
     {
         if (history.Count < maxHistory)
         {
-            history.Add(chatInputField.text);
+            history.Add(inputField.text);
             LastHistory = history.Count - 1;
         }
         else
@@ -231,7 +242,7 @@ public class ChatManager : MonoBehaviour
                 LastHistory = 0;
             }
 
-            history[LastHistory] = chatInputField.text;
+            history[LastHistory] = inputField.text;
         }
     }
 
@@ -256,7 +267,7 @@ public class ChatManager : MonoBehaviour
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
         DateTime localTime = date.ToLocalTime().DateTime;
-        Print($"[{localTime.ToString("HH:mm:ss")}] <Color=#E68D31>{player}</color>: {text}");
+        Print($"[{localTime.ToString("HH:mm:ss")}] <Color=#E68D31>{player}</color>: <noparse>{text}</noparse>");
     }
     public void PrintServerMessage(long time, string text)
     {
@@ -293,11 +304,10 @@ public class ChatManager : MonoBehaviour
         isChat = true;
         isChatting = true;
 
-        chatInputField.gameObject.SetActive(true);
-
-        chatInputField.text = string.Empty;
-        chatInputField.ActivateInputField();
-        chatBackground.color = Color.white;
+        inputField.gameObject.SetActive(true);
+        inputField.text = string.Empty;
+        inputField.ActivateInputField();
+        background.color = Color.white;
         chatScrollbar.value = 0;
         chathandle.gameObject.SetActive(true);
         chatScrollRect.enabled = true;
@@ -318,9 +328,10 @@ public class ChatManager : MonoBehaviour
     {
         isChatting = false;
         isChat = false;
-        chatInputField.gameObject.SetActive(false);
+        inputField.gameObject.SetActive(false);
+        hints.gameObject.SetActive(false);
 
-        chatBackground.color = new Color(1, 1, 1, 0);
+        background.color = new Color(1, 1, 1, 0);
         chatScrollbar.value = 0;
         chathandle.gameObject.SetActive(false);
         chatScrollRect.enabled = false;
@@ -369,10 +380,36 @@ public class ChatManager : MonoBehaviour
         }
 
         if (hints.Count == 0)
-        {
-            Print("<Color=red>Incorrect command: </Color>" + command);
-        }
+            Print($"<Color=red>Incorrect command: </Color><noparse>{command}</noparse>");
         PrintHint(hints.ToArray());
         return false;
     }
+    public Vector3 GetCaretWorldPosition()
+    {
+        TMP_Text text = inputField.textComponent;
+        text.ForceMeshUpdate();
+        TMP_TextInfo textInfo = text.textInfo;
+        int count = textInfo.characterCount;
+        int caret = Mathf.Clamp(inputField.stringPosition, 0, inputField.text.Length);
+
+        if (count == 0)
+            return text.transform.TransformPoint(text.rectTransform.rect.min);;
+
+        if (caret >= count)
+        {
+            TMP_CharacterInfo last = textInfo.characterInfo[count - 1];
+            return text.transform.TransformPoint(last.bottomRight);
+        }
+
+        TMP_CharacterInfo current = textInfo.characterInfo[caret];
+
+        return text.transform.TransformPoint(current.bottomLeft);
+    }
+    public void UpdateHints(string newValue)
+    {
+        Debug.Log("update!!");
+        var position = GetCaretWorldPosition() + new Vector3(0,50f);
+        hints.position = position;
+    }
 }
+ 

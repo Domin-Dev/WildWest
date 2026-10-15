@@ -21,11 +21,10 @@ public class MessageConfig : ScriptableObject
     [Min(0.01f)]public float CleanupPeriod;
     [Label("Message Chunk Lifetime (seconds)")]
     [Min(0.01f)]public float MessageChunkLifetime;
-    
-    
+     
     [Header("RPCs")]
     [Label("RPC cleanup period (seconds)")]
     [Min(0.01f)]public float RPCCleanupPeriod;
-    [Label("RPC Lifetime (ticks)")]
+    [Label("Max Rpc Age Frames (ticks)")]
     [Min(1)]public uint MaxRpcAgeFrames;
 }

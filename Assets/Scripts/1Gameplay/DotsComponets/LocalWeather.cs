@@ -13,11 +13,11 @@ public struct LocalWeather : IComponentData
 
     public override string ToString()
     {
-        return $"Temperature = {Temperature}\n" +
-       $"Wind = {WindSpeed} ({Wind})\n" +
-       $"Cloudiness = {Cloudiness}\n" +
-       $"Precipitation = {Precipitation}\n" +
-       $"Fog = {FogIntensity}\n" +
-       $"Storm = {Storm}";
+        return $"Temperature : {Temperature.ToString("F1")}\n" +
+       $"Wind : {WindSpeed.ToString("F1")} ({Wind.x.ToString("F2")},{Wind.y.ToString("F2")})\n" +
+       $"Cloudiness = {Cloudiness.ToString("F2")}\n" +
+       $"Precipitation = {Precipitation.ToString("F2")}\n" +
+       $"Fog = {FogIntensity.ToString("F2")}\n" +
+       $"Storm = {Storm.ToString("F2")}";
     }
 }
