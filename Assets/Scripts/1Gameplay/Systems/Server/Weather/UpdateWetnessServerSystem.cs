@@ -1,16 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Collections.NotBurstCompatible;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEngine;
-using UnityEngine.InputSystem.Processors;
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]

@@ -41,16 +41,12 @@ public class Property
 
 [CreateAssetMenu(fileName = "UISettings", menuName = "GameAsset/Settings/UISettings")]
 public class  UIConfig : ScriptableObject
-{
-    public UIThermometerConfig ThermometerConfig;
-    public Color durabilityBarColor;
-    public Color liquidCapacityBarColor;
-    public Color dirtyWaterBarColor;
-    public Color shelfLifeBarColor;
-
-    [SerializeField] private List<BarColor> barColors;
-    [SerializeField] private List<Property> properties;
-
+{ 
+    [SerializeField] public List<BarColor> barColors;
+    [SerializeField] public List<Property> properties;
+    [SerializeField] public List<FontData> fonts;
+    [SerializeField] public UIThermometerConfig thermometerConfig;
+    
     public List<(Color,Type)> GetColors()
     {
         List<(Color,Type)> colors = new List<(Color,Type)>();

@@ -27,4 +27,4 @@ public class MessageConfig : ScriptableObject
     [Min(0.01f)]public float RPCCleanupPeriod;
     [Label("Max Rpc Age Frames (ticks)")]
     [Min(1)]public uint MaxRpcAgeFrames;
-}
+} 

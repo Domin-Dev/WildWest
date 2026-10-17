@@ -62,8 +62,8 @@ public class WorldRow : MonoBehaviour
         headIcon.SetMaterialDirty();
         if (playerSave.characterLook.faceDetailsIndex == 9)
         {
-            coverSprite = UIAssetsManager.instance.ironBarsUI;
-            background = UIAssetsManager.instance.blackFrameUI;
+            coverSprite = UIAssetsConfig.Instance.ironBarsUI;
+            background = UIAssetsConfig.Instance.blackFrameUI;
         }
         CheckBadges(h, ref background, coverSprite);
 
@@ -77,11 +77,11 @@ public class WorldRow : MonoBehaviour
 
     public void RowSelected()
     {
-        GetComponent<Image>().sprite = UIAssetsManager.instance.selectedWoodBackgroundUI;
+        GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedWoodBackgroundUI;
     }
     public void RowDeselected()
     {
-        GetComponent<Image>().sprite = UIAssetsManager.instance.woodBackgroundUI;
+        GetComponent<Image>().sprite = UIAssetsConfig.Instance.woodBackgroundUI;
     }
 
     private Color GetColor(Difficulty difficulty)
@@ -106,11 +106,11 @@ public class WorldRow : MonoBehaviour
     private bool CheckBadges(long hours,ref Sprite background, Sprite cover)
     {
         if (hours >= 100)
-            background = UIAssetsManager.instance.goldBackgroundUI;
+            background = UIAssetsConfig.Instance.goldBackgroundUI;
         else if(hours >= 25)
-            background = UIAssetsManager.instance.silverBackgroundUI;
+            background = UIAssetsConfig.Instance.silverBackgroundUI;
         else if (hours >= 5)
-            background = UIAssetsManager.instance.bronzeBackgroundUI;
+            background = UIAssetsConfig.Instance.bronzeBackgroundUI;
         else
             return false;
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
@@ -22,12 +21,43 @@ public class QualityData
     public Color color;
 }
 
-// DOTO create config class
-public class  UIAssetsManager : MonoBehaviour
-{
 
-    [Header("Fonts")]
-    [SerializeField] public List<FontData> fonts;
+[System.Serializable]
+public class Background
+{
+    public Sprite Sprite;
+    public Sprite SelectedSprite;
+}
+
+[System.Serializable]
+public class Backgrounds
+{
+    public Background wood;
+    public Background iron;
+    public Background woodenFrame;
+    
+}
+
+
+// DOTO create config class
+[CreateAssetMenu(fileName = "UIAssetsConfig", menuName = "GameAsset/Settings/UIAssetsConfig")]
+public class  UIAssetsConfig : MonoBehaviour
+{
+    private static UIAssetsConfig _instance;
+    public static UIAssetsConfig Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = Resources.Load<UIAssetsConfig>("Config/UIAssetsConfig");
+
+            return _instance;
+        }
+    }
+
+
+    [SerializeField] public Backgrounds backgrounds{private set;get;}
+
     [SerializeField] public List<QualityData> qualitySprites;
 
 
@@ -52,14 +82,8 @@ public class  UIAssetsManager : MonoBehaviour
     [SerializeField] public Sprite selectedIronBackgroundUI;
     [Header("Pressed")]
     [SerializeField] public Sprite goldPressedBackgroundUI;
-
-
     [Space]
     [SerializeField] public Sprite ironBarsUI;
-
-
-
-    public static UIAssetsManager instance { private set; get; }
 
     public string[] GetFontNames()
     {
@@ -70,7 +94,6 @@ public class  UIAssetsManager : MonoBehaviour
         }
         return names.ToArray();
     }
-
     public Sprite GetQualitySprite(Quality quality)
     {
         foreach (var item in qualitySprites)
@@ -89,20 +112,6 @@ public class  UIAssetsManager : MonoBehaviour
         }
         return null;
     }
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
-    }
-
     public void ChangeButtonToIron(Button button)
     {
         var states = button.spriteState;
@@ -125,6 +134,7 @@ public class  UIAssetsManager : MonoBehaviour
         button.spriteState = states;
         button.image.sprite = woodBackgroundUI;
     }
-
 }
+
+
 

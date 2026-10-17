@@ -60,7 +60,7 @@ public class DailyCycle : MonoBehaviour
         timeOfDayBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.rangesUI);
         seasonBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.Seasons);
         seasonBar.UpdateBar();
-        thermometer.SetUpBar(WorldConfig.UIConfig.ThermometerConfig);
+        thermometer.SetUpBar(WorldConfig.UIConfig.thermometerConfig);
 
         lerpLight = new LerpLight(globalLight);
         lerpWeather = new LerpWeather(rainParticleSystem,snowParticleSystem,thermometer);

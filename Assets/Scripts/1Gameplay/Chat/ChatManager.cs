@@ -10,27 +10,31 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Build.Pipeline.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ChatManager : MonoBehaviour
 {
+    [Header("Chat GameObjects")]
     [SerializeField] private TMP_InputField inputField;
     [SerializeField] private Image background;
     [SerializeField] private ScrollRect chatScrollRect;
-    [SerializeField] private RectTransform hints;    
+    [SerializeField] private RectTransform hintParent;    
 
     [Header("Prefabs")]
     [SerializeField] private GameObject messagePrefab;
     [SerializeField] private GameObject hintPrefab;
 
+    [Header("Hints")]
+    [SerializeField] [Min(1)] private int displayedHintsCount;
     //chat
     private Scrollbar chatScrollbar;
     private RectTransform chathandle;
     private Transform content;
-    //
+    private RectTransform textViewport;
 
-    //History
+    private int selectedHint;
     private List<string> history = new List<string>();
     private int LastHistory;
     private int currentLastHistory = -1;
@@ -40,8 +44,7 @@ public class ChatManager : MonoBehaviour
     private const int maxMessageOnScreen = 8;
     private const int timeToDisappear = 10;
     public static readonly Color highlightColor = new Color(218f / 255f, 165f / 255f, 32f / 255f);
-
-    private static Color invisible = new Color(1, 1, 1, 0);
+    private static Color invibsile = new Color(1, 1, 1, 0);
 
     private bool isTimer = false;
     private  int LastIndex = 0;
@@ -50,30 +53,26 @@ public class ChatManager : MonoBehaviour
     //
 
     private bool isChat = false;
-    private List<CommandBase> commandList = new List<CommandBase>();
-
+    private Dictionary<string,List<CommandBase>> commandList;
+    private List<CommandBase> hintList;
     public static ChatManager instance { private set; get; }
     public bool isChatting { private set; get; }
-    
+    float timer = 0;
+
     private void Awake()
     {
         if(instance == null)
-        {
             instance = this;
-        }
         else
-        {
             Destroy(gameObject);
-        }
         SetUp();  
     }
     private void Start()
     {
         ClearIndexes();
-        commandList = DebugController.CommandList;
-        hints.gameObject.SetActive(false);
-        inputField.gameObject.SetActive(false);
-        
+        commandList = DebugController.Commands;
+        hintParent.gameObject.SetActive(false);
+        inputField.gameObject.SetActive(false);  
     }
     private void OnEnable()
     {
@@ -83,8 +82,6 @@ public class ChatManager : MonoBehaviour
     {
         inputField.onValueChanged.RemoveListener(UpdateHints);
     }
-
-    float timer = 0;
     private void Update()
     {     
         if(isTimer)
@@ -133,6 +130,15 @@ public class ChatManager : MonoBehaviour
                 if (index < history.Count) inputField.text = history[index];
             }
         }
+    }
+    private void SetUp()
+    {
+        chatScrollbar = chatScrollRect.verticalScrollbar;
+        chathandle = chatScrollbar.handleRect;
+        content = chatScrollRect.content;
+        textViewport = inputField.textViewport;
+        isChatting = false;
+        SetUpHints();
     }
     private void UpdateTimers()
     {
@@ -212,13 +218,10 @@ public class ChatManager : MonoBehaviour
         SwitchChat();
         if (text.Length > 0)
         {
-            if (text[0] == '/')
+            if (text[0] == '/' && !IsLocalCommand(text))
             {
-                if(CheckCommands(text))
-                {
-                    ChatService.ClientSendsMessage(inputField.text);
-                    SaveToHistory();
-                }
+                ChatService.ClientSendsMessage(inputField.text);
+                SaveToHistory();
             }
             else
             {
@@ -273,9 +276,8 @@ public class ChatManager : MonoBehaviour
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
         DateTime localTime = date.ToLocalTime().DateTime;
-        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIAssetsManager.instance.ironBackgroundUI;
-    }
-  
+        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIAssetsConfig.Instance.ironBackgroundUI;
+    }  
     private void PrintHint(params CommandBase[] commandBase)
     {
         StringBuilder sb = new StringBuilder();
@@ -286,13 +288,7 @@ public class ChatManager : MonoBehaviour
         }
         if(sb.Length > 0) Print(sb.ToString());
     }
-    private void SetUp()
-    {
-        chatScrollbar = chatScrollRect.verticalScrollbar;
-        chathandle = chatScrollbar.handleRect;
-        content = chatScrollRect.content;
-        isChatting = false;
-    }
+    
     private void SwitchChat()
     {
         currentLastHistory = -1;
@@ -315,7 +311,6 @@ public class ChatManager : MonoBehaviour
         {
             content.GetChild(i).gameObject.SetActive(true);
         }
-
         for (int i = 0; i < indexes.Length; i++)
         {
             if (indexes[i] != -1)
@@ -329,7 +324,7 @@ public class ChatManager : MonoBehaviour
         isChatting = false;
         isChat = false;
         inputField.gameObject.SetActive(false);
-        hints.gameObject.SetActive(false);
+        hintParent.gameObject.SetActive(false);
 
         background.color = new Color(1, 1, 1, 0);
         chatScrollbar.value = 0;
@@ -339,7 +334,6 @@ public class ChatManager : MonoBehaviour
         {
             content.GetChild(i).gameObject.SetActive(false);
         }
-
         for (int i = 0; i < indexes.Length; i++)
         {
             if (indexes[i] != -1)
@@ -349,40 +343,41 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-    public bool CheckCommands(string command)
+    public bool IsLocalCommand(string text)
     {
-        string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string[] properties = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         properties[0] = properties[0].Remove(0, 1);
         List<CommandBase> hints = new List<CommandBase>();
-        foreach (var item in commandList)
+        
+        if (commandList.TryGetValue(properties[0].ToLower(),out var list))
         {
-            CommandBase commandBase = item as CommandBase;
-            if (string.Compare(commandBase.commandId, properties[0], true) == 0)
-            {
-                string[] args = properties.Skip(1).ToArray();
-                if (item.Validate(args))
+            string[] args = properties.Skip(1).ToArray();
+            foreach(var command in list)
+            {               
+                if (command.Validate(args))
                 {
-                    if (!item.isServerCommand && !item.isAdminCommand)
+                    if (!command.isServerCommand && !command.isAdminCommand)
                     {
                         var ecb = new EntityCommandBuffer(Allocator.Temp);
-                        var output = item.Invoke(args,ref ecb,Entity.Null);
+                        var output = command.Invoke(args,ref ecb,Entity.Null);
                         ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
                         ecb.Dispose();
                         if (!string.IsNullOrEmpty(output))
                             Print(output);
-                        return false;
+                        return true;
                     }
                     else
-                        return true;
+                        return false;
                 }
-                else hints.Add(commandBase);
+                else 
+                    hints.Add(command);
             }
         }
 
         if (hints.Count == 0)
-            Print($"<Color=red>Incorrect command: </Color><noparse>{command}</noparse>");
+            Print($"<Color=red>Incorrect command: </Color><noparse>{text}</noparse>");
         PrintHint(hints.ToArray());
-        return false;
+        return true;
     }
     public Vector3 GetCaretWorldPosition()
     {
@@ -405,11 +400,65 @@ public class ChatManager : MonoBehaviour
 
         return text.transform.TransformPoint(current.bottomLeft);
     }
+    
+
+
+    #region  Hints
     public void UpdateHints(string newValue)
     {
-        Debug.Log("update!!");
-        var position = GetCaretWorldPosition() + new Vector3(0,50f);
-        hints.position = position;
+        if(!ChatService.IsCommand(newValue))
+        {
+            hintParent.gameObject.SetActive(false);
+            return;
+        }
+        string[] command = newValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string commandID = command[0].Substring(1).ToLower();
+
+        if(commandList.TryGetValue(commandID,out var variantlist))
+        {
+            
+        }
+        else
+        {
+            var hints = commandList.Where(x => x.Key.StartsWith(commandID)).SelectMany(x => x.Value).ToList();
+            UpdateHintList(hints);
+        }
+
+        if(hintList.Count > 0)
+        {
+            hintParent.gameObject.SetActive(true);
+            Debug.Log("sok " + textViewport.rect.height);
+            var position = GetCaretWorldPosition() + new Vector3(0,textViewport.rect.height - 12f);
+            hintParent.position = position;
+        }
+        else
+            hintParent.gameObject.SetActive(false);
     }
+    public void SetUpHints()
+    {
+        Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedIronBackgroundUI;
+        for(int i = 0; i < displayedHintsCount - 1; i++)
+            Instantiate(hintPrefab,hintParent);
+    }
+    public void UpdateHintList(List<CommandBase> hints)
+    {
+        hintList = hints;
+        selectedHint = 0;   
+        if(hints.Count == 0) return;  
+        for(int i = 0; i < hintParent.childCount; i++)
+        {
+            var child = hintParent.GetChild(i);
+            if(i < hints.Count)
+            {
+                var command = hints[i];
+                child.gameObject.SetActive(true);
+                child.GetComponentInChildren<TextMeshProUGUI>().text = $"/<Color=#{highlightColor.ToHexString()}>{command.commandId}</Color> {command.commandFormat}";
+            }
+            else
+                child.gameObject.SetActive(false);
+        }
+        LayoutRebuilder.ForceRebuildLayoutImmediate(hintParent);
+    }
+    #endregion
 }
  

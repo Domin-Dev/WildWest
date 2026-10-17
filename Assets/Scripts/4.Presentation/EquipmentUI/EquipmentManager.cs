@@ -62,7 +62,6 @@ public class Container : IHaveTooltip
             StringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
         }
 
-
         ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
         StringsHelper.Append(content, UIManager.instance.GetProperty("ContainerWaterResistance") ,c.waterResistance + " %");
         StringsHelper.Append(content,UIManager.instance.GetProperty("Capacity"),c.capacity.ToString());

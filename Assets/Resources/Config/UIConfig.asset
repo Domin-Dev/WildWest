@@ -12,15 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec322febc9933bd4aa3bc666a08a97ea, type: 3}
   m_Name: UIConfig
   m_EditorClassIdentifier: 
-  ThermometerConfig:
-    BelowZeroThermometerColor: {r: 0.16761978, g: 0.6054847, b: 0.94532114, a: 1}
-    AboveZeroThermometerColor: {r: 0.82329774, g: 0.059661105, b: 0.059661105, a: 1}
-    minTemperature: -40
-    maxTemperature: 40
-  durabilityBarColor: {r: 0.01182553, g: 0.8396226, b: 0, a: 1}
-  liquidCapacityBarColor: {r: 0, g: 0.30396703, b: 0.9716981, a: 1}
-  dirtyWaterBarColor: {r: 0.058561735, g: 0.6603774, b: 0.5284181, a: 1}
-  shelfLifeBarColor: {r: 0.9056604, g: 0.5736605, b: 0.13157704, a: 1}
   barColors:
   - color: {r: 0.18947636, g: 0.6754716, b: 0.15676033, a: 1}
     type: Food
@@ -415,6 +406,32 @@ MonoBehaviour:
     displayEQWindow: 0
     displayPriority: 0
     hideWhenValueIsZero: 0
+  fonts:
+  - name:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 8099245706358784
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    font: {fileID: 11400000, guid: e8f6b37156d7f074c89de35971b07ae7, type: 2}
+  - name:
+      m_TableReference:
+        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
+      m_TableEntryReference:
+        m_KeyId: 8099606798184448
+        m_Key: 
+      m_FallbackState: 0
+      m_WaitForCompletion: 0
+      m_LocalVariables: []
+    font: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  thermometerConfig:
+    BelowZeroThermometerColor: {r: 0.16761978, g: 0.6054847, b: 0.94532114, a: 1}
+    AboveZeroThermometerColor: {r: 0.82329774, g: 0.059661105, b: 0.059661105, a: 1}
+    minTemperature: -40
+    maxTemperature: 40
   references:
     version: 2
     RefIds: []

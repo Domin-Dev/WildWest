@@ -280,7 +280,7 @@ public class MenuManager : MonoBehaviour
             {
                 GameObject gameObject = Instantiate(worldRow, worldList.transform);
                 WorldRow row = gameObject.GetComponent<WorldRow>();
-                row.SetWorld(header.header,header.playerData, UIAssetsManager.instance.UIHeadMaterial);
+                row.SetWorld(header.header,header.playerData, UIAssetsConfig..UIHeadMaterial);
             }
         }
 

@@ -60,11 +60,8 @@ public abstract class CommandBase
             if (MyColor.TryParseHex(value, out var tmp)) { result = tmp; return true; }
         }
 
-        
-
         result = null;
         return false;
     }
-
     public abstract string Invoke(string[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender);
 }

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4cfab531b66e324292168ec47d16723, type: 3}
+  m_Name: UIAssetsConfig
+  m_EditorClassIdentifier: Assembly-CSharp::UIAssetsConfig
+  fonts: []
+  qualitySprites: []
+  yellowHeader: {fileID: 0}
+  whiteHeader: {fileID: 0}
+  UIHeadMaterial: {fileID: 0}
+  UIColorItem: {fileID: 0}
+  bronzeBackgroundUI: {fileID: 0}
+  silverBackgroundUI: {fileID: 0}
+  goldBackgroundUI: {fileID: 0}
+  woodBackgroundUI: {fileID: 0}
+  ironBackgroundUI: {fileID: 0}
+  woodenFrameUI: {fileID: 0}
+  blackFrameUI: {fileID: 0}
+  selectedWoodBackgroundUI: {fileID: 0}
+  selectedIronBackgroundUI: {fileID: 0}
+  goldPressedBackgroundUI: {fileID: 0}
+  ironBarsUI: {fileID: 0}
+  references:
+    version: 2
+    RefIds: []

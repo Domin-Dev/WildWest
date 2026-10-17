@@ -1,9 +1,5 @@
-﻿
-using Unity.Entities;
-using Unity.NetCode;
+﻿using Unity.NetCode;
 using UnityEngine;
-using UnityEngine.LowLevel;
-using UnityEngine.SceneManagement;
 
 public class GameConfiguration: MonoBehaviour 
 {

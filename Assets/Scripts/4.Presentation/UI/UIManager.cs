@@ -630,7 +630,7 @@ public class UIManager : MonoBehaviour
 
         if(stats.color.HasValue)
         {
-            Material mat = new Material(UIAssetsManager.instance.UIColorItem);
+            Material mat = new Material(UIAssetsConfig.Instance.UIColorItem);
             image.material = mat;
             mat.SetColor("_Color",stats.color.Value);
             image.SetMaterialDirty();
@@ -679,7 +679,7 @@ public class UIManager : MonoBehaviour
         else
         {
             obj.gameObject.SetActive(true);
-            obj.gameObject.GetComponent<Image>().sprite = UIAssetsManager.instance.GetQualitySprite(quality);
+            obj.gameObject.GetComponent<Image>().sprite = UIAssetsConfig.Instance.GetQualitySprite(quality);
         }
     }
 
@@ -1402,9 +1402,9 @@ public class UIManager : MonoBehaviour
         {
            var icon = ammoCountersParent.GetChild(i).gameObject;
             if(childIndex == i)
-                icon.transform.GetComponent<Image>().sprite = UIAssetsManager.instance.selectedIronBackgroundUI;
+                icon.transform.GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedIronBackgroundUI;
             else
-                icon.transform.GetComponent<Image>().sprite = UIAssetsManager.instance.ironBackgroundUI;
+                icon.transform.GetComponent<Image>().sprite = UIAssetsConfig.Instance.ironBackgroundUI;
         }
     }
     #endregion

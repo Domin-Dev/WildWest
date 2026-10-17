@@ -1,9 +1,7 @@
-using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-
 
 public struct NextWeatherUpdate : IComponentData
 {

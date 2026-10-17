@@ -6379,7 +6379,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1204180793}
   - component: {fileID: 1204180792}
-  - component: {fileID: 1204180794}
   - component: {fileID: 1204180796}
   - component: {fileID: 1204180797}
   - component: {fileID: 1204180798}
@@ -6433,79 +6432,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1204180794
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204180791}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4cfab531b66e324292168ec47d16723, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fonts:
-  - name:
-      m_TableReference:
-        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
-      m_TableEntryReference:
-        m_KeyId: 8099245706358784
-        m_Key: 
-      m_FallbackState: 0
-      m_WaitForCompletion: 0
-      m_LocalVariables: []
-    font: {fileID: 11400000, guid: e8f6b37156d7f074c89de35971b07ae7, type: 2}
-  - name:
-      m_TableReference:
-        m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
-      m_TableEntryReference:
-        m_KeyId: 8099606798184448
-        m_Key: 
-      m_FallbackState: 0
-      m_WaitForCompletion: 0
-      m_LocalVariables: []
-    font: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  qualitySprites:
-  - quality: 0
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
-  - quality: 1
-    sprite: {fileID: -144673411, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.2901961, g: 0.32941177, b: 0.38431373, a: 1}
-  - quality: 2
-    sprite: {fileID: -604605295, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.7058824, g: 0.1254902, b: 0.16470589, a: 1}
-  - quality: 3
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
-  - quality: 4
-    sprite: {fileID: -2002146841, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.16862746, g: 0.7921569, b: 0.28235295, a: 1}
-  - quality: 5
-    sprite: {fileID: -1501567345, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 1, g: 0.6313726, b: 0, a: 1}
-  - quality: 6
-    sprite: {fileID: -908559967, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.9411765, g: 0.1882353, b: 0.72156864, a: 1}
-  yellowHeader: {fileID: 1186568250, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  whiteHeader: {fileID: 1366682903, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  UIHeadMaterial: {fileID: 2100000, guid: df6d9abd4c7883d4684371e2537265b4, type: 2}
-  UIColorItem: {fileID: 2100000, guid: c24f4ec00f9ebd999a6b43e2536b1f66, type: 2}
-  bronzeBackgroundUI: {fileID: -387067171, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  silverBackgroundUI: {fileID: 1922422707, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  goldBackgroundUI: {fileID: 1532682267, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  woodBackgroundUI: {fileID: -155690521, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  ironBackgroundUI: {fileID: -1004384454, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  woodenFrameUI: {fileID: 1954819079, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  blackFrameUI: {fileID: -144562309, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  selectedWoodBackgroundUI: {fileID: -107823657, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  selectedIronBackgroundUI: {fileID: -353293881, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  goldPressedBackgroundUI: {fileID: 2019817164, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  ironBarsUI: {fileID: 1214819735, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  references:
-    version: 2
-    RefIds: []
 --- !u!114 &1204180796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6552,6 +6478,7 @@ MonoBehaviour:
     fontIndex: 0
     soundsVolume: 0
     musicVolume: 0
+    ambientVolume: 0
     language: 
 --- !u!114 &1204180798
 MonoBehaviour:

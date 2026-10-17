@@ -1,5 +1,3 @@
-
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Unity.Collections;
@@ -11,14 +9,16 @@ using UnityEngine;
 
 public static class DebugController 
 {
-    static List<CommandBase> commandList;
-    public static List<CommandBase> CommandList
+    static Dictionary<string,List<CommandBase>> commands;
+    public static Dictionary<string,List<CommandBase>> Commands
     {
         get
         {
-            if (commandList != null) return commandList;
-            commandList = new List<CommandBase>();
-            commandList.Add(new DebugCommand<string>("mkadmin", "Grants admin privileges to a player.", "[player name]", (ref EntityCommandBuffer ecb,Entity e, string arg) =>
+            if (commands != null) return commands;
+            commands = new Dictionary<string,List<CommandBase>>();
+
+
+            Add(new DebugCommand<string>("mkadmin", "Grants admin privileges to a player.", "[player name]", (ref EntityCommandBuffer ecb,Entity e, string arg) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -45,7 +45,7 @@ public static class DebugController
                 }
                 return null;
             }));
-            commandList.Add(new DebugCommand<int,int>("tp", "Teleports to the selected position", "[Position x] [Position y]", (ref EntityCommandBuffer ecb,Entity e, int x, int y) =>
+            Add(new DebugCommand<int,int>("tp", "Teleports to the selected position", "[Position x] [Position y]", (ref EntityCommandBuffer ecb,Entity e, int x, int y) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -77,7 +77,7 @@ public static class DebugController
                 }
                 return null;
             }));
-            commandList.Add(new DebugCommand("players", "Prints a list of players and their roles", null, (ref EntityCommandBuffer ecb, Entity e) =>
+            Add(new DebugCommand("players", "Prints a list of players and their roles", null, (ref EntityCommandBuffer ecb, Entity e) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -106,7 +106,7 @@ public static class DebugController
             }));
 
             #region Map
-            commandList.Add(new DebugCommand("seed", "Displays world seed", "", (ref EntityCommandBuffer ecb, Entity e) =>
+            Add(new DebugCommand("seed", "Displays world seed", "", (ref EntityCommandBuffer ecb, Entity e) =>
             {
                 var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
                 var query = entityManager.CreateEntityQuery(typeof(MapSettings));
@@ -124,7 +124,7 @@ public static class DebugController
             #endregion
 
             #region Give
-            commandList.Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "[Item ID] [Quantity] [player name]", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
+            Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "[Item ID] [Quantity] [player name]", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -164,7 +164,7 @@ public static class DebugController
                 }
                 return null;
             }));
-            commandList.Add(new DebugCommand<int, int>("give", "Gives you the specified item", "[Item ID] [Quantity] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
+            Add(new DebugCommand<int, int>("give", "Gives you the specified item", "[Item ID] [Quantity] ", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -183,7 +183,7 @@ public static class DebugController
                 }
                 return null;
             }));
-            commandList.Add(new DebugCommand<int, int,float,int,float,MyColor>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value] [Color]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue,MyColor color) =>
+            Add(new DebugCommand<int, int,float,int,float,MyColor>("give", "Gives you the specified item", "[Item ID] [Quantity] [Wetness (0 - 100)] [Quality (0 - 6)] [Bar Value] [Color]", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue,MyColor color) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -205,7 +205,7 @@ public static class DebugController
                 }
                 return null;
             }));
-            commandList.Add(new DebugCommand<int>("give", "Gives you the specified item", "[Item ID]", (ref EntityCommandBuffer ecb, Entity e, int id) =>
+            Add(new DebugCommand<int>("give", "Gives you the specified item", "[Item ID]", (ref EntityCommandBuffer ecb, Entity e, int id) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -225,7 +225,7 @@ public static class DebugController
                 return null;
             }));
             
-            commandList.Add(new DebugCommand("giveoutfit", "debug outfit kit","", (ref EntityCommandBuffer ecb, Entity e) =>
+            Add(new DebugCommand("giveoutfit", "debug outfit kit","", (ref EntityCommandBuffer ecb, Entity e) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -251,7 +251,7 @@ public static class DebugController
             #endregion
 
             #region Weather
-            commandList.Add(new DebugCommand<float,float>("rain", "", "[intensity] [time (s)]", (ref EntityCommandBuffer ecb, Entity e,float intensity,float time) =>
+            Add(new DebugCommand<float,float>("rain", "", "[intensity] [time (s)]", (ref EntityCommandBuffer ecb, Entity e,float intensity,float time) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -264,7 +264,7 @@ public static class DebugController
                 }
                 return null;
             }));       
-            commandList.Add(new DebugCommand<int,int>("weatherprediction", "", "[offset] [count]", (ref EntityCommandBuffer ecb, Entity e,int offset,int count) =>
+            Add(new DebugCommand<int,int>("weatherprediction", "", "[offset] [count]", (ref EntityCommandBuffer ecb, Entity e,int offset,int count) =>
             {
                 if(count < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
                 var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
@@ -299,7 +299,7 @@ public static class DebugController
             #endregion
 
             #region Time
-            commandList.Add(new DebugCommand("time", "Displays information about the time", "", (ref EntityCommandBuffer ecb, Entity e) =>
+            Add(new DebugCommand("time", "Displays information about the time", "", (ref EntityCommandBuffer ecb, Entity e) =>
             {
                 var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
                 var query = entityManager.CreateEntityQuery(typeof(CurrentTime));
@@ -314,7 +314,7 @@ public static class DebugController
                 query.Dispose();
                 return result;
             },false,false));
-            commandList.Add(new DebugCommand<int>("timeset", "Set the specified time", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
+            Add(new DebugCommand<int>("timeset", "Set the specified time", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
             {
                 if(value < 0 || value > 24) return "The value must be between 0 and 24.";         
                 if(value == 24) value = 0;
@@ -338,7 +338,7 @@ public static class DebugController
                 query.Dispose();
                 return null;
             },true,true));
-            commandList.Add(new DebugCommand<int>("timeskip", "Skip the specific time period", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
+            Add(new DebugCommand<int>("timeskip", "Skip the specific time period", "[Hour]", (ref EntityCommandBuffer ecb, Entity e,int value) =>
             {
                 if(value < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
 
@@ -356,7 +356,7 @@ public static class DebugController
             },true,true));
 
             #endregion
-            commandList.Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
+            Add(new DebugCommand("cleareq", "Removes all items from your inventory", "", (ref EntityCommandBuffer ecb, Entity e) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -368,7 +368,7 @@ public static class DebugController
                 }
                 return null;
             }));
-            commandList.Add(new DebugCommand<int>("cleareq", "Removes all items from your inventory", "[Container Index]", (ref EntityCommandBuffer ecb, Entity e,int index) =>
+            Add(new DebugCommand<int>("cleareq", "Removes all items from your inventory", "[Container Index]", (ref EntityCommandBuffer ecb, Entity e,int index) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
                 {
@@ -381,17 +381,24 @@ public static class DebugController
                 return null;
             }));
 
-            commandList.Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
+            Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
             {
-                string text = "Command list:\n";
-                for (int i = 0; i < commandList.Count; i++)
+                StringBuilder builder = new StringBuilder("Command list:\n");
+                foreach(var list in commands)
                 {
-                    CommandBase commandBase = commandList[i] as CommandBase;
-                    text += $"/<Color=#{ChatManager.highlightColor.ToHexString()}>{commandBase.commandId}</Color> {commandBase.commandFormat} - {commandBase.commandDescription}\n";
+                    foreach(var command in list.Value)
+                        builder.Append($"/<Color=#{ChatManager.highlightColor.ToHexString()}>{command.commandId}</Color> {command.commandFormat} - {command.commandDescription}\n");
                 }
-                return text;
+                return builder.ToString();
             },false,false));
-            return commandList;
+            return commands;
         }
+    }
+    private static void Add(CommandBase command)
+    {
+        if(commands.ContainsKey(command.commandId))
+            commands[command.commandId].Add(command);
+        else
+            commands.Add(command.commandId,new List<CommandBase>(){ command});  
     }
 }

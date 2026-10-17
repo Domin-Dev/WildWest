@@ -7,10 +7,10 @@ using Unity.Entities;
 using Unity.NetCode;
 
 public static class ChatService
-{
+{ 
     private static ushort _messageIndex = 0;
     private static ushort nextMessageIndex => ++_messageIndex;
- 
+
     #region SendMessage
     public static void ClientSendsMessage(string messageText)
     {      
@@ -118,41 +118,42 @@ public static class ChatService
     }
     public static bool IsCommand(string value)
     {
-        return value.Trim()[0] == '/';
+        if(value == null) return false;
+        var temp = value.Trim();
+        return temp.Length > 0 && temp[0] == '/';
     }
     #endregion
     #region ServerProcess
-    private static void ServerProcessCommand(EntityManager entityManager,EntityCommandBuffer ecb, string command,Entity connectionEntity)
+    private static void ServerProcessCommand(EntityManager entityManager,EntityCommandBuffer ecb, string commandText,Entity connectionEntity)
     {
-        var commandList = DebugController.CommandList;
-        string[] properties = command.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var commandList = DebugController.Commands;
+        string[] properties = commandText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         properties[0] = properties[0].Remove(0, 1);
         List<CommandBase> hints = new List<CommandBase>();
 
-        foreach (var item in commandList)
+        if (commandList.TryGetValue(properties[0].ToLower(),out var list))
         {
-            CommandBase commandBase = item as CommandBase;
-            if (string.Compare(commandBase.commandId, properties[0], true) == 0)
+            string[] args = properties.Skip(1).ToArray();
+            foreach(var command in list)
             {
-                string[] args = properties.Skip(1).ToArray();
-                if (item.Validate(args))
+                if (command.Validate(args) && command.isAdminCommand)
                 {
-                    if(item.isAdminCommand)
+                    if(entityManager.HasComponent<Admin>(connectionEntity))
                     {
-                        if(entityManager.HasComponent<Admin>(connectionEntity))
-                        {
-                            var output = item.Invoke(args, ref ecb, connectionEntity);
-                            if (!string.IsNullOrEmpty(output))
-                                SendMessage<ServerMessageRPC>(ecb, output, connectionEntity);
-                        }
-                        else
-                        {
-                            SendMessage<ServerMessageRPC>(ecb, "You don't have permission!", connectionEntity);
-                        }
+                        var output = command.Invoke(args, ref ecb, connectionEntity);
+                        if (!string.IsNullOrEmpty(output))
+                            SendMessage<ServerMessageRPC>(ecb, output, connectionEntity);
+                        return;
                     }
-                }      
-            }
-        }  
+                    else
+                    {
+                        SendMessage<ServerMessageRPC>(ecb, "You don't have permission!", connectionEntity);
+                        return;
+                    }
+                }   
+            }  
+        }
+        
     }       
     public static void ServerProcessMessage(EntityManager entityManager,EntityCommandBuffer ecb,in FixedString128Bytes senderName,in ClientMessageRPC message, Entity senderEntity)
     {
@@ -175,7 +176,6 @@ public static class ChatService
     }
 
     #endregion
-
     #region ClientProcess
     public static void ClientProcessMessage(in ServerMessageRPC message)
     {

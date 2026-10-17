@@ -44,7 +44,7 @@ public class GamePreferences : MonoBehaviour
 
     public TMP_FontAsset GetCurrentFont()
     {
-        return UIAssetsManager.instance.fonts[fontIndex].font;
+        return UIAssetsConfig.Instance.fonts[fontIndex].font;
     }
     public int GetCurrentIndexFont()
     {
@@ -67,7 +67,7 @@ public class GamePreferences : MonoBehaviour
     }
     public void NewFont(int index)
     {
-        if (UIAssetsManager.instance.fonts.Count < index || index < 0) return;
+        if (UIAssetsConfig.Instance.fonts.Count < index || index < 0) return;
         fontIndex = index;
         onNewFont?.Invoke(GetCurrentFont());
     }

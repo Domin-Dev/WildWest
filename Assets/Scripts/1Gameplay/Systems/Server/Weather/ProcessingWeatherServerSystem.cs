@@ -1,12 +1,8 @@
-using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Transforms;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateAfter(typeof(WeatherServerSystem))]

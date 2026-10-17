@@ -989,6 +989,10 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 40
       objectReference: {fileID: 0}
+    - target: {fileID: 8028182582317909554, guid: 119553c3e31cc8e44a605b4aeb8648f8, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 8637689044164233126, guid: 119553c3e31cc8e44a605b4aeb8648f8, type: 3}
