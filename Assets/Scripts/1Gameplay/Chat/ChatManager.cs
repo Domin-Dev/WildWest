@@ -276,7 +276,7 @@ public class ChatManager : MonoBehaviour
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
         DateTime localTime = date.ToLocalTime().DateTime;
-        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIAssetsConfig.Instance.ironBackgroundUI;
+        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Iron);
     }  
     private void PrintHint(params CommandBase[] commandBase)
     {
@@ -436,7 +436,7 @@ public class ChatManager : MonoBehaviour
     }
     public void SetUpHints()
     {
-        Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedIronBackgroundUI;
+    //    Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedIronBackgroundUI;
         for(int i = 0; i < displayedHintsCount - 1; i++)
             Instantiate(hintPrefab,hintParent);
     }

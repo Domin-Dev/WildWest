@@ -1,76 +1,89 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Localization;
+using UnityEngine.UI;
 
-
-[System.Serializable]
-public struct BarColor
-{
-    public Color color;
-    public string type;
-}
-
-[System.Serializable]
-public class Property
-{
-    [SerializeField] private string _name;
-    [SerializeField] private LocalizedString _localizedName;
-    [SerializeField] private LocalizedString _description;
-    [SerializeField] private Color _color;
-    [SerializeField] private string _nameIcon;
-    [SerializeField] private bool displayEQWindow;
-    [SerializeField] private int displayPriority;
-    [SerializeField] private bool hideWhenValueIsZero;
-
-
-
-
-    public string name => _name;
-    public LocalizedString localizedName => _localizedName;
-    public LocalizedString description => _description;
-    public Color color => _color;
-    public string nameIcon => _nameIcon;
-    public bool DisplayEQWindow => displayEQWindow;
-    public int DisplayPriority => displayPriority;
-    public bool HideWhenValueIsZero => hideWhenValueIsZero;
-}
-
-
-
-
-[CreateAssetMenu(fileName = "UISettings", menuName = "GameAsset/Settings/UISettings")]
-public class  UIConfig : ScriptableObject
+[CreateAssetMenu(fileName = "UIConfig", menuName = "GameAsset/UIConfig")]
+public class UIConfig : ScriptableObject
 { 
+    private static UIConfig _instance;
+    public static UIConfig Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = Resources.Load<UIConfig>("Config/UIConfig");
+
+            return _instance;
+        }
+    }
+
     [SerializeField] public List<BarColor> barColors;
     [SerializeField] public List<Property> properties;
-    [SerializeField] public List<FontData> fonts;
-    [SerializeField] public UIThermometerConfig thermometerConfig;
+    [SerializeField] public List<FontData> Fonts;
+    [SerializeField] public UIThermometerConfig ThermometerConfig;
+    [SerializeField] public Materials Materials;
+    [SerializeField] public List<QualityData> QualityData;
+    [SerializeField] public Headers Headers;
+    [SerializeField] public Backgrounds Backgrounds;
+    [SerializeField] public ProfileCovers ProfileCovers;
     
-    public List<(Color,Type)> GetColors()
+    public static string[] GetFontNames()
+    {
+        List<string> names = new List<string>();
+        foreach (var item in Instance.Fonts)
+            names.Add(item.name.GetLocalizedString());
+        return names.ToArray();
+    }
+    public static List<(Color,Type)> GetColors()
     {
         List<(Color,Type)> colors = new List<(Color,Type)>();
-        foreach (var c in barColors)
+        foreach (var c in Instance.barColors)
             colors.Add((c.color, Type.GetType(c.type)));
         return colors;
     }
-    public Dictionary<string,Property> GetProperties()
+    public static Dictionary<string,Property> GetProperties()
     {
         Dictionary<string,Property> properties = new Dictionary<string, Property>();
-        foreach(var p in this.properties)
+        foreach(var p in Instance.properties)
             properties.Add(p.name,p);
         return properties;
     }
+    public static Sprite GetQualitySprite(Quality quality)
+    {
+        foreach (var item in Instance.QualityData)
+        {
+            if (item.quality == quality)
+                return item.sprite;
+        }
+        return null;
+    }
+    public static Color? GetQualityColor(Quality quality)
+    {
+        foreach (var item in Instance.QualityData)
+        {
+            if (item.quality == quality)
+                return item.color;
+        }
+        return null;
+    }
+    public static void ChangeButton(Button button,Backgrounds.BackgroundType type)
+    {
+        var states = button.spriteState;
+        var background = GetBackground(type);
+        states.pressedSprite = background.PressedSprite;
+        states.selectedSprite =  background.SelectedSprite;
+        states.highlightedSprite = background.SelectedSprite;
+        button.spriteState = states;
+        button.image.sprite = background.Sprite;
+    }
+    public static Background GetBackground(Backgrounds.BackgroundType type)
+    {
+        return new Background();
+    }
+    public static Sprite GetBackgroundSprite(Backgrounds.BackgroundType type)
+    {
+        var background = GetBackground(type);
+        return background.Sprite;
+    }
 }
-
-[System.Serializable]
-public class UIThermometerConfig
-{
-    public Color BelowZeroThermometerColor;
-    public Color AboveZeroThermometerColor;
-    [Range(-60,60)]
-    public float minTemperature;
-    [Range(-60,60)]
-    public float maxTemperature;
-}
-

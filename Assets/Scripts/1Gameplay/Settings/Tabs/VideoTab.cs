@@ -89,13 +89,13 @@ public class VideoTab : SettingsTab
     }
     private void SetUpFont(SettingsData settingsData)
     {
-        fontSwitch.SetUpSwitch(UIAssetsConfig.Instance.GetFontNames(), settingsData.fontIndex);
+        fontSwitch.SetUpSwitch(UIConfig.GetFontNames(), settingsData.fontIndex);
         fontSwitch.OnChangedValue -= MainSettingsManager.instance.videoSettings.SetFont;
         fontSwitch.OnChangedValue += MainSettingsManager.instance.videoSettings.SetFont;
     }
     private void RefreshStrings(Locale obj)
     {
-        fontSwitch.RefreshTab(UIAssetsConfig.Instance.GetFontNames());
+        fontSwitch.RefreshTab(UIConfig.GetFontNames());
     }
     private void SetUpResolutions(SettingsData settings)
     {

@@ -56,7 +56,7 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
     {
         StringBuilder content = new StringBuilder();
         StringBuilder header = new StringBuilder();
-        Color? hColor = UIAssetsConfig.Instance.GetQualityColor(itemStats.quality);
+        Color? hColor = UIConfig.GetQualityColor(itemStats.quality);
 
         header.Append(name);
         if (itemStats.quality != Quality.none)

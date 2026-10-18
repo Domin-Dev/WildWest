@@ -32,9 +32,9 @@ public class TabUI : MonoBehaviour
         }
         public void TurnButton(bool value)
         {
-            tabButton.image.sprite = value ?  UIAssetsConfig.Instance.goldPressedBackgroundUI : UIAssetsConfig.Instance.woodBackgroundUI;
+            tabButton.image.sprite = value ?  UIConfig.Instance.Backgrounds.DefaultPressedSprite : UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Wood);
             var state =  tabButton.spriteState;
-            state.highlightedSprite =  value ? UIAssetsConfig.Instance.goldPressedBackgroundUI : UIAssetsConfig.Instance.selectedWoodBackgroundUI;
+            state.highlightedSprite =  value ? UIConfig.Instance.Backgrounds.DefaultPressedSprite :  UIConfig.GetBackground(Backgrounds.BackgroundType.Wood).SelectedSprite;
             tabButton.spriteState = state;
         }
         public void TurnTab(bool value)

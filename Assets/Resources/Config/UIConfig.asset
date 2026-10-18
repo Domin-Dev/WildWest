@@ -406,7 +406,7 @@ MonoBehaviour:
     displayEQWindow: 0
     displayPriority: 0
     hideWhenValueIsZero: 0
-  fonts:
+  Fonts:
   - name:
       m_TableReference:
         m_TableCollectionName: GUID:738863494e82c4f47ac07b67ed1feb6d
@@ -427,11 +427,48 @@ MonoBehaviour:
       m_WaitForCompletion: 0
       m_LocalVariables: []
     font: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
-  thermometerConfig:
+  ThermometerConfig:
     BelowZeroThermometerColor: {r: 0.16761978, g: 0.6054847, b: 0.94532114, a: 1}
     AboveZeroThermometerColor: {r: 0.82329774, g: 0.059661105, b: 0.059661105, a: 1}
     minTemperature: -40
     maxTemperature: 40
+  Materials:
+    HeadIcon: {fileID: 0}
+    ColorItem: {fileID: 2100000, guid: c24f4ec00f9ebd999a6b43e2536b1f66, type: 2}
+  QualityData: 
+  - quality: 0
+    sprite: {fileID: 0}
+    color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
+  - quality: 1
+    sprite: {fileID: -144673411, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+    color: {r: 0.2901961, g: 0.32941177, b: 0.38431373, a: 1}
+  - quality: 2
+    sprite: {fileID: -604605295, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+    color: {r: 0.7058824, g: 0.1254902, b: 0.16470589, a: 1}
+  - quality: 3
+    sprite: {fileID: 0}
+    color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
+  - quality: 4
+    sprite: {fileID: -2002146841, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+    color: {r: 0.16862746, g: 0.7921569, b: 0.28235295, a: 1}
+  - quality: 5
+    sprite: {fileID: -1501567345, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+    color: {r: 1, g: 0.6313726, b: 0, a: 1}
+  - quality: 6
+    sprite: {fileID: -908559967, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+    color: {r: 0.9411765, g: 0.1882353, b: 0.72156864, a: 1}
+  Headers:
+    yellowHeader: {fileID: 1186568250, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+    whiteHeader: {fileID: 1366682903, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+  Backgrounds:
+    wood:
+      Sprite: {fileID: -155690521, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+      SelectedSprite: {fileID: -107823657, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+      UseDefaultPressedSprite: 1
+      pressedSprite: {fileID: 0}
+    DefaultPressedSprite: {fileID: 2019817164, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+  ProfileCovers:
+    IronBars: {fileID: 1214819735, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   references:
     version: 2
     RefIds: []

@@ -56,11 +56,10 @@ public class LanguageTab : SettingsTab
     {
         SetUp();
         if (!string.IsNullOrEmpty(selected))
-        {
-           UIAssetsConfig.Instance.ChangeButtonToWood(languages[selected].GetComponent<Button>());
-        }
+           UIConfig.ChangeButton(languages[selected].GetComponent<Button>(),Backgrounds.BackgroundType.Wood);
+        
         selected = code;
-        UIAssetsConfig.Instance.ChangeButtonToIron(languages[selected].GetComponent<Button>());
+        UIConfig.ChangeButton(languages[selected].GetComponent<Button>(),Backgrounds.BackgroundType.Iron);
         MainSettingsManager.instance.languageSettings.SetLanguage(code);
     }
 }

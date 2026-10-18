@@ -89,7 +89,7 @@ public class Dashboard : MonoBehaviour
             Row rowComp = row.GetComponent<Row>();
 
             rowComp.playerName.text = playerData.playerName.ToString();
-            mat = new Material(UIAssetsConfig.Instance.UIHeadMaterial);
+            mat = new Material(UIConfig.Instance.Materials.HeadIcon);
             rowComp.playerIcon.material = mat;
             rowComp.pingText.text = "???";
 

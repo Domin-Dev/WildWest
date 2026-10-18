@@ -45,11 +45,9 @@ public class Tooltip : MonoBehaviour
             headerParent.gameObject.SetActive(true);
 
             if (headerColor == null)
-                SetColorHeader(Color.white, UIAssetsConfig.Instance.yellowHeader);
+                SetColorHeader(Color.white, UIConfig.Instance.Headers.yellowHeader);
             else
-                SetColorHeader(headerColor.Value, UIAssetsConfig.Instance.whiteHeader);
-
-
+                SetColorHeader(headerColor.Value, UIConfig.Instance.Headers.whiteHeader);
         }
 
 

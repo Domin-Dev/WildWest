@@ -132,11 +132,6 @@ public class UIManager : MonoBehaviour
 
     public event EventHandler windowOpen;
 
-    [SerializeField] private UIConfig uISettings;
-
-
-
-
    
     private void Awake()
     {
@@ -146,8 +141,8 @@ public class UIManager : MonoBehaviour
         SetGrids();
         SetUpNotices();
         LoadRecipes();
-        colors = uISettings.GetColors();
-        properties = uISettings.GetProperties();
+        colors = UIConfig.GetColors();
+        properties = UIConfig.GetProperties();
         itemInHandPopup.gameObject.SetActive(false);
         
 
@@ -630,7 +625,7 @@ public class UIManager : MonoBehaviour
 
         if(stats.color.HasValue)
         {
-            Material mat = new Material(UIAssetsConfig.Instance.UIColorItem);
+            Material mat = new Material(UIConfig.Instance.Materials.ColorItem);
             image.material = mat;
             mat.SetColor("_Color",stats.color.Value);
             image.SetMaterialDirty();
@@ -679,7 +674,7 @@ public class UIManager : MonoBehaviour
         else
         {
             obj.gameObject.SetActive(true);
-            obj.gameObject.GetComponent<Image>().sprite = UIAssetsConfig.Instance.GetQualitySprite(quality);
+            obj.gameObject.GetComponent<Image>().sprite = UIConfig.GetQualitySprite(quality);
         }
     }
 
@@ -1402,9 +1397,9 @@ public class UIManager : MonoBehaviour
         {
            var icon = ammoCountersParent.GetChild(i).gameObject;
             if(childIndex == i)
-                icon.transform.GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedIronBackgroundUI;
+                icon.transform.GetComponent<Image>().sprite = UIConfig.GetBackground(Backgrounds.BackgroundType.Iron).SelectedSprite;
             else
-                icon.transform.GetComponent<Image>().sprite = UIAssetsConfig.Instance.ironBackgroundUI;
+                icon.transform.GetComponent<Image>().sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Iron);
         }
     }
     #endregion
