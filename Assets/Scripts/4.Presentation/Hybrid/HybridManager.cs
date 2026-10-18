@@ -1,4 +1,4 @@
-using Cinemachine;
+
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
@@ -16,7 +16,7 @@ public class HybridManager : MonoBehaviour
     public Transform GameObjectPlayer => gameObjectPlayer.transform;
 
 
-    [SerializeField] CinemachineVirtualCamera virtualCamera;
+    [SerializeField] Unity.Cinemachine.CinemachineVirtualCamera virtualCamera;
 
     public static HybridManager instance;
     private Dictionary<Entity,GameObject> connectedObjects = new Dictionary<Entity,GameObject>(); 

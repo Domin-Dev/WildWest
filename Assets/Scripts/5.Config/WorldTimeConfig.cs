@@ -2,7 +2,7 @@ using UnityEngine;
 using NaughtyAttributes;
 using Unity.VisualScripting;
 using UnityEngine.Experimental.GlobalIllumination;
-using Unity.Entities.UniversalDelegates;
+
 using JetBrains.Annotations;
 using UnityEngine.Localization;
 

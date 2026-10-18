@@ -1,9 +1,9 @@
 ﻿using System;
-using NaughtyAttributes;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.UI;
+using EditorAttributes;
 
 [System.Serializable]
 public class FontData
@@ -15,23 +15,23 @@ public class FontData
 [System.Serializable]
 public class QualityData
 {
-    public Quality quality;
-    public Sprite sprite;
+    [AssetPreview(64f,64f)]public Sprite sprite;
     public Color color;
 }
 
 [System.Serializable]
 public class Background
 {
+    [AssetPreview(32f,32f)]
     public Sprite Sprite;
-    public Sprite SelectedSprite;
+    [AssetPreview(32f,32f)]
+    [SerializeField] private Sprite selectedSprite;
     public bool UseDefaultPressedSprite;
-
-    [HideIf("UseDefaultPressedSprite")]
-    [AllowNesting] 
-    [SerializeField] 
-    private Sprite pressedSprite;
+    [HideField(nameof(UseDefaultPressedSprite))]
+    [AssetPreview(32f,32f)]
+    [SerializeField] private Sprite pressedSprite;
     public Sprite PressedSprite => UseDefaultPressedSprite ? UIConfig.Instance.Backgrounds.DefaultPressedSprite : pressedSprite;
+    public Sprite SelectedSprite => selectedSprite == null ? Sprite : selectedSprite;
 }
 
 [System.Serializable]
@@ -51,7 +51,8 @@ public class Backgrounds
         IronFrame,
         IronBlackFrame,
     }
-    public Background wood;
+    [SerializeField] public Dictionary<BackgroundType,Background> backgrounds;
+    [AssetPreview(32f,32f)]
     public Sprite DefaultPressedSprite;
 }
 

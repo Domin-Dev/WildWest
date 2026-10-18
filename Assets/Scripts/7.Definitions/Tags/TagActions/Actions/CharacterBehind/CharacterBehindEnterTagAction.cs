@@ -1,6 +1,6 @@
 using System.Xml;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
+
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Physics.GraphicsIntegration;

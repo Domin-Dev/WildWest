@@ -2,7 +2,7 @@ using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
+
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;

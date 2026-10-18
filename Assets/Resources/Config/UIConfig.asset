@@ -406,6 +406,423 @@ MonoBehaviour:
     displayEQWindow: 0
     displayPriority: 0
     hideWhenValueIsZero: 0
+  Properties:
+  - key: Tags
+    value:
+      _name: Tags
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 2964330694225920
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.2143586, g: 0.5702814, b: 0.39022636, a: 1}
+      _nameIcon: Tag
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Wetness
+    value:
+      _name: Wetness
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 25073987584
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.13879316, g: 0.51458174, b: 0.75609833, a: 1}
+      _nameIcon: Water
+      displayEQWindow: 1
+      displayPriority: 200
+      hideWhenValueIsZero: 1
+  - key: MaxStack
+    value:
+      _name: MaxStack
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 67419070967808
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.78294, g: 0.6929585, b: 0.21205197, a: 1}
+      _nameIcon: MaxStack
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: RequiredTag
+    value:
+      _name: RequiredTag
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 2142888993927168
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.78294, g: 0.6929585, b: 0.21205197, a: 1}
+      _nameIcon: Tag
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: RequiredItem
+    value:
+      _name: RequiredItem
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 2165001301700608
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.78294, g: 0.6929585, b: 0.21205197, a: 1}
+      _nameIcon: Tag
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: ContainerWaterResistance
+    value:
+      _name: ContainerWaterResistance
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 1856188992368640
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.78431374, g: 0.2117647, b: 0.49019447, a: 1}
+      _nameIcon: WaterResistance
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Capacity
+    value:
+      _name: Capacity
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 2956435793555456
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.78431374, g: 0.2117647, b: 0.2117647, a: 1}
+      _nameIcon: Capacity
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Aesthetic
+    value:
+      _name: Aesthetic
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 5065090412228608
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.78431374, g: 0.2117647, b: 0.69460803, a: 1}
+      _nameIcon: Aesthetic
+      displayEQWindow: 1
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: MovementSpeed
+    value:
+      _name: MovementSpeed
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 5061607856451584
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.7792727, g: 0.682324, b: 0.15725861, a: 1}
+      _nameIcon: MovementSpeed
+      displayEQWindow: 1
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: WaterResistance
+    value:
+      _name: WaterResistance
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 5061965961932800
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.013853632, g: 0.6849538, b: 0.51921254, a: 1}
+      _nameIcon: WaterResistance
+      displayEQWindow: 1
+      displayPriority: 100
+      hideWhenValueIsZero: 0
+  - key: Insulation
+    value:
+      _name: Insulation
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 5061774802333696
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.88055074, g: 0.41657212, b: 0.25332037, a: 1}
+      _nameIcon: Temperature
+      displayEQWindow: 1
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Armor
+    value:
+      _name: Armor
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 5061384413294592
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.651115, g: 0.6091156, b: 0.6091156, a: 1}
+      _nameIcon: Armor
+      displayEQWindow: 1
+      displayPriority: 150
+      hideWhenValueIsZero: 0
+  - key: Color
+    value:
+      _name: Color
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 6153795537383424
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.73293316, g: 0.19013485, b: 0.03034279, a: 1}
+      _nameIcon: Color
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Hunger
+    value:
+      _name: Hunger
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 6153795537383424
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.8046155, g: 0.69084394, b: 0.08693184, a: 1}
+      _nameIcon: Hunger
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Thirst
+    value:
+      _name: Thirst
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 6153795537383424
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.081755, g: 0.44724572, b: 0.8065727, a: 1}
+      _nameIcon: Thirst
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
+  - key: Health
+    value:
+      _name: Health
+      _localizedName:
+        m_TableReference:
+          m_TableCollectionName: GUID:a869cb24160aef143adf373703498297
+        m_TableEntryReference:
+          m_KeyId: 6153795537383424
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _description:
+        m_TableReference:
+          m_TableCollectionName: 
+        m_TableEntryReference:
+          m_KeyId: 0
+          m_Key: 
+        m_FallbackState: 0
+        m_WaitForCompletion: 0
+        m_LocalVariables: []
+      _color: {r: 0.84904337, g: 0.12085749, b: 0.15090887, a: 1}
+      _nameIcon: Health
+      displayEQWindow: 0
+      displayPriority: 0
+      hideWhenValueIsZero: 0
   Fonts:
   - name:
       m_TableReference:
@@ -433,39 +850,108 @@ MonoBehaviour:
     minTemperature: -40
     maxTemperature: 40
   Materials:
-    HeadIcon: {fileID: 0}
+    HeadIcon: {fileID: 2100000, guid: df6d9abd4c7883d4684371e2537265b4, type: 2}
     ColorItem: {fileID: 2100000, guid: c24f4ec00f9ebd999a6b43e2536b1f66, type: 2}
-  QualityData: 
-  - quality: 0
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
-  - quality: 1
-    sprite: {fileID: -144673411, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.2901961, g: 0.32941177, b: 0.38431373, a: 1}
-  - quality: 2
-    sprite: {fileID: -604605295, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.7058824, g: 0.1254902, b: 0.16470589, a: 1}
-  - quality: 3
-    sprite: {fileID: 0}
-    color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
-  - quality: 4
-    sprite: {fileID: -2002146841, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.16862746, g: 0.7921569, b: 0.28235295, a: 1}
-  - quality: 5
-    sprite: {fileID: -1501567345, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 1, g: 0.6313726, b: 0, a: 1}
-  - quality: 6
-    sprite: {fileID: -908559967, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
-    color: {r: 0.9411765, g: 0.1882353, b: 0.72156864, a: 1}
+  Quality:
+  - key: 0
+    value:
+      sprite: {fileID: 0}
+      color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
+  - key: 2
+    value:
+      sprite: {fileID: -604605295, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+      color: {r: 0.7058824, g: 0.1254902, b: 0.16470589, a: 1}
+  - key: 1
+    value:
+      sprite: {fileID: -144673411, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+      color: {r: 0.2901961, g: 0.32941177, b: 0.38431373, a: 1}
+  - key: 3
+    value:
+      sprite: {fileID: 0}
+      color: {r: 0, g: 0.6156863, b: 0.7529412, a: 1}
+  - key: 4
+    value:
+      sprite: {fileID: -2002146841, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+      color: {r: 0.16862746, g: 0.7921569, b: 0.28235295, a: 1}
+  - key: 5
+    value:
+      sprite: {fileID: -1501567345, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+      color: {r: 1, g: 0.6313726, b: 0, a: 1}
+  - key: 6
+    value:
+      sprite: {fileID: -908559967, guid: 0749be2abae2b6e45949472bc6d0872b, type: 3}
+      color: {r: 0.9411765, g: 0.1882353, b: 0.72156864, a: 1}
   Headers:
     yellowHeader: {fileID: 1186568250, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
     whiteHeader: {fileID: 1366682903, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   Backgrounds:
-    wood:
-      Sprite: {fileID: -155690521, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-      SelectedSprite: {fileID: -107823657, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-      UseDefaultPressedSprite: 1
-      pressedSprite: {fileID: 0}
+    backgrounds:
+    - key: 5
+      value:
+        Sprite: {fileID: -1388937800, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 1057229142, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 0
+      value:
+        Sprite: {fileID: -155690521, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: -107823657, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 1
+      value:
+        Sprite: {fileID: -1004384454, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: -353293881, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 6
+      value:
+        Sprite: {fileID: -350282367, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 1288980219, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 7
+      value:
+        Sprite: {fileID: -744353387, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 1042351989, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 3
+      value:
+        Sprite: {fileID: 1922422707, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 0}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 2
+      value:
+        Sprite: {fileID: 1532682267, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 0}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 4
+      value:
+        Sprite: {fileID: -387067171, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 0}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 8
+      value:
+        Sprite: {fileID: 1954819079, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 0}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 9
+      value:
+        Sprite: {fileID: 406122447, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 0}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
+    - key: 10
+      value:
+        Sprite: {fileID: -144562309, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+        selectedSprite: {fileID: 0}
+        UseDefaultPressedSprite: 1
+        pressedSprite: {fileID: 943966893, guid: c25007e58f7508e419c973dfe94a4cce, type: 3}
     DefaultPressedSprite: {fileID: 2019817164, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
   ProfileCovers:
     IronBars: {fileID: 1214819735, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}

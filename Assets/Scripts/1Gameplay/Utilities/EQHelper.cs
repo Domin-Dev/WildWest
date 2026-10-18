@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.NetCode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
 
 public struct EQTransferData
 {
@@ -108,14 +104,12 @@ public static class EQHelper
         var containers = lookup[player];
         foreach (var item in containers)
         {
-            if (CheckRequirements(state.EntityManager.GetComponentData<ContainerComponent>(item.entity), itemID));
+            if (CheckRequirements(state.EntityManager.GetComponentData<ContainerComponent>(item.entity), itemID))
                 result.Add(item.index);   
         }
         return result;
     }
    
-
-
     //fixed
     public static bool TryFindContainerForItem(ref SystemState state,BufferLookup<EntityContainers> lookup, Entity player,out EntityContainers? playerContainer, ContainerType containerType, int itemID)
     {
@@ -132,11 +126,7 @@ public static class EQHelper
         playerContainer = null;
         return false;
     }
-   
-   
-
-   
-     public static void PrintBuffer(BufferLookup<InventorySlot> slotsLookup, Entity container)
+    public static void PrintBuffer(BufferLookup<InventorySlot> slotsLookup, Entity container)
     {
         var slots = slotsLookup[container];
         for (int j = 0; j < slots.Length; j++)
@@ -771,7 +761,7 @@ public static class EQHelper
     }
 
 
-    public static EQTransferData[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player,int itemID,int quantity = 1, byte wetness = 0, Quality quality = Quality.none)
+    public static EQTransferData[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player,int itemID,int quantity = 1, byte wetness = 0, Quality quality = Quality.None)
     {
         return FindSlotForItem(ref state, slotLookup, containers, player, new InventorySlot() {
             itemId = itemID,
@@ -780,7 +770,7 @@ public static class EQHelper
             quality = quality
         });
     }
-    public static EQTransferData[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player, int itemID, int quantity = 1, byte wetness = 0, Quality quality = Quality.none, params int[] findIncontainers)
+    public static EQTransferData[] FindSlotForItem(ref SystemState state, BufferLookup<InventorySlot> slotLookup, BufferLookup<EntityContainers> containers, Entity player, int itemID, int quantity = 1, byte wetness = 0, Quality quality = Quality.None, params int[] findIncontainers)
     {
         return FindSlotForItem(ref state, slotLookup, containers, player, new InventorySlot()
         {

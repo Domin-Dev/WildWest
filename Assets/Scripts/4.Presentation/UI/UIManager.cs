@@ -128,8 +128,6 @@ public class UIManager : MonoBehaviour
 
     private List<int> loadedScene = new List<int>();
     private List<(Color color, Type type)> colors;
-    private Dictionary<string,Property> properties;
-
     public event EventHandler windowOpen;
 
    
@@ -142,13 +140,10 @@ public class UIManager : MonoBehaviour
         SetUpNotices();
         LoadRecipes();
         colors = UIConfig.GetColors();
-        properties = UIConfig.GetProperties();
         itemInHandPopup.gameObject.SetActive(false);
         
-
         List<string> stats = new List<string>();
-        var values = properties.Values.OrderByDescending(x => x.DisplayPriority).ToList();
-
+        var values = UIConfig.Instance.Properties.Values.OrderByDescending(x => x.DisplayPriority).ToList();
         foreach(var key in values)
         {
             if(key.DisplayEQWindow)
@@ -568,20 +563,10 @@ public class UIManager : MonoBehaviour
         return color;
     }
 
-    public Property GetProperty(string name)
-    {
-        if(properties.TryGetValue(name, out Property p))
-            return p;
-        return null;
-    }
-
     public string GetColorHexStringForItem(int itemID)
     {
         return UnityEngine.ColorUtility.ToHtmlStringRGB(GetColorForItem(itemID));
     }
-
-
-
     private void NewItemUI(Transform gridUI, CreateItemArgs e)
     {
         RectTransform transform = Instantiate(item, gridUI.GetChild(e.position.slotIndex)).GetComponent<RectTransform>();
@@ -669,7 +654,7 @@ public class UIManager : MonoBehaviour
     {
         EQQuality obj;
         obj = itemTransform.GetComponentInChildren<EQQuality>(true);
-        if(quality == Quality.none || quality == Quality.normal)
+        if(quality == Quality.None || quality == Quality.Normal)
             obj.gameObject.SetActive(false);
         else
         {

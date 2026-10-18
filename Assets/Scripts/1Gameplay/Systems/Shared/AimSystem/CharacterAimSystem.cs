@@ -41,8 +41,6 @@ partial struct CharacterAimSystem : ISystem
         simulationTickDelta = 1f / NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate;
     }
 
-
-  
     public void OnUpdate(ref SystemState state)
     {
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
@@ -63,19 +61,21 @@ partial struct CharacterAimSystem : ISystem
         linkedContainersLookup.Update(ref state);
         objectsLookup.Update(ref state);
         
-        foreach ((PlayerAspect playerAspect,Entity entity) in SystemAPI.Query<PlayerAspect>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
+        foreach ((RefRO<GhostChunk> ghostChunk,RefRW<Cooldown> playerCooldown,RefRW<AimRotation> aimRotation,RefRW<PlayerActionSpread> playerSpread,RefRO<PlayerInputSync> playerInputSync,RefRW<CurrentPlayerState> playerState, DynamicBuffer<InputBufferData<PlayerInput>> playerInput,Entity entity) in 
+        SystemAPI.Query<RefRO<GhostChunk>,RefRW<Cooldown>,RefRW<AimRotation>,RefRW<PlayerActionSpread>,RefRO<PlayerInputSync>,RefRW<CurrentPlayerState>,DynamicBuffer<InputBufferData<PlayerInput>>>().WithNone<NewPlayerTag>().WithAll<Simulate>().WithEntityAccess())
         {
             if (state.World.IsClient() && !state.EntityManager.HasComponent<GhostOwnerIsLocal>(entity))
                 continue;
 
-            LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(playerAspect.hands.ValueRO.main);
-            float rot = playerAspect.aimRotation.ValueRO.angle;   
+            int networkId = SystemAPI.GetComponentRO<GhostOwner>(entity).ValueRO.NetworkId;
+            LocalToWorld worldMainHand = state.EntityManager.GetComponentData<LocalToWorld>(SystemAPI.GetComponentRO<Hands>(entity).ValueRO.main);
+            float rot = aimRotation.ValueRO.angle;   
 
             for (var i = 1u; i <= networkTime.SimulationStepBatchSize; i++)
             {
                 var testTick = currentTick;
                 testTick.Subtract((uint)networkTime.SimulationStepBatchSize - i);         
-                if(testTick.IsValid && playerAspect.input.GetDataAtTick(testTick, out var input))
+                if(testTick.IsValid && playerInput.GetDataAtTick(testTick, out var input))
                 {
                     float3 currentPosition = worldMainHand.Position;
                     float2 direction = input.InternalInput.sightDirection - new float2(currentPosition.x, currentPosition.y);
@@ -84,26 +84,26 @@ partial struct CharacterAimSystem : ISystem
 
                 
                     CalculateNextRotation(ref rot, direction,0.5f);    
-                    float rawSpread = DeltaAngle(playerAspect.aimRotation.ValueRO.angle,rot);
-                    float newSpread = playerAspect.spread.ValueRO.Spread + rawSpread * shootingConfig.sensitivityPlayerAim;
+                    float rawSpread = DeltaAngle(aimRotation.ValueRO.angle,rot);
+                    float newSpread = playerSpread.ValueRO.Spread + rawSpread * shootingConfig.sensitivityPlayerAim;
                     if(newSpread > 0)
                     {
                         newSpread -= shootingConfig.spreadRecovery;
                     }
 
                   
-                    playerAspect.spread.ValueRW.Spread = math.clamp(newSpread,0,shootingConfig.maxSpread);
+                    playerSpread.ValueRW.Spread = math.clamp(newSpread,0,shootingConfig.maxSpread);
                     
-                   // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + playerAspect.cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(playerAspect.cooldown.ValueRO.startCooldown.IsValid ? playerAspect.cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
+                   // Debug.Log(" jest input!! "+ state.World.Flags + " " + testTick.TickIndexForValidTick + " " + cooldown.ValueRO.cooldownTick.TickIndexForValidTick + " " +(cooldown.ValueRO.startCooldown.IsValid ? cooldown.ValueRO.startCooldown.TickIndexForValidTick : "null"));
                     
-                    bool isCooldown = !playerAspect.cooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerAspect.cooldown.ValueRO.cooldownTick) ||
-                    (playerAspect.cooldown.ValueRO.startCooldown.IsValid && playerAspect.cooldown.ValueRO.startCooldown.IsNewerThan(testTick));
-                    playerAspect.aimRotation.ValueRW.angle = rot;
+                    bool isCooldown = !playerCooldown.ValueRO.cooldownTick.IsValid || testTick.IsNewerThan(playerCooldown.ValueRO.cooldownTick) ||
+                    (playerCooldown.ValueRO.startCooldown.IsValid && playerCooldown.ValueRO.startCooldown.IsNewerThan(testTick));
+                    aimRotation.ValueRW.angle = rot;
                     
                     if(isCooldown)
                     {
                         testTick.Subtract(1);
-                        if (playerAspect.input.GetDataAtTick(testTick, out var input2))
+                        if (playerInput.GetDataAtTick(testTick, out var input2))
                         {
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
@@ -111,13 +111,13 @@ partial struct CharacterAimSystem : ISystem
                                 if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
                                     break;
 
-                                bool isItem = EQHelper.TryGetBufferIndex(slotsLookup,playerAspect.playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex);
+                                bool isItem = EQHelper.TryGetBufferIndex(slotsLookup,playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex);
                                     
                                 Debug.Log("dziala!!!" + isItem);
 
 
                                 NetworkTick cooldownTick = NetworkTick.Invalid;
-                                float2 pointerPos = playerAspect.playerInputSync.ValueRO.sightPosition;
+                                float2 pointerPos = playerInputSync.ValueRO.sightPosition;
 
                                 if(ItemsAsset.instance.TryGetItem<RangedWeapon>(itemId,out RangedWeapon rangedWeapon))
                                 {
@@ -126,22 +126,22 @@ partial struct CharacterAimSystem : ISystem
 
                                     if(rangedWeapon.hasMagazine)
                                     {
-                                        var magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,playerContainer.Value.entity,playerAspect.playerInputSync.ValueRO.slotInHand, out Entity linkedContainerEntity);
+                                        var magazine = EQHelper.ReadLinkedContainer(slotsLookup,linkedContainersLookup,playerContainer.Value.entity,playerInputSync.ValueRO.slotInHand, out Entity linkedContainerEntity);
                                         if(magazine == null  || magazine.Length == 0)
                                         {
                                             var emptyMagazine = new EmptyMagazineRPC()
                                             {
-                                                networkID = playerAspect.networkId,
+                                                networkID = networkId,
                                                 itemID = itemId,
                                                 tick = testTick
                                             };   
                                             if(state.World.IsServer())
-                                                RPCService.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                                RPCService.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,networkId,entity,ghostChunk.ValueRO.GetChunk(),testTick);
                                             else                                          
                                                 EntityHelper.CreateEntityWithComponent(entityCommandBuffer,emptyMagazine);  
 
 
-                                            playerAspect.cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(testTick,0.5f);
+                                            playerCooldown.ValueRW.cooldownTick = EntityHelper.AddTime(testTick,0.5f);
                                             break;
                                         }
 
@@ -149,7 +149,7 @@ partial struct CharacterAimSystem : ISystem
                                         if(state.World.IsServer())
                                         {
                                             EQHelper.SubtractItem(slotsLookup,linkedContainerEntity,0,out var removedValue,1,false);  
-                                            EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId,new EquipmentEvent(EquipementEventFlags.UpdateWeaponMagazine));                                  
+                                            EQHelper.SendEvents(entityCommandBuffer, networkId,new EquipmentEvent(EquipementEventFlags.UpdateWeaponMagazine));                                  
                                         }
                                     }
                                     else
@@ -159,34 +159,34 @@ partial struct CharacterAimSystem : ISystem
                                         {
                                             var emptyMagazine = new EmptyMagazineRPC()
                                             {
-                                                networkID = playerAspect.networkId,
+                                                networkID = networkId,
                                                 itemID = itemId,
                                                 tick = testTick
                                             };   
                                             if(state.World.IsServer())
-                                                RPCService.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                                RPCService.SendEventsToClients<EmptyMagazineRPC>(emptyMagazine,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,networkId,entity,ghostChunk.ValueRO.GetChunk(),testTick);
                                             else                                          
                                                 EntityHelper.CreateEntityWithComponent(entityCommandBuffer,emptyMagazine);  
 
 
-                                            playerAspect.cooldown.ValueRW.cooldownTick = EntityHelper.AddTime(testTick,0.5f);
+                                            playerCooldown.ValueRW.cooldownTick = EntityHelper.AddTime(testTick,0.5f);
                                             break;
                                         }
 
-                                        ammoID = aggregated[playerAspect.playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
+                                        ammoID = aggregated[playerInputSync.ValueRO.ammoSelectedIndex % aggregated.Length].itemId;
                                         reloadCooldown = rangedWeapon.reloadCooldown;
 
                                         if(state.World.IsServer())
                                         {      
-                                            if(EQHelper.PlayerHasTheAmmo(playerAspect.playerInputSync.ValueRO.ammoSelectedItemID,aggregated))
-                                                ammoID = playerAspect.playerInputSync.ValueRO.ammoSelectedItemID;
+                                            if(EQHelper.PlayerHasTheAmmo(playerInputSync.ValueRO.ammoSelectedItemID,aggregated))
+                                                ammoID = playerInputSync.ValueRO.ammoSelectedItemID;
                         
                                             for(int k = 0; k < slots.Length; k++)
                                             {
                                                 if(slots[k].itemID == ammoID)
                                                 {
                                                     var events = EQHelper.SubtractItem(slotsLookup,containersLookup,slots[k].transferData.pos,entity);
-                                                    EQHelper.SendEvents(entityCommandBuffer, playerAspect.networkId, events);
+                                                    EQHelper.SendEvents(entityCommandBuffer, networkId, events);
                                                     break;
                                                 }
                                             }
@@ -204,16 +204,16 @@ partial struct CharacterAimSystem : ISystem
                                 
                                     uint seed = (uint)testTick.TickIndexForValidTick * 747796405u + 2891336453u;
                                     Unity.Mathematics.Random random = new Unity.Mathematics.Random(seed);
-                                    float spread = playerAspect.spread.ValueRO.Spread * 2f;
+                                    float spread = playerSpread.ValueRO.Spread * 2f;
                                     spread = random.NextFloat(-1 * spread, spread);                       
-                                    playerAspect.spread.ValueRW.Spread = math.clamp(playerAspect.spread.ValueRO.Spread + shootingConfig.shootSpread,0,shootingConfig.maxSpread);
+                                    playerSpread.ValueRW.Spread = math.clamp(playerSpread.ValueRO.Spread + shootingConfig.shootSpread,0,shootingConfig.maxSpread);
                                     float offset = ammoItem.bulletOffset;
                                     spread -= ammoItem.BulletsSpread / 2f;
 
                                     for(int k = 0 ; k <  ammoItem.bulletCount; k++)
                                     {
                                         Entity bullet = state.EntityManager.Instantiate(entitiesReferences.bulletEntity);
-                                        entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = playerAspect.networkId });                            
+                                        entityCommandBuffer.SetComponent(bullet, new GhostOwner() { NetworkId = networkId });                            
                                         var baseRot = quaternion.Euler(0, 0, rot);
                                         var spreadRot = quaternion.RotateZ((spread + (offset * k)) * Mathf.Deg2Rad);
                                         var rotation = math.mul(baseRot, spreadRot);
@@ -226,7 +226,7 @@ partial struct CharacterAimSystem : ISystem
                                         entityCommandBuffer.SetComponent(bullet, lt);
                                         entityCommandBuffer.SetComponent(bullet, new Bullet()
                                         {
-                                            bulletID = (uint)(playerAspect.networkId << 16) | (uint)((11 * k + networkTime.ServerTick.TickIndexForValidTick) % 65536),
+                                            bulletID = (uint)(networkId << 16) | (uint)((11 * k + networkTime.ServerTick.TickIndexForValidTick) % 65536),
                                             speed = 4,
                                             damage = 10,
                                             range = 20
@@ -242,7 +242,7 @@ partial struct CharacterAimSystem : ISystem
                                             entityCommandBuffer.SetComponent(bullet, bulletComp);
                                         }
                                         else
-                                            state.EntityManager.GetComponentObject<SpriteRenderer>(bullet).sprite = ammoItem.BulletSprite;
+                                            state.EntityManager.GetCompanion<SpriteRenderer>(bullet).sprite = ammoItem.BulletSprite;
                                     } 
 
                                 }
@@ -265,7 +265,7 @@ partial struct CharacterAimSystem : ISystem
                                     }
                                        
                                     cooldownTick = EntityHelper.AddTime(testTick,cooldown);
-                                    int2 tilePosition = mapSettings.GetPointerPosition(playerAspect.playerInputSync.ValueRO.sightPosition,playerAspect.localToWorld.ValueRO.Position);
+                                    int2 tilePosition = mapSettings.GetPointerPosition(playerInputSync.ValueRO.sightPosition,SystemAPI.GetComponentRO<LocalToWorld>(entity).ValueRO.Position);
                                     pointerPos = mapSettings.GetEnginePositionFromTilePosition(tilePosition).XY();
                                     int chunkIndex = mapSettings.GetChunkIndexFromEnginePosition(pointerPos);
                                     
@@ -285,7 +285,7 @@ partial struct CharacterAimSystem : ISystem
                                                     entityCommandBuffer.AppendToBuffer<ChunkServerActions>(chunk,new ChunkServerActions()
                                                     {
                                                         action = ServerAction.DamageBuildingObject,
-                                                        networkID = playerAspect.networkId,
+                                                        networkID = networkId,
                                                         tilePosition = tilePosition,
                                                         value = efficiency 
                                                     });
@@ -295,7 +295,7 @@ partial struct CharacterAimSystem : ISystem
                                                         EntityHelper.CreateEntityWithComponent<EQUseItem>(entityCommandBuffer,new EQUseItem()
                                                         {
                                                             networkEntity = SystemAPI.GetComponent<PlayerSourceConnection>(entity).value,
-                                                            slotPosition = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerAspect.playerInputSync.ValueRO.slotInHand)
+                                                            slotPosition = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerInputSync.ValueRO.slotInHand)
                                                         });
                                                     }
                                                 }
@@ -309,41 +309,41 @@ partial struct CharacterAimSystem : ISystem
 
                                 var rpc = new PlayerActionRPC()
                                 {
-                                    networkID = playerAspect.networkId,
+                                    networkID = networkId,
                                     itemID = itemId,
                                     tick = testTick,
                                     pointerPosition = pointerPos
                                 };                               
 
-                                playerAspect.playerState.ValueRW.state = PlayerState.shooting;
+                                playerState.ValueRW.state = PlayerState.shooting;
                                 if(state.World.IsServer())
                                 {
-                                    RPCService.SendEventsToClients<PlayerActionRPC>(rpc,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                    RPCService.SendEventsToClients<PlayerActionRPC>(rpc,ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,networkId,entity,ghostChunk.ValueRO.GetChunk(),testTick);
                                 } 
                                 else   
                                 {                                       
                                     EntityHelper.CreateEntityWithComponent(entityCommandBuffer,rpc); 
                                 }     
                                 
-                                playerAspect.cooldown.ValueRW.cooldownTick = cooldownTick;
-                                playerAspect.cooldown.ValueRW.startCooldown = NetworkTick.Invalid;              
+                                playerCooldown.ValueRW.cooldownTick = cooldownTick;
+                                playerCooldown.ValueRW.startCooldown = NetworkTick.Invalid;              
                             }
                         }
                     }
-                    else if (playerAspect.playerState.ValueRO.state == PlayerState.reloading  || playerAspect.playerState.ValueRO.state == PlayerState.unloading)
+                    else if (playerState.ValueRO.state == PlayerState.reloading  || playerState.ValueRO.state == PlayerState.unloading)
                     {
                         testTick.Subtract(1);
-                        if (playerAspect.input.GetDataAtTick(testTick, out var input2))
+                        if (playerInput.GetDataAtTick(testTick, out var input2))
                         {
                             uint counter2 = input2.InternalInput.rightButton.Count - input.InternalInput.rightButton.Count;
                             uint counter1 = input2.InternalInput.leftButton.Count - input.InternalInput.leftButton.Count;
                             if(counter2 != 0 || counter1 != 0)
                             {  
                                 state.EntityManager.SetComponentData<Cooldown>(entity,new Cooldown(){ cooldownTick = EntityHelper.AddTime(testTick,20) });
-                                playerAspect.playerState.ValueRW.state = PlayerState.none;
+                                playerState.ValueRW.state = PlayerState.none;
 
                                 if(state.World.IsServer())
-                                    RPCService.SendEventsToClientsAndOwner<StopReloadRPC>(ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,playerAspect.networkId,entity,playerAspect.ghostChunk.ValueRO.GetChunk(),testTick);
+                                    RPCService.SendEventsToClientsAndOwner<StopReloadRPC>(ref state,playerNeedChunkLookup,loadedChunks,entityCommandBuffer,networkId,entity,ghostChunk.ValueRO.GetChunk(),testTick);
                             }
                         }
                     }

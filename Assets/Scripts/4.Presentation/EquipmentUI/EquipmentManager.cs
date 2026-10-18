@@ -54,17 +54,17 @@ public class Container : IHaveTooltip
         if (mandatoryProperties == MandatoryProperties.tag)
         {
             string arg = StringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetTag<TagBase>(mandatoryData).getLocalizedString);
-            StringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
+            StringsHelper.AppendArgs(content,UIConfig.GetProperty("RequiredTag"),arg);
         }
         else if(mandatoryProperties == MandatoryProperties.item)
         {  
             string arg = StringsHelper.GetStringWithDefaultColor(ItemsAsset.instance.GetItem(mandatoryData)?.name);
-            StringsHelper.AppendArgs(content,UIManager.instance.GetProperty("RequiredTag"),arg);
+            StringsHelper.AppendArgs(content,UIConfig.GetProperty("RequiredTag"),arg);
         }
 
         ContainerComponent c = ClientServerBootstrap.ClientWorld.EntityManager.GetComponentData<ContainerComponent>(entity);
-        StringsHelper.Append(content, UIManager.instance.GetProperty("ContainerWaterResistance") ,c.waterResistance + " %");
-        StringsHelper.Append(content,UIManager.instance.GetProperty("Capacity"),c.capacity.ToString());
+        StringsHelper.Append(content, UIConfig.GetProperty("ContainerWaterResistance") ,c.waterResistance + " %");
+        StringsHelper.Append(content,UIConfig.GetProperty("Capacity"),c.capacity.ToString());
     }
     
 }

@@ -64,7 +64,7 @@ public class ItemStats : IReadOnlyItemStats
         this.quantity = quantity;
         this._color = itemStats.color;
     }
-    public ItemStats(int itemID, int itemCount = 1, float wetness = 0, Quality quality = Quality.none, Color? color = null)
+    public ItemStats(int itemID, int itemCount = 1, float wetness = 0, Quality quality = Quality.None, Color? color = null)
     {
         this.itemID = itemID;
         this.wetness = wetness;

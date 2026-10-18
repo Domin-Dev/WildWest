@@ -64,7 +64,7 @@ public class PlayerStatsUI : MonoBehaviour
     private void LoadStat(string nameStat)
     {
         var obj = Instantiate(statsPrefab.gameObject,startsParent).GetComponent<StatUI>(); 
-        var stat = UIManager.instance.GetProperty(nameStat);
+        var stat = UIConfig.GetProperty(nameStat);
         if(TrySetValue(obj,stat,0))
             stats.Add(nameStat,obj);
     }
@@ -73,7 +73,7 @@ public class PlayerStatsUI : MonoBehaviour
     {
         if(instance.stats.TryGetValue(name,out var statUI))
         {
-            var property = UIManager.instance.GetProperty(name);
+            var property = UIConfig.GetProperty(name);
             instance.TrySetValue(statUI,property,values);
         }
     }

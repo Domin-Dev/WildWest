@@ -1,17 +1,6 @@
-using System;
-using System.Linq;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
-using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEngine;
-using UnityEngine.InputSystem.Processors;
-
-
 
 [UpdateInGroup(typeof(EquipmentSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -57,7 +46,6 @@ partial struct DeselectionItemServerSystem : ISystem
             selectedSlot.ValueRW.Position = SlotPosition.NullSlot;
             entityCommandBuffer.DestroyEntity(entity);
         }
-
 
         entityCommandBuffer.Playback(state.EntityManager);
         entityCommandBuffer.Dispose();

@@ -53,7 +53,9 @@ TextureImporter:
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
+  spriteTessellationMethod: 0
   spriteTessellationDetail: -1
+  spriteGeometrySubdivision: -1
   textureType: 8
   textureShape: 1
   singleChannelComponent: 0
@@ -232,7 +234,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_2"
+      name: WoodenFrame
       rect:
         serializedVersion: 2
         x: 272
@@ -254,7 +256,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_3"
+      name: IronFrame
       rect:
         serializedVersion: 2
         x: 302
@@ -342,7 +344,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_7"
+      name: Blue
       rect:
         serializedVersion: 2
         x: 152
@@ -364,7 +366,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: "ItemEQ \u2014 kopia_8"
+      name: Green
       rect:
         serializedVersion: 2
         x: 212
@@ -452,7 +454,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_3
+      name: IronBlackFrame
       rect:
         serializedVersion: 2
         x: 1
@@ -474,7 +476,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_4
+      name: Bronze
       rect:
         serializedVersion: 2
         x: 32
@@ -496,7 +498,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_5
+      name: Silver
       rect:
         serializedVersion: 2
         x: 62
@@ -518,7 +520,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_6
+      name: Gold
       rect:
         serializedVersion: 2
         x: 92
@@ -562,7 +564,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_8
+      name: GreenSelected
       rect:
         serializedVersion: 2
         x: 242
@@ -584,7 +586,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_9
+      name: BlueSelected
       rect:
         serializedVersion: 2
         x: 182
@@ -606,7 +608,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_10
+      name: RedSelected
       rect:
         serializedVersion: 2
         x: 122
@@ -716,7 +718,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: UIBackgrounds_11
+      name: IronSelected
       rect:
         serializedVersion: 2
         x: 212
@@ -841,35 +843,35 @@ TextureImporter:
       - key: SpriteEditor.SliceSettings
         value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
+      Blue: -744353387
+      BlueSelected: 1042351989
+      Bronze: -387067171
       DefaultPressedSprite: 2019817164
+      Gold: 1532682267
+      Green: -350282367
+      GreenSelected: 1288980219
       Iron: -1004384454
+      IronBlackFrame: -144562309
+      IronFrame: 406122447
+      IronSelected: -353293881
       "ItemEQ \u2014 kopia_1": 130874801
-      "ItemEQ \u2014 kopia_2": 1954819079
-      "ItemEQ \u2014 kopia_3": 406122447
       "ItemEQ \u2014 kopia_4": 409571638
-      "ItemEQ \u2014 kopia_7": -744353387
-      "ItemEQ \u2014 kopia_8": -350282367
       Red: -1388937800
+      RedSelected: 1057229142
+      Silver: 1922422707
       UIBackgrounds_0: -1448790104
       UIBackgrounds_1: -1476733124
-      UIBackgrounds_10: 1057229142
-      UIBackgrounds_11: -353293881
       UIBackgrounds_13: -1728049519
       UIBackgrounds_15: -279984359
       UIBackgrounds_16: 1012725750
       UIBackgrounds_18: 1152116005
       UIBackgrounds_2: 1214819735
-      UIBackgrounds_3: -144562309
-      UIBackgrounds_4: -387067171
-      UIBackgrounds_5: 1922422707
-      UIBackgrounds_6: 1532682267
       UIBackgrounds_7: 1656743691
-      UIBackgrounds_8: 1288980219
-      UIBackgrounds_9: 1042351989
       UIWhiteHeader: 1366682903
       UIYellowHeader: 1186568250
       Wood: -155690521
       WoodSelected: -107823657
+      WoodenFrame: 1954819079
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -13,7 +13,6 @@ public partial class MapLoadingClientSystem : SystemBase
     private EntitiesReferences entitiesReferences;
     private NativeHashSet<int> chunksToLoad;
 
-
     private BufferLookup<BuildingObjects> objectsLookup;
     private BufferLookup<LocalBuildingObjects> localObjectsLookup;
     private BufferLookup<LinkedEntityGroup> linkedLookup;
@@ -23,23 +22,12 @@ public partial class MapLoadingClientSystem : SystemBase
         clientMap = new ClientMap();
         MapVisualization.instance.clientMap = clientMap;
     }
-
-    public void SetMapSettings(StartDataRPC map)
-    { 
-    //    clientMap.widthInChunks = map.widthInChunks;
-    }
     protected override void OnCreate()
     {
         base.OnCreate();
         chunksToLoad = new NativeHashSet<int>(30,Allocator.Persistent);
         RequireForUpdate<EntitiesReferences>();
         RequireForUpdate<Chunks>();
-        //var entityQueryDesc = new EntityQueryDesc
-        //{
-        //    All = new ComponentType[] { typeof(ReceiveRpcCommandRequest) },
-        //    Any = new ComponentType[] { typeof(FixedChunk), typeof(FixedBuildingObjects) }
-        //};
-        //RequireForUpdate(GetEntityQuery(entityQueryDesc));
 
         objectsLookup = SystemAPI.GetBufferLookup<BuildingObjects>();
         localObjectsLookup = SystemAPI.GetBufferLookup<LocalBuildingObjects>();
@@ -53,16 +41,8 @@ public partial class MapLoadingClientSystem : SystemBase
     {
         entitiesReferences = SystemAPI.GetSingleton<EntitiesReferences>();
     }
-
-    private float timer = 0f;
     protected override void OnUpdate()
     {
-        // float deltaTime = SystemAPI.Time.DeltaTime;
-        // timer += deltaTime;
-
-        // if (timer < 0.05) return; 
-        // timer = 0f;
-
         var ecb = new EntityCommandBuffer(Allocator.Temp);
         var mapVis = MapVisualization.instance;
         var chunks = SystemAPI.GetSingleton<Chunks>();
@@ -70,75 +50,71 @@ public partial class MapLoadingClientSystem : SystemBase
         localObjectsLookup.Update(this);
         linkedLookup.Update(this);
 
-
         bool mapIsUpdated = false;
-       Entities
-       .ForEach((Entity e,ChunkEventCounter counter, DynamicBuffer<ChunkEvents> events) =>
-       {
+        foreach((RefRW<ChunkEventCounter> counter,DynamicBuffer<ChunkEvents> events,Entity e) in SystemAPI.Query<RefRW<ChunkEventCounter>,DynamicBuffer<ChunkEvents>>().WithEntityAccess())
+        {
            if(!events.IsEmpty)
            {
-            while (true)
-           {
-             //  bool isEvent = false;
-               for (int i = 0; i < events.Length; i++)
-               {
-                   var ev = events[i];
-                   if (ev.index == counter.index)
-                   {
-                       counter.index++;
-                       switch (ev.flags)
-                       {
-                            case ChunkEventType.LoadChunk:
-                               chunksToLoad.Add(ev.chunk);
-                               break;
-                            case ChunkEventType.UnloadChunk:
-                               clientMap.RemoveChunk(ev.chunk);
-                               break;
-                            case ChunkEventType.UpdateBuildingObject:
-                                mapIsUpdated = true;
-                                if(chunks.currentChunks.TryGetValue(ev.chunk,out Entity chunkEntity))  
-                                {
-                                    if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,objectsLookup,out var result,out int index))
+                while (true)
+            {
+                //  bool isEvent = false;
+                for (int i = 0; i < events.Length; i++)
+                {
+                    var ev = events[i];
+                    if (ev.index == counter.ValueRO.index)
+                    {
+                        counter.ValueRW.index++;
+                        switch (ev.flags)
+                        {
+                                case ChunkEventType.LoadChunk:
+                                chunksToLoad.Add(ev.chunk);
+                                break;
+                                case ChunkEventType.UnloadChunk:
+                                clientMap.RemoveChunk(ev.chunk);
+                                break;
+                                case ChunkEventType.UpdateBuildingObject:
+                                    mapIsUpdated = true;
+                                    if(chunks.currentChunks.TryGetValue(ev.chunk,out Entity chunkEntity))  
                                     {
-                                        if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
+                                        if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,objectsLookup,out var result,out int index))
                                         {
-                                            float hp = (float)result.hitPoints / result.maxHitPoints;
-                                            int condition = Mathf.Clamp((int)((1f - hp) * 3f), 0, 2);
-                                            EntityManager.GetComponentObject<SpriteRenderer>(localResult.localSpriteEntity).sprite = ItemsAsset.instance.GetBuildingObjectSprite(result.id,result.variantIndex,condition);
-                                        }
-                                    }
-                                    else if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
-                                    {
-                                        var buffer = linkedLookup[chunkEntity];
-                                        for (int k = buffer.Length - 1; k >= 0; k--)
-                                        {
-                                            if (buffer[k].Value == localResult.localEntity)
+                                            if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
                                             {
-                                                buffer.RemoveAtSwapBack(k);
-                                                break;
+                                                float hp = (float)result.hitPoints / result.maxHitPoints;
+                                                int condition = Mathf.Clamp((int)((1f - hp) * 3f), 0, 2);
+                                                EntityManager.GetCompanion<SpriteRenderer>(localResult.localSpriteEntity).sprite = ItemsAsset.instance.GetBuildingObjectSprite(result.id,result.variantIndex,condition);
                                             }
                                         }
-                                        if(ItemsAsset.instance.TryGetItem<BuildingObject>(localResult.id,out var itemData))
-                                            Sounds.instance.PlayerSound(itemData.destructionSound);
+                                        else if(EntityHelper.TryFindBuildingObject(chunkEntity,ev.tilePosition,localObjectsLookup,out var localResult, out int localIndex))
+                                        {
+                                            var buffer = linkedLookup[chunkEntity];
+                                            for (int k = buffer.Length - 1; k >= 0; k--)
+                                            {
+                                                if (buffer[k].Value == localResult.localEntity)
+                                                {
+                                                    buffer.RemoveAtSwapBack(k);
+                                                    break;
+                                                }
+                                            }
+                                            if(ItemsAsset.instance.TryGetItem<BuildingObject>(localResult.id,out var itemData))
+                                                Sounds.instance.PlayerSound(itemData.destructionSound);
 
-                                        ecb.AddComponent<DestroyEntityTag>(localResult.localEntity);
-                                        localObjectsLookup[chunkEntity].RemoveAtSwapBack(localIndex);
+                                            ecb.AddComponent<DestroyEntityTag>(localResult.localEntity);
+                                            localObjectsLookup[chunkEntity].RemoveAtSwapBack(localIndex);
+                                        }
                                     }
-                                }
-                                break;
-                       }
+                                    break;
+                        }
 
-                       //isEvent = true;
-                       break;
-                   }
-               }
-              // if (!isEvent) break; 
-              break;
+                        //isEvent = true;
+                        break;
+                    }
+                }
+                // if (!isEvent) break; 
+                break;
+            }
            }
-            ecb.SetComponent(e, counter);
-           }
-       })
-       .WithoutBurst().Run();
+       }
 
         if(mapIsUpdated)
         {
@@ -150,12 +126,13 @@ public partial class MapLoadingClientSystem : SystemBase
 
         if (!chunksToLoad.IsEmpty)
         {
-            Entities.ForEach((Entity e, ChunkComponent chunk, DynamicBuffer<BuildingObjects> buildingObjects, DynamicBuffer<LocalBuildingObjects> localBuildingObjects) =>
+            foreach((RefRO<ChunkComponent> chunk, DynamicBuffer<BuildingObjects> buildingObjects, DynamicBuffer<LocalBuildingObjects> localBuildingObjects,Entity e) in SystemAPI.Query<RefRO<ChunkComponent>,DynamicBuffer<BuildingObjects>, DynamicBuffer<LocalBuildingObjects>>().WithEntityAccess())
             {
-                if(chunksToLoad.Contains(chunk.chunkIndex))
+            
+                if(chunksToLoad.Contains(chunk.ValueRO.chunkIndex))
                 {
-                    clientMap.AddChunk(chunk.chunkIndex, e);
-                    chunksToLoad.Remove(chunk.chunkIndex);
+                    clientMap.AddChunk(chunk.ValueRO.chunkIndex, e);
+                    chunksToLoad.Remove(chunk.ValueRO.chunkIndex);
 
                     for(int i = 0; i < buildingObjects.Length; i++)
                     {
@@ -173,10 +150,9 @@ public partial class MapLoadingClientSystem : SystemBase
                         buildingObjects.ElementAt(i) = item;
                     }
                 }
-            }).WithoutBurst().Run();
+            }
         }
         mapVis?.RenderNewChunks();
-
         ecb.Playback(EntityManager);
         ecb.Dispose();
     }

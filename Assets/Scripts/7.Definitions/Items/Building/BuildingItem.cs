@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Unity.Entities.UniversalDelegates;
+
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;

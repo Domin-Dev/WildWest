@@ -283,7 +283,6 @@ public class MenuManager : MonoBehaviour
                 row.SetWorld(header.header,header.playerData, UIConfig.Instance.Materials.HeadIcon);
             }
         }
-
         OpenWindow(worldListWindow, buttonBackWorlds);
         gamepadDropdownScroll.RefreshButtons();
     }

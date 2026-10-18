@@ -1,6 +1,5 @@
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
@@ -29,12 +28,9 @@ partial struct NewWorldItemServerSystem : ISystem
         state.RequireForUpdate<PhysicsWorldSingleton>();
         entityQueryBuilder.Dispose();
 
-
-
         worldItemLookup = SystemAPI.GetComponentLookup<WorldItem>();
         connections = SystemAPI.GetComponentLookup<PlayerSourceConnection>(true);
         playerNeedLookup = SystemAPI.GetBufferLookup<PlayersNeedChunk>(true);
-        
     }
 
     public void OnUpdate(ref SystemState state)

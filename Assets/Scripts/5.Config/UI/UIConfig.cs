@@ -19,11 +19,11 @@ public class UIConfig : ScriptableObject
     }
 
     [SerializeField] public List<BarColor> barColors;
-    [SerializeField] public List<Property> properties;
+    [SerializeField] public Dictionary<string,Property> Properties;
     [SerializeField] public List<FontData> Fonts;
     [SerializeField] public UIThermometerConfig ThermometerConfig;
     [SerializeField] public Materials Materials;
-    [SerializeField] public List<QualityData> QualityData;
+    [SerializeField] public Dictionary<Quality,QualityData> Quality;
     [SerializeField] public Headers Headers;
     [SerializeField] public Backgrounds Backgrounds;
     [SerializeField] public ProfileCovers ProfileCovers;
@@ -42,30 +42,26 @@ public class UIConfig : ScriptableObject
             colors.Add((c.color, Type.GetType(c.type)));
         return colors;
     }
-    public static Dictionary<string,Property> GetProperties()
+    public static Property GetProperty(string propertyName)
     {
-        Dictionary<string,Property> properties = new Dictionary<string, Property>();
-        foreach(var p in Instance.properties)
-            properties.Add(p.name,p);
-        return properties;
+        if(Instance.Properties.TryGetValue(propertyName,out var value))
+            return value;
+        else
+            return null;
     }
     public static Sprite GetQualitySprite(Quality quality)
     {
-        foreach (var item in Instance.QualityData)
-        {
-            if (item.quality == quality)
-                return item.sprite;
-        }
-        return null;
+        if(Instance.Quality.TryGetValue(quality,out var value))
+            return value.sprite;
+        else
+            return null;
     }
     public static Color? GetQualityColor(Quality quality)
     {
-        foreach (var item in Instance.QualityData)
-        {
-            if (item.quality == quality)
-                return item.color;
-        }
-        return null;
+        if(Instance.Quality.TryGetValue(quality,out var value))
+            return value.color;
+        else
+            return null;
     }
     public static void ChangeButton(Button button,Backgrounds.BackgroundType type)
     {
@@ -79,7 +75,10 @@ public class UIConfig : ScriptableObject
     }
     public static Background GetBackground(Backgrounds.BackgroundType type)
     {
-        return new Background();
+        if(Instance.Backgrounds.backgrounds.TryGetValue(type,out var value))
+            return value;
+        else
+            return null;
     }
     public static Sprite GetBackgroundSprite(Backgrounds.BackgroundType type)
     {

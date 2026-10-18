@@ -1,10 +1,10 @@
 public enum Quality : byte
 {
-    none = 0,
-    terrible = 1,
-    poor = 2,
-    normal = 3,
-    good = 4,
-    masterful = 5,
-    legendary = 6,
+    None = 0,
+    Terrible = 1,
+    Poor = 2,
+    Normal = 3,
+    Good = 4,
+    Excellent = 5,
+    Legendary = 6,
 }

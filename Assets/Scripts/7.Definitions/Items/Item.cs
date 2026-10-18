@@ -59,7 +59,7 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
         Color? hColor = UIConfig.GetQualityColor(itemStats.quality);
 
         header.Append(name);
-        if (itemStats.quality != Quality.none)
+        if (itemStats.quality != Quality.None)
             header.Append($" [ {itemStats.quality.ToString().ToUpper()} ]");
 
         content.Append(description);
@@ -67,7 +67,7 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
         var tags = ItemsAsset.instance.GetItemTags(itemStats.itemID);
         if (tags.Length > 0)
         {   
-            StringsHelper.Append(content,UIManager.instance.GetProperty("Tags"), tags);
+            StringsHelper.Append(content,UIConfig.GetProperty("Tags"), tags);
         }
         // if (itemStats is ItemWithBar)
         // {
@@ -77,13 +77,13 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
         // }
         
         if (itemStats.wetness >= 0.01)
-             StringsHelper.Append(content, UIManager.instance.GetProperty("Wetness"), itemStats.wetness.ToString("F2") + " %");
-         StringsHelper.Append(content, UIManager.instance.GetProperty("MaxStack") , stackMax.ToString());
+             StringsHelper.Append(content, UIConfig.GetProperty("Wetness"), itemStats.wetness.ToString("F2") + " %");
+         StringsHelper.Append(content, UIConfig.GetProperty("MaxStack") , stackMax.ToString());
       
         if (itemStats.color.HasValue)
         {
             string colorHex = UnityEngine.ColorUtility.ToHtmlStringRGB(itemStats.color.Value);
-            StringsHelper.Append(content,UIManager.instance.GetProperty("Color"), StringsHelper.GetColorfulString( "#" + colorHex,colorHex));
+            StringsHelper.Append(content,UIConfig.GetProperty("Color"), StringsHelper.GetColorfulString( "#" + colorHex,colorHex));
         }
 
  
