@@ -28,8 +28,6 @@ public class HeroEditor: MonoBehaviour
     [SerializeField] private Sprite selected;
     [SerializeField] private Sprite unselected;
 
-    private CharacterEditorSettings characterEditorSettings;
-
     [SerializeField] private SpriteRenderer head;
     [SerializeField] private SpriteRenderer body;
     [SerializeField] private SpriteRenderer hand1;
@@ -69,10 +67,9 @@ public class HeroEditor: MonoBehaviour
         {
             Destroy(gameObject);
         }
-        characterEditorSettings = Resources.Load<CharacterEditorSettings>("CharacterParts/CharacterEditorSettings");
-        hairSwitch.SetUpSwitch(0, characterEditorSettings.hairstylesTexture.height / 21, "Hairstyle");
-        beardSwitch.SetUpSwitch(0, characterEditorSettings.beardTexture.height / 21, "Beard");
-        faceDetailsSwitch.SetUpSwitch(0, characterEditorSettings.faceDetailsTexture.height / 21, "Facial details");
+        hairSwitch.SetUpSwitch(0, CharacterEditorConfig.Instance.hairstylesTexture.height / 21, "Hairstyle");
+        beardSwitch.SetUpSwitch(0, CharacterEditorConfig.Instance.beardTexture.height / 21, "Beard");
+        faceDetailsSwitch.SetUpSwitch(0, CharacterEditorConfig.Instance.faceDetailsTexture.height / 21, "Facial details");
         DirectionSwitch.SetUpSwitch(0, 4);
         LoadColors();
     }
@@ -80,10 +77,10 @@ public class HeroEditor: MonoBehaviour
     private void LoadColors()
     {
         SetCharacterSpriteProperties();
-        for (int i = 0; i < characterEditorSettings.skinColors.Length; i++)
+        for (int i = 0; i < CharacterEditorConfig.Instance.skinColors.Length; i++)
         {
             Transform transform = Instantiate(colorToSelectPrefab, skinColors).transform;
-            transform.GetComponent<Image>().color = characterEditorSettings.skinColors[i];
+            transform.GetComponent<Image>().color = CharacterEditorConfig.Instance.skinColors[i];
             transform.GetComponent<Button>().onClick.AddListener(() => 
             {
                 Image selectedColor = transform.GetComponent<Image>();
@@ -92,10 +89,10 @@ public class HeroEditor: MonoBehaviour
             });
         }
 
-        for (int i = 0; i < characterEditorSettings.hairColors.Length; i++)
+        for (int i = 0; i < CharacterEditorConfig.Instance.hairColors.Length; i++)
         {
             Transform transform = Instantiate(colorToSelectPrefab,hairColors).transform;
-            transform.GetComponent<Image>().color = characterEditorSettings.hairColors[i];
+            transform.GetComponent<Image>().color = CharacterEditorConfig.Instance.hairColors[i];
             transform.GetComponent<Button>().onClick.AddListener(() => 
             {
                 Image selectedColor = transform.GetComponent<Image>();
@@ -104,10 +101,10 @@ public class HeroEditor: MonoBehaviour
             });
         }
 
-        for (int i = 0; i < characterEditorSettings.clothesColors.Length; i++)
+        for (int i = 0; i < CharacterEditorConfig.Instance.clothesColors.Length; i++)
         {
             Transform transform = Instantiate(colorToSelectPrefab, underwearColors).transform;
-            transform.GetComponent<Image>().color = characterEditorSettings.clothesColors[i];
+            transform.GetComponent<Image>().color = CharacterEditorConfig.Instance.clothesColors[i];
             transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 Image selectedColor = transform.GetComponent<Image>();
@@ -142,9 +139,9 @@ public class HeroEditor: MonoBehaviour
         ChangeHair(0);
         ChangeBeard(0);
         ChangeFaceDetails(0);
-        ChangeSkinColor(characterEditorSettings.skinColors[0]);
-        ChangeHairColor(characterEditorSettings.hairColors[0]);
-        ChangeUnderwearColor(characterEditorSettings.clothesColors[0]);
+        ChangeSkinColor(CharacterEditorConfig.Instance.skinColors[0]);
+        ChangeHairColor(CharacterEditorConfig.Instance.hairColors[0]);
+        ChangeUnderwearColor(CharacterEditorConfig.Instance.clothesColors[0]);
     } 
     public void ChangeHair(int value)
     {

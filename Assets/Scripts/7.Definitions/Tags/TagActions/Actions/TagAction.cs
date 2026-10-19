@@ -10,10 +10,13 @@ public abstract class TagActionBase : ScriptableObject
     public abstract Type ArgsType {get;}
     public int TagActionID = -1;
 
+
+#if UNITY_EDITOR
     private void OnValidate()
     {
         if (TagActionID == -1) TagActionID = Resources.Load<IDManager>("IDManager").GetNextTagActionID();
     }
+#endif
     protected (int index,TagActionState state)[] GetActionState(DynamicBuffer<TagActionState> states)
     {
         return GetActionState(states,TagActionID);

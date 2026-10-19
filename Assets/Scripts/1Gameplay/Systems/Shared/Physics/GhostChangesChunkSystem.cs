@@ -16,7 +16,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
 [RequireMatchingQueriesForUpdate]
 

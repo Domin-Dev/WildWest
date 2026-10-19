@@ -110,13 +110,13 @@ partial struct StartSetUpServerSystem : ISystem
             EntityHelper.CreateEntityWithComponent(ecb, new CurrentTime()
             {
                 Day = 1,
-                Hour = WorldConfig.TimeConfig.startHour,
-                Season = WorldConfig.TimeConfig.startSeason,
+                Hour = WorldTimeConfig.Instance.startHour,
+                Season = WorldTimeConfig.Instance.startSeason,
                 StartTick = NetworkTick.Invalid,
-                StartHour = WorldConfig.TimeConfig.startHour,
-                NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(
-                    WorldConfig.TimeConfig.startSeason,
-                    WorldConfig.TimeConfig.startHour,
+                StartHour = WorldTimeConfig.Instance.startHour,
+                NextTimeOfDay = WorldTimeConfig.Instance.GetTimeOfDayThreshold(
+                    WorldTimeConfig.Instance.startSeason,
+                    WorldTimeConfig.Instance.startHour,
                     1,
                     out TimeOfDay currentTimeOfDay),
                 TimeOfDay = currentTimeOfDay

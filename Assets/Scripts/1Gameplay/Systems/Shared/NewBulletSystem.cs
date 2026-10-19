@@ -8,6 +8,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [RequireMatchingQueriesForUpdate]
 partial struct NewBulletSystem : ISystem
 {

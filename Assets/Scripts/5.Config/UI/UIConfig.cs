@@ -4,20 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "UIConfig", menuName = "GameAsset/UIConfig")]
-public class UIConfig : ScriptableObject
+public class UIConfig : Config<UIConfig>
 { 
-    private static UIConfig _instance;
-    public static UIConfig Instance
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = Resources.Load<UIConfig>("Config/UIConfig");
-
-            return _instance;
-        }
-    }
-
     [SerializeField] public List<BarColor> barColors;
     [SerializeField] public Dictionary<string,Property> Properties;
     [SerializeField] public List<FontData> Fonts;

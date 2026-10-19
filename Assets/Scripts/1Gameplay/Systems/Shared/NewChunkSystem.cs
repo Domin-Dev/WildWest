@@ -1,21 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.NetCode;
 using UnityEngine;
-
 
 public struct Chunks : IComponentData
 {
     public NativeHashMap<int,Entity> currentChunks;
 }
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(MapSystemGroup),OrderFirst = true)]
 [RequireMatchingQueriesForUpdate]
 [BurstCompile]

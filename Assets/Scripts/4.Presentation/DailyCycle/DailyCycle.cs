@@ -57,10 +57,10 @@ public class DailyCycle : MonoBehaviour
     }
     public void Start()
     {
-        timeOfDayBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.rangesUI);
-        seasonBar.SetUpBar(rangePrefab,WorldConfig.TimeConfig.Seasons);
+        timeOfDayBar.SetUpBar(rangePrefab,WorldTimeConfig.Instance.rangesUI);
+        seasonBar.SetUpBar(rangePrefab,WorldTimeConfig.Instance.Seasons);
         seasonBar.UpdateBar();
-        thermometer.SetUpBar(WorldConfig.UIConfig.ThermometerConfig);
+        thermometer.SetUpBar(UIConfig.Instance.ThermometerConfig);
 
         lerpLight = new LerpLight(globalLight);
         lerpWeather = new LerpWeather(rainParticleSystem,snowParticleSystem,thermometer);
@@ -68,7 +68,7 @@ public class DailyCycle : MonoBehaviour
 
         timeOfDayBar.GetComponent<DynamicTooltipTrigger>().SetUp(() =>
         {
-            var timeOfDay =  WorldConfig.TimeConfig.GetTimeOfDayUI(time.TimeOfDay);
+            var timeOfDay =  WorldTimeConfig.Instance.GetTimeOfDayUI(time.TimeOfDay);
             return new TooltipInfo
             (
                 currentTimeString.GetLocalizedString() + " " +time.HourInt + ":" + time.MinuteInt.ToString("00") + "\n" +
@@ -78,10 +78,10 @@ public class DailyCycle : MonoBehaviour
         seasonBar.GetComponent<DynamicTooltipTrigger>().SetUp(() =>
         {
             var nextSeason = WorldTimeConfig.GetNextSeason(time.Season);
-            int daysUntil =  WorldConfig.TimeConfig.SeasonDuration - (time.Day - 1) % WorldConfig.TimeConfig.SeasonDuration;
+            int daysUntil =  WorldTimeConfig.Instance.SeasonDuration - (time.Day - 1) % WorldTimeConfig.Instance.SeasonDuration;
             
-            var currentSeasonConfig = WorldConfig.TimeConfig.GetSeason(time.Season);
-            var nextSeasonConfig = WorldConfig.TimeConfig.GetSeason(nextSeason);
+            var currentSeasonConfig = WorldTimeConfig.Instance.GetSeason(time.Season);
+            var nextSeasonConfig = WorldTimeConfig.Instance.GetSeason(nextSeason);
 
             return new TooltipInfo
             (
@@ -155,37 +155,37 @@ public class DailyCycle : MonoBehaviour
     private void UpdateDayCounter(CurrentTime time)
     {
         dayCounter.text = "Day " + time.Day;
-        timeOfDayBar.UpdateBar(WorldConfig.TimeConfig.GetDailySchedule(time.Season,time.Day).GetTimes());
-        float season = ((time.Day - 1) % WorldConfig.TimeConfig.SeasonDuration) / (float)(WorldConfig.TimeConfig.SeasonDuration);
+        timeOfDayBar.UpdateBar(WorldTimeConfig.Instance.GetDailySchedule(time.Season,time.Day).GetTimes());
+        float season = ((time.Day - 1) % WorldTimeConfig.Instance.SeasonDuration) / (float)(WorldTimeConfig.Instance.SeasonDuration);
         seasonBar.SetValue(((int)time.Season + season) * 0.25f);
     }
     private void UpdateTimeOfDay(CurrentTime time)
     {
-        (Color color, float lerpTime) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
-        var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.Season,time.Day);
+        (Color color, float lerpTime) = WorldTimeConfig.Instance.GetTimeOfDayColor(time);
+        var schedule = WorldTimeConfig.Instance.GetDailySchedule(time.Season,time.Day);
         float startHour = schedule.GetStartTimeOfDay(time.TimeOfDay);
 
         lerpLight.Start(globalLight.color,color,time.GetWorldTime(startHour),lerpTime);
     }
     private void SetSunColor(CurrentTime time)
     {
-        (Color color, float lerpT) = WorldConfig.TimeConfig.GetTimeOfDayColor(time);
-        var schedule = WorldConfig.TimeConfig.GetDailySchedule(time.Season,time.Day);
+        (Color color, float lerpT) = WorldTimeConfig.Instance.GetTimeOfDayColor(time);
+        var schedule = WorldTimeConfig.Instance.GetDailySchedule(time.Season,time.Day);
         double start = time.GetWorldTime(schedule.GetStartTimeOfDay(time.TimeOfDay));
         
         if(time.WorldTime - start >= lerpT)
             lerpLight.Set(color);
         else
         {
-            (Color preColor, float _) = WorldConfig.TimeConfig.GetPreviousTimeOfDayColor(time);        
+            (Color preColor, float _) = WorldTimeConfig.Instance.GetPreviousTimeOfDayColor(time);        
             lerpLight.Start(preColor,color,start,lerpT);
             lerpLight.Update(time.WorldTime);
         }
     }
     private void SetGlobalVolume(CurrentTime time)
     {
-        double worldTimeStart = WorldConfig.TimeConfig.GetWorldTimeStartCurrentSeason(time); 
-        var current = WorldConfig.TimeConfig.GetSeason(time.Season);
+        double worldTimeStart = WorldTimeConfig.Instance.GetWorldTimeStartCurrentSeason(time); 
+        var current = WorldTimeConfig.Instance.GetSeason(time.Season);
 
         if(worldTimeStart - worldTimeStart > current.whiteBalance.LerpDuration)
         {
@@ -193,14 +193,14 @@ public class DailyCycle : MonoBehaviour
         }
         else
         {
-            var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.Season));
+            var previous = WorldTimeConfig.Instance.GetSeason(WorldTimeConfig.GetPreviousSeason(time.Season));
             lerpGlobalVolume.Start(previous.whiteBalance,current.whiteBalance,worldTimeStart,current.whiteBalance.LerpDuration);
         }
     }
     private void SeasonStart(CurrentTime time)
     {
-        var current = WorldConfig.TimeConfig.GetSeason(time.Season);
-        var previous = WorldConfig.TimeConfig.GetSeason(WorldTimeConfig.GetPreviousSeason(time.Season));
+        var current = WorldTimeConfig.Instance.GetSeason(time.Season);
+        var previous = WorldTimeConfig.Instance.GetSeason(WorldTimeConfig.GetPreviousSeason(time.Season));
         lerpGlobalVolume.Start(previous.whiteBalance,current.whiteBalance,time.WorldTime,current.whiteBalance.LerpDuration);
     }
     #endregion
@@ -210,20 +210,20 @@ public class DailyCycle : MonoBehaviour
         if(weather == null)
             lerpWeather.Set(localWeather);
         else
-            lerpWeather.Start(weather.Value,localWeather,currentTime.WorldTime,WorldConfig.WeatherConfig.WeatherUpdateLerpDuration);
+            lerpWeather.Start(weather.Value,localWeather,currentTime.WorldTime,WeatherConfig.Instance.WeatherUpdateLerpDuration);
         
         weather = localWeather;
     } 
     private void SetUpWeather(CurrentTime time)
     {
-        Sounds.CreateAmbient(WorldConfig.SoundsConfig.WindAmbient);
-        Sounds.CreateAmbient(WorldConfig.SoundsConfig.RainAmbient);
+        Sounds.CreateAmbient(SoundsConfig.Instance.WindAmbient);
+        Sounds.CreateAmbient(SoundsConfig.Instance.RainAmbient);
     }
     private void Lightning(float2 position)
     {
         Instantiate(lightningPrefab,new Vector3(position.x,position.y,position.y),Quaternion.identity);
-        Sounds.CreateWorldSound(WorldConfig.SoundsConfig.Thunder,position);
-        lerpLight.SetLightningColor(WorldConfig.WeatherConfig.stormConfig.LightningGlobalLightColor,time.WorldTime,WorldConfig.WeatherConfig.stormConfig.LightningColorLerpDuration);
+        Sounds.CreateWorldSound(SoundsConfig.Instance.Thunder,position);
+        lerpLight.SetLightningColor(WeatherConfig.Instance.stormConfig.LightningGlobalLightColor,time.WorldTime,WeatherConfig.Instance.stormConfig.LightningColorLerpDuration);
     }
     #endregion
 }   

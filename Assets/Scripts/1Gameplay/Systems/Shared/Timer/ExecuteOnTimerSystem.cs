@@ -1,7 +1,8 @@
- using Unity.Collections;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 public partial struct ExecuteOnTimerSystem : ISystem
 {

@@ -5,7 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SetUpSystemGroup))]
 [BurstCompile]
 partial struct StartSetUpSystem : ISystem
@@ -18,14 +18,14 @@ partial struct StartSetUpSystem : ISystem
             EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
             #region Time
-            int HourDurationInTicks = (int)(WorldConfig.TimeConfig.HourDuration * 60f * NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate);
+            int HourDurationInTicks = (int)(WorldTimeConfig.Instance.HourDuration * 60f * NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate);
             EntityHelper.CreateEntityWithComponent(ecb, new TimeConfig()
             {
-                DayDuration = WorldConfig.TimeConfig.HourDuration * 24f,
-                HourDuration = WorldConfig.TimeConfig.HourDuration ,
+                DayDuration = WorldTimeConfig.Instance.HourDuration * 24f,
+                HourDuration = WorldTimeConfig.Instance.HourDuration ,
                 DayDurationInTicks = (uint)(HourDurationInTicks * 24),
                 HourDurationInTicks = HourDurationInTicks,
-                SeasonDuration = WorldConfig.TimeConfig.SeasonDuration
+                SeasonDuration = WorldTimeConfig.Instance.SeasonDuration
             });
             #endregion 
 

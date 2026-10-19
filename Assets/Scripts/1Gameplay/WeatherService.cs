@@ -11,7 +11,7 @@ public static class WeatherService
         get
         {
             if(_weatherConfig == null)
-                _weatherConfig = WorldConfig.WeatherConfig;
+                _weatherConfig = WeatherConfig.Instance;
             return _weatherConfig;
         }
     }
@@ -43,14 +43,14 @@ public static class WeatherService
     
     public static LocalWeather GetWeather(int worldSeed,double worldTime,float2 position)
     {
-        return GetWeather(worldSeed,worldTime,WorldConfig.TimeConfig.GetCurrentSeason(worldTime),position);
+        return GetWeather(worldSeed,worldTime,WorldTimeConfig.Instance.GetCurrentSeason(worldTime),position);
     }
     public static LocalWeather GetWeather(int worldSeed,double worldTime,Season season, float2 position)
     {
         int hour = (int)(worldTime % 24);
         float2 windDir = GetWindDirection(position,worldTime,worldSeed,out float windSpeed);
         Vector2 weatherPosition = position - windDir * (float)worldTime * 0.1f;
-        var seasonConfig = WorldConfig.TimeConfig.GetSeason(season);
+        var seasonConfig = WorldTimeConfig.Instance.GetSeason(season);
 
         float temperature = GetTemperature(hour,seasonConfig,weatherPosition,worldSeed);
         float cloudiness = GetCloudiness(hour,seasonConfig,weatherPosition,worldSeed);

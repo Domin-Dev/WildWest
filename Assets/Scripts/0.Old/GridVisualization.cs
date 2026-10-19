@@ -64,7 +64,6 @@ public class GridVisualization : MonoBehaviour
     public event EventHandler<PlayerPositionArgs> onChangeChunk;
 
     public Dictionary<int, TileUV> TilesUV { get; private set; }
-    public MapGeneratorSettings id { private set; get; }
 
     int textureWidth;
     int textureHeight;

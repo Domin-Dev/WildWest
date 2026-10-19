@@ -1,18 +1,19 @@
 using UnityEngine;
-using NaughtyAttributes;
+using EditorAttributes;
 using Unity.Mathematics;
+using NaughtyAttributes;
 
 
 [CreateAssetMenu(fileName = "WeatherConfig", menuName = "GameAsset/ConfigFiles/WeatherConfig")]
-public class WeatherConfig : ScriptableObject
+public class WeatherConfig : Config<WeatherConfig>
 {
     [Header("Weather Settings")]
 
-    [Label("Weather Update Period (game hour)")]
+    [Rename("Weather Update Period"),Suffix("Game Hour")]
     public float WeatherUpdatePeriod = 0.5f;
-    [Label("Weather Update Lerp Duration (game hour)")]
+    [Rename("Weather Update Lerp Duration"),Suffix("Game Hour")]
     public float WeatherUpdateLerpDuration = 0.3f;
-    [Label("Processing Weather Update Period (seconds)")]
+    [Rename("Processing Weather Update Period"),Suffix("Seconds")]
     public float ProcessingWeatherUpdatePeriod = 0.5f;
     public PrecipitationConfig PrecipitationConfig;
     public FogConfig fogConfig;
@@ -59,7 +60,7 @@ public class FogConfig
 {
     [Range(0f,1f)]
     public float FogThreshold;
-    [CurveRange(0f,-1f,24f,1f)]
+   // [CurveRange(0f,-1f,24f,1f)]
 	public AnimationCurve fogByTime;
     [Range(-1f,1f)]
     public float WindSpeedInfluenceOnFog;    
@@ -86,8 +87,7 @@ public class StormConfig
     public float CloudinessInfluenceOnStorm;
     [Header("Lightning")]
     public Color LightningGlobalLightColor;
-    [AllowNesting]
-    [Label("Lightning Color Lerp Duration (game hour)")]
+    [Rename("Lightning Color Lerp Duration"),Suffix("Seconds")]
     public float LightningColorLerpDuration = 0.1f;
 
 }

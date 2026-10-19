@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using EditorAttributes;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,17 +8,21 @@ public struct Tile
     public int tileID;
 }
 
-[CreateAssetMenu(fileName = "MapGeneratorSettings", menuName = "GameAsset/Settings/MapGeneratorSettings")]
-public class MapGeneratorSettings : ScriptableObject
+[CreateAssetMenu(fileName = "MapGeneratorConfig", menuName = "GameAsset/MapGeneratorConfig")]
+public class MapGeneratorConfig : Config<MapGeneratorConfig>
 {
     public int grassID;
     public List<Tile> tiles;
 
 
     private int seed;
-    [Header("Map Size( in chunks )")]
-    private int widthInChunks = 10;
-    private int heightInChunks = 10;
+    [Header("Map Size")]
+    [Suffix("Chunks")]
+    [SerializeField] private int widthInChunks = 10;
+    [Suffix("Chunks")]
+    [SerializeField] private int heightInChunks = 10;
+
+
     [Header("Map Generator Settings")]
     [SerializeField] private float scale = 20;
     [SerializeField] private Vector2 offset;

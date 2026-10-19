@@ -6,6 +6,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateAfter(typeof(PhysicsSimulationGroup))]
 public partial struct StatefulTriggerEventBufferSystem : ISystem

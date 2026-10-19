@@ -39,7 +39,7 @@ partial struct ContainerClientSystem : ISystem
                 if(owner.ValueRO.NetworkId == containerOwner.ValueRO.NetworkId)
                 {
 
-                    if(containerComponent.ValueRO.containerIndex == EquipmentConfig.itemInHand_ContainerIndex)
+                    if(containerComponent.ValueRO.containerIndex == EquipmentConfig.Instance.itemInHand_ContainerIndex)
                         entityCommandBuffer.AddComponent<ContainersLoaded>(e);
 
 

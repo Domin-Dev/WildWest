@@ -85,7 +85,6 @@ public struct BarColor
 [System.Serializable]
 public class Property
 {
-    [SerializeField] private string _name;
     [SerializeField] private LocalizedString _localizedName;
     [SerializeField] private LocalizedString _description;
     [SerializeField] private Color _color;
@@ -94,7 +93,6 @@ public class Property
     [SerializeField] private int displayPriority;
     [SerializeField] private bool hideWhenValueIsZero;
 
-    public string name => _name;
     public LocalizedString localizedName => _localizedName;
     public LocalizedString description => _description;
     public Color color => _color;
@@ -109,8 +107,10 @@ public class UIThermometerConfig
 {
     public Color BelowZeroThermometerColor;
     public Color AboveZeroThermometerColor;
+    [Suffix("°C")]
     [Range(-60,60)]
     public float minTemperature;
+    [Suffix("°C")]
     [Range(-60,60)]
     public float maxTemperature;
 }

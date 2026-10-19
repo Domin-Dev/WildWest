@@ -1,12 +1,7 @@
-using System.Diagnostics;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Jobs;
-using Unity.NetCode;
-using Unity.NetCode.LowLevel;
-using Unity.Transforms;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(TriggerSystemGroup))]
 [UpdateBefore(typeof(TagTriggerSystem))]
 public partial struct TagTriggerSetUpSystem : ISystem

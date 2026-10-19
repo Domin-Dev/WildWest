@@ -9,12 +9,10 @@ public partial class StartScene : SystemBase
     protected override void OnCreate()
     {
         Enabled = false;
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByBuildIndex(0)) return;
-        SceneManager.LoadScene(0);
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName(Scenes.AppBoot)) return;
+        SceneManager.LoadScene(Scenes.AppBoot);
     }
-    protected override void OnUpdate()
-    {
-    }
+    protected override void OnUpdate() {}
 }
 
 #endif

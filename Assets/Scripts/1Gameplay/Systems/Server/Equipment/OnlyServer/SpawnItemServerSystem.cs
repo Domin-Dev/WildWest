@@ -63,12 +63,12 @@ partial struct SpawnItemServerSystem : ISystem
         {
             if(chunks.currentChunks.TryGetValue(command.ValueRO.chunkIndex,out Entity chunkEntity))
             {
-                var container = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+                var container = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.Instance.chunkItems_ContainerIndex);
                 if(container.HasValue)
                 {
-                    int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
+                    int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.Instance.chunkItems_ContainerIndex);
                     var args = new [] {new EQTransferData(){
-                        pos = new SlotPosition(EquipmentConfig.chunkItems_ContainerIndex,slotIndex),
+                        pos = new SlotPosition(EquipmentConfig.Instance.chunkItems_ContainerIndex,slotIndex),
                         quantity = command.ValueRO.item.quantity,
                         slotExist = false
                     }};

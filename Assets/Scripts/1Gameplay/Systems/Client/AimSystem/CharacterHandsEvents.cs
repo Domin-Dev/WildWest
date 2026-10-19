@@ -198,7 +198,7 @@ partial struct CharacterHandsEvents : ISystem
                     if(ghostOwner.ValueRO.NetworkId != action.ValueRO.networkID) continue;
                     if(SystemAPI.IsComponentEnabled<GhostOwnerIsLocal>(player))
                     {
-                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.Instance.hotBar_ContainerIndex,out var playerContainer))
                         {
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);
                             int itemId = slot.HasValue ? slot.Value.itemId : -1;

@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
-[CreateAssetMenu(fileName = "CharacterEditorSettings", menuName = "GameAsset/CharacterEditorSettings")]
-public class CharacterEditorSettings : ScriptableObject
+[CreateAssetMenu(fileName = "CharacterEditorConfig", menuName = "GameAsset/CharacterEditorConfig")]
+public class CharacterEditorConfig : Config<CharacterEditorConfig>
 {
     [SerializeField] public Color[] skinColors;
     [SerializeField] public Color[] hairColors;

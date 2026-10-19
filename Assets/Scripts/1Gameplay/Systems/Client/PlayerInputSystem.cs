@@ -122,7 +122,7 @@ partial struct PlayerInputSystem : ISystem
                 playerInput.ValueRW.ammoSelectedIndex = newAmmoIndex;
                 playerInputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
                 
-                if(EQHelper.TryGetPlayerContainer(containersLookup,playerEntity,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer))
+                if(EQHelper.TryGetPlayerContainer(containersLookup,playerEntity,EquipmentConfig.Instance.itemInHand_ContainerIndex,out var playerContainer))
                 {                         
                     EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                     if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
@@ -189,7 +189,7 @@ partial struct PlayerInputSystem : ISystem
                 RPCService.SendRpc(ecb,new EQDropItem()
                 {
                     count = 1,
-                    position = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot)
+                    position = new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,newSlot)
                 });
 
             if(InputManager.i.sideAction.WasPerformedThisFrame())
@@ -197,7 +197,7 @@ partial struct PlayerInputSystem : ISystem
                 RPCService.SendRpc(ecb,new EQDoubleClickAction()
                 {
                     action = true,
-                    position = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot)
+                    position = new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,newSlot)
                 });
             }
 
@@ -225,7 +225,7 @@ partial struct PlayerInputSystem : ISystem
 
     public static void UpdateItemInHand(BufferLookup<InventorySlot> slotsLookup,BufferLookup<EntityContainers> containersLookup,Entity player,int newSlot)
     {
-        EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,newSlot), out var inventorySlot, out int bufferIndex);
+        EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,newSlot), out var inventorySlot, out int bufferIndex);
         onNewSlotInHand?.Invoke(newSlot,inventorySlot);
     }
 

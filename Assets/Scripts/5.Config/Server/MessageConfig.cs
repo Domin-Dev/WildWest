@@ -1,30 +1,18 @@
-using NaughtyAttributes;
+using EditorAttributes;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MessageConfig", menuName = "GameAsset/MessageConfig")]
-public class MessageConfig : ScriptableObject
+public class MessageConfig : Config<MessageConfig>
 {   
-    private static MessageConfig _instance;
-    public static MessageConfig Instance
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = Resources.Load<MessageConfig>("Config/MessageConfig");
-
-            return _instance;
-        }
-    }
-    
-    [Header("Messages")]
-    [Label("Message System cleanup period (seconds)")]
+    [Rename("Message System cleanup period "),Suffix("Seconds")]
     [Min(0.01f)]public float CleanupPeriod;
-    [Label("Message Chunk Lifetime (seconds)")]
+    [Rename("Message Chunk Lifetime"),Suffix("Seconds")]
     [Min(0.01f)]public float MessageChunkLifetime;
      
     [Header("RPCs")]
-    [Label("RPC cleanup period (seconds)")]
+
+    [Rename("RPC cleanup period"),Suffix("Seconds")]
     [Min(0.01f)]public float RPCCleanupPeriod;
-    [Label("Max Rpc Age Frames (ticks)")]
+    [Rename("Max Rpc Age Frames "),Suffix("Ticks")]
     [Min(1)]public uint MaxRpcAgeFrames;
 } 

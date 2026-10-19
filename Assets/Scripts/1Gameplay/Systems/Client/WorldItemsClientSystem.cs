@@ -60,7 +60,7 @@ partial struct WorldItemsClientSystem : ISystem
             {
                 if(chunks.currentChunks.TryGetValue(action.ValueRO.chunkIndex,out Entity chunkEntity))
                 {
-                    var container = EQHelper.GetContainer(containersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+                    var container = EQHelper.GetContainer(containersLookup, chunkEntity, EquipmentConfig.Instance.chunkItems_ContainerIndex);
                     if(container.HasValue && EQHelper.TryGetBufferIndex(slotsLookup,action.ValueRO.slotIndex,container.Value.entity,out InventorySlot? slot,out int bufferIndex))
                     {
                         Entity worldItem = state.EntityManager.Instantiate(prefabs.worldItemEntity);
@@ -105,7 +105,7 @@ partial struct WorldItemsClientSystem : ISystem
                 {
                     if(chunks.currentChunks.TryGetValue(action.ValueRO.chunkIndex,out Entity chunkEntity))
                     {
-                        var container = EQHelper.GetContainer(containersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+                        var container = EQHelper.GetContainer(containersLookup, chunkEntity, EquipmentConfig.Instance.chunkItems_ContainerIndex);
                         if(container.HasValue)
                         {
                             EQHelper.TryGetBufferIndex(slotsLookup,action.ValueRO.slotIndex,container.Value.entity,out InventorySlot? slot,out int bufferIndex);  
@@ -180,7 +180,7 @@ partial struct WorldItemsClientSystem : ISystem
 
                             if(SystemAPI.HasComponent<GhostOwnerIsLocal>(player))
                             {
-                                SlotPosition slotPosition = new SlotPosition(EquipmentConfig.chunkItems_ContainerIndex,action.ValueRO.slotIndex);
+                                SlotPosition slotPosition = new SlotPosition(EquipmentConfig.Instance.chunkItems_ContainerIndex,action.ValueRO.slotIndex);
                                 if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,chunkEntity,slotPosition,out var item,out int newbufferIndex))
                                     RPCService.CreateLocalEvent(new PickUpItemCompletedClient() {item = item.Value },ecb,EntityHelper.AddTime(tick,action.ValueRO.duration));         
                             }

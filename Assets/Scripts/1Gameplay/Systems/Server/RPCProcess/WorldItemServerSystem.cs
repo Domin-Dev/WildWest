@@ -65,7 +65,7 @@ partial struct WorldItemServerSystem : ISystem
 
             if(chunks.currentChunks.TryGetValue(rpc.ValueRO.chunkIndex,out Entity chunkEntity))
             { 
-                if(EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex,out var container))
+                if(EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.Instance.chunkItems_ContainerIndex,out var container))
                 {
                     if(EQHelper.TryGetBufferIndex(slotsLookup,rpc.ValueRO.slotIndex,container.Value.entity,out InventorySlot? item,out int bufferIndex))
                     {
@@ -105,14 +105,14 @@ partial struct WorldItemServerSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;
                   
             if(chunks.currentChunks.TryGetValue(rpc.ValueRO.chunkIndex,out Entity chunkEntity) &&
-            EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex,out var container))
+            EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.Instance.chunkItems_ContainerIndex,out var container))
             {
                 if(EQHelper.TryGetBufferIndex(slotsLookup,rpc.ValueRO.slotIndex,container.Value.entity,out InventorySlot? inventorySlot,out int bufferIndex))
                 {
                     Entity connection = SystemAPI.GetComponent<PlayerSourceConnection>(player).value;
                     GhostChunk chunk = SystemAPI.GetComponent<GhostChunk>(player);
 
-                    SlotPosition slotPosition = new SlotPosition(EquipmentConfig.chunkItems_ContainerIndex,rpc.ValueRO.slotIndex);
+                    SlotPosition slotPosition = new SlotPosition(EquipmentConfig.Instance.chunkItems_ContainerIndex,rpc.ValueRO.slotIndex);
                     var tab = EQHelper.FindSlotForItem(componentLookup,slotsLookup,containersLookup,player,inventorySlot.Value,out int remains);
                     var events = EQHelper.MoveItems(ref state,ecb,linkedContainers,barsLookup,slotsLookup,connection,containersLookup,slotPosition,player,chunkEntity,tab);
 
@@ -134,10 +134,10 @@ partial struct WorldItemServerSystem : ISystem
 
                         if(rpc.ValueRO.chunkIndex != chunk.GetChunk())
                         {
-                            if(EQHelper.TryGetPlayerContainer(containersLookup, chunk.currentChunkEntity ,EquipmentConfig.chunkItems_ContainerIndex,out var containerTo)) 
+                            if(EQHelper.TryGetPlayerContainer(containersLookup, chunk.currentChunkEntity ,EquipmentConfig.Instance.chunkItems_ContainerIndex,out var containerTo)) 
                             {   
                                 chunkIndex = chunk.GetChunk();
-                                newSlot = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,containersLookup,chunk.currentChunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
+                                newSlot = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,containersLookup,chunk.currentChunkEntity,EquipmentConfig.Instance.chunkItems_ContainerIndex);
                                 EQHelper.MoveBetweenContainers(ref state,ref ecb,linkedContainers,barsLookup,slotsLookup,Entity.Null,Entity.Null,container.Value,containerTo.Value,newSlot,rpc.ValueRO.slotIndex,int.MaxValue,false,true,true);
                             }
                         }
@@ -173,7 +173,7 @@ partial struct WorldItemServerSystem : ISystem
             if(rpc.ValueRO.mergeItemsPRC.fromChunkIndex == rpc.ValueRO.mergeItemsPRC.toChunkIndex)
             {
                 if(chunks.currentChunks.TryGetValue(rpc.ValueRO.mergeItemsPRC.fromChunkIndex, out var chunkEntity) &&
-                EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex,out var container))
+                EQHelper.TryGetPlayerContainer(containersLookup,chunkEntity,EquipmentConfig.Instance.chunkItems_ContainerIndex,out var container))
                 {
                     chunkFrom = chunkTo = chunkEntity;
                     containerFrom = containerTo = container.Value;
@@ -185,8 +185,8 @@ partial struct WorldItemServerSystem : ISystem
             {
                 if(!(chunks.currentChunks.TryGetValue(rpc.ValueRO.mergeItemsPRC.toChunkIndex, out chunkTo) &&
                 chunks.currentChunks.TryGetValue(rpc.ValueRO.mergeItemsPRC.fromChunkIndex,out chunkFrom) &&
-                EQHelper.TryGetPlayerContainer(containersLookup,chunkTo,EquipmentConfig.chunkItems_ContainerIndex,out containerTo) && 
-                EQHelper.TryGetPlayerContainer(containersLookup,chunkFrom,EquipmentConfig.chunkItems_ContainerIndex,out containerFrom)))
+                EQHelper.TryGetPlayerContainer(containersLookup,chunkTo,EquipmentConfig.Instance.chunkItems_ContainerIndex,out containerTo) && 
+                EQHelper.TryGetPlayerContainer(containersLookup,chunkFrom,EquipmentConfig.Instance.chunkItems_ContainerIndex,out containerFrom)))
                     break;
             } 
             

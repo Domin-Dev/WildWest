@@ -34,7 +34,7 @@ public static class TimeService
         
         if(rawHour >= currentTime.ValueRO.NextTimeOfDay)
         {
-            currentTime.ValueRW.NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(
+            currentTime.ValueRW.NextTimeOfDay = WorldTimeConfig.Instance.GetTimeOfDayThreshold(
                 currentTime.ValueRO.Season,
                 hour,
                 currentTime.ValueRO.Day,
@@ -63,9 +63,9 @@ public static class TimeService
         currentTime.ValueRW.Hour = (float)(newWorldTime % 24);
         currentTime.ValueRW.StartHour = currentTime.ValueRO.Hour;
 
-        currentTime.ValueRW.NextTimeOfDay = WorldConfig.TimeConfig.GetTimeOfDayThreshold(currentTime.ValueRO.Season,  currentTime.ValueRO.Hour , days, out TimeOfDay currentTimeOfDay);
+        currentTime.ValueRW.NextTimeOfDay = WorldTimeConfig.Instance.GetTimeOfDayThreshold(currentTime.ValueRO.Season,  currentTime.ValueRO.Hour , days, out TimeOfDay currentTimeOfDay);
         currentTime.ValueRW.TimeOfDay = currentTimeOfDay;
-        currentTime.ValueRW.Season = WorldConfig.TimeConfig.GetCurrentSeason(currentTime.ValueRW.WorldTime);
+        currentTime.ValueRW.Season = WorldTimeConfig.Instance.GetCurrentSeason(currentTime.ValueRW.WorldTime);
     }
     public static double GetWorldTime(this CurrentTime currentTime,float hour)
     {

@@ -5,7 +5,7 @@ using Unity.NetCode;
 using Unity.Collections;
 using System;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 public partial struct DestroyOnTimerSystem : ISystem
 {

@@ -8,7 +8,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 
-// TODO maybe add world filter
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 partial struct ChunkDespawnClientSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

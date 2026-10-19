@@ -8,7 +8,7 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup),OrderLast = true)]
 [UpdateBefore(typeof(EndPredictedSimulationEntityCommandBufferSystem))]
 public partial class DestroyEntitySystem : SystemBase

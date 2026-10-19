@@ -39,7 +39,7 @@ public class LoadingManager : MonoBehaviour
 
     private void Awake()
     {
-        errorButton.onClick.AddListener(()=> { SceneManager.LoadScene(0);});
+        errorButton.onClick.AddListener(()=> { SceneManager.LoadScene(Scenes.Menu);});
     }
 
     private void Start()

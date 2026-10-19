@@ -40,8 +40,8 @@ public class Container : IHaveTooltip
         StringBuilder header = new StringBuilder();
         StringBuilder content = new StringBuilder();
 
-        header.Append(EquipmentConfig.Instance.GetContainerName(gridIndex));
-        content.Append(EquipmentConfig.Instance.GetContainerDescription(gridIndex));
+        header.Append(EquipmentConfig.GetContainerName(gridIndex));
+        content.Append(EquipmentConfig.GetContainerDescription(gridIndex));
 
         if(containerType == ContainerType.Standard)
             WriteContainerStats(header,content);

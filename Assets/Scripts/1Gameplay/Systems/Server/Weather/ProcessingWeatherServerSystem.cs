@@ -21,7 +21,7 @@ public partial struct ProcessingWeatherServerSystem : ISystem
         state.RequireForUpdate<MapSettings>(); 
         state.RequireForUpdate<LocalWeather>(); 
 
-        period = (uint)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * WorldConfig.WeatherConfig.ProcessingWeatherUpdatePeriod);
+        period = (uint)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * WeatherConfig.Instance.ProcessingWeatherUpdatePeriod);
         processed = new NativeHashSet<Entity>(16,Allocator.Persistent);
         weatherLookup = SystemAPI.GetComponentLookup<LocalWeather>(true);
         connectionsLookup = SystemAPI.GetComponentLookup<PlayerSourceConnection>(true);

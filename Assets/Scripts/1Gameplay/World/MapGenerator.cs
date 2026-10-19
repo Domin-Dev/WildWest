@@ -34,12 +34,9 @@ public class MapGenerator
 
     private static readonly Vector2 gridOffset = new Vector2(0, 0);
 
-    private MapGeneratorSettings mapGeneratorSettings;
-
     public MapGenerator(int seed)
     {
         this.seed = seed;
-        mapGeneratorSettings = Resources.Load<MapGeneratorSettings>("mapGeneratorSettings");
         var rand = new System.Random(seed);
         offset.x = rand.Next(-100000, 100000);
         offset.y = rand.Next(-100000, 100000);
@@ -52,7 +49,7 @@ public class MapGenerator
     }
     private void SetValue(ref ServerChunk chunk, int x, int y, int index, int variant)
     {
-        var tile =  chunk.grid[x,y].SetTileID(mapGeneratorSettings.tiles[index].tileID,21, variant); 
+        var tile =  chunk.grid[x,y].SetTileID(MapGeneratorConfig.Instance.tiles[index].tileID,21, variant); 
         chunk.grid[x,y] = tile;
     }
     private void SetBuildingObject(ref ServerChunk chunk, int x, int y, int index)
@@ -267,18 +264,18 @@ public class MapGenerator
     private List<int> GetNumberVariants()
     {
         List<int> list = new List<int>();
-        for (int i = 0; i < mapGeneratorSettings.tiles.Count; i++)
+        for (int i = 0; i < MapGeneratorConfig.Instance.tiles.Count; i++)
         {
-            list.Add(MapVisualization.instance.tilesUV[mapGeneratorSettings.tiles[i].tileID].variants);
+            list.Add(MapVisualization.instance.tilesUV[MapGeneratorConfig.Instance.tiles[i].tileID].variants);
         }
         return list;
     }
     private List<float> GetChanceOfDefaultTile()
     {
         List<float> list = new List<float>();
-        for (int i = 0; i < mapGeneratorSettings.tiles.Count; i++)
+        for (int i = 0; i < MapGeneratorConfig.Instance.tiles.Count; i++)
         {
-            list.Add(((Floor)ItemsAsset.instance.GetItem(mapGeneratorSettings.tiles[i].tileID)).chanceOfDefaultTile);
+            list.Add(((Floor)ItemsAsset.instance.GetItem(MapGeneratorConfig.Instance.tiles[i].tileID)).chanceOfDefaultTile);
         }
         return list;
     }

@@ -20,7 +20,7 @@ public class ChunkAuthoring : MonoBehaviour
             AddBuffer<GhostChildren>(entity);
             AddBuffer<EntityContainers>(entity);
             AddComponent<NextTempIndex>(entity, new NextTempIndex() {
-                    nextTempIndex = EquipmentConfig.start_ContainerIndex
+                    nextTempIndex = EquipmentConfig.Instance.start_ContainerIndex
             });
             AddBuffer<WorldItemPosition>(entity);
         }

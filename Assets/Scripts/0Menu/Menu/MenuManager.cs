@@ -221,9 +221,12 @@ public class MenuManager : MonoBehaviour
     }
     public void Load(string worldName)
     {
+        Debug.Log("load " + worldName);
         if (!SaveIOThread.TryLoadHeader(worldName,out HeaderSave data)) return;
-
+   Debug.Log("singel? " + isSingleplayerList);
         CloseWindows();
+
+        Debug.Log("singel? " + isSingleplayerList);
         if (isSingleplayerList)
             Starter.LoadSingleplayerWorld(data);
         else

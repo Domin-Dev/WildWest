@@ -84,7 +84,7 @@ partial struct NewItemInHandSystem : ISystem
                     {
                         if(networkTime.InterpolationTick.IsNewerThan(rpcCommand.ValueRO.tick))
                         {
-                            if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.itemInHand_ContainerIndex,out var playerContainer) && SystemAPI.Exists(playerContainer.Value.entity))
+                            if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.Instance.itemInHand_ContainerIndex,out var playerContainer) && SystemAPI.Exists(playerContainer.Value.entity))
                             {    
                                 EQHelper.TryGetBufferIndex(slotsLookup,0,playerContainer.Value.entity,out InventorySlot? slot, out int bufferIndex);
                                 int itemId = slot.HasValue ? slot.Value.itemId : -1;
@@ -99,7 +99,7 @@ partial struct NewItemInHandSystem : ISystem
                                         CharacterHandsEvents.ResetAnimation(hands.ValueRO,animationLookup,transformLookup,framesLookup,eventsLookup);
                                         Debug.Log("input!!!! nowe");
                                         state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpcCommand.ValueRO.tick,20)});
-                                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var hotbar))
+                                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.Instance.hotBar_ContainerIndex,out var hotbar))
                                         {
                                             UpdateUI(ref state,input,player,slot,out var ammoID,hotbar.Value.entity);
                                         }
@@ -118,7 +118,7 @@ partial struct NewItemInHandSystem : ISystem
                     }
                     else
                     {
-                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                        if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.Instance.hotBar_ContainerIndex,out var playerContainer))
                         {
                             Debug.Log("container "+ playerContainer.Value.entity + " " + playerContainer.Value.index);
                             EQHelper.TryGetBufferIndex(slotsLookup,input.ValueRO.slotInHand,playerContainer.Value.entity,out InventorySlot? slot , out int bufferIndex);

@@ -7,6 +7,7 @@ using Unity.NetCode;
 using Unity.NetCode.LowLevel;
 using Unity.Transforms;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(TriggerSystemGroup))]
 [UpdateBefore(typeof(TagUpdateSystem))]
 public partial struct TagTriggerSystem : ISystem

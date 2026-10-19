@@ -1,23 +1,21 @@
 using UnityEngine;
-using NaughtyAttributes;
-using Unity.VisualScripting;
-using UnityEngine.Experimental.GlobalIllumination;
-
 using JetBrains.Annotations;
 using UnityEngine.Localization;
+using EditorAttributes;
 
 [CreateAssetMenu(fileName = "WorldTimeConfig", menuName = "GameAsset/ConfigFiles/WorldTimeConfig")]
-public class WorldTimeConfig : ScriptableObject
+public class WorldTimeConfig : Config<WorldTimeConfig>
 {
     [Header("Start Settings")]
+    [Suffix("Hour")]
     [Range(0,24)]
     public int startHour;
     public Season startSeason;
     [Header("Day Settings")]
-    [Label("Hour duration (minutes)")]
+    [Rename("Hour duration"),Suffix("Minutes")]
     [Min(0.001f)]
     public float HourDuration;
-    [Label("Season duration (days)")]
+    [Rename("Season duration"),Suffix("Days")]
     [Min(1)]
     public int SeasonDuration;
     public int YearDuration => SeasonDuration * 4;
@@ -29,7 +27,6 @@ public class WorldTimeConfig : ScriptableObject
 
     [Header("Time of Day UI")]
     public TimeOfDayUI[] rangesUI;
-
 
     public (Color color,float dayLerpTime) GetTimeOfDayColor(in CurrentTime currentTime)
     {
@@ -154,8 +151,6 @@ public class WorldTimeConfig : ScriptableObject
     }
 }
 
-
-
 [System.Serializable]
 public class TimeOfDayUI : RangeUI
 {
@@ -199,18 +194,21 @@ public struct WhiteBalance
     public float Temperature;
     [Range(-100f, 100f)]
     public float Tint;
+    [Rename("Lerp duration"),Suffix("Game Hour")]
     [Min(0.1f)]
-    [Label("Lerp duration (game hour)")]
     public float LerpDuration;
 }
 
 [System.Serializable]
 public struct DailySchedule
 {    
+    [Suffix("Hour")]
     [Range(0, 24)]
     public float dayStart;
+    [Suffix("Hour")]
     [Range(0, 24)]
     public float eveningStart;
+    [Suffix("Hour")]
     [Range(0, 24)]
     public float nightStart;
     public float[] GetTimes()
@@ -222,7 +220,6 @@ public struct DailySchedule
         times[3] = 24 - nightStart;
         return times;
     }
-
     public float GetStartTimeOfDay(TimeOfDay timeOfDay)
     {
         switch(timeOfDay)
@@ -241,13 +238,13 @@ public struct DailySchedule
 public struct SeasonWeather
 {
     [Header("Temperature")]
-    [Label("Base Temperature (°C)")]
+    [Rename("Base Temperature"),Suffix("°C")]
     [Range(-60,60)]
     public float BaseTemperature;
-    [Label("Daily Variation (°C)")]
+    [Rename("Daily Variation"),Suffix("°C")]
     [Range(-60,60)]
     public float DailyVariation;
-    [Label("Daily Amplitude (°C)")]
+    [Rename("Daily Amplitude"),Suffix("°C")]
     [Range(-60,60)]
     public float DailyAmplitude;
 
@@ -272,18 +269,18 @@ public struct SeasonWeather
 public struct TimesOfDay
 {
     public Color dayColor;
+    [Rename("Day lerp duration"),Suffix("Game Hour")]
     [Min(0.1f)]
-    [Label("Day lerp duration (game hour)")]
     public float dayLerpDuration;
    
     public Color eveningColor;
+    [Rename("Evening lerp duration"),Suffix("Game Hour")]
     [Min(0.1f)]
-    [Label("Evening lerp duration (game hour)")]
     public float eveningLerpDuration;
     
     public Color nightColor;
+    [Rename("Night lerp duration"),Suffix("Game Hour")]
     [Min(0.1f)]
-    [Label("Night lerp duration (game hour)")]
     public float nightLerpDuration;
 
     public (Color color,float lerpTIme) GetColor(TimeOfDay timeOfDay)

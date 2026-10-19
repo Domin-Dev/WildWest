@@ -1,76 +1,58 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.Localization.Settings;
 
-public class EquipmentConfig 
+
+[System.Serializable]
+public class ContainerData
 {
-    private static EquipmentConfig i;
-    private static Dictionary<int,ContainerData> containers;
+    [SerializeField] private ContainerStats _containerStats;
+    [SerializeField] private LocalizedString  _containerName;
+    [SerializeField] private LocalizedString  _description;
+
+    public int index => _containerStats.containerIndex;
+    public ContainerStats stats => _containerStats;
+    public LocalizedString name => _containerName;
+    public LocalizedString description => _description;
+}
 
 
-    public static LocalizedString defaultContainerName {private set;get;}
-    public IReadOnlyDictionary<int, ContainerData> Containers => containers;
-    public readonly static int itemInHand_ContainerIndex;
-    public static SlotPosition itemInHand_SlotPosition => new SlotPosition(itemInHand_ContainerIndex,0);
+[CreateAssetMenu(fileName = "EquipmentConfig", menuName = "GameAsset/ConfigFiles/EquipmentConfig")]
+public class EquipmentConfig : Config<EquipmentConfig>
+{
+    public List<ContainerData> containers;
+    private Dictionary<int,ContainerData> containersMap;
+    public LocalizedString defaultContainerName;
+    public int itemInHand_ContainerIndex;
+    public SlotPosition itemInHand_SlotPosition => new SlotPosition(itemInHand_ContainerIndex,0);
+    public int hotBar_ContainerIndex;
+    public int start_ContainerIndex;
+    public int chunkItems_ContainerIndex;
 
-    public readonly static int hotBar_ContainerIndex;
-    public readonly static int start_ContainerIndex;
-    public readonly static int chunkItems_ContainerIndex;
-
-    
-
-
-
-    public static EquipmentConfig Instance
+    protected override void Start()
     {
-        get
-        {
-            if (i == null)
-            {
-                i = new EquipmentConfig();
-            }
-            return i;
-        }
+        containersMap = new Dictionary<int, ContainerData>();
+        foreach(var c in containers)
+            containersMap.TryAdd(c.index,c);
     }
-    
-    static EquipmentConfig()
-    {
-        var config = Resources.Load<EquipmentConfigData>("Config/EquipmentConfig");
-        defaultContainerName = config.defaultContainerName;
-        containers = new Dictionary<int, ContainerData>();
-
-        itemInHand_ContainerIndex = config.itemInHand_ContainerIndex;
-        hotBar_ContainerIndex = config.hotBar_ContainerIndex;
-        start_ContainerIndex = config.start_ContainerIndex;
-
-        chunkItems_ContainerIndex = config.chunkItems_ContainerIndex;
-
-        foreach(var c in config.containers)
-        {
-            containers.TryAdd(c.index,c);
-        }
-    }
-
     public static ContainerData GetContainer(int index)
     {
-        if(containers.TryGetValue(index,out ContainerData containerData))
+        if(Instance.containersMap.TryGetValue(index,out ContainerData containerData))
             return containerData;
         return null;
     }
-    public string GetContainerName(int index)
+    public static string GetContainerName(int index)
     {
         var cont = GetContainer(index);
-        if(cont == null || cont.name.IsEmpty) return defaultContainerName.GetLocalizedString();
+        if(cont == null || cont.name.IsEmpty) return Instance.defaultContainerName.GetLocalizedString();
         return cont.name.GetLocalizedString();
     }
-    public string GetContainerDescription(int index)
+    public static string GetContainerDescription(int index)
     {
         var cont = GetContainer(index);
         if(cont == null || cont.description.IsEmpty) return null;
         return cont.description.GetLocalizedString();
     }
 }
+ 

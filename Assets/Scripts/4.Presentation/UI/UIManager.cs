@@ -141,15 +141,7 @@ public class UIManager : MonoBehaviour
         LoadRecipes();
         colors = UIConfig.GetColors();
         itemInHandPopup.gameObject.SetActive(false);
-        
-        List<string> stats = new List<string>();
-        var values = UIConfig.Instance.Properties.Values.OrderByDescending(x => x.DisplayPriority).ToList();
-        foreach(var key in values)
-        {
-            if(key.DisplayEQWindow)
-                stats.Add(key.name);       
-        }
-        statsUI.Load(stats.ToArray());
+        statsUI.Load();
     }
     public void TabSetUp()
     {

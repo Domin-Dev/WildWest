@@ -6,10 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
-    guid: 0d45a2b64cba31a4da34b949a2af98d5
+    path: Assets/Scenes/AppBoot.unity
+    guid: ba32d08c806b6f5a1b7ec808400644c8
   - enabled: 1
-    path: Assets/Scenes/Game/BootScene.unity
+    path: Assets/Scenes/Game/GameBoot.unity
     guid: c7c07b9637d18ab29ba68851795b986f
   - enabled: 1
     path: Assets/Scenes/PlayerEditor.unity
@@ -42,10 +42,13 @@ EditorBuildSettings:
     path: Assets/Scenes/GameMenu.unity
     guid: 15735a56bb3414a4fbe21e81714051b5
   - enabled: 1
-    path: Assets/Scenes/Game/GameScene.unity
+    path: Assets/Scenes/Game/Game.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
-    path: Assets/Scenes/UI/ChatScene.unity
+    path: Assets/Scenes/Menu.unity
+    guid: 0d45a2b64cba31a4da34b949a2af98d5
+  - enabled: 1
+    path: Assets/Scenes/UI/Chat.unity
     guid: 0b2cf914e21b1d37bb74635ad02367c2
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: ad05fad9ae50a1647b1050db9e9fd8d8, type: 2}

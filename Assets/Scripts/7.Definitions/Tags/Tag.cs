@@ -48,9 +48,10 @@ public class TagBase : ScriptableObject, IReadTag
         }
     }
 
-
+#if UNITY_EDITOR
     private void OnValidate()
     {
         if (_ID == -1) _ID = Resources.Load<IDManager>("IDManager").GetNextTagID();
     }
+#endif
 }

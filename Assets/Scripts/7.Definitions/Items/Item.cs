@@ -48,10 +48,12 @@ public class Item : ScriptableObject,ISerializationCallbackReceiver
     {
         return new ItemStats(ID);
     }
+    #if UNITY_EDITOR
     private void OnValidate()
     {
        if(ID == -1) ID = Resources.Load<IDManager>("IDManager").GetNextID();
     }
+    #endif
     public virtual TooltipInfo GetTooltip(ItemStats itemStats)
     {
         StringBuilder content = new StringBuilder();

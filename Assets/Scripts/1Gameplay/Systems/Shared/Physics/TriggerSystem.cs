@@ -16,7 +16,7 @@ public struct EntityPairEvent
     public Entity entityB;
 }
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PhysicsSystemGroup))]
 [UpdateAfter(typeof(PhysicsSimulationGroup))]
 [UpdateBefore(typeof(AfterPhysicsSystemGroup))]

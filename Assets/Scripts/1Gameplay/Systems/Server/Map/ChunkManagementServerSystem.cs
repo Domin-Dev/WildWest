@@ -179,7 +179,7 @@ public partial class ChunkManagementServerSystem : SystemBase
             GoInGameServerSystem.CreateNewContainer(chunkEntity,ecb,index,ref entitiesReferences,new ContainerStats()
             {
                 capacity = 1000,
-                containerIndex = EquipmentConfig.chunkItems_ContainerIndex,
+                containerIndex = EquipmentConfig.Instance.chunkItems_ContainerIndex,
                 serverContainer = true,
                 publicContainer = true,
                 waterResistance = 0,

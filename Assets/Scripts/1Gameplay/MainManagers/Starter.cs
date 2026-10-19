@@ -75,6 +75,7 @@ public static class Starter
         GameInfo.LoadScene(1, 0, 0.5f);
     
 
+        Debug.Log("dz");
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
             World world = World.All[i];

@@ -58,8 +58,8 @@ partial struct VariableSynchronizationServerSystem : ISystem
             int NewSlotInHand = Mathf.Clamp(playerInput.ValueRO.slotInHand,0,9); 
             if (NewSlotInHand != playerInputSync.ValueRO.slotInHand && ghostChunk.ValueRO.HasChunk())
             {               
-                var from = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand);
-                var to = EquipmentConfig.itemInHand_SlotPosition;
+                var from = new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,NewSlotInHand);
+                var to = EquipmentConfig.Instance.itemInHand_SlotPosition;
                 EQHelper.Clone(from,to,barsLookup,slotsLookup,containersLookup,player,out var newSlot,out var newBarData);
                 int itemID = newSlot.HasValue ? newSlot.Value.itemId : -1;
                 
@@ -81,7 +81,7 @@ partial struct VariableSynchronizationServerSystem : ISystem
             if(newAmmo || playerInput.ValueRO.reloadButton.IsSet || playerInput.ValueRO.unloadButton.IsSet)
             {
                 playerInputSync.ValueRW.ammoSelectedIndex = newAmmoIndex;
-                EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,NewSlotInHand), out var slot,out int bufferIndex, out Entity containerEntity);
+                EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,NewSlotInHand), out var slot,out int bufferIndex, out Entity containerEntity);
                 if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
                 {
                     if(item.hasMagazine && (!cooldown.ValueRO.cooldownTick.IsValid || tick.IsNewerThan(cooldown.ValueRO.cooldownTick) ||

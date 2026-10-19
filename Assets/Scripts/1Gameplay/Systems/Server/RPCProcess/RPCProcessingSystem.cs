@@ -62,7 +62,7 @@ partial struct RPCProcessingSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;  
             state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state = PlayerState.shooting});
             
-            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.Instance.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && !item.hasMagazine)
             {
                 RPCService.CreateLocalEvent(new FutureReload(),ecb,player,rpc.ValueRO.networkID,EntityHelper.AddTime(tick,item.shootCooldown),false);
@@ -77,7 +77,7 @@ partial struct RPCProcessingSystem : ISystem
         SystemAPI.Query<RefRO<FutureReload>,DynamicBuffer<SendEventToPlayers>>().WithNone<WaitForProcess>().WithEntityAccess())
         {
             Entity player = toPlayers.ElementAt(0).connection; 
-            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.Instance.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
             {
                 var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
@@ -127,7 +127,7 @@ partial struct RPCProcessingSystem : ISystem
             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,20)});
             var playerInputSync = state.EntityManager.GetComponentData<PlayerInputSync>(player);
 
-            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerInputSync.slotInHand), out var slot,out int bufferIndex) && 
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,playerInputSync.slotInHand), out var slot,out int bufferIndex) && 
             ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
             {
                 if(!item.hasMagazine)
@@ -248,7 +248,7 @@ partial struct RPCProcessingSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;
             var input = SystemAPI.GetComponent<PlayerInputSync>(player);
 
-            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,input.slotInHand), out var slot,out int bufferIndex,out Entity containerEntity) && 
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,input.slotInHand), out var slot,out int bufferIndex,out Entity containerEntity) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))
             {
                 var ammo = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out var aggregated,out int counter);
@@ -287,7 +287,7 @@ partial struct RPCProcessingSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;
             var input = SystemAPI.GetComponent<PlayerInputSync>(player);
 
-            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,input.slotInHand), out var slot,out int bufferIndex,out Entity containerEntity) && 
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,input.slotInHand), out var slot,out int bufferIndex,out Entity containerEntity) && 
                 ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && item.hasMagazine)
             {
                 var ammo = EQHelper.TryFindItemWithTag(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out var aggregated,out int counter);
@@ -332,7 +332,7 @@ partial struct RPCProcessingSystem : ISystem
             Entity player = toPlayers.ElementAt(0).connection;
             state.EntityManager.SetComponentData<Cooldown>(player,new Cooldown(){ cooldownTick = EntityHelper.AddTime(rpc.ValueRO.tick,20) });
             state.EntityManager.SetComponentData<CurrentPlayerState>(player,new CurrentPlayerState(){ state =  PlayerState.none});
-            EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex);
+            EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.Instance.itemInHand_SlotPosition, out var slot,out int bufferIndex);
             rpc.ValueRW.weaponID = slot.HasValue ? slot.Value.itemId : -1;
    
             var buffer = SystemAPI.GetBuffer<FutureEventsForPlayer>(player);

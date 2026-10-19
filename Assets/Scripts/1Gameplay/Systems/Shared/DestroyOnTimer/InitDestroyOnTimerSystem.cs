@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Collections;
 using System;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct InitDestroyOnTimerSystem : ISystem
 {
 

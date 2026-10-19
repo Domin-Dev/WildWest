@@ -85,7 +85,7 @@ public class WindowsManager : MonoBehaviour
     {
         bool load = !loadedScene.Contains(index);
         LoadScene(index, load);
-    }
+    }    
     public void LoadScene(int index, bool background)
     {
         bool load = !loadedScene.Contains(index);

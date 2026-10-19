@@ -7,7 +7,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateAfter(typeof(TransformSystemGroup))]
 partial struct FollowersSystem : ISystem
 {

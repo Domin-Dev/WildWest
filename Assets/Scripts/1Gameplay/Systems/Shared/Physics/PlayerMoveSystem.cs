@@ -15,7 +15,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(CopyCommandBufferToInputSystemGroup),OrderLast = true)]
 public partial struct PlayerMoveSystem : ISystem
 {

@@ -29,5 +29,5 @@ public class IDManagerEditor : Editor
         
     }
 
-    
+
 }

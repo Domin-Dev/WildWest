@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Localization;
-
 
 
 [CreateAssetMenu(fileName = "SoundsConfig", menuName = "GameAsset/ConfigFiles/SoundsConfig")]
-public class SoundsConfig : ScriptableObject
+public class SoundsConfig : Config<SoundsConfig>
 {
     [SerializeField] private List<AudioClip> sounds;
     [SerializeField] public Ambient WindAmbient;

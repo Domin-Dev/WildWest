@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -26,12 +27,14 @@ public class PlayerStatsUI : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public void Load(string[] playerStats)
+    public void Load()
     {
         stats.Clear();
-        foreach(var s in playerStats)
+        var values = UIConfig.Instance.Properties.OrderByDescending(x => x.Value.DisplayPriority).ToList();
+        foreach(var item in values)
         {
-            LoadStat(s);
+            if(item.Value.DisplayEQWindow)
+                LoadStat(item.Value,item.Key);       
         }
     }
 
@@ -61,14 +64,12 @@ public class PlayerStatsUI : MonoBehaviour
         statUI.SetUp(StringsHelper.GetPropertyString(property,Color.white,values),property.color);
         return true;
     }
-    private void LoadStat(string nameStat)
+    private void LoadStat(Property property,string name)
     {
         var obj = Instantiate(statsPrefab.gameObject,startsParent).GetComponent<StatUI>(); 
-        var stat = UIConfig.GetProperty(nameStat);
-        if(TrySetValue(obj,stat,0))
-            stats.Add(nameStat,obj);
+        if(TrySetValue(obj,property,0))
+            stats.Add(name,obj);
     }
-
     public static void UpdateStat<T>(string name,params T[] values)
     {
         if(instance.stats.TryGetValue(name,out var statUI))

@@ -127,10 +127,10 @@ partial struct GoInGameServerSystem : ISystem
             targetContainer = -1,
         });
         ecb.AddComponent<NextTempIndex>(character, new NextTempIndex() {
-            nextTempIndex = EquipmentConfig.start_ContainerIndex
+            nextTempIndex = EquipmentConfig.Instance.start_ContainerIndex
         });
 
-        var containers = EquipmentConfig.Instance.Containers;
+        var containers = EquipmentConfig.Instance.containers;
         foreach(var cont in containers)
         { 
             ContainerSave? containerSave = null;
@@ -138,11 +138,11 @@ partial struct GoInGameServerSystem : ISystem
             {
                 foreach(var save in containerSaves)
                 {
-                    if(save.containerIndex == cont.Value.stats.containerIndex)
+                    if(save.containerIndex == cont.stats.containerIndex)
                         containerSave = save;
                 }
             }
-            CreateNewContainer(ref state,character, connection,ecb,ref entities,networkID,cont.Value.stats,containerSave);
+            CreateNewContainer(ref state,character, connection,ecb,ref entities,networkID,cont.stats,containerSave);
         }
 
         if(containerSaves != null)

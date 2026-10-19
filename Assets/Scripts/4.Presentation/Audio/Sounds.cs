@@ -10,8 +10,6 @@ public class Sounds : MonoBehaviour
     private Dictionary<string,(AudioSource audioSource,Ambient ambient)> ambients = new Dictionary<string, (AudioSource,Ambient)>();
 
  
-    [SerializeField] private SoundsConfig soundsConfig;
-
     [SerializeField] List<AudioClip> swordSounds;
     [SerializeField] List<AudioClip> hitSounds;
     [SerializeField] List<AudioClip> ShieldSounds;
@@ -58,9 +56,9 @@ public class Sounds : MonoBehaviour
 
     public void PlayerSound(int id)
     {
-        if(soundsConfig.Sounds.Count > id && id >= 0)
+        if(SoundsConfig.Instance.Sounds.Count > id && id >= 0)
         {
-            audioSource.PlayOneShot(soundsConfig.Sounds[id]);
+            audioSource.PlayOneShot(SoundsConfig.Instance.Sounds[id]);
         }
     }
 

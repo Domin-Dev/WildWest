@@ -39,8 +39,8 @@ public class LerpWeather : LerpValue
         this.thermometer = thermometer;
         this.rain = rain;
         this.snow = snow;
-        this.precipitationConfig = WorldConfig.WeatherConfig.PrecipitationConfig;
-        this.fogConfig = WorldConfig.WeatherConfig.fogConfig;
+        this.precipitationConfig = WeatherConfig.Instance.PrecipitationConfig;
+        this.fogConfig = WeatherConfig.Instance.fogConfig;
         this.state = PrecipitationState.None;
     }
     public void Start(LocalWeather startValue,LocalWeather targetValue,double startHour,float duration)

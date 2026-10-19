@@ -52,7 +52,8 @@ public class GameInfo : MonoBehaviour
         instance.loadingMode = loadingMode;
         instance.nextScene = newScene;
         instance.maxProgress = maxProgress;
-        SceneManager.LoadScene(3);
+        Debug.Log("load");
+        SceneManager.LoadScene(Scenes.Loading);
     }
     public static void SetUp()
     {

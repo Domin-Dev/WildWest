@@ -8,6 +8,7 @@ public struct RPCCleanUp : IComponentData
     public uint MaxRpcAgeFrames;
 }
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup))]
 partial struct RPCCleanUpSystem : ISystem
 { 

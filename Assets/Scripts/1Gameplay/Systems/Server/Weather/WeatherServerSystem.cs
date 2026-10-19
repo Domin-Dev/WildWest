@@ -19,7 +19,7 @@ public partial struct WeatherServerSystem : ISystem
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<MapSettings>(); 
         state.RequireForUpdate<NextWeatherUpdate>(); 
-        period = (uint)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * 60 * WorldConfig.TimeConfig.HourDuration * WorldConfig.WeatherConfig.WeatherUpdatePeriod);
+        period = (uint)(NetCodeConfig.Global.ClientServerTickRate.SimulationTickRate * 60 * WorldTimeConfig.Instance.HourDuration * WeatherConfig.Instance.WeatherUpdatePeriod);
     }
     public void OnUpdate(ref SystemState state)
     {

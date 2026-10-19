@@ -72,7 +72,7 @@ partial struct EventsServerSystem : ISystem
         Debug.Log("nowy  lista " + playersToAmmoUpdate.Count);
         foreach(var player in playersToAmmoUpdate)
         {
-            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
+            if(EQHelper.TryGetBufferIndex(slotsLookup,containersLookup,player,EquipmentConfig.Instance.itemInHand_SlotPosition, out var slot,out int bufferIndex) && 
             ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item) && !item.hasMagazine)
             {
                 var ammo = EQHelper.TryFindItemWithTag_Aggregated(ref state,slotsLookup,containersLookup,player,item.ammoTagID,out int counter);
@@ -127,13 +127,13 @@ partial struct EventsServerSystem : ISystem
                
 
                
-                if((equipmentEvent.data.flags !=  EquipementEventFlags.UpdateItemStats && equipmentEvent.containerIndex == EquipmentConfig.hotBar_ContainerIndex) 
+                if((equipmentEvent.data.flags !=  EquipementEventFlags.UpdateItemStats && equipmentEvent.containerIndex == EquipmentConfig.Instance.hotBar_ContainerIndex) 
                 || equipmentEvent.data.flags == EquipementEventFlags.ClearAllContainers)
                 {
                     if(input.ValueRO.slotInHand == equipmentEvent.slotPosition.slotIndex)
                     {
                         var playerChunk = SystemAPI.GetComponentRO<GhostChunk>(playerContainer.ValueRO.owner);
-                        var to = new SlotPosition(EquipmentConfig.itemInHand_ContainerIndex,0);
+                        var to = new SlotPosition(EquipmentConfig.Instance.itemInHand_ContainerIndex,0);
                         
                         EQHelper.Clone(equipmentEvent.slotPosition,to,barsLookup,slotsLookup,containersLookup,playerContainer.ValueRO.owner,out var newSlot,out var newBarData);
                         int itemID = newSlot.HasValue ? newSlot.Value.itemId : -1;

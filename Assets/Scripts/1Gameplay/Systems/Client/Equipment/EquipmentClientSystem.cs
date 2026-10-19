@@ -113,7 +113,7 @@ partial struct EquipmentClientSystem : ISystem
                 InventorySlot[] magazine = null;
                 InventorySlot? slot = null;
 
-                if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                if(EQHelper.TryGetPlayerContainer(containersLookup,player,EquipmentConfig.Instance.hotBar_ContainerIndex,out var playerContainer))
                 {                    
                     EQHelper.TryGetBufferIndex(slotsLookup,inputSync.ValueRO.slotInHand,playerContainer.Value.entity,out slot, out int bufferIndex);   
                     if(slot.HasValue && ItemsAsset.instance.TryGetItem<RangedWeapon>(slot.Value.itemId,out var item))

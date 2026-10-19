@@ -6,7 +6,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(SimulationSystemGroup),OrderFirst = true)]
 partial struct NewPlayerSystem : ISystem
 {
@@ -20,7 +20,6 @@ partial struct NewPlayerSystem : ISystem
     {
         EntityCommandBuffer entityCommandBuffer = new EntityCommandBuffer(Allocator.Temp);
         var players = SystemAPI.GetSingleton<Players>();
-        
 
         foreach ((RefRO<Player> player,RefRW<PhysicsMass> mass, RefRW<PlayerLook> playerLook, Entity entity) in SystemAPI.Query<RefRO<Player>,RefRW<PhysicsMass>, RefRW<PlayerLook>>().WithAll<Simulate,NewPlayerTag>().WithEntityAccess())
         {

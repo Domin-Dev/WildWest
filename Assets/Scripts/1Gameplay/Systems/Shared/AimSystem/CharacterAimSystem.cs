@@ -5,6 +5,8 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
+
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ThinClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [UpdateAfter(typeof(VariableSynchronizationServerSystem))]
 [UpdateAfter(typeof(PlayerMoveSystem))]
@@ -108,7 +110,7 @@ partial struct CharacterAimSystem : ISystem
                             uint counter2 = input2.InternalInput.rightButton.Count;
                             if(counter2 - input.InternalInput.rightButton.Count != 0)
                             {  
-                                if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.hotBar_ContainerIndex,out var playerContainer))
+                                if(!EQHelper.TryGetPlayerContainer(containersLookup,entity,EquipmentConfig.Instance.hotBar_ContainerIndex,out var playerContainer))
                                     break;
 
                                 bool isItem = EQHelper.TryGetBufferIndex(slotsLookup,playerInputSync.ValueRO.slotInHand,playerContainer.Value.entity,out int itemId, out int bufferIndex);
@@ -295,7 +297,7 @@ partial struct CharacterAimSystem : ISystem
                                                         EntityHelper.CreateEntityWithComponent<EQUseItem>(entityCommandBuffer,new EQUseItem()
                                                         {
                                                             networkEntity = SystemAPI.GetComponent<PlayerSourceConnection>(entity).value,
-                                                            slotPosition = new SlotPosition(EquipmentConfig.hotBar_ContainerIndex,playerInputSync.ValueRO.slotInHand)
+                                                            slotPosition = new SlotPosition(EquipmentConfig.Instance.hotBar_ContainerIndex,playerInputSync.ValueRO.slotInHand)
                                                         });
                                                     }
                                                 }

@@ -98,12 +98,12 @@ partial struct DropItemsServerSystem : ISystem
                     from = SystemAPI.GetComponentRW<ContainerSettings>(player).ValueRO.Position;
 
                 var containerFrom = EQHelper.GetContainer(playerContainersLookup, player, from.containerIndex);
-                var containerTo = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.chunkItems_ContainerIndex);
+                var containerTo = EQHelper.GetContainer(playerContainersLookup, chunkEntity, EquipmentConfig.Instance.chunkItems_ContainerIndex);
 
                 List<EquipmentEvent> events = new List<EquipmentEvent>();
                 if (containerFrom.HasValue && containerTo.HasValue && !SystemAPI.HasComponent<ServerContainer>(containerFrom.Value.entity) && EQHelper.TryGetBufferIndex(slotsLookup, from.slotIndex, containerFrom.Value.entity, out int itemID, out int index))
                 {
-                    int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.chunkItems_ContainerIndex);
+                    int slotIndex = EQHelper.GetNextFreeSlotForItem(ref state,slotsLookup,playerContainersLookup,chunkEntity,EquipmentConfig.Instance.chunkItems_ContainerIndex);
                     int count = command.ValueRO.count >= 1 ? command.ValueRO.count : int.MaxValue;
 
                     var tab = EQHelper.MoveBetweenContainers(ref state, ref ecb,linkedLookup,barsLookup, slotsLookup, rpcCommandRequest.ValueRO.SourceConnection,player,
