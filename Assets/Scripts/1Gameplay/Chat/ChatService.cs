@@ -180,9 +180,9 @@ public static class ChatService
     public static void ClientProcessMessage(in ServerMessageRPC message)
     {
         if (message.senderIsServer)
-            ChatManager.instance.PrintServerMessage(message.messageTime, message.Message.ToString());
+            Chat.instance.PrintServerMessage(message.messageTime, message.Message.ToString());
         else
-            ChatManager.instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
+            Chat.instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
     }   
     public static void ClientProcessMessage(NativeArray<(ServerMessageRPC message,NetworkTick tick)> messages)
     {
@@ -191,9 +191,9 @@ public static class ChatService
         string textStr = CombineMessageChunks(messages);
 
         if (message.senderIsServer)
-            ChatManager.instance.PrintServerMessage(message.messageTime, textStr);
+            Chat.instance.PrintServerMessage(message.messageTime, textStr);
         else
-            ChatManager.instance.PrintPlayerMessage(message.messageTime, textStr, message.sender.ToString());
+            Chat.instance.PrintPlayerMessage(message.messageTime, textStr, message.sender.ToString());
     }
 
     #endregion

@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 246617001}
   - component: {fileID: 246617002}
+  - component: {fileID: 246617003}
   m_Layer: 0
   m_Name: AppBoot
   m_TagString: Untagged
@@ -163,6 +164,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49cfe4f4417e637b68f510d600f9f603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AppBoot
+--- !u!114 &246617003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246617000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8908bddce26d73158ad6fc4445f15065, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Configs
   configs:
   - {fileID: 11400000, guid: 52311980b6b4414459e59be896b05e90, type: 2}
   - {fileID: 11400000, guid: f25610ee9948962a6be4829700821f88, type: 2}

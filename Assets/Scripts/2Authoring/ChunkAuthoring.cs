@@ -19,6 +19,8 @@ public class ChunkAuthoring : MonoBehaviour
             AddBuffer<LocalBuildingObjects>(entity);
             AddBuffer<GhostChildren>(entity);
             AddBuffer<EntityContainers>(entity);
+            Debug.Log(EquipmentConfig.Instance == null);
+            Debug.Log(UIConfig.Instance == null);
             AddComponent<NextTempIndex>(entity, new NextTempIndex() {
                     nextTempIndex = EquipmentConfig.Instance.start_ContainerIndex
             });

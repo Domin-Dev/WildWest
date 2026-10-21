@@ -360,11 +360,6 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
-    private void OnButtonCreateGame()
-    {
-        GameInfo.instance.isMultiplayer = false;
-        GameInfo.LoadScene(2, 1);
-    }
 
     public void OpenWorldSetUp()
     {

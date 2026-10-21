@@ -60,14 +60,14 @@ partial struct ClientMessageSystem : ISystem
         foreach ((PlayerJoinRPC message, Entity entity) in
         SystemAPI.Query<PlayerJoinRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
         {
-            ChatManager.instance.PrintServerMessage(message.messageTime,$"{message.playerName} has joined the game.");
+            Chat.instance.PrintServerMessage(message.messageTime,$"{message.playerName} has joined the game.");
             ecb.DestroyEntity(entity);
         }
 
         foreach ((PlayerLeftRPC message, Entity entity) in
         SystemAPI.Query<PlayerLeftRPC>().WithAll<ReceiveRpcCommandRequest>().WithEntityAccess())
         {
-            ChatManager.instance.PrintServerMessage(message.messageTime, $"{message.playerName} has left the game. {((NetworkStreamDisconnectReason)message.ReasonCode).ToString()}");
+            Chat.instance.PrintServerMessage(message.messageTime, $"{message.playerName} has left the game. {((NetworkStreamDisconnectReason)message.ReasonCode).ToString()}");
             ecb.DestroyEntity(entity);
         }
 

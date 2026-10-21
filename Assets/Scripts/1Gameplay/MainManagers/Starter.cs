@@ -76,15 +76,15 @@ public static class Starter
     
 
         Debug.Log("dz");
+
         for (int i = World.All.Count - 1; i >= 0; i--)
         {
             World world = World.All[i];
             if(world.Flags == WorldFlags.GameClient || world.Flags == WorldFlags.GameServer)
-            {
                 world.Dispose();
-            }
         }
-
+        if(World.DefaultGameObjectInjectionWorld != null && World.DefaultGameObjectInjectionWorld.IsCreated)
+            World.DefaultGameObjectInjectionWorld.Dispose();
 
         GameInfo.instance.startGame = true;
         World serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWildWorld");

@@ -21,6 +21,7 @@ public abstract class Config<T> : ConfigCore where T : Config<T>
     public sealed override void SetUp()
     {
         SetInstance((T)this);
+        Start();
     }
     protected virtual void Start(){}
 } 

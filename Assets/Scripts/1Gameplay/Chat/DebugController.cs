@@ -286,7 +286,7 @@ public static class DebugController
                     foreach(var i in tab)
                     {
                         var time = TimeService.GetTime(i.worldTime);
-                        stringBuilder.AppendLine(StringsHelper.GetColorfulString($"Time : {time.hour}:{time.minute.ToString("00")}, Day : {time.day}",ChatManager.highlightColor));
+                        stringBuilder.AppendLine(StringsHelper.GetColorfulString($"Time : {time.hour}:{time.minute.ToString("00")}, Day : {time.day}",Chat.highlightColor));
                         stringBuilder.Append($"\n{i.localWeather.ToString()}");
                     }
                 }
@@ -387,7 +387,7 @@ public static class DebugController
                 foreach(var list in commands)
                 {
                     foreach(var command in list.Value)
-                        builder.Append($"/<Color=#{ChatManager.highlightColor.ToHexString()}>{command.commandId}</Color> {command.commandFormat} - {command.commandDescription}\n");
+                        builder.Append($"/<Color=#{Chat.highlightColor.ToHexString()}>{command.commandId}</Color> {command.commandFormat} - {command.commandDescription}\n");
                 }
                 return builder.ToString();
             },false,false));

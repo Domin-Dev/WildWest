@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TMPro;
-using Unity.Burst.CompilerServices;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Build.Pipeline.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ChatManager : MonoBehaviour
+public class Chat : ChatCore
 {
     [Header("Chat GameObjects")]
     [SerializeField] private TMP_InputField inputField;
@@ -55,7 +51,7 @@ public class ChatManager : MonoBehaviour
     private bool isChat = false;
     private Dictionary<string,List<CommandBase>> commandList;
     private List<CommandBase> hintList;
-    public static ChatManager instance { private set; get; }
+    public static Chat instance { private set; get; }
     public bool isChatting { private set; get; }
     float timer = 0;
 
@@ -74,62 +70,64 @@ public class ChatManager : MonoBehaviour
         hintParent.gameObject.SetActive(false);
         inputField.gameObject.SetActive(false);  
     }
-    private void OnEnable()
-    {
-        inputField.onValueChanged.AddListener(UpdateHints);
-    }
-    private void OnDisable()
-    {
-        inputField.onValueChanged.RemoveListener(UpdateHints);
-    }
+
+    
+    // private void OnEnable()
+    // {
+    //     inputField.onValueChanged.AddListener(UpdateHints);
+    // }
+    // private void OnDisable()
+    // {
+    //     inputField.onValueChanged.RemoveListener(UpdateHints);
+    // }
     private void Update()
     {     
-        if(isTimer)
-        {
-            timer += Time.deltaTime;
-            if(timer >= 1)
-            {
-                timer = 0;
-                UpdateTimers();
-            }
-        }
+        // if(isTimer)
+        // {
+        //     timer += Time.deltaTime;
+        //     if(timer >= 1)
+        //     {
+        //         timer = 0;
+        //         UpdateTimers();
+        //     }
+        // }
 
-        if (Input.GetKeyDown(KeyCode.T) && !inputField.isFocused && !WindowsManager.instance.HasOpenWidnows())
-        {
-            SwitchChat();
-        }
+        // if (Input.GetKeyDown(KeyCode.T) && !inputField.isFocused && !WindowsManager.instance.HasOpenWidnows())
+        // {
+        //     SwitchChat();
+        // }
 
-        if(isChat)
-        {
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                SendMessage();
-            }
+        // if(isChat)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.Return))
+        //     {
+        //         SendMessage();
+        //     }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                SwitchChat();
-            }
+        //     if (Input.GetKeyDown(KeyCode.Escape))
+        //     {
+        //         SwitchChat();
+        //     }
 
-            if (Input.GetKeyDown(KeyCode.UpArrow))
-            {
-                currentLastHistory = math.clamp(++currentLastHistory, 0, history.Count - 1);
-                int index = LastHistory - currentLastHistory;
+        //     if (Input.GetKeyDown(KeyCode.UpArrow))
+        //     {
+        //         currentLastHistory = math.clamp(++currentLastHistory, 0, history.Count - 1);
+        //         int index = LastHistory - currentLastHistory;
 
 
-                if (index < 0) index = history.Count + index;
-                if(index < history.Count) inputField.text = history[index];
-            }
+        //         if (index < 0) index = history.Count + index;
+        //         if(index < history.Count) inputField.text = history[index];
+        //     }
             
-            if (Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                currentLastHistory = math.clamp(--currentLastHistory, 0, history.Count - 1);
-                int index = LastHistory - currentLastHistory;
+        //     if (Input.GetKeyDown(KeyCode.DownArrow))
+        //     {
+        //         currentLastHistory = math.clamp(--currentLastHistory, 0, history.Count - 1);
+        //         int index = LastHistory - currentLastHistory;
 
-                if (index < 0) index = history.Count + index;
-                if (index < history.Count) inputField.text = history[index];
-            }
-        }
+        //         if (index < 0) index = history.Count + index;
+        //         if (index < history.Count) inputField.text = history[index];
+        //     }
+        // }
     }
     private void SetUp()
     {
@@ -436,9 +434,10 @@ public class ChatManager : MonoBehaviour
     }
     public void SetUpHints()
     {
-    //    Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = UIAssetsConfig.Instance.selectedIronBackgroundUI;
+        var sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Wood);
+        Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Iron);
         for(int i = 0; i < displayedHintsCount - 1; i++)
-            Instantiate(hintPrefab,hintParent);
+            Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = sprite;
     }
     public void UpdateHintList(List<CommandBase> hints)
     {

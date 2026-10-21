@@ -47,7 +47,7 @@ public class WindowsManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape) && !ChatManager.instance.isChatting) 
+        if(Input.GetKeyDown(KeyCode.Escape) && !Chat.instance.isChatting) 
         {
             if (escScene == -1)
                 CloseOpenWindows();
@@ -101,7 +101,13 @@ public class WindowsManager : MonoBehaviour
             UnloadScene(index);
         }
         SwitchBackground(background);
+    }    
+    public void LoadScene(string name, bool background)
+    {
+        LoadScene(SceneManager.GetSceneByName(name).buildIndex,background);
     }
+
+
     public bool CloseOpenWindows()
     {
         OnCloseWindows?.Invoke();

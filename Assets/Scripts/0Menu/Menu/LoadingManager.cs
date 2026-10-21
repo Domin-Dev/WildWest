@@ -129,6 +129,7 @@ public class LoadingManager : MonoBehaviour
     private void Loading(float maxProgress, float startProgress = 0f)
     {
         loadingText.text = "Loading...";
+        Debug.Log("loading!! " + GameInfo.instance.nextScene);
         LoadAsyncScene(GameInfo.instance.nextScene, maxProgress, startProgress);
     }
     private void SetValue(float value)

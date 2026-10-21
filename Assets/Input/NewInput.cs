@@ -1263,6 +1263,119 @@ namespace UnityEngine.InputSystem
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Chat"",
+            ""id"": ""139e60ff-53e3-4a27-b4a9-5f80133358cd"",
+            ""actions"": [
+                {
+                    ""name"": ""OpenChat"",
+                    ""type"": ""Button"",
+                    ""id"": ""6997dacc-339f-436c-afd1-b7600cf9ae75"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""CloseChat"",
+                    ""type"": ""Button"",
+                    ""id"": ""826154cd-75ed-4815-b8ec-a19d4aed474b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""SendMessage"",
+                    ""type"": ""Button"",
+                    ""id"": ""b6775af6-2fcf-4953-815d-c16c14569ccc"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""NextSuggestion"",
+                    ""type"": ""Button"",
+                    ""id"": ""5c8f4f8d-f45b-4e7b-94cb-1c8e892b662b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""PreviousSuggestion"",
+                    ""type"": ""Button"",
+                    ""id"": ""818cbebc-2929-4bcb-af1b-4c59f9f51317"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""a7d8069d-376a-4457-8d03-31407bcdb569"",
+                    ""path"": ""<Keyboard>/t"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""OpenChat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5807c3db-64ce-4f14-80c8-1112891fb6ab"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CloseChat"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4241b679-9a32-4418-be2c-e38523a81bee"",
+                    ""path"": ""<Keyboard>/enter"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SendMessage"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e27cc090-cfe8-4781-84ff-cb9b3f28c63a"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NextSuggestion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1dfec108-9e93-4261-9624-c495811ac394"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PreviousSuggestion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1372,6 +1485,13 @@ namespace UnityEngine.InputSystem
             m_Eqipment_MoveAllTheItems = m_Eqipment.FindAction("MoveAllTheItems", throwIfNotFound: true);
             m_Eqipment_MoveTheItem = m_Eqipment.FindAction("MoveTheItem", throwIfNotFound: true);
             m_Eqipment_DropItem = m_Eqipment.FindAction("DropItem", throwIfNotFound: true);
+            // Chat
+            m_Chat = asset.FindActionMap("Chat", throwIfNotFound: true);
+            m_Chat_OpenChat = m_Chat.FindAction("OpenChat", throwIfNotFound: true);
+            m_Chat_CloseChat = m_Chat.FindAction("CloseChat", throwIfNotFound: true);
+            m_Chat_SendMessage = m_Chat.FindAction("SendMessage", throwIfNotFound: true);
+            m_Chat_NextSuggestion = m_Chat.FindAction("NextSuggestion", throwIfNotFound: true);
+            m_Chat_PreviousSuggestion = m_Chat.FindAction("PreviousSuggestion", throwIfNotFound: true);
         }
 
         ~@NewInput()
@@ -1379,6 +1499,7 @@ namespace UnityEngine.InputSystem
             UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, NewInput.Player.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, NewInput.UI.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_Eqipment.enabled, "This will cause a leak and performance issues, NewInput.Eqipment.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Chat.enabled, "This will cause a leak and performance issues, NewInput.Chat.Disable() has not been called.");
         }
 
         /// <summary>
@@ -2123,6 +2244,146 @@ namespace UnityEngine.InputSystem
         /// Provides a new <see cref="EqipmentActions" /> instance referencing this action map.
         /// </summary>
         public EqipmentActions @Eqipment => new EqipmentActions(this);
+
+        // Chat
+        private readonly InputActionMap m_Chat;
+        private List<IChatActions> m_ChatActionsCallbackInterfaces = new List<IChatActions>();
+        private readonly InputAction m_Chat_OpenChat;
+        private readonly InputAction m_Chat_CloseChat;
+        private readonly InputAction m_Chat_SendMessage;
+        private readonly InputAction m_Chat_NextSuggestion;
+        private readonly InputAction m_Chat_PreviousSuggestion;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "Chat".
+        /// </summary>
+        public struct ChatActions
+        {
+            private @NewInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public ChatActions(@NewInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "Chat/OpenChat".
+            /// </summary>
+            public InputAction @OpenChat => m_Wrapper.m_Chat_OpenChat;
+            /// <summary>
+            /// Provides access to the underlying input action "Chat/CloseChat".
+            /// </summary>
+            public InputAction @CloseChat => m_Wrapper.m_Chat_CloseChat;
+            /// <summary>
+            /// Provides access to the underlying input action "Chat/SendMessage".
+            /// </summary>
+            public InputAction @SendMessage => m_Wrapper.m_Chat_SendMessage;
+            /// <summary>
+            /// Provides access to the underlying input action "Chat/NextSuggestion".
+            /// </summary>
+            public InputAction @NextSuggestion => m_Wrapper.m_Chat_NextSuggestion;
+            /// <summary>
+            /// Provides access to the underlying input action "Chat/PreviousSuggestion".
+            /// </summary>
+            public InputAction @PreviousSuggestion => m_Wrapper.m_Chat_PreviousSuggestion;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_Chat; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="ChatActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(ChatActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="ChatActions" />
+            public void AddCallbacks(IChatActions instance)
+            {
+                if (instance == null || m_Wrapper.m_ChatActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_ChatActionsCallbackInterfaces.Add(instance);
+                @OpenChat.started += instance.OnOpenChat;
+                @OpenChat.performed += instance.OnOpenChat;
+                @OpenChat.canceled += instance.OnOpenChat;
+                @CloseChat.started += instance.OnCloseChat;
+                @CloseChat.performed += instance.OnCloseChat;
+                @CloseChat.canceled += instance.OnCloseChat;
+                @SendMessage.started += instance.OnSendMessage;
+                @SendMessage.performed += instance.OnSendMessage;
+                @SendMessage.canceled += instance.OnSendMessage;
+                @NextSuggestion.started += instance.OnNextSuggestion;
+                @NextSuggestion.performed += instance.OnNextSuggestion;
+                @NextSuggestion.canceled += instance.OnNextSuggestion;
+                @PreviousSuggestion.started += instance.OnPreviousSuggestion;
+                @PreviousSuggestion.performed += instance.OnPreviousSuggestion;
+                @PreviousSuggestion.canceled += instance.OnPreviousSuggestion;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="ChatActions" />
+            private void UnregisterCallbacks(IChatActions instance)
+            {
+                @OpenChat.started -= instance.OnOpenChat;
+                @OpenChat.performed -= instance.OnOpenChat;
+                @OpenChat.canceled -= instance.OnOpenChat;
+                @CloseChat.started -= instance.OnCloseChat;
+                @CloseChat.performed -= instance.OnCloseChat;
+                @CloseChat.canceled -= instance.OnCloseChat;
+                @SendMessage.started -= instance.OnSendMessage;
+                @SendMessage.performed -= instance.OnSendMessage;
+                @SendMessage.canceled -= instance.OnSendMessage;
+                @NextSuggestion.started -= instance.OnNextSuggestion;
+                @NextSuggestion.performed -= instance.OnNextSuggestion;
+                @NextSuggestion.canceled -= instance.OnNextSuggestion;
+                @PreviousSuggestion.started -= instance.OnPreviousSuggestion;
+                @PreviousSuggestion.performed -= instance.OnPreviousSuggestion;
+                @PreviousSuggestion.canceled -= instance.OnPreviousSuggestion;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ChatActions.UnregisterCallbacks(IChatActions)" />.
+            /// </summary>
+            /// <seealso cref="ChatActions.UnregisterCallbacks(IChatActions)" />
+            public void RemoveCallbacks(IChatActions instance)
+            {
+                if (m_Wrapper.m_ChatActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="ChatActions.AddCallbacks(IChatActions)" />
+            /// <seealso cref="ChatActions.RemoveCallbacks(IChatActions)" />
+            /// <seealso cref="ChatActions.UnregisterCallbacks(IChatActions)" />
+            public void SetCallbacks(IChatActions instance)
+            {
+                foreach (var item in m_Wrapper.m_ChatActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_ChatActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="ChatActions" /> instance referencing this action map.
+        /// </summary>
+        public ChatActions @Chat => new ChatActions(this);
         private int m_KeyboardMouseSchemeIndex = -1;
         /// <summary>
         /// Provides access to the input control scheme.
@@ -2477,6 +2738,49 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnDropItem(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Chat" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="ChatActions.AddCallbacks(IChatActions)" />
+        /// <seealso cref="ChatActions.RemoveCallbacks(IChatActions)" />
+        public interface IChatActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "OpenChat" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnOpenChat(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "CloseChat" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnCloseChat(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "SendMessage" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSendMessage(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "NextSuggestion" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnNextSuggestion(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "PreviousSuggestion" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPreviousSuggestion(InputAction.CallbackContext context);
         }
     }
 }

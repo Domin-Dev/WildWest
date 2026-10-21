@@ -6,46 +6,27 @@ using EditorAttributes;
 using System;
 
 
+[RequireComponent(typeof(Configs))]
 public class AppBoot : MonoBehaviour
 {
-    [Validate("Missing configurations", nameof(CheckConfigs), buildKiller: true, applyToCollection: true)]
-    [SerializeField] private ConfigCore[] configs;
     private void Awake()
     {
-#if UNITY_EDITOR 
-        CheckConfigs();
-#endif
-        foreach (ConfigCore config in configs)
-            if (config != null) config.SetUp();
-        SceneManager.LoadScene(Scenes.Menu);
+        
     }
-
-#if UNITY_EDITOR
-    private bool CheckConfigs()
+    private void Start()
     {
-        var allTypes = TypeCache
-            .GetTypesDerivedFrom<ConfigCore>()
-            .Where(type =>
-                type.IsClass &&
-                !type.IsAbstract &&
-                !type.ContainsGenericParameters)
-            .ToArray();
-
-        var configuredTypes = (configs ?? Array.Empty<ConfigCore>()).Where(config => config != null)
-            .Select(config => config.GetType()).ToHashSet();
-
-        var missingTypes = allTypes
-            .Where(type => !configuredTypes.Contains(type)).ToArray();
-
-        if (missingTypes.Length > 0)
+        if(TryGetComponent<Configs>(out var configs))
         {
-            Debug.LogError(
-                $"Missing configurations:\n" +
-                string.Join("\n", missingTypes.Select(type => type.FullName)),
-                this);
-            return true;
-        }
-        return false;
-    }
+            Debug.Log("AppBoot");
+#if UNITY_EDITOR 
+            configs.CheckConfigs();
 #endif
+            foreach (ConfigCore config in configs.GetConfigs())
+                if (config != null) config.SetUp();
+            SceneManager.LoadScene(Scenes.Menu);
+        }
+        else
+            Debug.LogError("Missing configurations");
+        Destroy(this);
+    }
 }

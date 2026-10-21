@@ -161,11 +161,15 @@ public class InputManager : MonoBehaviour
     {
         input.UI.Enable();
         input.Player.Enable();
+        input.Chat.Enable();
+        input.Eqipment.Enable();
     }
 
     private void OnDisable()
     {
         input.UI.Disable();
         input.Player.Disable();
+        input.Chat.Disable();
+        input.Eqipment.Disable();
     }
 }

@@ -1,18 +1,21 @@
-
 #if UNITY_EDITOR
-
+using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
-using Unity.Entities;
 
-public partial class StartScene : SystemBase
+[InitializeOnLoad]
+public static class StartScene
 {
-    protected override void OnCreate()
+    static StartScene()
     {
-        Enabled = false;
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName(Scenes.AppBoot)) return;
-        SceneManager.LoadScene(Scenes.AppBoot);
+        EditorApplication.playModeStateChanged += OnPlayModeChanged;
     }
-    protected override void OnUpdate() {}
+    private static void OnPlayModeChanged(PlayModeStateChange state)
+    {
+        if (state != PlayModeStateChange.ExitingEditMode || SceneManager.GetActiveScene().name == Scenes.AppBoot)
+            return;
+        EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
+        EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/Scenes/AppBoot.unity");
+    }
 }
-
 #endif

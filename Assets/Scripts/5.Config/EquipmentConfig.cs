@@ -38,6 +38,7 @@ public class EquipmentConfig : Config<EquipmentConfig>
     }
     public static ContainerData GetContainer(int index)
     {
+        Debug.Log("spawdz" + Instance == null);
         if(Instance.containersMap.TryGetValue(index,out ContainerData containerData))
             return containerData;
         return null;
