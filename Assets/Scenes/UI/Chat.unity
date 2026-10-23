@@ -327,7 +327,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 828113226}
   m_HandleRect: {fileID: 828113225}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -889,7 +889,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "jijijijijijjjj\u200B"
+  m_text: "\u200B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e8f6b37156d7f074c89de35971b07ae7, type: 2}
   m_sharedMaterial: {fileID: -7721429128836851817, guid: e8f6b37156d7f074c89de35971b07ae7, type: 2}
@@ -980,8 +980,8 @@ GameObject:
   - component: {fileID: 1703002437}
   - component: {fileID: 1703002441}
   - component: {fileID: 1703002440}
-  - component: {fileID: 1703002439}
   - component: {fileID: 1703002438}
+  - component: {fileID: 1703002442}
   m_Layer: 5
   m_Name: InputField
   m_TagString: Untagged
@@ -1021,7 +1021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd1ddb15fefbe754ab68a2e45bd4c6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UpdateShadow
---- !u!114 &1703002439
+--- !u!114 &1703002440
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1030,9 +1030,47 @@ MonoBehaviour:
   m_GameObject: {fileID: 1703002436}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 406122447, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1703002441
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703002436}
+  m_CullTransparentMesh: 1
+--- !u!114 &1703002442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1703002436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dcec7dd640e349468479f707cad49a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomInputField
   m_Navigation:
     m_Mode: 3
     m_WrapAround: 0
@@ -1062,7 +1100,7 @@ MonoBehaviour:
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 1703002440}
-  m_TextViewport: {fileID: 1579401273}
+  m_TextViewport: {fileID: 738573114}
   m_TextComponent: {fileID: 1579401275}
   m_Placeholder: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -1106,8 +1144,8 @@ MonoBehaviour:
       m_Calls: []
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
-  m_SelectionColor: {r: 0.35686275, g: 0.19215688, b: 0.21960786, a: 0.7529412}
-  m_Text: jijijijijijjjj
+  m_SelectionColor: {r: 0.35686275, g: 0.19215687, b: 0.21960784, a: 0.7529412}
+  m_Text: 
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0
@@ -1122,44 +1160,7 @@ MonoBehaviour:
   isAlert: 0
   m_InputValidator: {fileID: 0}
   m_ShouldActivateOnSelect: 1
---- !u!114 &1703002440
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1703002436}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 406122447, guid: 9194e9ee53ccb9d4c8f77c40d5b40d9c, type: 3}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1703002441
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1703002436}
-  m_CullTransparentMesh: 1
+  DisableInputControls: 1
 --- !u!1 &1787863319
 GameObject:
   m_ObjectHideFlags: 0
@@ -1371,7 +1372,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2141062540}
   - component: {fileID: 2141062542}
-  - component: {fileID: 2141062541}
   - component: {fileID: 2141062543}
   m_Layer: 5
   m_Name: Chat
@@ -1402,27 +1402,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2141062541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2141062539}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bc0611e6913a7f46a56da6176ab4aa3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inputField: {fileID: 1703002439}
-  background: {fileID: 1491623348}
-  chatScrollRect: {fileID: 933218897}
-  hintParent: {fileID: 2093378128}
-  messagePrefab: {fileID: 8064614052373504529, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
-  hintPrefab: {fileID: 5288512418748181064, guid: c010adb851e9412b39575830665a5ce7, type: 3}
-  displayedHintsCount: 5
-  indexes: 0000000000000000000000000000000000000000000000000000000000000000i
-  timers: 0000000000000000000000000000000000000000000000000000000000000000i
 --- !u!222 &2141062542
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1440,19 +1419,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 2141062539}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f7b4d450253f86b4592e7270beceb379, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bc0611e6913a7f46a56da6176ab4aa3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ChatCore
-  inputField: {fileID: 1703002439}
+  m_EditorClassIdentifier: Assembly-CSharp::Chat
+  inputField: {fileID: 1703002442}
   background: {fileID: 1491623348}
   chatScrollRect: {fileID: 933218897}
   messagePrefab: {fileID: 8064614052373504529, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
   maxMessageOnScreen: 8
   timeToDisappear: 10
   maxLog: 30
-  OpenChatAction: {fileID: 6867925373644311099, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
-  CloseChatAction: {fileID: 160010761318287615, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
-  SendMessageAction: {fileID: -8538452823266676875, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
+  openChatAction: {fileID: 6867925373644311099, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
+  closeChatAction: {fileID: 160010761318287615, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
+  sendMessageAction: {fileID: -8538452823266676875, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
+  hintParent: {fileID: 2093378128}
+  hintPrefab: {fileID: 5288512418748181064, guid: c010adb851e9412b39575830665a5ce7, type: 3}
+  displayedHintsCount: 5
+  nextSuggestion: {fileID: 5458531012638861571, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
+  previousSuggestion: {fileID: 5046534415764367969, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
+  applySuggestion: {fileID: -1102803867186424771, guid: b2abce9a486c7eb4cb2b066d23212adc, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

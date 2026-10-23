@@ -171,7 +171,6 @@ public class TimersFor<T> : Timer
     }
     protected void UpdateTimers(float delta)
     {
-        Debug.Log("liczba " + values.Count);
         for(int i = values.Count -1; i >= 0;i--)
         {
             float timer = values[i].timer - delta;

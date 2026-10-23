@@ -1,11 +1,13 @@
 ﻿using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class StringsHelper
 { 
-    public static string GetColorfulString(string value,Color color)
+
+    public static string GetColorfulString(this string value, Color color)
     {
-        return GetColorfulString(value,UnityEngine.ColorUtility.ToHtmlStringRGB(color));
+        return GetColorfulString(value,color.ToHexString());
     }
     public static string GetColorfulString(string value, string color)
     {
@@ -33,11 +35,11 @@ public static class StringsHelper
 
     public static string GetPropertyString<T>(Property property,params T[] value)
     {
-        return GetPropertyString(ColorUtility.ToHtmlStringRGB(property.color), property.localizedName.GetLocalizedString(),property.nameIcon, value);
+        return GetPropertyString(property.color.ToHexString(), property.localizedName.GetLocalizedString(),property.nameIcon, value);
     }
     public static string GetPropertyString<T>(Property property,Color color,params T[] value) 
     {
-        return GetPropertyString(ColorUtility.ToHtmlStringRGB(color), property.localizedName.GetLocalizedString(),property.nameIcon, value);
+        return GetPropertyString(color.ToHexString(), property.localizedName.GetLocalizedString(),property.nameIcon, value);
     }
     public static string GetPropertyString<T>(string colorString, string fieldName,string iconName,params T[] value)
     {

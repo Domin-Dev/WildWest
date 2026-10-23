@@ -123,7 +123,7 @@ public class UIManager : MonoBehaviour
 
     private List<Transform> openWindows = new List<Transform>();
             
-    public bool WindowsAreClosed => openWindows.Count == 0 && !tabUI.IsOpen() && !Chat.instance.isChatting;
+    public bool WindowsAreClosed => openWindows.Count == 0 && !tabUI.IsOpen() && !Chat.Instance.ChatIsOpen;
 
 
     private List<int> loadedScene = new List<int>();

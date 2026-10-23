@@ -4,59 +4,51 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
-public class ChatCore : MonoBehaviour
+public class ChatCore<T> : Singleton<T> where T : ChatCore<T>
 {
     #region Fields
-
-    public static ChatCore Instance { private set; get; }
     public bool ChatIsOpen { private set; get; }
-    
     protected virtual bool canOpen => !WindowsManager.instance.HasOpenWidnows();
 
-    [Header("Chat Core")]
-    [SerializeField] private TMP_InputField inputField;
+    [Header("Core")]
+    [SerializeField] protected TMP_InputField inputField;
     [SerializeField] private Image background;
     [SerializeField] private ScrollRect chatScrollRect;
     [SerializeField] private GameObject messagePrefab;
 
-    [Header("Chat Config")]
+    [Header("Config")]
     [SerializeField] private int maxMessageOnScreen = 8;
     [SerializeField] private int timeToDisappear = 10;
     [SerializeField] private int maxLog = 30;
     [Header("Input")]
-    [SerializeField] private InputActionReference OpenChatAction;
-    [SerializeField] private InputActionReference CloseChatAction;
-    [SerializeField] private InputActionReference SendMessageAction;
+    [SerializeField] private InputActionReference openChatAction;
+    [SerializeField] private InputActionReference closeChatAction;
+    [SerializeField] private InputActionReference sendMessageAction;
 
     private Scrollbar chatScrollbar;
     private RectTransform chathandle;
-    private Transform content;
+    private RectTransform content;
     private int lastIndex => content.childCount - 1;
     private List<(float timer,int index)> messagesOnScreenList;
     private TimersForWithUpdateInterval<int> messagesOnScreen;
     #endregion
     #region UnityFuncs
-    private void Awake()
+    protected override void Awake()
     {
-        if(Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        base.Awake();
         SetUp();  
     }
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
-        inputField.onValueChanged.AddListener(OnInputChanged);
-        OpenChatAction.action.performed += OpenChat;
-        CloseChatAction.action.performed += CloseChat;
-        SendMessageAction.action.performed += SendMessage;
+        openChatAction.action.performed += OpenChat;
+        closeChatAction.action.performed += CloseChat;
+        sendMessageAction.action.performed += SendMessage;
     }
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
-        inputField.onValueChanged.RemoveListener(OnInputChanged);
-        OpenChatAction.action.performed -= OpenChat;
-        CloseChatAction.action.performed -= CloseChat;
-        SendMessageAction.action.performed -= SendMessage;
+        openChatAction.action.performed -= OpenChat;
+        closeChatAction.action.performed -= CloseChat;
+        sendMessageAction.action.performed -= SendMessage;
     }
     private void OnDestroy()
     {
@@ -78,8 +70,16 @@ public class ChatCore : MonoBehaviour
             image.color = new Color(1, 1, 1, 1f);
         else
             image.color = new Color(1, 1, 1, 0.5f);
-
+        LayoutRebuilder.ForceRebuildLayoutImmediate(content);
+        LayoutRebuilder.ForceRebuildLayoutImmediate(message.GetComponent<RectTransform>());
         return message;
+    }
+    public void Clear()
+    {
+        messagesOnScreenList.Clear();
+        for (int i = 1; i < content.childCount; i++)
+            Destroy(content.GetChild(i).gameObject);
+        LayoutRebuilder.MarkLayoutForRebuild(content);
     }
     protected virtual void SetUp()
     {
@@ -88,7 +88,6 @@ public class ChatCore : MonoBehaviour
         content = chatScrollRect.content;
         ChatIsOpen = false;
         inputField.gameObject.SetActive(false);  
-
 
         messagesOnScreenList = new List<(float,int)>();
         messagesOnScreen = Timer.Create(messagesOnScreenList,(index) => 
@@ -99,7 +98,6 @@ public class ChatCore : MonoBehaviour
             return false;
         },1f,false);
     }
-    protected virtual void OnInputChanged(string newValue){}
     protected virtual void SwitchChat()
     {
         if (ChatIsOpen) TurnOffChat();
@@ -150,6 +148,7 @@ public class ChatCore : MonoBehaviour
         if (content.childCount > maxLog + 1)
         {
             Destroy(content.GetChild(1).gameObject);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(content);
             for (int i = 0; i < messagesOnScreenList.Count; i++)
             {
                 var value = messagesOnScreenList[i];

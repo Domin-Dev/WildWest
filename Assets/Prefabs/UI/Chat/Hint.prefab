@@ -8,6 +8,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3293718846424239604, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
+      propertyPath: m_Padding.m_Top
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3293718846424239604, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
+      propertyPath: m_Padding.m_Left
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3293718846424239604, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3293718846424239604, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
+      propertyPath: m_Padding.m_Bottom
+      value: 16
+      objectReference: {fileID: 0}
     - target: {fileID: 4501180491884475426, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
       propertyPath: m_HorizontalFit
       value: 2
@@ -30,11 +46,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6485171526186753732, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 8
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 6485171526186753732, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -18.39
+      value: -20.39
       objectReference: {fileID: 0}
     - target: {fileID: 7161639051333763731, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
       propertyPath: m_text
@@ -122,7 +138,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8064614052373504529, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
       propertyPath: m_Name
-      value: Message Variant
+      value: Hint
       objectReference: {fileID: 0}
     - target: {fileID: 8657593189390264218, guid: 67a676c05fc6bd243b82bd3cf0fc22b3, type: 3}
       propertyPath: m_HorizontalFit

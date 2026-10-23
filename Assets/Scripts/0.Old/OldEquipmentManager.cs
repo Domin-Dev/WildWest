@@ -339,7 +339,7 @@ public class OldEquipmentManager : MonoBehaviour
 
     private void Update()   
     {
-        if (!Chat.instance.isChatting)
+        if (!Chat.Instance.ChatIsOpen)
         {
                  if (Input.GetKeyDown(KeyCode.Alpha1)) ChangeSelectedSlot(0);
             else if (Input.GetKeyDown(KeyCode.Alpha2)) ChangeSelectedSlot(1);

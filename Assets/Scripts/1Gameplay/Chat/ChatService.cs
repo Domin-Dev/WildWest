@@ -5,6 +5,7 @@ using System.Text;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.VisualScripting;
 
 public static class ChatService
 { 
@@ -122,6 +123,16 @@ public static class ChatService
         var temp = value.Trim();
         return temp.Length > 0 && temp[0] == '/';
     }
+    public static void PrintCommands(params CommandBase[] commandBase)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < commandBase.Length; i++)
+        {
+            sb.Append($"/{commandBase[i].commandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {commandBase[i].commandFormat}");
+            if(i != commandBase.Length - 1) sb.Append("\n");
+        }
+        if(sb.Length > 0) Chat.Instance.Print(sb.ToString());
+    }
     #endregion
     #region ServerProcess
     private static void ServerProcessCommand(EntityManager entityManager,EntityCommandBuffer ecb, string commandText,Entity connectionEntity)
@@ -180,9 +191,9 @@ public static class ChatService
     public static void ClientProcessMessage(in ServerMessageRPC message)
     {
         if (message.senderIsServer)
-            Chat.instance.PrintServerMessage(message.messageTime, message.Message.ToString());
+            Chat.Instance.PrintServerMessage(message.messageTime, message.Message.ToString());
         else
-            Chat.instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
+            Chat.Instance.PrintPlayerMessage(message.messageTime, message.Message.ToString(), message.sender.ToString());
     }   
     public static void ClientProcessMessage(NativeArray<(ServerMessageRPC message,NetworkTick tick)> messages)
     {
@@ -191,10 +202,45 @@ public static class ChatService
         string textStr = CombineMessageChunks(messages);
 
         if (message.senderIsServer)
-            Chat.instance.PrintServerMessage(message.messageTime, textStr);
+            Chat.Instance.PrintServerMessage(message.messageTime, textStr);
         else
-            Chat.instance.PrintPlayerMessage(message.messageTime, textStr, message.sender.ToString());
+            Chat.Instance.PrintPlayerMessage(message.messageTime, textStr, message.sender.ToString());
     }
+    public static bool TryExecuteLocalCommand(string value)
+    {
+        string[] properties = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        properties[0] = properties[0].Remove(0, 1);
+        List<CommandBase> hints = new List<CommandBase>();
+        
+        if (DebugController.Commands.TryGetValue(properties[0].ToLower(),out var list))
+        {
+            string[] args = properties.Skip(1).ToArray();
+            foreach(var command in list)
+            {               
+                if (command.Validate(args))
+                {
+                    if (!command.isServerCommand && !command.isAdminCommand)
+                    {
+                        var ecb = new EntityCommandBuffer(Allocator.Temp);
+                        var output = command.Invoke(args,ref ecb,Entity.Null);
+                        ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+                        ecb.Dispose();
+                        if (!string.IsNullOrEmpty(output))
+                            Chat.Instance.Print(output);
+                        return true;
+                    }
+                    else
+                        return false;
+                }
+                else 
+                    hints.Add(command);
+            }
+        }
 
+        if (hints.Count == 0)
+            Chat.Instance.Print($"{"Incorrect command:".GetColorfulString(ChatConfig.Instance.WarningColor)} <noparse>{value}</noparse>");
+        PrintCommands(hints.ToArray());
+        return true;
+    }
     #endregion
 }

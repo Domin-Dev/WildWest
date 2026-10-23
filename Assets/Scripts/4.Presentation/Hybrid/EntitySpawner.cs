@@ -79,7 +79,7 @@ public class EntitySpawner : MonoBehaviour
         EntityManager entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
         var query = entityManager.CreateEntityQuery(typeof(EntitiesReferences));
         if (query.IsEmpty)
-            Chat.instance.Print("Czekam na załadowanie komponentu EntitiesReferences...");
+            Chat.Instance.Print("Czekam na załadowanie komponentu EntitiesReferences...");
         else
         {
             SetUp(query);
@@ -89,10 +89,10 @@ public class EntitySpawner : MonoBehaviour
 
     private void SetUp(EntityQuery entityQuery)
     {
-        Chat.instance.Print("Udalo sie wczytac");
+        Chat.Instance.Print("Udalo sie wczytac");
         entityManager = ClientServerBootstrap.ClientWorld.EntityManager;
         entitiesReferences = entityManager.GetComponentData<EntitiesReferences>(entityQuery.GetSingletonEntity());
-        Chat.instance.Print("wszystko gotowe");
+        Chat.Instance.Print("wszystko gotowe");
         isReady = true;
     }
     public void SpawnParticle(int indexParticle, float3 position, quaternion quaternion)

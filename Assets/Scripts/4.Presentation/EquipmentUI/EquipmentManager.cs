@@ -100,7 +100,7 @@ public class EquipmentManager : MonoBehaviour
     }
     private void Update()
     {
-        if (!Chat.instance.isChatting)
+        if (!Chat.Instance.ChatIsOpen)
         {
             if (InputManager.i.equipment.triggered)
             {

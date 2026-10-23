@@ -676,7 +676,7 @@ namespace UnityEngine.InputSystem
                     ""name"": ""Submit"",
                     ""type"": ""Button"",
                     ""id"": ""f0b3c26b-a904-43ee-ac29-6b87bceaf548"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false,
@@ -1304,7 +1304,7 @@ namespace UnityEngine.InputSystem
                     ""id"": ""5c8f4f8d-f45b-4e7b-94cb-1c8e892b662b"",
                     ""expectedControlType"": """",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""AutoRepeat"",
                     ""initialStateCheck"": false,
                     ""priority"": 0
                 },
@@ -1312,6 +1312,16 @@ namespace UnityEngine.InputSystem
                     ""name"": ""PreviousSuggestion"",
                     ""type"": ""Button"",
                     ""id"": ""818cbebc-2929-4bcb-af1b-4c59f9f51317"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""AutoRepeat"",
+                    ""initialStateCheck"": false,
+                    ""priority"": 0
+                },
+                {
+                    ""name"": ""ApplySuggestion"",
+                    ""type"": ""Button"",
+                    ""id"": ""10b8cab5-2a8c-4117-a389-613a80a9fd86"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1370,8 +1380,19 @@ namespace UnityEngine.InputSystem
                     ""path"": ""<Keyboard>/downArrow"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""PreviousSuggestion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ece2505-f939-4e77-8434-6689690435b6"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ApplySuggestion"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1492,6 +1513,7 @@ namespace UnityEngine.InputSystem
             m_Chat_SendMessage = m_Chat.FindAction("SendMessage", throwIfNotFound: true);
             m_Chat_NextSuggestion = m_Chat.FindAction("NextSuggestion", throwIfNotFound: true);
             m_Chat_PreviousSuggestion = m_Chat.FindAction("PreviousSuggestion", throwIfNotFound: true);
+            m_Chat_ApplySuggestion = m_Chat.FindAction("ApplySuggestion", throwIfNotFound: true);
         }
 
         ~@NewInput()
@@ -2253,6 +2275,7 @@ namespace UnityEngine.InputSystem
         private readonly InputAction m_Chat_SendMessage;
         private readonly InputAction m_Chat_NextSuggestion;
         private readonly InputAction m_Chat_PreviousSuggestion;
+        private readonly InputAction m_Chat_ApplySuggestion;
         /// <summary>
         /// Provides access to input actions defined in input action map "Chat".
         /// </summary>
@@ -2284,6 +2307,10 @@ namespace UnityEngine.InputSystem
             /// Provides access to the underlying input action "Chat/PreviousSuggestion".
             /// </summary>
             public InputAction @PreviousSuggestion => m_Wrapper.m_Chat_PreviousSuggestion;
+            /// <summary>
+            /// Provides access to the underlying input action "Chat/ApplySuggestion".
+            /// </summary>
+            public InputAction @ApplySuggestion => m_Wrapper.m_Chat_ApplySuggestion;
             /// <summary>
             /// Provides access to the underlying input action map instance.
             /// </summary>
@@ -2325,6 +2352,9 @@ namespace UnityEngine.InputSystem
                 @PreviousSuggestion.started += instance.OnPreviousSuggestion;
                 @PreviousSuggestion.performed += instance.OnPreviousSuggestion;
                 @PreviousSuggestion.canceled += instance.OnPreviousSuggestion;
+                @ApplySuggestion.started += instance.OnApplySuggestion;
+                @ApplySuggestion.performed += instance.OnApplySuggestion;
+                @ApplySuggestion.canceled += instance.OnApplySuggestion;
             }
 
             /// <summary>
@@ -2351,6 +2381,9 @@ namespace UnityEngine.InputSystem
                 @PreviousSuggestion.started -= instance.OnPreviousSuggestion;
                 @PreviousSuggestion.performed -= instance.OnPreviousSuggestion;
                 @PreviousSuggestion.canceled -= instance.OnPreviousSuggestion;
+                @ApplySuggestion.started -= instance.OnApplySuggestion;
+                @ApplySuggestion.performed -= instance.OnApplySuggestion;
+                @ApplySuggestion.canceled -= instance.OnApplySuggestion;
             }
 
             /// <summary>
@@ -2781,6 +2814,13 @@ namespace UnityEngine.InputSystem
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnPreviousSuggestion(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "ApplySuggestion" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnApplySuggestion(InputAction.CallbackContext context);
         }
     }
 }

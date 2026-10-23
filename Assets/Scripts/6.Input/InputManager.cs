@@ -145,18 +145,6 @@ public class InputManager : MonoBehaviour
     {
         Debug.Log("dzial!!");
     }
-
-    private void Update()
-    {
-        // if(input.Player.Equipment.triggered)
-        //{
-        //    Debug.Log("action!!!");
-        //    foreach (var binding in input.Player.Equipment.)
-        //    {
-        //        Debug.Log($"[{binding.action}] {binding.path} (override: {binding.overridePath})");
-        //    }
-        //}
-    }
     private void OnEnable()
     {
         input.UI.Enable();

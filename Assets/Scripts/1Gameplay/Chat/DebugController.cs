@@ -286,7 +286,7 @@ public static class DebugController
                     foreach(var i in tab)
                     {
                         var time = TimeService.GetTime(i.worldTime);
-                        stringBuilder.AppendLine(StringsHelper.GetColorfulString($"Time : {time.hour}:{time.minute.ToString("00")}, Day : {time.day}",Chat.highlightColor));
+                        stringBuilder.AppendLine($"Time : {time.hour}:{time.minute.ToString("00")}, Day : {time.day}".GetColorfulString(ChatConfig.Instance.HighlightColor));
                         stringBuilder.Append($"\n{i.localWeather.ToString()}");
                     }
                 }
@@ -381,16 +381,23 @@ public static class DebugController
                 return null;
             }));
 
+            #region Chat
+            Add(new DebugCommand("clear", "Clears the chat", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
+            {
+                Chat.Instance.Clear();
+                return null;
+            },false,false));
             Add(new DebugCommand("help", "Command list", "", (ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
             {
                 StringBuilder builder = new StringBuilder("Command list:\n");
                 foreach(var list in commands)
                 {
                     foreach(var command in list.Value)
-                        builder.Append($"/<Color=#{Chat.highlightColor.ToHexString()}>{command.commandId}</Color> {command.commandFormat} - {command.commandDescription}\n");
+                        builder.Append($"/{command.commandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {command.commandFormat} - {command.commandDescription}\n");
                 }
                 return builder.ToString();
             },false,false));
+            #endregion
             return commands;
         }
     }

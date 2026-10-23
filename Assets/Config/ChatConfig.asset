@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9309a180fd089d07a80ed85c0978c270, type: 3}
+  m_Name: ChatConfig
+  m_EditorClassIdentifier: Assembly-CSharp::ChatConfig
+  maxMessageOnScreen: 8
+  timeToDisappear: 10
+  maxLog: 30
+  maxHintsOnScreen: 5
+  highlightColor: {r: 0.85490197, g: 0.64705884, b: 0.1254902, a: 1}
+  warningColor: {r: 1, g: 0, b: 0, a: 1}

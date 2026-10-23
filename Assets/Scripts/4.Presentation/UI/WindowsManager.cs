@@ -47,7 +47,7 @@ public class WindowsManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape) && !Chat.instance.isChatting) 
+        if(Input.GetKeyDown(KeyCode.Escape) && !Chat.Instance.ChatIsOpen) 
         {
             if (escScene == -1)
                 CloseOpenWindows();

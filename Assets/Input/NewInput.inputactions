@@ -588,7 +588,7 @@
                     "name": "Submit",
                     "type": "Button",
                     "id": "f0b3c26b-a904-43ee-ac29-6b87bceaf548",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false,
@@ -1216,7 +1216,7 @@
                     "id": "5c8f4f8d-f45b-4e7b-94cb-1c8e892b662b",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "",
+                    "interactions": "AutoRepeat",
                     "initialStateCheck": false,
                     "priority": 0
                 },
@@ -1224,6 +1224,16 @@
                     "name": "PreviousSuggestion",
                     "type": "Button",
                     "id": "818cbebc-2929-4bcb-af1b-4c59f9f51317",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "AutoRepeat",
+                    "initialStateCheck": false,
+                    "priority": 0
+                },
+                {
+                    "name": "ApplySuggestion",
+                    "type": "Button",
+                    "id": "10b8cab5-2a8c-4117-a389-613a80a9fd86",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -1282,8 +1292,19 @@
                     "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "PreviousSuggestion",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6ece2505-f939-4e77-8434-6689690435b6",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ApplySuggestion",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

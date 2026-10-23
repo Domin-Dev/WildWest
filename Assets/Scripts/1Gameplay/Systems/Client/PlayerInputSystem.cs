@@ -67,7 +67,7 @@ partial struct PlayerInputSystem : ISystem
         //    if (!WindowsManager.instance.CloseOpenWindows())
         //        WindowsManager.instance.LoadScene(11);
         //}
-        if (InputManager.i.playerList.triggered && !Chat.instance.isChatting)
+        if (InputManager.i.playerList.triggered && !Chat.Instance.ChatIsOpen)
         {
             WindowsManager.instance.LoadScene(9);
         }
