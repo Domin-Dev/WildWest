@@ -19,12 +19,9 @@ public delegate string Command<T1, T2, T3, T4,T5,T6>(ref EntityCommandBuffer ecb
 public class DebugCommand : CommandBase
 {
     public Command command { private set; get; }
-
-
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand,adminCommand,commandId, commandDescription, commandFormat)
+    public DebugCommand(string commandId, string commandDescription, Command command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand,adminCommand,commandId, commandDescription)
     {
-        this.command = command;
-      
+        this.command = command;   
     }
     public override string Invoke(string[] args,ref EntityCommandBuffer entityCommandBuffer, Entity sender)
     {
@@ -34,7 +31,8 @@ public class DebugCommand : CommandBase
 public class DebugCommand<T1> : CommandBase
 {
     public Command<T1> command { private set; get; }
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command<T1> command,bool serwerCommand = true,bool adminCommand = true) : base(serwerCommand,adminCommand, commandId, commandDescription, commandFormat,typeof(T1))
+    public DebugCommand(string commandId, string commandDescription,string argName1, Command<T1> command,bool serwerCommand = true,bool adminCommand = true) : 
+    base(serwerCommand,adminCommand, commandId, commandDescription,(typeof(T1),argName1))
     {
         this.command = command;
     }
@@ -49,7 +47,8 @@ public class DebugCommand<T1> : CommandBase
 public class DebugCommand<T1,T2> : CommandBase
 {
     public Command<T1,T2> command { private set; get; }
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command<T1,T2> command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand,adminCommand,commandId, commandDescription, commandFormat,typeof(T1),typeof(T2))
+    public DebugCommand(string commandId, string commandDescription,string argName1,string argName2, Command<T1,T2> command, bool serwerCommand = true, bool adminCommand = true) : 
+    base(serwerCommand,adminCommand,commandId, commandDescription,(typeof(T1),argName1),(typeof(T2),argName2))
     {
         this.command = command;
     }
@@ -66,7 +65,8 @@ public class DebugCommand<T1,T2> : CommandBase
 public class DebugCommand<T1,T2,T3> : CommandBase
 {
     public Command<T1, T2,T3> command { private set; get; }
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command<T1, T2, T3> command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand,adminCommand, commandId, commandDescription, commandFormat, typeof(T1), typeof(T2),typeof(T3))
+    public DebugCommand(string commandId, string commandDescription,string argName1,string argName2,string argName3,Command<T1, T2, T3> command, bool serwerCommand = true, bool adminCommand = true) : 
+    base(serwerCommand,adminCommand, commandId, commandDescription,(typeof(T1),argName1),(typeof(T2),argName2),(typeof(T3),argName3))
     {
         this.command = command;
     }
@@ -84,7 +84,8 @@ public class DebugCommand<T1,T2,T3> : CommandBase
 public class DebugCommand<T1, T2, T3, T4> : CommandBase
 {
     public Command<T1, T2, T3, T4> command { private set; get; }
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command<T1, T2, T3,T4> command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand,adminCommand, commandId, commandDescription, commandFormat, typeof(T1), typeof(T2), typeof(T3), typeof(T4))
+    public DebugCommand(string commandId, string commandDescription,string argName1,string argName2,string argName3,string argName4, Command<T1, T2, T3,T4> command, bool serwerCommand = true, bool adminCommand = true) : 
+    base(serwerCommand,adminCommand, commandId, commandDescription,(typeof(T1),argName1),(typeof(T2),argName2),(typeof(T3),argName3),(typeof(T4),argName4))
     {
         this.command = command;
     }
@@ -104,7 +105,8 @@ public class DebugCommand<T1, T2, T3, T4> : CommandBase
 public class DebugCommand<T1, T2, T3, T4,T5> : CommandBase
 {
     public Command<T1, T2, T3, T4 , T5> command { private set; get; }
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command<T1, T2, T3, T4, T5> command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand, adminCommand, commandId, commandDescription, commandFormat, typeof(T1), typeof(T2), typeof(T3), typeof(T4),typeof(T5))
+    public DebugCommand(string commandId, string commandDescription,string argName1,string argName2,string argName3,string argName4,string argName5,Command<T1, T2, T3, T4, T5> command, bool serwerCommand = true, bool adminCommand = true) : 
+    base(serwerCommand, adminCommand, commandId, commandDescription,(typeof(T1),argName1),(typeof(T2),argName2),(typeof(T3),argName3),(typeof(T4),argName4),(typeof(T5),argName5))
     {
         this.command = command;
     }
@@ -126,7 +128,8 @@ public class DebugCommand<T1, T2, T3, T4,T5> : CommandBase
 public class DebugCommand<T1, T2, T3, T4,T5,T6> : CommandBase
 {
     public Command<T1, T2, T3, T4 , T5, T6> command { private set; get; }
-    public DebugCommand(string commandId, string commandDescription, string commandFormat, Command<T1, T2, T3, T4, T5, T6> command, bool serwerCommand = true, bool adminCommand = true) : base(serwerCommand, adminCommand, commandId, commandDescription, commandFormat, typeof(T1), typeof(T2), typeof(T3), typeof(T4),typeof(T5),typeof(T6))
+    public DebugCommand(string commandId, string commandDescription,string argName1,string argName2,string argName3,string argName4,string argName5,string argName6, Command<T1, T2, T3, T4, T5, T6> command, bool serwerCommand = true, bool adminCommand = true) : 
+    base(serwerCommand, adminCommand, commandId, commandDescription,(typeof(T1),argName1),(typeof(T2),argName2),(typeof(T3),argName3),(typeof(T4),argName4),(typeof(T5),argName5),(typeof(T6),argName6))
     {
         this.command = command;
     }

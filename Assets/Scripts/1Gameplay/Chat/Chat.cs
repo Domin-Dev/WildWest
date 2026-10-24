@@ -36,6 +36,10 @@ public class Chat : ChatCore<Chat>
     private List<CommandBase> hintList;
     private int selectedHint = 0;
     private int selectedHintChildIndex = 0; 
+    private bool commandIsSelected = false;
+    private string[] arguments;
+    private Background messageBackground;
+    private Background serverMessageBackground;
 
     #endregion
     #region UnityFuncs
@@ -67,7 +71,7 @@ public class Chat : ChatCore<Chat>
     {
         DateTimeOffset date = DateTimeOffset.FromUnixTimeSeconds(time);
         DateTime localTime = date.ToLocalTime().DateTime;
-        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Iron);
+        Print($"[{localTime.ToString("HH:mm:ss")}] {text}").GetComponent<Image>().sprite = serverMessageBackground.Sprite;
     } 
     protected override void SetUp()
     {
@@ -75,13 +79,11 @@ public class Chat : ChatCore<Chat>
         commandList = DebugController.Commands;
         hintParent.gameObject.SetActive(false); 
         textViewport = inputField.textViewport;
-        
-        var sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Wood);
-        Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite =  UIConfig.GetBackground(Backgrounds.BackgroundType.Wood).SelectedSprite;
-        for(int i = 0; i < displayedHintsCount - 1; i++)
-            Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = sprite;
-
         LoadConfig(ChatConfig.Instance);
+  
+        Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = messageBackground.SelectedSprite;
+        for(int i = 0; i < displayedHintsCount - 1; i++)
+            Instantiate(hintPrefab,hintParent).GetComponent<Image>().sprite = messageBackground.Sprite;
     }
     protected override void TurnOffChat()
     {
@@ -90,7 +92,7 @@ public class Chat : ChatCore<Chat>
     }
     protected override void ProcessMessage(string message)
     {
-        if (!ChatService.IsCommand(message) || !ChatService.TryExecuteLocalCommand(message))
+        if (!ChatService.TryExecuteLocalCommand(message))
         {
             ChatService.ClientSendsMessage(inputField.text);
             SaveToHistory();
@@ -137,27 +139,37 @@ public class Chat : ChatCore<Chat>
     }
     private void LoadConfig(ChatConfig config)
     {
-        
+        Debug.Log("loading" + config == null);
+        messageBackground = UIConfig.GetBackground(config.MessageBackground);
+        serverMessageBackground = UIConfig.GetBackground(config.ServerMessageBackground);
     }
     private void UpdateHints(string newValue)
-    {
-        Debug.Log(newValue + " koko");  
-        if(!ChatService.IsCommand(newValue))
+    { 
+        if(!ChatService.TrySplitCommand(newValue,out var commandID,out arguments))
         {
             hintParent.gameObject.SetActive(false);
             return;
         }
-        string[] command = newValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        string commandID = command[0].Substring(1).ToLower();
 
-        if(commandList.TryGetValue(commandID,out var variantlist))
+        var hints = commandList.Where(x => x.Key.StartsWith(commandID)).ToList();
+        if(commandList.TryGetValue(commandID,out var variantlist) && (hints.Count == 1 || ChatService.HasWhitespaceBeforeCaret(newValue,inputField.stringPosition)))
         {
-            UpdateHintList(variantlist);
+            hintParent.GetChild(selectedHintChildIndex).GetComponent<Image>().sprite = messageBackground.Sprite;
+            variantlist = variantlist
+                .Where(x => x.Arguments.Length >= arguments.Length)
+                .OrderBy(x => x.Arguments.Length)
+                .OrderByDescending(x => x.CountValidArguments(arguments))
+                .ToList();
+            commandIsSelected = true; 
+            if(variantlist.Count > 0)
+                UpdateHintList(variantlist);
+            else
+                UpdateHintList(new List<CommandBase>());   
         }
         else
         {
-            var hints = commandList.Where(x => x.Key.StartsWith(commandID)).SelectMany(x => x.Value).ToList();
-            UpdateHintList(hints);
+            commandIsSelected = false; 
+            UpdateHintList(commandList.Where(x => x.Key.StartsWith(commandID)).SelectMany(x => x.Value).ToList());
         }
 
         if(hintList.Count > 0)
@@ -183,8 +195,8 @@ public class Chat : ChatCore<Chat>
         int newChildIndex = math.max(0,displayedHintsCount - hintList.Count + selectedHint);    
         if(newChildIndex != selectedHintChildIndex) 
         {   
-            hintParent.GetChild(newChildIndex).GetComponent<Image>().sprite = UIConfig.GetBackground(Backgrounds.BackgroundType.Wood).SelectedSprite;
-            hintParent.GetChild(selectedHintChildIndex).GetComponent<Image>().sprite = UIConfig.GetBackgroundSprite(Backgrounds.BackgroundType.Wood);
+            hintParent.GetChild(newChildIndex).GetComponent<Image>().sprite = messageBackground.SelectedSprite;
+            hintParent.GetChild(selectedHintChildIndex).GetComponent<Image>().sprite = messageBackground.Sprite;
             selectedHintChildIndex = newChildIndex;
         }
         UpdateHints(); 
@@ -198,13 +210,33 @@ public class Chat : ChatCore<Chat>
             int index = startIndex + i;
             if(index >= 0 && index < hintList.Count)
             {
-                Debug.Log(index);
                 var command = hintList[index];
                 child.gameObject.SetActive(true);
-                bool commandFormatIsEmpty = string.IsNullOrEmpty(command.commandFormat);
-                child.GetComponentInChildren<TextMeshProUGUI>().text = $"/{command.commandId.GetColorfulString(ChatConfig.Instance.HighlightColor)}{(commandFormatIsEmpty ? "" : " ")}{command.commandFormat}";
+                bool commandFormatIsEmpty = string.IsNullOrEmpty(command.CommandFormat);
+                var text = child.GetComponentInChildren<TextMeshProUGUI>();
+                if(commandIsSelected)
+                {
+                    StringBuilder stringBuilder = new StringBuilder($"/{command.CommandId}");
+                    for(int j = 0; j < command.Arguments.Length;j++)
+                    {
+                        if(arguments?.Length > j)
+                        {
+                            if(command.ValidateArgument(arguments[j],j))
+                                stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.CorrectColor));
+                            else
+                                stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.WarningColor));
+                        }
+                        else if(arguments?.Length == j)
+                            stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));
+                        else
+                            stringBuilder.Append($" [{command.Arguments[j].name}]");
+                    }
+                    text.text = stringBuilder.ToString();
+                }
+                else
+                    text.text = $"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)}{(commandFormatIsEmpty ? "" : " ")}{command.CommandFormat}";
             }
-            else
+            else 
                 child.gameObject.SetActive(false);
         }
         LayoutRebuilder.ForceRebuildLayoutImmediate(hintParent);
@@ -213,18 +245,28 @@ public class Chat : ChatCore<Chat>
     #region InputActions
     private void NextSuggestion(InputAction.CallbackContext context)
     {
-        ChangeSelectedHint(++selectedHint);
+        if(!commandIsSelected)
+            ChangeSelectedHint(++selectedHint);
     }
     private void PreviousSuggestion(InputAction.CallbackContext context)
     {
-        ChangeSelectedHint(--selectedHint);
+        if(!commandIsSelected)
+            ChangeSelectedHint(--selectedHint);
     }
     private void ApplySuggestion(InputAction.CallbackContext context)
     {
-        if(hintList == null || hintList.Count == 0) return;
-        if(inputField.text.Contains('/'))
+        if(commandIsSelected || hintList == null || hintList.Count == 0) return;
+
+        var selectedCommand = hintList[selectedHint].CommandId;
+        if(ChatService.TrySplitCommand(inputField.text,out var commandID,out var arguments))
         {
-            inputField.text = Regex.Replace(inputField.text, @"/\S*","/" + hintList[selectedHint].commandId);
+            Match match = Regex.Match(inputField.text, @"\S*");
+            if (match.Success)
+            {
+                inputField.text = inputField.text.Substring(0, match.Index)
+                    + $"/{selectedCommand} "
+                    + inputField.text.Substring(match.Index + match.Length);
+            }
             inputField.MoveTextEnd(false);
             UpdateHints(inputField.text);
         }

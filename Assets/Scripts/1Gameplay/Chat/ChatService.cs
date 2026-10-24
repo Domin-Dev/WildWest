@@ -76,6 +76,32 @@ public static class ChatService
     }    
     #endregion
     #region Tools
+    public static bool TrySplitCommand(string value,out string commandID,out string[] arguments)
+    {
+        if(IsCommand(value))
+        {
+            string[] command = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            commandID = command[0].Substring(1).ToLower();
+            arguments = command.Skip(1).ToArray();
+            return true;
+        }
+        else
+        {
+            commandID = null;
+            arguments = null;
+            return false;
+        }
+    }
+    public static bool HasWhitespaceBeforeCaret(string value,int index)
+    {
+        value = value.TrimStart();
+        for (int i = 0; i < index && i < value.Length; i++)
+        {
+            if (char.IsWhiteSpace(value[i]))
+                return true;         
+        }
+        return false;
+    }
     public static List<FixedString512Bytes> GetFixedString(string value)
     {
         var result = new List<FixedString512Bytes>();
@@ -128,49 +154,46 @@ public static class ChatService
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < commandBase.Length; i++)
         {
-            sb.Append($"/{commandBase[i].commandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {commandBase[i].commandFormat}");
+            sb.Append($"/{commandBase[i].CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {commandBase[i].CommandFormat}");
             if(i != commandBase.Length - 1) sb.Append("\n");
         }
         if(sb.Length > 0) Chat.Instance.Print(sb.ToString());
     }
     #endregion
     #region ServerProcess
-    private static void ServerProcessCommand(EntityManager entityManager,EntityCommandBuffer ecb, string commandText,Entity connectionEntity)
+    private static void ExecuteServerCommand(EntityManager entityManager,EntityCommandBuffer ecb, string commandText,Entity connectionEntity)
     {
-        var commandList = DebugController.Commands;
-        string[] properties = commandText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        properties[0] = properties[0].Remove(0, 1);
-        List<CommandBase> hints = new List<CommandBase>();
-
-        if (commandList.TryGetValue(properties[0].ToLower(),out var list))
+        if(TrySplitCommand(commandText,out var commandID,out var arguments))
         {
-            string[] args = properties.Skip(1).ToArray();
-            foreach(var command in list)
+            var commandList = DebugController.Commands;
+            if (commandList.TryGetValue(commandID,out var list))
             {
-                if (command.Validate(args) && command.isAdminCommand)
+                foreach(var command in list)
                 {
-                    if(entityManager.HasComponent<Admin>(connectionEntity))
+                    if (command.Validate(arguments) && command.IsAdminCommand)
                     {
-                        var output = command.Invoke(args, ref ecb, connectionEntity);
-                        if (!string.IsNullOrEmpty(output))
-                            SendMessage<ServerMessageRPC>(ecb, output, connectionEntity);
-                        return;
-                    }
-                    else
-                    {
-                        SendMessage<ServerMessageRPC>(ecb, "You don't have permission!", connectionEntity);
-                        return;
-                    }
-                }   
-            }  
+                        if(entityManager.HasComponent<Admin>(connectionEntity))
+                        {
+                            var output = command.Invoke(arguments, ref ecb, connectionEntity);
+                            if (!string.IsNullOrEmpty(output))
+                                SendMessage<ServerMessageRPC>(ecb, output, connectionEntity);
+                            return;
+                        }
+                        else
+                        {
+                            SendMessage<ServerMessageRPC>(ecb, "You don't have permission!", connectionEntity);
+                            return;
+                        }
+                    }   
+                }  
+            }
         }
-        
     }       
     public static void ServerProcessMessage(EntityManager entityManager,EntityCommandBuffer ecb,in FixedString128Bytes senderName,in ClientMessageRPC message, Entity senderEntity)
     {
         string textStr = message.ToString();
         if(IsCommand(textStr))
-            ServerProcessCommand(entityManager,ecb,textStr.Trim(),senderEntity);
+            ExecuteServerCommand(entityManager,ecb,textStr.Trim(),senderEntity);
         else
             ServerSendsClientMessage(ecb,senderName,message); 
     }   
@@ -180,7 +203,7 @@ public static class ChatService
         if(IsCommand(first.message.Message.ToString()))
         {
             string textStr = CombineMessageChunks(messages);
-            ServerProcessCommand(entityManager,ecb,textStr.Trim(),senderEntity);
+            ExecuteServerCommand(entityManager,ecb,textStr.Trim(),senderEntity);
         }
         else
             ServerSendsClientMessage(ecb,senderName,messages);
@@ -208,39 +231,39 @@ public static class ChatService
     }
     public static bool TryExecuteLocalCommand(string value)
     {
-        string[] properties = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        properties[0] = properties[0].Remove(0, 1);
-        List<CommandBase> hints = new List<CommandBase>();
-        
-        if (DebugController.Commands.TryGetValue(properties[0].ToLower(),out var list))
+        if(TrySplitCommand(value,out var commandID,out var arguments))
         {
-            string[] args = properties.Skip(1).ToArray();
-            foreach(var command in list)
-            {               
-                if (command.Validate(args))
-                {
-                    if (!command.isServerCommand && !command.isAdminCommand)
+            List<CommandBase> hints = new List<CommandBase>();           
+            if (DebugController.Commands.TryGetValue(commandID.ToLower(),out var list))
+            {
+                foreach(var command in list)
+                {               
+                    if (command.Validate(arguments))
                     {
-                        var ecb = new EntityCommandBuffer(Allocator.Temp);
-                        var output = command.Invoke(args,ref ecb,Entity.Null);
-                        ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
-                        ecb.Dispose();
-                        if (!string.IsNullOrEmpty(output))
-                            Chat.Instance.Print(output);
-                        return true;
+                        if (!command.IsServerCommand && !command.IsAdminCommand)
+                        {
+                            var ecb = new EntityCommandBuffer(Allocator.Temp);
+                            var output = command.Invoke(arguments,ref ecb,Entity.Null);
+                            ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+                            ecb.Dispose();
+                            if (!string.IsNullOrEmpty(output))
+                                Chat.Instance.Print(output);
+                            return true;
+                        }
+                        else
+                            return false;
                     }
-                    else
-                        return false;
+                    else 
+                        hints.Add(command);
                 }
-                else 
-                    hints.Add(command);
             }
+            if (hints.Count == 0)
+                Chat.Instance.Print($"{"Incorrect command:".GetColorfulString(ChatConfig.Instance.WarningColor)} <noparse>{value}</noparse>");
+            PrintCommands(hints.ToArray());
+            return true;
         }
-
-        if (hints.Count == 0)
-            Chat.Instance.Print($"{"Incorrect command:".GetColorfulString(ChatConfig.Instance.WarningColor)} <noparse>{value}</noparse>");
-        PrintCommands(hints.ToArray());
-        return true;
+        else
+            return false;
     }
     #endregion
 }
