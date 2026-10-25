@@ -26,7 +26,6 @@ public abstract class CommandBase
             return stringBuilder.ToString();
         }
     }
-
     protected CommandBase(bool serverCommand,bool adminCommand, string id, string desc, params (Type type,string name)[] args)
     {
         CommandId = id;
@@ -65,6 +64,16 @@ public abstract class CommandBase
             return false;
         return true;
     }
+    public virtual bool TryCompleteArgument(string currentArgument,int index,out string newValue)
+    {
+        TryConvert(currentArgument, Arguments[index].type, out var result);
+        ICommandArgument commandArgument = result as ICommandArgument;
+        if(commandArgument != null && !commandArgument.IsCorrect)
+           return commandArgument.TryComplete(out newValue);
+       
+        newValue = default;
+        return false;
+    }
     protected bool TryConvert(string value, Type targetType, out object result)
     {
         switch (targetType)
@@ -78,7 +87,7 @@ public abstract class CommandBase
                 break;
             case Type t when t == typeof(float):
                 if (float.TryParse(
-                    value.Replace(',', '.'),
+                    value?.Replace(',', '.'),
                     NumberStyles.Float,
                     CultureInfo.InvariantCulture,
                     out var floatValue))
@@ -110,6 +119,11 @@ public abstract class CommandBase
                 {
                     result = commandArg;
                     return true;
+                }
+                else
+                {
+                    result = arg;
+                    return false;
                 }
                 break;
         }

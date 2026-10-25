@@ -1,9 +1,30 @@
+using System.Linq;
+
 public class CommandArg : ICommandArgument
 {
     public string CommandID;
-    public string Fill()
+    public bool IsCorrect => isCorrect;
+    private bool isCorrect;
+    public CommandArg()
     {
-        throw new System.NotImplementedException();
+        isCorrect = false;
+    }
+    public bool TryComplete(out string value)
+    {
+        if(string.IsNullOrEmpty(CommandID)) 
+        {
+            value = DebugController.Commands.Last().Key;
+            return true;
+        }
+
+        var list = DebugController.Commands.Where(x => x.Key.StartsWith(CommandID)).ToList();
+        if(list.Count == 1)
+        {
+            value = list[0].Key;
+            return true;
+        }
+        value = default;
+        return false;
     }
     public string GetNext()
     {
@@ -15,14 +36,20 @@ public class CommandArg : ICommandArgument
     }
     public bool TryParse(string value,out object result)
     {
-        value = value.ToLower();
-        if(DebugController.Commands.ContainsKey(value))
+        if(value != null)
         {
-            CommandID = value;
-            result = this; 
-            return true;
+            value = value.ToLower();
+            if(DebugController.Commands.ContainsKey(value))
+            {
+                isCorrect = true;
+                CommandID = value;
+                result = this; 
+                return true;
+            }
         }
-        result = default;
+        isCorrect = false;
+        CommandID = value;
+        result = this;
         return false;
     }
 }

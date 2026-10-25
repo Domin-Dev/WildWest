@@ -47,6 +47,7 @@ public class Chat : ChatCore<Chat>
     {
         base.OnEnable();
         inputField.onValueChanged.AddListener(UpdateHints);
+        (inputField as CustomInputField).OnCaretPositionChanged += CaretPositionChanged;
         nextSuggestion.action.performed += NextSuggestion;
         previousSuggestion.action.performed += PreviousSuggestion;
         applySuggestion.action.performed += ApplySuggestion;
@@ -55,6 +56,7 @@ public class Chat : ChatCore<Chat>
     {
         base.OnDisable();
         inputField.onValueChanged.RemoveListener(UpdateHints);
+        (inputField as CustomInputField).OnCaretPositionChanged -= CaretPositionChanged;
         nextSuggestion.action.performed -= NextSuggestion;
         previousSuggestion.action.performed -= PreviousSuggestion;
         applySuggestion.action.performed -= ApplySuggestion;
@@ -193,7 +195,7 @@ public class Chat : ChatCore<Chat>
             return; 
         selectedHint = math.clamp(newValue,0,hintList.Count-1);
         int newChildIndex = math.max(0,displayedHintsCount - hintList.Count + selectedHint);    
-        if(newChildIndex != selectedHintChildIndex) 
+        if(!commandIsSelected && newChildIndex != selectedHintChildIndex) 
         {   
             hintParent.GetChild(newChildIndex).GetComponent<Image>().sprite = messageBackground.SelectedSprite;
             hintParent.GetChild(selectedHintChildIndex).GetComponent<Image>().sprite = messageBackground.Sprite;
@@ -201,9 +203,17 @@ public class Chat : ChatCore<Chat>
         }
         UpdateHints(); 
     }   
+    private void CaretPositionChanged()
+    {
+        if(hintList == null || hintList.Count == 0)
+            return;
+        UpdateHints();
+    }
     private void UpdateHints()
     {
         int startIndex = selectedHint - selectedHintChildIndex;
+        int argumentIndex = ChatService.GetArgumentIndex(inputField.text,inputField.stringPosition);
+
         for(int i = 0; i < hintParent.childCount; i++)
         {
             var child = hintParent.GetChild(i);
@@ -221,13 +231,14 @@ public class Chat : ChatCore<Chat>
                     {
                         if(arguments?.Length > j)
                         {
-                            if(command.ValidateArgument(arguments[j],j))
-                                stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.CorrectColor));
+                            var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
+                            if(argumentIndex == j)
+                                stringBuilder.Append(($" [{command.Arguments[j].name.GetColorfulString(ChatConfig.Instance.HighlightColor)}]").GetColorfulString(color));
                             else
-                                stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.WarningColor));
+                                stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(color));
                         }
-                        else if(arguments?.Length == j)
-                            stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));
+                        else if(argumentIndex == j)
+                            stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));             
                         else
                             stringBuilder.Append($" [{command.Arguments[j].name}]");
                     }
@@ -245,30 +256,69 @@ public class Chat : ChatCore<Chat>
     #region InputActions
     private void NextSuggestion(InputAction.CallbackContext context)
     {
-        if(!commandIsSelected)
+        if(commandIsSelected)
+        {
+            
+        }
+        else
             ChangeSelectedHint(++selectedHint);
     }
     private void PreviousSuggestion(InputAction.CallbackContext context)
     {
-        if(!commandIsSelected)
+        if(commandIsSelected)
+        {
+            
+        }
+        else
             ChangeSelectedHint(--selectedHint);
     }
     private void ApplySuggestion(InputAction.CallbackContext context)
     {
-        if(commandIsSelected || hintList == null || hintList.Count == 0) return;
+        if(hintList == null || hintList.Count == 0) return;        
+        if(commandIsSelected && ChatService.TrySplitCommand(inputField.text,out var commandID,out var arguments) && arguments != null)
+        {           
+            int argumentIndex = ChatService.GetArgumentIndex(inputField.text,inputField.stringPosition);
+            if(argumentIndex < 0 ) return;
+            bool argIsNotEmpty = argumentIndex < arguments.Length;
+            string arg = argIsNotEmpty ? arguments[argumentIndex] : default; 
+        
+            for(int k = 0; k < hintList.Count; k++)
+            {
+                var command = hintList[k];
+                Debug.Log("index " + argumentIndex);
+                if(command.Arguments.Length > argumentIndex && command.TryCompleteArgument(arg,argumentIndex,out var newValue))
+                {
+                    if(argIsNotEmpty)
+                        arguments[argumentIndex] = newValue;
+                    else
+                    {
+                        Array.Resize(ref arguments, arguments.Length + 1);
+                        arguments[arguments.Length - 1] = newValue;
+                    }
 
-        var selectedCommand = hintList[selectedHint].CommandId;
-        if(ChatService.TrySplitCommand(inputField.text,out var commandID,out var arguments))
-        {
+                    inputField.text = "/" + commandID + " " + string.Join(" ", arguments);
+                    int pos = 1 + commandID.Length + 1;           
+                    for (int i = 0; i <= argumentIndex; i++)
+                    {
+                        pos += arguments[i].Length;
+                        if (i < argumentIndex) pos++;             
+                    }
+                    inputField.stringPosition = pos;
+                    break;
+                }
+            }
+        }
+        else
+        {         
             Match match = Regex.Match(inputField.text, @"\S*");
             if (match.Success)
             {
                 inputField.text = inputField.text.Substring(0, match.Index)
-                    + $"/{selectedCommand} "
+                    + $"/{hintList[selectedHint].CommandId} "
                     + inputField.text.Substring(match.Index + match.Length);
             }
             inputField.MoveTextEnd(false);
-            UpdateHints(inputField.text);
+            UpdateHints(inputField.text);          
         }
     }
     #endregion

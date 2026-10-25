@@ -92,15 +92,28 @@ public static class ChatService
             return false;
         }
     }
-    public static bool HasWhitespaceBeforeCaret(string value,int index)
+    public static bool HasWhitespaceBeforeCaret(string value,int caretPosition)
     {
         value = value.TrimStart();
-        for (int i = 0; i < index && i < value.Length; i++)
+        for (int i = 0; i < caretPosition && i < value.Length; i++)
         {
             if (char.IsWhiteSpace(value[i]))
                 return true;         
         }
         return false;
+    } 
+    public static int GetArgumentIndex(string value,int caretPosition)
+    {
+        int counter = 0;
+        bool previous = true;
+        for (int i = 0; i < caretPosition && i < value.Length; i++)
+        {
+            bool current = char.IsWhiteSpace(value[i]);
+            if(!previous && current)
+                counter++;
+            previous = current;
+        }
+        return counter - 1;
     }
     public static List<FixedString512Bytes> GetFixedString(string value)
     {
