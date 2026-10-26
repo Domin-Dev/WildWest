@@ -13,18 +13,8 @@ public class CustomInputField : TMP_InputField
         if (Event.current.isKey && (Event.current.keyCode == KeyCode.DownArrow || Event.current.keyCode == KeyCode.UpArrow))
             Event.current.Use();
     }
-    // public override void OnUpdateSelected(BaseEventData eventData)
-    // {
-    //     base.OnUpdateSelected(eventData);
-    //     if(stringPosition != oldCaretPosition)
-    //     {
-    //         oldCaretPosition = stringPosition;
-    //         OnCaretPositionChanged?.Invoke();
-    //     }
-    // }
-
     public override void OnMove(AxisEventData eventData)
-    {
+    {   
         base.OnMove(eventData);
         OnCaretPositionChanged?.Invoke();
     }

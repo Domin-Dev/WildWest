@@ -112,63 +112,63 @@ public static class DebugController
             },false,false));
             #endregion
             #region Give
-            Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "Item ID","Quantity","player name", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
-            {
-                if (ClientServerBootstrap.HasServerWorld)
-                {
-                    if (ItemsAsset.instance.GetItem(id) == null) return null;
-                    var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
-                    var query = entityManager.CreateEntityQuery(typeof(PlayerName),typeof(NetworkId));
-                    var names = query.ToComponentDataArray<PlayerName>(Allocator.TempJob);
-                    var players = query.ToEntityArray(Allocator.TempJob);
-                    Entity networkPlayer = Entity.Null;
-                    for (int i = 0; i < names.Length; i++)
-                    {
-                        if (names[i].name == player)
-                        {
-                            networkPlayer = players[i];
-                            break;
-                        }
-                    }
-                    players.Dispose();
-                    names.Dispose();
-                    query.Dispose();
-                    if (networkPlayer == Entity.Null)
-                        return "No player found with that name";
-                    else
-                    {
-                        EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
-                        {
-                            item = new InventorySlot
-                            {
-                                itemId = id,
-                                quantity = quantity,
-                            },
-                            barValue = 1,
-                            networkEntity = networkPlayer
-                        });
-                    }
-                }
-                return null;
-            }));
-            Add(new DebugCommand<int, int>("give", "Gives you the specified item", "Item ID","Quantity", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
-            {
-                if (ClientServerBootstrap.HasServerWorld)
-                {
-                    if (ItemsAsset.instance.GetItem(id) == null) return null;
-                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
-                    {
-                        item = new InventorySlot
-                        {
-                            itemId = id,
-                            quantity = quantity
-                        },
-                        barValue = 1,
-                        networkEntity = e
-                    });
-                }
-                return null;
-            }));            
+            // Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "Item ID","Quantity","player name", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
+            // {
+            //     if (ClientServerBootstrap.HasServerWorld)
+            //     {
+            //         if (ItemsAsset.instance.GetItem(id) == null) return null;
+            //         var entityManager = ClientServerBootstrap.ServerWorld.EntityManager;
+            //         var query = entityManager.CreateEntityQuery(typeof(PlayerName),typeof(NetworkId));
+            //         var names = query.ToComponentDataArray<PlayerName>(Allocator.TempJob);
+            //         var players = query.ToEntityArray(Allocator.TempJob);
+            //         Entity networkPlayer = Entity.Null;
+            //         for (int i = 0; i < names.Length; i++)
+            //         {
+            //             if (names[i].name == player)
+            //             {
+            //                 networkPlayer = players[i];
+            //                 break;
+            //             }
+            //         }
+            //         players.Dispose();
+            //         names.Dispose();
+            //         query.Dispose();
+            //         if (networkPlayer == Entity.Null)
+            //             return "No player found with that name";
+            //         else
+            //         {
+            //             EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+            //             {
+            //                 item = new InventorySlot
+            //                 {
+            //                     itemId = id,
+            //                     quantity = quantity,
+            //                 },
+            //                 barValue = 1,
+            //                 networkEntity = networkPlayer
+            //             });
+            //         }
+            //     }
+            //     return null;
+            // }));
+            // Add(new DebugCommand<int, int>("give", "Gives you the specified item", "Item ID","Quantity", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity) =>
+            // {
+            //     if (ClientServerBootstrap.HasServerWorld)
+            //     {
+            //         if (ItemsAsset.instance.GetItem(id) == null) return null;
+            //         EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+            //         {
+            //             item = new InventorySlot
+            //             {
+            //                 itemId = id,
+            //                 quantity = quantity
+            //             },
+            //             barValue = 1,
+            //             networkEntity = e
+            //         });
+            //     }
+            //     return null;
+            // }));            
             Add(new DebugCommand<int, int,float,int,float,MyColor>("give", "Gives you the specified item", "Item ID", "Quantity", "Wetness (0 - 100)", "Quality (0 - 6)", "Bar Value", "Color", (ref EntityCommandBuffer ecb, Entity e, int id, int quantity,float wetness,int quality,float barValue,MyColor color) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
@@ -190,24 +190,24 @@ public static class DebugController
                 }
                 return null;
             }));
-            Add(new DebugCommand<int>("give", "Gives you the specified item", "Item ID", (ref EntityCommandBuffer ecb, Entity e, int id) =>
-            {
-                if (ClientServerBootstrap.HasServerWorld)
-                {
-                    if (ItemsAsset.instance.GetItem(id) == null) return null;
-                    EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
-                    {
-                        item = new InventorySlot
-                        {
-                            itemId = id,
-                            quantity = 1
-                        },
-                        barValue = 1,
-                        networkEntity = e
-                    });
-                }
-                return null;
-            }));
+            // Add(new DebugCommand<int>("give", "Gives you the specified item", "Item ID", (ref EntityCommandBuffer ecb, Entity e, int id) =>
+            // {
+            //     if (ClientServerBootstrap.HasServerWorld)
+            //     {
+            //         if (ItemsAsset.instance.GetItem(id) == null) return null;
+            //         EntityHelper.CreateEntityWithComponent(ref ecb, new EQGiveItem()
+            //         {
+            //             item = new InventorySlot
+            //             {
+            //                 itemId = id,
+            //                 quantity = 1
+            //             },
+            //             barValue = 1,
+            //             networkEntity = e
+            //         });
+            //     }
+            //     return null;
+            // }));
             Add(new DebugCommand("giveoutfit", "debug outfit kit", (ref EntityCommandBuffer ecb, Entity e) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)

@@ -12,6 +12,7 @@ using Unity.NetCode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Users;
 using UnityEngine.UI;
 
 
@@ -21,6 +22,7 @@ public class Chat : ChatCore<Chat>
     [Header("Hints")]
     [SerializeField] private RectTransform hintParent;    
     [SerializeField] private GameObject hintPrefab;
+    [SerializeField] private TextMeshProUGUI placeholder;
     [SerializeField] [Min(1)] private int displayedHintsCount = 5;
     [Header("Hints Input")]
     [SerializeField] private InputActionReference nextSuggestion;
@@ -147,6 +149,8 @@ public class Chat : ChatCore<Chat>
     }
     private void UpdateHints(string newValue)
     { 
+        Debug.Log("test");
+        placeholder.text = default;
         if(!ChatService.TrySplitCommand(newValue,out var commandID,out arguments))
         {
             hintParent.gameObject.SetActive(false);
@@ -166,7 +170,7 @@ public class Chat : ChatCore<Chat>
             if(variantlist.Count > 0)
                 UpdateHintList(variantlist);
             else
-                UpdateHintList(new List<CommandBase>());   
+                UpdateHintList(new List<CommandBase>());  
         }
         else
         {
@@ -227,8 +231,29 @@ public class Chat : ChatCore<Chat>
                 if(commandIsSelected)
                 {
                     StringBuilder stringBuilder = new StringBuilder($"/{command.CommandId}");
+                    StringBuilder placeHolderBuilder = new StringBuilder();
                     for(int j = 0; j < command.Arguments.Length;j++)
                     {
+                        if(j > argumentIndex)
+                        {
+                            if(arguments?.Length > j)
+                            {
+                                var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
+                                placeHolderBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(color));                            }
+                            else
+                                placeHolderBuilder.Append($" ({command.Arguments[j].name})");
+                        }
+                        else if(j == argumentIndex)
+                        {
+                            if(arguments?.Length > j)
+                            {
+                                var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
+                                placeHolderBuilder.Append(($" [{command.Arguments[j].name.GetColorfulString(ChatConfig.Instance.HighlightColor)}]").GetColorfulString(color));
+                            }
+                            else
+                                placeHolderBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));     
+                        }
+ 
                         if(arguments?.Length > j)
                         {
                             var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
@@ -242,10 +267,22 @@ public class Chat : ChatCore<Chat>
                         else
                             stringBuilder.Append($" [{command.Arguments[j].name}]");
                     }
+                    
+
+                    string input = inputField.text.Trim();
+                 //   int whitespaceIndex  = ChatService.GetWhitespaceEnd(input,inputField.stringPosition);
+                   // input = whitespaceIndex <  input.Length ? input.Remove(whitespaceIndex) : input;
+
+                    placeHolderBuilder.Insert(0,$"{input}");
+                    placeholder.text = placeHolderBuilder.ToString();
                     text.text = stringBuilder.ToString();
+
+                 //   Debug.Log(index + " " + inputField.text + " " + inputField.stringPosition);
+                    inputField.SetTextWithoutNotify(input + new string(' ',  placeholder.textInfo.characterCount*2));
+                    break;
                 }
                 else
-                    text.text = $"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)}{(commandFormatIsEmpty ? "" : " ")}{command.CommandFormat}";
+                    text.text = $"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)}{(commandFormatIsEmpty ? "" : " ")}{command.CommandFormat}";          
             }
             else 
                 child.gameObject.SetActive(false);
@@ -257,25 +294,38 @@ public class Chat : ChatCore<Chat>
     private void NextSuggestion(InputAction.CallbackContext context)
     {
         if(commandIsSelected)
-        {
-            
-        }
+            GetNextArgument();
         else
             ChangeSelectedHint(++selectedHint);
     }
     private void PreviousSuggestion(InputAction.CallbackContext context)
     {
         if(commandIsSelected)
-        {
-            
-        }
+            GetPreviousArgument();
         else
             ChangeSelectedHint(--selectedHint);
     }
     private void ApplySuggestion(InputAction.CallbackContext context)
     {
         if(hintList == null || hintList.Count == 0) return;        
-        if(commandIsSelected && ChatService.TrySplitCommand(inputField.text,out var commandID,out var arguments) && arguments != null)
+        if(commandIsSelected)
+            CompleteArgument();
+        else
+        {         
+            Match match = Regex.Match(inputField.text, @"\S*");
+            if (match.Success)
+            {
+                inputField.text = inputField.text.Substring(0, match.Index)
+                    + $"/{hintList[selectedHint].CommandId} "
+                    + inputField.text.Substring(match.Index + match.Length);
+            }
+            inputField.MoveTextEnd(false);
+            UpdateHints(inputField.text);          
+        }
+    }  
+    private void CompleteArgument()
+    {
+        if(ChatService.TrySplitCommand(inputField.text,out var commandID,out var arguments) && arguments != null)
         {           
             int argumentIndex = ChatService.GetArgumentIndex(inputField.text,inputField.stringPosition);
             if(argumentIndex < 0 ) return;
@@ -285,7 +335,6 @@ public class Chat : ChatCore<Chat>
             for(int k = 0; k < hintList.Count; k++)
             {
                 var command = hintList[k];
-                Debug.Log("index " + argumentIndex);
                 if(command.Arguments.Length > argumentIndex && command.TryCompleteArgument(arg,argumentIndex,out var newValue))
                 {
                     if(argIsNotEmpty)
@@ -308,18 +357,47 @@ public class Chat : ChatCore<Chat>
                 }
             }
         }
-        else
-        {         
-            Match match = Regex.Match(inputField.text, @"\S*");
-            if (match.Success)
+    }  
+    private void GetNextArgument()
+    {
+        if(ChatService.TrySplitCommand(inputField.text,out var commandID,out var arguments) && arguments != null)
+        {           
+            int argumentIndex = ChatService.GetArgumentIndex(inputField.text,inputField.stringPosition);
+            if(argumentIndex < 0 ) return;
+            bool argIsNotEmpty = argumentIndex < arguments.Length;
+            string arg = argIsNotEmpty ? arguments[argumentIndex] : default; 
+        
+            for(int k = 0; k < hintList.Count; k++)
             {
-                inputField.text = inputField.text.Substring(0, match.Index)
-                    + $"/{hintList[selectedHint].CommandId} "
-                    + inputField.text.Substring(match.Index + match.Length);
+                var command = hintList[k];
+                if(command.Arguments.Length > argumentIndex 
+                && command.TryGetICommandArgument(arg,argumentIndex,out var commandArgument) 
+                && commandArgument.TryGetNext(out var newValue))
+                {
+                    if(argIsNotEmpty)
+                        arguments[argumentIndex] = newValue;
+                    else
+                    {
+                        Array.Resize(ref arguments, arguments.Length + 1);
+                        arguments[arguments.Length - 1] = newValue;
+                    }
+
+                    inputField.text = "/" + commandID + " " + string.Join(" ", arguments);
+                    int pos = 1 + commandID.Length + 1;           
+                    for (int i = 0; i <= argumentIndex; i++)
+                    {
+                        pos += arguments[i].Length;
+                        if (i < argumentIndex) pos++;             
+                    }
+                    inputField.stringPosition = pos;
+                    break;
+                }
             }
-            inputField.MoveTextEnd(false);
-            UpdateHints(inputField.text);          
         }
+    }
+    private void GetPreviousArgument()
+    {
+        
     }
     #endregion
 }

@@ -101,6 +101,13 @@ public static class ChatService
                 return true;         
         }
         return false;
+    }     
+    public static int GetWhitespaceEnd(string value,int caretPosition)
+    {
+        int i = value.Length - 1; 
+        while (i > caretPosition && char.IsWhiteSpace(value[i]))
+            i--;
+        return i + 1;
     } 
     public static int GetArgumentIndex(string value,int caretPosition)
     {

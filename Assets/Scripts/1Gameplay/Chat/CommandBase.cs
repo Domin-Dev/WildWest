@@ -66,14 +66,18 @@ public abstract class CommandBase
     }
     public virtual bool TryCompleteArgument(string currentArgument,int index,out string newValue)
     {
-        TryConvert(currentArgument, Arguments[index].type, out var result);
-        ICommandArgument commandArgument = result as ICommandArgument;
-        if(commandArgument != null && !commandArgument.IsCorrect)
-           return commandArgument.TryComplete(out newValue);
-       
+        if(TryGetICommandArgument(currentArgument,index,out var result) && !result.IsCorrect)
+           return result.TryComplete(out newValue);  
         newValue = default;
         return false;
+    }    
+    public bool TryGetICommandArgument(string currentArgument,int index,out ICommandArgument result)
+    {
+        TryConvert(currentArgument, Arguments[index].type, out var convertResult);
+        result = convertResult as ICommandArgument;
+        return result != null;
     }
+    public abstract string Invoke(string[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender);
     protected bool TryConvert(string value, Type targetType, out object result)
     {
         switch (targetType)
@@ -125,10 +129,8 @@ public abstract class CommandBase
                     result = arg;
                     return false;
                 }
-                break;
         }
         result = null;
         return false;
     }
-    public abstract string Invoke(string[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender);
 }
