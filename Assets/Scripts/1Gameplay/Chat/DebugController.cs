@@ -9,13 +9,13 @@ using UnityEngine;
 using UnityEngine.Localization.SmartFormat.Utilities;
 public static class DebugController 
 {
-    static Dictionary<string,List<CommandBase>> commands;
-    public static Dictionary<string,List<CommandBase>> Commands
+    static Dictionary<string,CommandBase> commands;
+    public static Dictionary<string,CommandBase> Commands
     {
         get
         {
             if (commands != null) return commands;
-            commands = new Dictionary<string,List<CommandBase>>();
+            commands = new Dictionary<string,CommandBase>();
             Add(new DebugCommand<string>("mkadmin", "Grants admin privileges to a player.", "player name", (ref EntityCommandBuffer ecb,Entity e, string arg) =>
             {
                 if (ClientServerBootstrap.HasServerWorld)
@@ -109,7 +109,7 @@ public static class DebugController
                 entities.Dispose();
                 query.Dispose();
                 return result;
-            },false,false));
+            },commandType:CommandType.ClientSide));
             #endregion
             #region Give
             // Add(new DebugCommand<int,int,string>("give", "Gives the player the specified item", "Item ID","Quantity","player name", (ref EntityCommandBuffer ecb, Entity e,int id,int quantity,string player) =>
@@ -270,7 +270,8 @@ public static class DebugController
                 entities.Dispose();
                 query.Dispose();
                 return stringBuilder.ToString();
-            },true,true));
+            }));
+
             #endregion
             #region Time
             Add(new DebugCommand("time", "Displays information about the time", (ref EntityCommandBuffer ecb, Entity e) =>
@@ -287,7 +288,7 @@ public static class DebugController
                 entities.Dispose();
                 query.Dispose();
                 return result;
-            },false,false));
+            },commandType: CommandType.ClientSide));
             Add(new DebugCommand<int>("timeset", "Set the specified time", "Hour", (ref EntityCommandBuffer ecb, Entity e,int value) =>
             {
                 if(value < 0 || value > 24) return "The value must be between 0 and 24.";         
@@ -309,7 +310,7 @@ public static class DebugController
                 entities.Dispose();
                 query.Dispose();
                 return null;
-            },true,true));
+            }));
             Add(new DebugCommand<int>("timeskip", "Skip the specific time period", "Hour", (ref EntityCommandBuffer ecb, Entity e,int value) =>
             {
                 if(value < 0) return StringsHelper.GetColorfulString("The value must be greater than 0.",Color.red);         
@@ -324,7 +325,7 @@ public static class DebugController
                 entities.Dispose();
                 query.Dispose();
                 return null;
-            },true,true));
+            }));
             #endregion
             Add(new DebugCommand("cleareq", "Removes all items from your inventory", (ref EntityCommandBuffer ecb, Entity e) =>
             {
@@ -355,41 +356,27 @@ public static class DebugController
             {
                 Chat.Instance.Clear();
                 return null;
-            },false,false));
+            },CommandType.ClientSide));
             Add(new DebugCommand("help", "Command list",(ref EntityCommandBuffer entityCommandBuffer, Entity e) =>
             {
                 StringBuilder builder = new StringBuilder("Command list:\n");
-                foreach(var list in commands)
-                {
-                    foreach(var command in list.Value)
-                        builder.Append($"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {command.CommandFormat} - {command.CommandDescription}\n");
-                }
+                foreach(var command in commands.Values)
+                    builder.Append($"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {command.CommandFormat} - {command.CommandDescription}\n"); 
                 return builder.ToString();
-            },false,false));            
+            },CommandType.ClientSide));            
             Add(new DebugCommand<CommandArg>("help", "Prints a description of the command","Command Name",(ref EntityCommandBuffer entityCommandBuffer,Entity e,CommandArg value) =>
             {
-                if(commands.TryGetValue(value.CommandID,out var variants))
-                {
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < variants.Count; i++)
-                    {
-                        var command = variants[i];
-                        sb.Append($"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {command.CommandFormat}\n{command.CommandDescription}");
-                        if(i !=  variants.Count - 1) sb.Append("\n\n");
-                    }
-                    return sb.ToString();
-                }
+                if(commands.TryGetValue(value.CommandID,out var command))
+                    return $"/{command.CommandId.GetColorfulString(ChatConfig.Instance.HighlightColor)} {command.CommandFormat}\n{command.CommandDescription}";
                 return "Command not found";
-            },false,false));
+            },commandType: CommandType.ClientSide));
             #endregion
             return commands;
         }
     }
     private static void Add(CommandBase command)
     {
-        if(commands.ContainsKey(command.CommandId))
-            commands[command.CommandId].Add(command);
-        else
-            commands.Add(command.CommandId,new List<CommandBase>(){ command});  
+        if(!commands.TryAdd(command.CommandId,command))
+            Debug.LogWarning($"Command with ID '{command.CommandId}' already exists.");
     }
 }

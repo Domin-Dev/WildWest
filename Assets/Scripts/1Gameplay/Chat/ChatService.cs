@@ -186,26 +186,22 @@ public static class ChatService
         if(TrySplitCommand(commandText,out var commandID,out var arguments))
         {
             var commandList = DebugController.Commands;
-            if (commandList.TryGetValue(commandID,out var list))
+            if (commandList.TryGetValue(commandID,out var command))
             {
-                foreach(var command in list)
+                if(command.IsAdminCommand && entityManager.HasComponent<Admin>(connectionEntity))
                 {
-                    if (command.Validate(arguments) && command.IsAdminCommand)
+                    if(command.TryInvoke(arguments, ref ecb, connectionEntity,out var output))
                     {
-                        if(entityManager.HasComponent<Admin>(connectionEntity))
-                        {
-                            var output = command.Invoke(arguments, ref ecb, connectionEntity);
-                            if (!string.IsNullOrEmpty(output))
-                                SendMessage<ServerMessageRPC>(ecb, output, connectionEntity);
-                            return;
-                        }
-                        else
-                        {
-                            SendMessage<ServerMessageRPC>(ecb, "You don't have permission!", connectionEntity);
-                            return;
-                        }
-                    }   
-                }  
+                        if(!string.IsNullOrEmpty(output))
+                            SendMessage<ServerMessageRPC>(ecb, output, connectionEntity);
+                    }
+                    return;
+                }
+                else
+                {
+                    SendMessage<ServerMessageRPC>(ecb, "You don't have permission!", connectionEntity);
+                    return;
+                } 
             }
         }
     }       
@@ -252,34 +248,29 @@ public static class ChatService
     public static bool TryExecuteLocalCommand(string value)
     {
         if(TrySplitCommand(value,out var commandID,out var arguments))
-        {
-            List<CommandBase> hints = new List<CommandBase>();           
-            if (DebugController.Commands.TryGetValue(commandID.ToLower(),out var list))
-            {
-                foreach(var command in list)
-                {               
-                    if (command.Validate(arguments))
+        {     
+            if (DebugController.Commands.TryGetValue(commandID.ToLower(),out var command))
+            {              
+                if(command.IsLocalCommand)
+                {
+                    var ecb = new EntityCommandBuffer(Allocator.Temp);
+                    if(command.TryInvoke(arguments,ref ecb,Entity.Null,out var output))
                     {
-                        if (!command.IsServerCommand && !command.IsAdminCommand)
-                        {
-                            var ecb = new EntityCommandBuffer(Allocator.Temp);
-                            var output = command.Invoke(arguments,ref ecb,Entity.Null);
-                            ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
-                            ecb.Dispose();
-                            if (!string.IsNullOrEmpty(output))
-                                Chat.Instance.Print(output);
-                            return true;
-                        }
-                        else
-                            return false;
+                        ecb.Playback(ClientServerBootstrap.ClientWorld.EntityManager);
+                        ecb.Dispose();
+                        if (!string.IsNullOrEmpty(output))
+                            Chat.Instance.Print(output);
                     }
-                    else 
-                        hints.Add(command);
+                    else
+                        PrintCommands(command);
+
+                    return true;
                 }
+                else
+                    return false;
             }
-            if (hints.Count == 0)
-                Chat.Instance.Print($"{"Incorrect command:".GetColorfulString(ChatConfig.Instance.WarningColor)} <noparse>{value}</noparse>");
-            PrintCommands(hints.ToArray());
+
+            Chat.Instance.Print($"{"Incorrect command:".GetColorfulString(ChatConfig.Instance.WarningColor)} <noparse>{value}</noparse>");
             return true;
         }
         else

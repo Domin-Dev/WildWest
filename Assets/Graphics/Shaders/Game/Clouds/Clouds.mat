@@ -62,9 +62,10 @@ Material:
     - _Speed: 0.22
     - _SpeedMultiplier: 0.08
     m_Colors:
+    - White: {r: 1, g: 1, b: 1, a: 1}
     - _ChunkWorldPosition: {r: 0, g: 0, b: 0, a: 0}
     - _ChunkWroldPosition: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0, g: 0, b: 0, a: 0.47058824}
+    - _Color: {r: 0, g: 0, b: 0, a: 0.39215687}
     - _DistortSpeedVector: {r: 0.9, g: 0, b: 0, a: 0}
     - _DistortTiling: {r: 1, g: 1, b: 0, a: 0}
     - _DistortWindDirection: {r: 0.2, g: 0, b: 0, a: 0}

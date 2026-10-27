@@ -16,17 +16,20 @@ MonoBehaviour:
   description: 
   stackMax: 1
   ID: 11
-  icon: {fileID: -1558752730, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
+  icon: {fileID: 918400040, guid: 9ae147eb5c363e047b3b208350004b11, type: 3}
   worldSprite: {fileID: 0}
   animSprites: []
   tags:
-  - tag: {fileID: 11400000, guid: 1d964270d1c5ee48984f1df29ddc4ebb, type: 2}
+  - Tag: {fileID: 11400000, guid: 1d964270d1c5ee48984f1df29ddc4ebb, type: 2}
+    TagSettings:
+      rid: -2
   crafingIngredients:
   - itemID: 0
     number: 0
-  craftTables: ffffffff
+  craftTables: ffffffffi
   numberItem: 1
   durability: 100
+  destructionSound: 0
   texture: {fileID: 2800000, guid: 71253a8602cd87e4d8a8abf368fa2363, type: 3}
   sprites:
   - {fileID: 21300000, guid: 9214258a9898fa543abd8532fe548877, type: 2}
@@ -39,3 +42,8 @@ MonoBehaviour:
     insulation: 10
     waterResistance: 200
     aesthetic: 20
+  references:
+    version: 2
+    RefIds:
+    - rid: -2
+      type: {class: , ns: , asm: }

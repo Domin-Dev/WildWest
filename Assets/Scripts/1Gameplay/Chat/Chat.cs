@@ -16,6 +16,22 @@ using UnityEngine.InputSystem.Users;
 using UnityEngine.UI;
 
 
+public class HintList
+{
+    private int selectedHint;
+    private int displayedHintsCount;
+    private List<CommandBase> commands;
+
+    public HintList(int displayedHintsCount)
+    {
+        this.displayedHintsCount = displayedHintsCount;
+    }
+    public void InputChanged(string newValue)
+    {
+        
+    }
+}
+
 public class Chat : ChatCore<Chat>
 {
     #region Fields
@@ -34,7 +50,7 @@ public class Chat : ChatCore<Chat>
     private int LastHistory;
     private int currentLastHistory = -1;
     private const int maxHistory = 10;
-    private Dictionary<string,List<CommandBase>> commandList;
+    private Dictionary<string,CommandBase> commandList;
     private List<CommandBase> hintList;
     private int selectedHint = 0;
     private int selectedHintChildIndex = 0; 
@@ -149,7 +165,6 @@ public class Chat : ChatCore<Chat>
     }
     private void UpdateHints(string newValue)
     { 
-        Debug.Log("test");
         placeholder.text = default;
         if(!ChatService.TrySplitCommand(newValue,out var commandID,out arguments))
         {
@@ -157,25 +172,17 @@ public class Chat : ChatCore<Chat>
             return;
         }
 
-        var hints = commandList.Where(x => x.Key.StartsWith(commandID)).ToList();
-        if(commandList.TryGetValue(commandID,out var variantlist) && (hints.Count == 1 || ChatService.HasWhitespaceBeforeCaret(newValue,inputField.stringPosition)))
+        var hints = commandList.Where(x => x.Key.StartsWith(commandID)).Select(x => x.Value).ToList();
+        if(commandList.TryGetValue(commandID,out var command) && (hints.Count == 1 || ChatService.HasWhitespaceBeforeCaret(newValue,inputField.stringPosition)))
         {
             hintParent.GetChild(selectedHintChildIndex).GetComponent<Image>().sprite = messageBackground.Sprite;
-            variantlist = variantlist
-                .Where(x => x.Arguments.Length >= arguments.Length)
-                .OrderBy(x => x.Arguments.Length)
-                .OrderByDescending(x => x.CountValidArguments(arguments))
-                .ToList();
             commandIsSelected = true; 
-            if(variantlist.Count > 0)
-                UpdateHintList(variantlist);
-            else
-                UpdateHintList(new List<CommandBase>());  
+            UpdateHintList(new List<CommandBase>(){command});  
         }
         else
-        {
+        {   
             commandIsSelected = false; 
-            UpdateHintList(commandList.Where(x => x.Key.StartsWith(commandID)).SelectMany(x => x.Value).ToList());
+            UpdateHintList(hints);
         }
 
         if(hintList.Count > 0)
@@ -232,47 +239,45 @@ public class Chat : ChatCore<Chat>
                 {
                     StringBuilder stringBuilder = new StringBuilder($"/{command.CommandId}");
                     StringBuilder placeHolderBuilder = new StringBuilder();
-                    for(int j = 0; j < command.Arguments.Length;j++)
+                    for(int j = 0; j < command.RequiredArguments.Length;j++)
                     {
                         if(j > argumentIndex)
                         {
                             if(arguments?.Length > j)
                             {
                                 var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
-                                placeHolderBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(color));                            }
+                                placeHolderBuilder.Append(($" [{command.GetArgument(j).Name}]").GetColorfulString(color));                            }
                             else
-                                placeHolderBuilder.Append($" ({command.Arguments[j].name})");
+                                placeHolderBuilder.Append($" ({command.GetArgument(j).Name})");
                         }
                         else if(j == argumentIndex)
                         {
                             if(arguments?.Length > j)
                             {
                                 var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
-                                placeHolderBuilder.Append(($" [{command.Arguments[j].name.GetColorfulString(ChatConfig.Instance.HighlightColor)}]").GetColorfulString(color));
+                                placeHolderBuilder.Append(($" [{command.GetArgument(j).Name.GetColorfulString(ChatConfig.Instance.HighlightColor)}]").GetColorfulString(color));
                             }
                             else
-                                placeHolderBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));     
+                                placeHolderBuilder.Append(($" [{command.GetArgument(j).Name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));     
                         }
  
                         if(arguments?.Length > j)
                         {
                             var color = command.ValidateArgument(arguments[j],j) ? ChatConfig.Instance.CorrectColor : ChatConfig.Instance.WarningColor;
                             if(argumentIndex == j)
-                                stringBuilder.Append(($" [{command.Arguments[j].name.GetColorfulString(ChatConfig.Instance.HighlightColor)}]").GetColorfulString(color));
+                                stringBuilder.Append(($" [{command.GetArgument(j).Name.GetColorfulString(ChatConfig.Instance.HighlightColor)}]").GetColorfulString(color));
                             else
-                                stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(color));
+                                stringBuilder.Append(($" [{command.GetArgument(j).Name}]").GetColorfulString(color));
                         }
                         else if(argumentIndex == j)
-                            stringBuilder.Append(($" [{command.Arguments[j].name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));             
+                            stringBuilder.Append(($" [{command.GetArgument(j).Name}]").GetColorfulString(ChatConfig.Instance.HighlightColor));             
                         else
-                            stringBuilder.Append($" [{command.Arguments[j].name}]");
+                            stringBuilder.Append($" [{command.GetArgument(j).Name}]");
                     }
                     
 
-                    string input = inputField.text.Trim();
-                 //   int whitespaceIndex  = ChatService.GetWhitespaceEnd(input,inputField.stringPosition);
-                   // input = whitespaceIndex <  input.Length ? input.Remove(whitespaceIndex) : input;
 
+                    string input = inputField.text.Trim() + (char.IsWhiteSpace(inputField.text[inputField.text.Length-1]) ? " " : default);
                     placeHolderBuilder.Insert(0,$"{input}");
                     placeholder.text = placeHolderBuilder.ToString();
                     text.text = stringBuilder.ToString();
@@ -335,7 +340,7 @@ public class Chat : ChatCore<Chat>
             for(int k = 0; k < hintList.Count; k++)
             {
                 var command = hintList[k];
-                if(command.Arguments.Length > argumentIndex && command.TryCompleteArgument(arg,argumentIndex,out var newValue))
+                if(command.RequiredArguments.Length > argumentIndex && command.TryCompleteArgument(arg,argumentIndex,out var newValue))
                 {
                     if(argIsNotEmpty)
                         arguments[argumentIndex] = newValue;
@@ -370,7 +375,7 @@ public class Chat : ChatCore<Chat>
             for(int k = 0; k < hintList.Count; k++)
             {
                 var command = hintList[k];
-                if(command.Arguments.Length > argumentIndex 
+                if(command.RequiredArguments.Length > argumentIndex 
                 && command.TryGetICommandArgument(arg,argumentIndex,out var commandArgument) 
                 && commandArgument.TryGetNext(out var newValue))
                 {

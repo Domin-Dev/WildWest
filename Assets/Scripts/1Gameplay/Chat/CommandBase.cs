@@ -1,68 +1,125 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Unity.Entities;
 using Unity.Mathematics;
-using UnityEngine;
+
 
 public abstract class CommandBase 
 {
-    public bool IsServerCommand { get; private set; }
-    public bool IsAdminCommand { get; private set; }
+    public class Argument
+    {
+        public Type Type;
+        public string Name;
+        public int Index;
+        public object DefaultValue;
+
+        public Argument(Type type,string name,int index,object defaultValue = null)
+        {
+            this.Type = type;
+            this.Name = name;
+            this.Index = index;
+            this.DefaultValue = defaultValue;
+        }
+    }
+   
+    public CommandType CommandType;
+    public bool IsServerCommand => CommandType == CommandType.ServerSide || CommandType == CommandType.ServerSideOnlyAdmin;
+    public bool IsAdminCommand  => CommandType == CommandType.ClientSideOnlyAdmin || CommandType == CommandType.ServerSideOnlyAdmin;
+    public bool IsLocalCommand => CommandType == CommandType.ClientSideOnlyAdmin || CommandType == CommandType.ClientSide;
+
     public string CommandId {  get; private set; }
     public string CommandDescription {  get; private set; }
-    public (Type type,string name)[] Arguments {get; private set;}
+    public Argument[] RequiredArguments {get; private set;}
+    public Argument[] OptionalArguments {get; private set;}
+    public int ArgumentsCount => RequiredArguments.Length + OptionalArguments.Length;
     public string CommandFormat
     {
         get
         {
             StringBuilder stringBuilder = new StringBuilder();
-            for(int i = 0; i < Arguments.Length;i++)
+            for(int i = 0; i < ArgumentsCount;i++)
             {
-                stringBuilder.Append($"[{Arguments[i].name}]");
-                if(i + 1 < Arguments.Length)
+                if(i < RequiredArguments.Length)
+                    stringBuilder.Append($"[{RequiredArguments[i].Name}]");
+                else
+                    stringBuilder.Append($"({OptionalArguments[i].Name})");
+                
+                if(i + 1 < ArgumentsCount) 
                     stringBuilder.Append(" ");
             }
             return stringBuilder.ToString();
         }
     }
-    protected CommandBase(bool serverCommand,bool adminCommand, string id, string desc, params (Type type,string name)[] args)
+    protected CommandBase(CommandType commandType, string id, string desc, params (Type type,string name,object defaultValue)[] args)
     {
         CommandId = id;
         CommandDescription = desc;
-        Arguments = args;
-        this.IsServerCommand = serverCommand;
-        this.IsAdminCommand = adminCommand;
+        CommandType = commandType;
+        var required = new List<Argument>();
+        var optional = new List<Argument>();
+        for(int i = 0; i < args.Length; i++)
+        {
+            var arg = args[i];
+            if(arg.defaultValue != null)
+                optional.Add(new Argument(arg.type,arg.name,i,arg.defaultValue));
+            else
+                required.Add(new Argument(arg.type,arg.name,i));
+        }
+
+        RequiredArguments = required.ToArray();
+        OptionalArguments = optional.ToArray();
     }
 
-    public virtual bool Validate(string[] args)
+    public bool Validate(string[] args)
     {
-        if (args.Length != Arguments.Length)
-            return false;
-
-        for (int i = 0; i < args.Length; i++)
+        return Validate(args,out var objects);
+    }
+    public bool Validate(string[] args,out object[] argObjects)
+    {
+        if (args.Length < RequiredArguments.Length || args.Length > ArgumentsCount)
         {
-            if (!TryConvert(args[i], Arguments[i].type, out _))
+            argObjects = default;
+            return false;
+        }
+        
+        argObjects = new object[ArgumentsCount];
+        for (int i = 0; i < RequiredArguments.Length; i++)
+        {
+            var arg = RequiredArguments[i];
+            if (!TryConvert(args[i],arg.Type, out argObjects[arg.Index]))
                 return false;
+        }
+
+        List<int> optionalArgs = new List<int>();
+        for (int i = RequiredArguments.Length; i < args.Length; i++)
+        {
+            string argText = args[i].ToLower();
+            var arg = OptionalArguments.FirstOrDefault(x => argText.StartsWith($"{x.Name}:"));
+
+            if(arg == null)
+                return false;
+            else if (!optionalArgs.Contains(arg.Index) && TryConvert(argText.Substring(arg.Name.Length+1), arg.Type, out argObjects[arg.Index]))
+                optionalArgs.Add(arg.Index);
+            else
+                return false;     
+        }
+
+        if(optionalArgs.Count != OptionalArguments.Length)
+        {
+            foreach(var arg in OptionalArguments)
+            {
+                if(!optionalArgs.Contains(arg.Index))
+                    argObjects[arg.Index] = arg.DefaultValue;
+            }
         }
         return true;
     }    
-    public virtual int CountValidArguments(string[] args)
-    {
-        int max = math.min(args.Length,Arguments.Length);
-        int counter = 0;
-        for (int i = 0; i < max; i++)
-        {
-            if (TryConvert(args[i], Arguments[i].type, out _))
-                counter++;
-        }
-        return counter;
-    }
     public virtual bool ValidateArgument(string argument, int index)
     {
-        if (index >= Arguments.Length || !TryConvert(argument, Arguments[index].type, out _))
-            return false;
-        return true;
+        return TryGetArgument(index,out Argument arg) && TryConvert(argument, arg.Type, out _);
     }
     public virtual bool TryCompleteArgument(string currentArgument,int index,out string newValue)
     {
@@ -73,11 +130,32 @@ public abstract class CommandBase
     }    
     public bool TryGetICommandArgument(string currentArgument,int index,out ICommandArgument result)
     {
-        TryConvert(currentArgument, Arguments[index].type, out var convertResult);
-        result = convertResult as ICommandArgument;
-        return result != null;
+        if(TryGetArgument(index,out var arg))
+        {
+            TryConvert(currentArgument,arg.Type, out var convertResult);
+            result = convertResult as ICommandArgument;
+            return result != null;
+        }
+        result = default;
+        return false;
     }
-    public abstract string Invoke(string[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender);
+    
+    public bool TryInvoke(string[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender,out string result)
+    {
+        if(Validate(args,out var argObjects))
+        {
+            result = Invoke(argObjects,ref entityCommandBuffer,sender);
+            return true;
+        }
+        result = default;
+        return false;
+    }
+    public Argument GetArgument(int index)
+    {
+        TryGetArgument(index,out Argument argument);
+        return argument;
+    }
+    protected abstract string Invoke(object[] args, ref EntityCommandBuffer entityCommandBuffer, Entity sender);
     protected bool TryConvert(string value, Type targetType, out object result)
     {
         switch (targetType)
@@ -131,6 +209,24 @@ public abstract class CommandBase
                 }
         }
         result = null;
+        return false;
+    }
+    private bool TryGetArgument(int index, out Argument argument)
+    {
+        if(index >= 0)
+        {
+            if(index < RequiredArguments.Length)
+            {
+                argument = RequiredArguments[index];
+                return true;
+            }
+            if(index < OptionalArguments.Length)
+            {
+                argument = OptionalArguments[index];
+                return true;
+            }
+        }
+        argument = default;
         return false;
     }
 }
